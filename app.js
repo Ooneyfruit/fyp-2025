@@ -15,8 +15,8 @@ const worldElement = document.getElementById('world');
 const newWorldInput = document.getElementById('new-world');
 const updateWorldButton = document.getElementById('update-world');
 
-// Get the initial value of 'world' from Firestore
-db.collection('worlds').doc('current').get().then((doc) => {
+// Listen for real-time updates to the 'world' value in Firestore
+db.collection('worlds').doc('current').onSnapshot((doc) => {
   if (doc.exists) {
     worldElement.textContent = doc.data().name;
   }
@@ -29,7 +29,6 @@ updateWorldButton.addEventListener('click', () => {
     db.collection('worlds').doc('current').set({
       name: newWorld
     }).then(() => {
-      worldElement.textContent = newWorld;
       newWorldInput.value = '';
     });
   }
