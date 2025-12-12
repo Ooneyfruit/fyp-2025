@@ -1,6 +1,7 @@
 
 const admin = require('firebase-admin');
 const fs = require('fs');
+const path = require('path');
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
@@ -34,7 +35,8 @@ function reviveFirestoreTypes(data) {
 
 
 async function importData() {
-  const fileContents = fs.readFileSync('firestore-export.json', 'utf8');
+  const filePath = path.join(__dirname, 'firestore-export.json');
+  const fileContents = fs.readFileSync(filePath, 'utf8');
   const data = JSON.parse(fileContents);
 
   for (const collectionId in data) {

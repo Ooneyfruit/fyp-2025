@@ -11,6 +11,7 @@
 
   # Sets environment variables in the workspace
   env = {};
+
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
@@ -22,7 +23,7 @@
       enable = true;
       previews = {
         web = {
-          command = ["npx", "http-server", "-c-1"];
+          command = ["npx" "http-server" "-c-1"];
           manager = "web";
         };
       };
@@ -33,7 +34,7 @@
       # Runs when a workspace is first created
       onCreate = {
         # Example: install JS dependencies from NPM
-        # npm-install = "npm install";
+        npm-install = "npm install";
       };
       # Runs when the workspace is (re)started
       onStart = {

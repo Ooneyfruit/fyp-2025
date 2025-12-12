@@ -28,6 +28,122 @@
       },
       "decision_status": "pending",
       "decision_notes": "Chloe beat you to it!"
+    },
+    "7kmxgPVHQtrGmZIix3C0": {
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "9d7rGqO6viw4uq52FoLi"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1748889600,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1749148799,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "annual leave",
+      "requested_date": {
+        "_seconds": 1741336980,
+        "_nanoseconds": 0
+      },
+      "decision_status": "pending",
+      "decision_notes": ""
+    },
+    "1YWZdh2fP8UCFNjj0XYw": {
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "r8fPNPbncIC5s25s9d2P"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1749398400,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1749657599,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "sickness",
+      "requested_date": {
+        "_seconds": 1743952020,
+        "_nanoseconds": 0
+      },
+      "decision_status": "yes",
+      "decision_notes": ""
+    },
+    "rdOjIJMaZ34E5VOMl81h": {
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "fG3p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1751481600,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1751827199,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "annual leave",
+      "requested_date": {
+        "_seconds": 1746100860,
+        "_nanoseconds": 0
+      },
+      "decision_status": "yes",
+      "decision_notes": ""
+    },
+    "SixGXsnZyH80zG90f4Dh": {
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "3AH7ckeGauB6wuwJj2Q3"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1751481600,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1751740799,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "annual leave",
+      "requested_date": {
+        "_seconds": 1746100920,
+        "_nanoseconds": 0
+      },
+      "decision_status": "denied",
+      "decision_notes": "Chloe beat you to it!"
     }
   },
   "practices": {
@@ -75,6 +191,21 @@
             "name": "Dentist",
             "type": "Practitioner",
             "icon_url": "https://picsum.photos/id/237/512/512"
+          },
+          "0jA2jzsNL1IIUNH2AH0w": {
+            "name": "Hygienist",
+            "type": "Practitioner",
+            "icon_url": "https://picsum.photos/id/243/512/512"
+          },
+          "7ZZZJwmKsktSPaz2NoUh": {
+            "name": "Nurse",
+            "type": "Assistant",
+            "icon_url": "https://picsum.photos/id/244/512/512"
+          },
+          "CqlB32wkgQA2WRxHZgUl": {
+            "name": "Receptionist",
+            "type": "Administrative",
+            "icon_url": "https://picsum.photos/id/245/512/512"
           }
         },
         "surgeries": {
@@ -88,7 +219,7 @@
             ],
             "end_time": {
               "_seconds": 39600,
-              "_nanoseconds": 140000000
+              "nanoseconds": 140000000
             },
             "start_time": {
               "_seconds": 27000,
@@ -355,6 +486,108 @@
       "user_name": "Dr. James Wilson",
       "role_name": "Dentist",
       "surgery_name": "Morning"
+    },
+    "lLiKtdbCGdonu5pUSgt0": {
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 0
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "delJr4EMbfGEefqnvh1O"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. Able Baker",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    },
+    "urHrNFH2pe32y79lctly": {
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 0
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "mynUylqCUH8PaqB7gXXQ"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "7ZZZJwmKsktSPaz2NoUh"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Harry Smith",
+      "role_name": "Nurse",
+      "surgery_name": "Morning"
     }
   },
   "users": {
@@ -452,6 +685,144 @@
       "address": "22 Forest Drive\nBarchester\nB1 5IJ",
       "role": "Dentist",
       "profile_image": "https://picsum.photos/id/242/512/512"
+    },
+    "delJr4EMbfGEefqnvh1O": {
+      "name": "Dr. Able Baker",
+      "email": "able.baker@mail.com",
+      "start_date": {
+        "_seconds": 1244847600,
+        "_nanoseconds": 0
+      },
+      "usual_working_days": [
+        "Monday",
+        "Wednesday",
+        "Friday"
+      ],
+      "end_date": null,
+      "is_administrator": false,
+      "is_employee": true,
+      "address": "101 Willow Lane\nBarchester\nB1 6KL",
+      "role": "Dentist",
+      "profile_image": "https://avatar.com/a90790asc.ico"
+    },
+    "pd9uSPWgBHzkqE2lbsM0": {
+      "name": "Dr. Benny Goodman",
+      "email": "benny.goodman@mail.com",
+      "start_date": {
+        "_seconds": 1715468400,
+        "_nanoseconds": 0
+      },
+      "usual_working_days": [
+        "Tuesday",
+        "Thursday"
+      ],
+      "end_date": {
+        "_seconds": 1746226800,
+        "_nanoseconds": 0
+      },
+      "is_administrator": false,
+      "is_employee": false,
+      "address": "202 Maple Street\nBarchester\nB1 7MN",
+      "role": "Dentist",
+      "profile_image": "https://avatar.com/8uac-ia=sc.ico"
+    },
+    "GyraCc1u2Q87DcqVPExc": {
+      "name": "Dr. Jack Smith",
+      "email": "jack.smith@mail.com",
+      "start_date": {
+        "_seconds": 860089200,
+        "_nanoseconds": 0
+      },
+      "usual_working_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "end_date": null,
+      "is_administrator": false,
+      "is_employee": true,
+      "address": "303 Birch Road\nBarchester\nB1 8OP",
+      "role": "Dentist",
+      "profile_image": "https://avatar.com/acs9-amc.ico"
+    },
+    "mynUylqCUH8PaqB7gXXQ": {
+      "name": "Harry Smith",
+      "email": "harry.smith@mail.com",
+      "start_date": {
+        "_seconds": 1072915200,
+        "_nanoseconds": 0
+      },
+      "usual_working_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday"
+      ],
+      "end_date": null,
+      "is_administrator": false,
+      "is_employee": true,
+      "address": "404 Cedar Blvd\nBarchester\nB1 9QR",
+      "role": "Nurse",
+      "profile_image": "https://avatar.com/a90790asc.ico"
+    },
+    "gOvF6VWkzWZsOLlwcYkW": {
+      "name": "Riya Khatri",
+      "email": "riya.khatri@mail.com",
+      "start_date": {
+        "_seconds": 1244847600,
+        "_nanoseconds": 0
+      },
+      "usual_working_days": [
+        "Thursday",
+        "Friday"
+      ],
+      "end_date": null,
+      "is_administrator": false,
+      "is_employee": false,
+      "address": "505 Pine St\nBarchester\nB2 1ST",
+      "role": "Nurse",
+      "profile_image": "https://avatar.com/8uac-ia=sc.ico"
+    },
+    "PpEzliOHXLP7q74PtWQd": {
+      "name": "Jiya Khatri",
+      "email": "jiya.khatri@mail.com",
+      "start_date": {
+        "_seconds": 860089200,
+        "_nanoseconds": 0
+      },
+      "usual_working_days": [
+        "Tuesday",
+        "Wednesday",
+        "Thursday"
+      ],
+      "end_date": null,
+      "is_administrator": false,
+      "is_employee": true,
+      "address": "606 Spruce Ave\nBarchester\nB2 2UV",
+      "role": "Hygienist",
+      "profile_image": "https://avatar.com/64ac3s.ico"
+    },
+    "3AH7ckeGauB6wuwJj2Q3": {
+      "name": "Susan Day",
+      "email": "susan.day@mail.com",
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      },
+      "usual_working_days": [
+        "Monday",
+        "Friday"
+      ],
+      "end_date": {
+        "_seconds": 1788246000,
+        "_nanoseconds": 0
+      },
+      "is_administrator": false,
+      "is_employee": true,
+      "address": "707 Redwood Ct\nBarchester\nB2 3WX",
+      "role": "Receptionist",
+      "profile_image": "https://avatar.com/a90790asc.ico"
     }
   },
   "warnings": {
