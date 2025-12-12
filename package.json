@@ -5,8 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
+    "start": "npm run dev",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "deploy": "npm run build && firebase deploy",
+    "deploy:branch": "npm run build && firebase hosting:channel:deploy $(git branch --show-current) --expires 7d",
+    "undeploy": "firebase hosting:disable -f",
+    "undeploy:branch": "firebase hosting:channel:delete $(git branch --show-current) -f"
   },
   "repository": {
     "type": "git",
@@ -25,6 +31,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.3",
-    "vite": "^7.2.7"
+    "vite": "^7.2.7",
+    "vitest": "^4.0.15"
   }
 }
