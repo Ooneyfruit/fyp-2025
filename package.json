@@ -6,7 +6,6 @@
   "scripts": {
     "start": "npm run dev",
     "test": "vitest",      
-
     "setup": "npm install && firebase login",
     "dev": "vite",
     "build": "vite build",
