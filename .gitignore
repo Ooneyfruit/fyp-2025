@@ -3,8 +3,7 @@ node_modules
 
 # Build Output
 dist/*
-!dist/index.html
-# (The line above tells git: "Ignore everything in dist, except index.html")
+dist
 
 # Logs
 npm-debug.log*
