@@ -1,15 +1,35 @@
 # Dependencies
 node_modules
+.pnp
+.pnp.js
 
-# Build Output
-dist/*
+# Testing
+coverage
+
+# Production Build (Vite)
 dist
+dist-ssr
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Environment Variables (CRITICAL for security)
+.env
+.env.local
+.env.*.local
 
-# OS System Files
+# Firebase
+.firebase/
+firebase-debug.log*
+firebase-debug.*.log*
+
+# IDE / Editor Files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs
+*.njsproj
+*.sln
+*.sw?
+
+# OS Generated Files
 .DS_Store
 Thumbs.db
