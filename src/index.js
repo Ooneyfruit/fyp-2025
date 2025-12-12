@@ -12,14 +12,14 @@ const firebaseApp = initializeApp({
 });
 
 const firestore = getFirestore(firebaseApp);
-const myEmployee = doc(firestore, 'employee/axyMshjnDhHEq9zNNKH0')
+const myEmployee = doc(firestore, 'users/9d7rGqO6viw4uq52FoLi')
 async function updateJob(jobDescription) {
     const docData = {
-        job: jobDescription
+        role: jobDescription
     }
     setDoc(myEmployee, docData, {merge: true})
         .then(()=>{
-            console.log(`Updated employee job to ${docData.job}`);
+            console.log(`Updated employee job to ${docData.role}`);
         })
         .catch((error) => {
             console.log(`There's an error: ${error}`);
@@ -41,10 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const downgradeBtn = document.getElementById("downgrade-btn");
 
     upgradeBtn.addEventListener("click", () => {
-        updateJob("Code Jockey Level 2.5");
+        updateJob("Dentist");
     });
 
     downgradeBtn.addEventListener("click", () => {
-        updateJob("Code Jockey");
+        updateJob("Trainee Dentist");
     });
 });
