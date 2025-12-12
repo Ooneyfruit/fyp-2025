@@ -1,0 +1,21 @@
+/* src/assets/main.css */
+:root {
+  /* Brand Colors */
+  --color-primary: #4285F4;       /* Google Blue */
+  --color-danger: #e74c3c;        /* Red */
+  --color-success: #2ecc71;       /* Green */
+  --color-warning: #f1c40f;       /* Yellow */
+  
+  /* Text Colors */
+  --text-main: #333333;
+  --text-muted: #555555;
+  
+  /* Spacing (Optional but helpful) */
+  --spacing-md: 20px;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
