@@ -184,6 +184,138 @@
             "staff_count": 1,
             "role_name": "Dentist",
             "surgery_name": "Morning"
+          },
+          "aEbN2VB7UYRTjIUfH6Iq": {
+            "role_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "ASUy8xKAXGuVM5DEgKqa"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Dentist",
+            "surgery_name": "Afternoon"
+          },
+          "hIGCfwAyZyg6Os2OswrF": {
+            "role_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "7ZZZJwmKsktSPaz2NoUh"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 2,
+            "role_name": "Nurse",
+            "surgery_name": "Afternoon"
+          },
+          "U6c8X0qssEiLj6d4B4Sz": {
+            "role_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "CqlB32wkgQA2WRxHZgUl"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Receptionist",
+            "surgery_name": "Afternoon"
+          },
+          "mDOxytjbe57fTFdxXv9g": {
+            "role_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "0jA2jzsNL1IIUNH2AH0w"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "kRPk2xZRHRkexyjMwL7J"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Hygienist",
+            "surgery_name": "Evening"
           }
         },
         "roles": {
@@ -215,17 +347,50 @@
               "Tuesday",
               "Wednesday",
               "Thursday",
-              "Friday"
+              "Friday",
+              "Saturday"
             ],
             "end_time": {
               "_seconds": 39600,
-              "nanoseconds": 140000000
+              "_nanoseconds": 0
             },
             "start_time": {
               "_seconds": 27000,
-              "_nanoseconds": 113000000
+              "_nanoseconds": 0
             },
             "name": "Morning"
+          },
+          "WyCPjTbrhiI3Jnn3JAPO": {
+            "name": "Afternoon",
+            "start_time": {
+              "_seconds": 46800,
+              "_nanoseconds": 0
+            },
+            "end_time": {
+              "_seconds": 63000,
+              "_nanoseconds": 0
+            },
+            "days_of_operation": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ]
+          },
+          "kRPk2xZRHRkexyjMwL7J": {
+            "name": "Evening",
+            "start_time": {
+              "_seconds": 68400,
+              "_nanoseconds": 0
+            },
+            "end_time": {
+              "_seconds": 75600,
+              "_nanoseconds": 0
+            },
+            "days_of_operation": [
+              "Thursday"
+            ]
           }
         }
       }
