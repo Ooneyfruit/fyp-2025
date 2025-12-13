@@ -4,7 +4,8 @@
   /* 60px -> 3.75rem */
   --navbar-height: 3.75rem; 
   /* 260px -> 16.25rem */
-  --sidebar-width: 16.25rem; 
+  --sidebar-width: 16.25rem;      /* 260px (Expanded) */
+  --sidebar-slim-width: 4.5rem;   /* 72px (Collapsed) */
   
   /* Animation Speed */
   --anim-speed: 0.3s;

@@ -2,8 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import StaffView from '../views/StaffView.vue';
 import LoginView from '../views/LoginView.vue';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase'; // Import DB
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore'; // Import Firestore methods
 
 const routes = [
   { path: '/', component: HomeView },
@@ -20,7 +21,7 @@ const router = createRouter({
   routes
 });
 
-// Helper to wait for Firebase to initialize
+// Helper: Wait for Auth to Initialize
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const removeListener = onAuthStateChanged(auth, 
@@ -35,27 +36,34 @@ const getCurrentUser = () => {
 
 router.beforeEach(async (to, from, next) => {
   const currentUser = await getCurrentUser();
-  
-  // 1. Check Admin Status
   let isAdmin = false;
-  
+
+  // --- THE FIX ---
   if (currentUser) {
-    // Import the exported 'user' ref from the composable
-    // Note: We use 'await import' to avoid circular dependency issues
-    const { user } = await import('../composables/useAuth');
-    
-    // Check the value
-    isAdmin = user.value?.is_administrator === true;
+    // We must manually fetch the profile here to be 100% sure 
+    // we have the latest role before routing.
+    try {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists() && userDoc.data().is_administrator) {
+        isAdmin = true;
+      }
+    } catch (e) {
+      console.error("Router Admin Check Failed:", e);
+    }
   }
 
-  // 2. Navigation Logic
+  // Navigation Logic
   if (to.meta.requiresAdmin && !isAdmin) {
-    next('/'); // Redirect unauthorized users to Home
+    // If trying to access Staff but not admin, go Home
+    next('/'); 
   } else if (!currentUser && to.path !== '/login') {
+    // If not logged in, go to Login
     next('/login');
   } else if (currentUser && to.path === '/login') {
+    // If logged in, don't show Login page
     next('/');
   } else {
+    // Allow navigation
     next();
   }
 });
