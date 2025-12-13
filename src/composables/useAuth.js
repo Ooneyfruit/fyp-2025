@@ -1,12 +1,11 @@
 import { ref } from 'vue';
 import { auth, provider } from '../firebase';
+// CHANGE: Revert to signInWithPopup
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 
-// Global state (defined outside function to share state across components)
 const user = ref(null);
 const isAuthReady = ref(false);
 
-// Initialize listener immediately
 onAuthStateChanged(auth, (u) => {
   user.value = u;
   isAuthReady.value = true;
@@ -15,6 +14,7 @@ onAuthStateChanged(auth, (u) => {
 export function useAuth() {
   const login = async () => {
     try {
+      // CHANGE: Use Popup. It handles HTTP dev environments better.
       await signInWithPopup(auth, provider);
     } catch (err) {
       throw new Error(err.message);

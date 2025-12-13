@@ -13,7 +13,7 @@
           :key="item.name"
           href="#" 
           class="nav-item"
-          :class="{ active: item.active }"
+          :class="{ active: route.path === item.path }" 
           @click.prevent="handleNavigation(item)" 
         >
           <span class="icon">{{ item.icon }}</span>
@@ -26,69 +26,89 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router'; // Import useRoute
 
 defineProps({ isOpen: Boolean });
 const emit = defineEmits(['close']);
+const router = useRouter();
+const route = useRoute(); // Initialize Route to read current URL
 
 const menuItems = ref([
-  { name: 'Staff Management', icon: '👥', active: true },
+  // No longer need 'active: true' here. 
+  // The template calculates it automatically based on the URL.
+  { name: 'Home', icon: '🏠', path: '/' },
+  { name: 'Staff Management', icon: '👥', path: '/staff' },
 ]);
 
 const handleNavigation = (item) => {
-  menuItems.value.forEach(i => i.active = false);
-  item.active = true;
-  // On Desktop: You might want the menu to STAY open after clicking. 
-  // If so, remove the line below. For now, we close it.
   emit('close');
+  router.push(item.path);
 };
 </script>
 
 <style scoped>
 .sidebar {
-  /* USE VARIABLES */
   top: var(--navbar-height);
+  bottom: 0;
   width: var(--sidebar-width);
-  height: calc(100vh - var(--navbar-height));
-  
   position: fixed;
   left: 0;
   background: white;
-  border-right: 1px solid #eee;
-  z-index: 40;
-  
-  /* Slide Animation */
+  border-right: 1px solid var(--border-color);
+  z-index: var(--z-sidebar);
   transform: translateX(-100%);
   transition: transform var(--anim-speed) ease;
+  overflow-y: auto; 
 }
 
 .sidebar.open {
   transform: translateX(0);
 }
 
-.sidebar-nav { padding: 20px 0; }
+.sidebar-nav {
+  padding: var(--spacing-md) 0;
+}
 
 .nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 24px;
-  text-decoration: none; color: #555; font-weight: 500;
-  border-left: 4px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  border-left: 0.25rem solid transparent;
+  font-size: 1rem;
 }
 
-.nav-item:hover { background-color: #f5f5f5; }
+.nav-item:hover {
+  background-color: #f5f5f5;
+}
 
+/* This class applies whenever the URL matches the item.path */
 .nav-item.active {
-  background-color: #e8f0fe; color: #1967d2;
-  border-left-color: #1967d2; /* Highlight left border */
+  background-color: #e8f0fe;
+  color: #1967d2;
+  border-left-color: #1967d2;
 }
 
-/* --- MOBILE ONLY OVERLAY --- */
+.icon {
+  font-size: 1.125rem; /* 18px */
+}
+
+/* Mobile Overlay */
 .mobile-overlay {
-  display: none; /* Hidden on desktop */
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); z-index: 39;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: var(--z-overlay);
 }
 
-@media (max-width: 768px) {
-  .mobile-overlay { display: block; } /* Show on mobile */
+@media (max-width: 48rem) {
+  .mobile-overlay { display: block; }
 }
 </style>
