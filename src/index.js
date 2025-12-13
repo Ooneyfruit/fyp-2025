@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import StaffManagement from './components/StaffManagement.vue';
+import './assets/main.css';
+import App from './App.vue'; // <--- Change this import
 
-const app = createApp(StaffManagement);
-app.mount('#app');
+createApp(App).mount('#app'); // <--- Mount App instead
