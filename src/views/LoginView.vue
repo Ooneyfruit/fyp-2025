@@ -1,0 +1,82 @@
+<template>
+  <div class="login-page">
+    <div class="login-card">
+      <h1 class="brand">RotaDent</h1>
+      <p>Please sign in to access the system.</p>
+      <button @click="handleLogin" class="google-btn">
+        Sign in with Google
+      </button>
+      <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router'; // Import Router
+import { useAuth } from '../composables/useAuth';
+
+const { login } = useAuth();
+const router = useRouter(); // Initialize
+const errorMsg = ref("");
+
+const handleLogin = async () => {
+  try {
+    await login(); 
+    // CHANGE: Manually redirect to Home after popup success
+    router.push('/'); 
+  } catch (err) {
+    console.error(err);
+    errorMsg.value = "Login failed. Please try again.";
+  }
+};
+</script>
+
+<style scoped>
+.login-page {
+  min-height: 100vh;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  background-color: #f0f2f5;
+  padding: var(--spacing-md); /* Prevent edge touching on mobile */
+}
+
+.login-card {
+  background: white; 
+  padding: 2.5rem; /* 40px */
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1); 
+  text-align: center;
+  width: 100%; 
+  max-width: 25rem; /* 400px */
+}
+
+.brand { 
+  color: var(--color-primary); 
+  margin-bottom: 0.625rem; 
+}
+
+.google-btn {
+  background-color: var(--color-primary); 
+  color: white; 
+  border: none;
+  padding: 0.75rem 1.5rem; 
+  border-radius: var(--border-radius); 
+  font-size: 1rem;
+  cursor: pointer; 
+  margin-top: 1.25rem; 
+  width: 100%;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.google-btn:hover {
+  background-color: #357ae8;
+}
+
+.error { 
+  color: var(--color-danger); 
+  margin-top: 0.9375rem; 
+}
+</style>
