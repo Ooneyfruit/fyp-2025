@@ -1,20 +1,39 @@
 import { ref } from 'vue';
-import { auth, provider } from '../firebase';
-// CHANGE: Revert to signInWithPopup
+import { auth, provider, db } from '../firebase';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
-const user = ref(null);
-const isAuthReady = ref(false);
+// CHANGE: Add 'export' to these two lines
+export const user = ref(null);
+export const isAuthReady = ref(false);
 
-onAuthStateChanged(auth, (u) => {
-  user.value = u;
+const fetchUserProfile = async (firebaseUser) => {
+  if (!firebaseUser) {
+    user.value = null;
+    return;
+  }
+  
+  try {
+    const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+    if (userDoc.exists()) {
+      user.value = { ...firebaseUser, ...userDoc.data() };
+    } else {
+      user.value = firebaseUser;
+    }
+  } catch (e) {
+    console.error("Error fetching user profile:", e);
+    user.value = firebaseUser;
+  }
+};
+
+onAuthStateChanged(auth, async (u) => {
+  await fetchUserProfile(u);
   isAuthReady.value = true;
 });
 
 export function useAuth() {
   const login = async () => {
     try {
-      // CHANGE: Use Popup. It handles HTTP dev environments better.
       await signInWithPopup(auth, provider);
     } catch (err) {
       throw new Error(err.message);
@@ -26,10 +45,5 @@ export function useAuth() {
     user.value = null;
   };
 
-  return { 
-    user, 
-    isAuthReady, 
-    login, 
-    logout 
-  };
+  return { user, isAuthReady, login, logout };
 }

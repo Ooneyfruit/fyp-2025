@@ -7,7 +7,11 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 const routes = [
   { path: '/', component: HomeView },
-  { path: '/staff', component: StaffView },
+  { 
+    path: '/staff', 
+    component: StaffView,
+    meta: { requiresAdmin: true } 
+  },
   { path: '/login', component: LoginView }
 ];
 
@@ -16,13 +20,12 @@ const router = createRouter({
   routes
 });
 
-// --- THE FIX: Helper to wait for Firebase to initialize ---
+// Helper to wait for Firebase to initialize
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
-    // We try to remove the listener immediately after it fires once
     const removeListener = onAuthStateChanged(auth, 
       (user) => {
-        removeListener(); // Unsubscribe immediately
+        removeListener(); 
         resolve(user);
       },
       reject
@@ -30,19 +33,29 @@ const getCurrentUser = () => {
   });
 };
 
-// Navigation Guard
 router.beforeEach(async (to, from, next) => {
-  // Await the actual status from Firebase
-  const user = await getCurrentUser();
+  const currentUser = await getCurrentUser();
   
-  if (to.path === '/login' && user) {
-    // If logged in, don't let them go to Login page
-    next('/');
-  } else if (to.path !== '/login' && !user) {
-    // If not logged in, and trying to go elsewhere, send to Login
+  // 1. Check Admin Status
+  let isAdmin = false;
+  
+  if (currentUser) {
+    // Import the exported 'user' ref from the composable
+    // Note: We use 'await import' to avoid circular dependency issues
+    const { user } = await import('../composables/useAuth');
+    
+    // Check the value
+    isAdmin = user.value?.is_administrator === true;
+  }
+
+  // 2. Navigation Logic
+  if (to.meta.requiresAdmin && !isAdmin) {
+    next('/'); // Redirect unauthorized users to Home
+  } else if (!currentUser && to.path !== '/login') {
     next('/login');
+  } else if (currentUser && to.path === '/login') {
+    next('/');
   } else {
-    // Proceed as normal
     next();
   }
 });

@@ -25,20 +25,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router'; // Import useRoute
+import { computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuth } from '../composables/useAuth';
 
-defineProps({ isOpen: Boolean });
+// 1. Define Props (Fixes the "isOpen" error)
+defineProps({
+  isOpen: Boolean
+});
+
+// 2. Define Emits
 const emit = defineEmits(['close']);
-const router = useRouter();
-const route = useRoute(); // Initialize Route to read current URL
 
-const menuItems = ref([
-  // No longer need 'active: true' here. 
-  // The template calculates it automatically based on the URL.
-  { name: 'Home', icon: '🏠', path: '/' },
-  { name: 'Staff Management', icon: '👥', path: '/staff' },
-]);
+// 3. Setup Logic
+const { user } = useAuth();
+const router = useRouter();
+const route = useRoute();
+
+// 4. Define Menu Items (Static List)
+const allMenuItems = [
+  { name: 'Home', icon: '🏠', path: '/', adminOnly: false },
+  { name: 'Staff Management', icon: '👥', path: '/staff', adminOnly: true },
+];
+
+// 5. Computed Filter (Hides Admin items if user isn't admin)
+const menuItems = computed(() => {
+  return allMenuItems.filter(item => {
+    // If the item requires admin, check if the user is an admin.
+    // If user is null (not logged in), this safely returns false.
+    return item.adminOnly ? user.value?.is_administrator : true;
+  });
+});
 
 const handleNavigation = (item) => {
   emit('close');
@@ -47,6 +64,7 @@ const handleNavigation = (item) => {
 </script>
 
 <style scoped>
+/* Use your existing styles or the REM-based ones we created earlier */
 .sidebar {
   top: var(--navbar-height);
   bottom: 0;
@@ -72,8 +90,8 @@ const handleNavigation = (item) => {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* 12px */
-  padding: 0.75rem 1.5rem; /* 12px 24px */
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 500;
@@ -85,7 +103,6 @@ const handleNavigation = (item) => {
   background-color: #f5f5f5;
 }
 
-/* This class applies whenever the URL matches the item.path */
 .nav-item.active {
   background-color: #e8f0fe;
   color: #1967d2;
@@ -93,10 +110,9 @@ const handleNavigation = (item) => {
 }
 
 .icon {
-  font-size: 1.125rem; /* 18px */
+  font-size: 1.125rem;
 }
 
-/* Mobile Overlay */
 .mobile-overlay {
   display: none;
   position: fixed;
