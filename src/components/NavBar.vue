@@ -28,18 +28,20 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'; // 1. Import Router
+import { useRouter } from 'vue-router'; 
 import { useAuth } from '../composables/useAuth';
 
 defineEmits(['toggleSidebar']);
 
 const { user, logout } = useAuth();
-const router = useRouter(); // 2. Initialize Router
 
 const handleLogout = async () => {
   await logout();
-  // 3. Force navigation to Login page immediately after logout
-  router.push('/login');
+  
+  // 1. Force a browser reload. 
+  // This wipes all memory, variables, and Firestore caches instantly.
+  // It effectively "restarts" the app for the next user.
+  window.location.href = "/login";
 };
 </script>
 
