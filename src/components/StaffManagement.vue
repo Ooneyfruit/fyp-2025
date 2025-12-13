@@ -12,8 +12,6 @@
           </div>
           <p class="subtitle">View and manage all staff members in the practice.</p>
         </div>
-        
-        <button @click="logout" class="logout-btn">Logout</button>
       </header>
 
       <div v-if="loading" class="loading-msg">Loading staff data...</div>
@@ -44,7 +42,7 @@
               </td>
               <td>{{ staff.email }}</td>
               
-              <td :class="isDateOld(staff.start_date) ? 'date-orange' : 'date-text'">
+              <td :class="isDateOld(staff.end_date) ? 'date-orange' : 'date-text'">
                 {{ formatDate(staff.start_date) }}
               </td>
               <td :class="isDateOld(staff.end_date) ? 'date-orange' : 'date-text'">
@@ -115,7 +113,7 @@ const formatDate = (timestamp) => {
 const isDateOld = (timestamp) => {
   if (!timestamp) return false;
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-  return date.getFullYear() < 2015;
+  return date.getFullYear() < 2025;
 };
 
 const editStaff = (staff) => console.log("Edit:", staff.name);
