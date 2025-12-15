@@ -97,12 +97,11 @@ const fetchStaff = async () => {
 };
 
 // Watcher: When user exists, fetch data.
-// SAFETY ADDITION: If user logs out (becomes null), WIPE the data immediately.
 watchEffect(() => {
   if (user.value) {
     fetchStaff();
   } else {
-    staffMembers.value = []; // <--- Clear the sensitive array
+    staffMembers.value = []; // If user logs out (becomes null), wipe the data immediately.
   }
 });
 

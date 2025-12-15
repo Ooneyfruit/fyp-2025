@@ -1,41 +1,39 @@
 /* src/assets/main.css */
 :root {
-  /* --- LAYOUT DIMENSIONS (Converted to rem) --- */
-  /* 60px -> 3.75rem */
-  --navbar-height: 3.75rem; 
-  /* 260px -> 16.25rem */
-  --sidebar-width: 16.25rem;      /* 260px (Expanded) */
-  --sidebar-slim-width: 4.5rem;   /* 72px (Collapsed) */
+  /* Layout Dimensions */
+  --navbar-height: 3.75rem;
+  --sidebar-width: 16.25rem;
+  --sidebar-slim-width: 4.5rem;
   
   /* Animation Speed */
   --anim-speed: 0.3s;
   
-  /* --- Z-INDEX LAYERS (The fix for fragility) --- */
+  /* Z-Index Layers */
   --z-negative: -1;
   --z-normal: 1;
   --z-overlay: 40;  /* The black backdrop */
   --z-sidebar: 50;  /* The side menu */
   --z-navbar: 60;   /* The top bar (always on top) */
 
-  /* --- BRAND COLORS --- */
+  /* Brand Colours */
   --color-primary: #4285F4;
   --color-danger: #e74c3c;
   --color-success: #2ecc71;
   --color-warning: #f1c40f;
   
-  /* --- TEXT COLORS --- */
+  /* Text Colours */
   --text-main: #333333;
   --text-muted: #555555;
   --text-light: #ffffff;
   
-  /* --- SPACING SCALE (Consistent spacing) --- */
-  --spacing-xs: 0.5rem;   /* 8px */
-  --spacing-sm: 0.75rem;  /* 12px */
-  --spacing-md: 1.25rem;  /* 20px */
-  --spacing-lg: 2.5rem;   /* 40px */
+  /* Spacing Scale */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1.25rem;
+  --spacing-lg: 2.5rem;
   
-  /* --- BORDERS --- */
-  --border-radius: 0.25rem; /* 4px */
+  /* Borders */
+  --border-radius: 0.25rem;
   --border-color: #e0e0e0;
 }
 
@@ -46,8 +44,7 @@ body {
   background-color: #f8f9fa;
   color: var(--text-main);
   overflow-x: hidden; 
-  /* Sets the baseline for REM units to 16px */
-  font-size: 16px; 
+  font-size: 16px; /* Baseline for REM units is 16px */
 }
 
 /* Global Reset for Buttons */

@@ -28,19 +28,19 @@ defineProps({
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: var(--spacing-lg); /* 40px */
+  margin-bottom: var(--spacing-lg);
 }
 
 .title-line {
   display: flex;
   align-items: center;
-  gap: 0.9375rem; /* 15px */
+  gap: 0.9375rem; 
   margin-bottom: 0.5rem;
   flex-wrap: wrap; /* Good for mobile if title is long */
 }
 
 h1 {
-  font-size: 1.75rem; /* 28px */
+  font-size: 1.75rem;
   font-weight: 500;
   margin: 0;
   color: var(--text-main);

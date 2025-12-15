@@ -2,9 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import StaffView from '../views/StaffView.vue';
 import LoginView from '../views/LoginView.vue';
-import { auth, db } from '../firebase'; // Import DB
+import { auth, db } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore'; // Import Firestore methods
+import { doc, getDoc } from 'firebase/firestore';
 
 const routes = [
   { path: '/', component: HomeView },
@@ -38,10 +38,9 @@ router.beforeEach(async (to, from, next) => {
   const currentUser = await getCurrentUser();
   let isAdmin = false;
 
-  // --- THE FIX ---
   if (currentUser) {
-    // We must manually fetch the profile here to be 100% sure 
-    // we have the latest role before routing.
+    // Must manually fetch the profile here to be 100% sure 
+    // it is the latest role before routing.
     try {
       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
       if (userDoc.exists() && userDoc.data().is_administrator) {

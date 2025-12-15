@@ -3,7 +3,6 @@ import { auth, provider, db } from '../firebase';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
-// CHANGE: Add 'export' to these two lines
 export const user = ref(null);
 export const isAuthReady = ref(false);
 

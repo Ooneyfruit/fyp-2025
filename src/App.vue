@@ -18,8 +18,6 @@
 </template>
 
 <script setup>
-// ... Script section remains exactly the same ...
-// (Imports, useAuth, watch logic, etc. do not need changes)
 import { ref, watch } from 'vue';
 import { useAuth } from './composables/useAuth';
 import NavBar from './components/NavBar.vue';
@@ -48,28 +46,25 @@ watch(user, (newValue) => {
 <style scoped>
 .app-layout { min-height: 100vh; }
 
-/* --- DESKTOP BEHAVIOR --- */
+/* Desktop Behaviour */
 .main-content {
   padding-top: var(--navbar-height);
   transition: margin-left var(--anim-speed) ease;
   
-  /* DEFAULT (Closed): content sits next to the slim sidebar */
+  /* Default (Closed) */
   margin-left: var(--sidebar-slim-width); 
 }
 
-/* OPEN STATE: content pushed by full sidebar */
+/* Open State */
 .is-sidebar-open .main-content {
   margin-left: var(--sidebar-width);
 }
 
 .full-screen { padding: 0; margin: 0; }
 
-/* --- MOBILE BEHAVIOR (< 768px) --- */
+/* Mobile Behaviour */
 @media (max-width: 48rem) {
-  /* On mobile, closed means GONE, so margin is 0 */
   .main-content { margin-left: 0; }
-  
-  /* Even when open, sidebar overlays content, so margin stays 0 */
   .is-sidebar-open .main-content { margin-left: 0; }
 }
 

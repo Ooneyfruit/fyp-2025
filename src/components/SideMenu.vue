@@ -55,7 +55,7 @@ const handleNavigation = (item) => {
 </script>
 
 <style scoped>
-/* --- BASE STYLES (DESKTOP DEFAULT) --- */
+/* Base Styles */
 .sidebar {
   top: var(--navbar-height);
   bottom: 0;
@@ -65,17 +65,17 @@ const handleNavigation = (item) => {
   border-right: 1px solid var(--border-color);
   z-index: var(--z-sidebar);
   
-  /* TRANSITIONS: Animate width */
+  /* Transitions */
   transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
   overflow-x: hidden; /* Hide text when it slides out */
   white-space: nowrap; /* Prevent text wrapping during animation */
 
-  /* DEFAULT STATE (Closed Desktop): Slim width, visible */
+  /* Default State */
   width: var(--sidebar-slim-width);
   transform: translateX(0); 
 }
 
-/* OPEN STATE (Desktop): Full width */
+/* Open State */
 .sidebar.open {
   width: var(--sidebar-width);
 }
@@ -85,8 +85,7 @@ const handleNavigation = (item) => {
 .nav-item {
   display: flex;
   align-items: center;
-  /* Adjust padding to center the icon when slim */
-  padding: 0.75rem 0; 
+  padding: 0.75rem 0; /* Adjust padding to center the icon when slim */
   padding-left: 1.5rem; /* Fixed left padding ensures icon stays in place */
   
   text-decoration: none;
@@ -94,7 +93,7 @@ const handleNavigation = (item) => {
   font-weight: 500;
   border-left: 0.25rem solid transparent;
   font-size: 1rem;
-  height: 3rem; /* Fixed height for consistency */
+  height: 3rem;
 }
 
 .nav-item:hover { background-color: #f5f5f5; }
@@ -113,19 +112,16 @@ const handleNavigation = (item) => {
   transition: opacity 0.2s ease;
 }
 
-/* When sidebar is closed, hide the label */
+/* Label Hiding Logic */
 .label.hidden {
   opacity: 0;
   pointer-events: none; /* Prevent clicking hidden text */
 }
 
-/* --- MOBILE OVERRIDES (< 768px) --- */
+/* Mobile Overrides */
 @media (max-width: 48rem) {
   .sidebar {
-    /* Reset width logic: Mobile sidebar is always full width */
     width: var(--sidebar-width);
-    
-    /* Reset visibility logic: Mobile sidebar is hidden by default */
     transform: translateX(-100%);
   }
 
@@ -133,7 +129,6 @@ const handleNavigation = (item) => {
     transform: translateX(0);
   }
   
-  /* On mobile, text is always visible because the bar is either Full or Gone */
   .label.hidden {
     opacity: 1; 
   }

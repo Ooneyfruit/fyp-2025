@@ -13,11 +13,10 @@
 
 <script setup>
 import PageHeader from '../components/PageHeader.vue';
-import PageContainer from '../components/PageContainer.vue'; // Import it
+import PageContainer from '../components/PageContainer.vue';
 </script>
 
 <style scoped>
-/* REMOVED: .home-container styles (now handled by component) */
 
 .action-btn {
   padding: 0.625rem 1.25rem;
