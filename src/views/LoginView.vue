@@ -13,17 +13,16 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // Import Router
+import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 
 const { login } = useAuth();
-const router = useRouter(); // Initialize
+const router = useRouter();
 const errorMsg = ref("");
 
 const handleLogin = async () => {
   try {
     await login(); 
-    // CHANGE: Manually redirect to Home after popup success
     router.push('/'); 
   } catch (err) {
     console.error(err);
@@ -44,12 +43,12 @@ const handleLogin = async () => {
 
 .login-card {
   background: white; 
-  padding: 2.5rem; /* 40px */
+  padding: 2.5rem;
   border-radius: 0.5rem;
   box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1); 
   text-align: center;
   width: 100%; 
-  max-width: 25rem; /* 400px */
+  max-width: 25rem;
 }
 
 .brand { 

@@ -1,9 +1,9 @@
 import { createApp } from 'vue';
-import './assets/main.css';     // Global CSS
-import App from './App.vue';    // Root Component
-import router from './router';  // Automatically finds ./router/index.js
+import './assets/main.css';
+import App from './App.vue';
+import router from './router';
 
 const app = createApp(App);
 
-app.use(router); // Tells Vue to use the router we just built
+app.use(router);
 app.mount('#app');

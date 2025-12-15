@@ -28,7 +28,6 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'; 
 import { useAuth } from '../composables/useAuth';
 
 defineEmits(['toggleSidebar']);
@@ -38,9 +37,9 @@ const { user, logout } = useAuth();
 const handleLogout = async () => {
   await logout();
   
-  // 1. Force a browser reload. 
-  // This wipes all memory, variables, and Firestore caches instantly.
-  // It effectively "restarts" the app for the next user.
+  /* Force a browser reload. 
+  This wipes all memory, variables, and Firestore caches instantly.
+  It effectively "restarts" the app for the next user. */
   window.location.href = "/login";
 };
 </script>
