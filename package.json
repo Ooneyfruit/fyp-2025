@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run dev",
-    "test": "vitest",      
+    "test": "vitest",
     "setup": "npm install && firebase login",
     "dev": "vite",
     "build": "vite build",
@@ -28,7 +28,8 @@
   "homepage": "https://github.com/Ooneyfruit/fyp-2025#readme",
   "dependencies": {
     "firebase": "^12.6.0",
-    "vue": "^3.5.25"
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.3",

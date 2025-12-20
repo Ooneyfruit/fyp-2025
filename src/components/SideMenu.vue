@@ -13,11 +13,15 @@
           :key="item.name"
           href="#" 
           class="nav-item"
-          :class="{ active: item.active }"
+          :class="{ active: route.path === item.path }" 
           @click.prevent="handleNavigation(item)" 
+          :title="!isOpen ? item.name : ''" 
         >
           <span class="icon">{{ item.icon }}</span>
-          {{ item.name }}
+          
+          <span class="label" :class="{ 'hidden': !isOpen }">
+            {{ item.name }}
+          </span>
         </a>
       </nav>
     </aside>
@@ -25,70 +29,114 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuth } from '../composables/useAuth';
 
 defineProps({ isOpen: Boolean });
 const emit = defineEmits(['close']);
+const { user } = useAuth();
+const router = useRouter();
+const route = useRoute();
 
-const menuItems = ref([
-  { name: 'Staff Management', icon: '👥', active: true },
-]);
+const allMenuItems = [
+  { name: 'Home', icon: '🏠', path: '/', adminOnly: false },
+  { name: 'Staff Management', icon: '👥', path: '/staff', adminOnly: true },
+];
+
+const menuItems = computed(() => {
+  return allMenuItems.filter(item => item.adminOnly ? user.value?.is_administrator : true);
+});
 
 const handleNavigation = (item) => {
-  menuItems.value.forEach(i => i.active = false);
-  item.active = true;
-  // On Desktop: You might want the menu to STAY open after clicking. 
-  // If so, remove the line below. For now, we close it.
-  emit('close');
+  if (window.innerWidth < 768) emit('close');
+  router.push(item.path);
 };
 </script>
 
 <style scoped>
+/* Base Styles */
 .sidebar {
-  /* USE VARIABLES */
   top: var(--navbar-height);
-  width: var(--sidebar-width);
-  height: calc(100vh - var(--navbar-height));
-  
+  bottom: 0;
   position: fixed;
   left: 0;
   background: white;
-  border-right: 1px solid #eee;
-  z-index: 40;
+  border-right: 1px solid var(--border-color);
+  z-index: var(--z-sidebar);
   
-  /* Slide Animation */
-  transform: translateX(-100%);
-  transition: transform var(--anim-speed) ease;
+  /* Transitions */
+  transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
+  overflow-x: hidden; /* Hide text when it slides out */
+  white-space: nowrap; /* Prevent text wrapping during animation */
+
+  /* Default State */
+  width: var(--sidebar-slim-width);
+  transform: translateX(0); 
 }
 
+/* Open State */
 .sidebar.open {
-  transform: translateX(0);
+  width: var(--sidebar-width);
 }
 
-.sidebar-nav { padding: 20px 0; }
+.sidebar-nav { padding: var(--spacing-md) 0; }
 
 .nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 24px;
-  text-decoration: none; color: #555; font-weight: 500;
-  border-left: 4px solid transparent;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0; /* Adjust padding to center the icon when slim */
+  padding-left: 1.5rem; /* Fixed left padding ensures icon stays in place */
+  
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  border-left: 0.25rem solid transparent;
+  font-size: 1rem;
+  height: 3rem;
 }
 
 .nav-item:hover { background-color: #f5f5f5; }
+.nav-item.active { background-color: #e8f0fe; color: #1967d2; border-left-color: #1967d2; }
 
-.nav-item.active {
-  background-color: #e8f0fe; color: #1967d2;
-  border-left-color: #1967d2; /* Highlight left border */
+.icon {
+  font-size: 1.25rem;
+  min-width: 1.5rem; /* Ensure icon reserves space */
+  text-align: center;
 }
 
-/* --- MOBILE ONLY OVERLAY --- */
-.mobile-overlay {
-  display: none; /* Hidden on desktop */
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); z-index: 39;
+/* Text Label Logic */
+.label {
+  margin-left: 0.75rem;
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
-@media (max-width: 768px) {
-  .mobile-overlay { display: block; } /* Show on mobile */
+/* Label Hiding Logic */
+.label.hidden {
+  opacity: 0;
+  pointer-events: none; /* Prevent clicking hidden text */
+}
+
+/* Mobile Overrides */
+@media (max-width: 48rem) {
+  .sidebar {
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .label.hidden {
+    opacity: 1; 
+  }
+  
+  .mobile-overlay {
+    display: block;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: var(--z-overlay);
+  }
 }
 </style>

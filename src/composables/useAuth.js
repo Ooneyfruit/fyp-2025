@@ -1,14 +1,32 @@
 import { ref } from 'vue';
-import { auth, provider } from '../firebase';
+import { auth, provider, db } from '../firebase';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
-// Global state (defined outside function to share state across components)
-const user = ref(null);
-const isAuthReady = ref(false);
+export const user = ref(null);
+export const isAuthReady = ref(false);
 
-// Initialize listener immediately
-onAuthStateChanged(auth, (u) => {
-  user.value = u;
+const fetchUserProfile = async (firebaseUser) => {
+  if (!firebaseUser) {
+    user.value = null;
+    return;
+  }
+  
+  try {
+    const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+    if (userDoc.exists()) {
+      user.value = { ...firebaseUser, ...userDoc.data() };
+    } else {
+      user.value = firebaseUser;
+    }
+  } catch (e) {
+    console.error("Error fetching user profile:", e);
+    user.value = firebaseUser;
+  }
+};
+
+onAuthStateChanged(auth, async (u) => {
+  await fetchUserProfile(u);
   isAuthReady.value = true;
 });
 
@@ -26,10 +44,5 @@ export function useAuth() {
     user.value = null;
   };
 
-  return { 
-    user, 
-    isAuthReady, 
-    login, 
-    logout 
-  };
+  return { user, isAuthReady, login, logout };
 }

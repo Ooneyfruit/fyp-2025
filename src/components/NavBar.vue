@@ -30,59 +30,110 @@
 <script setup>
 import { useAuth } from '../composables/useAuth';
 
-// We define an event 'toggleSidebar' that the parent (App.vue) listens for
 defineEmits(['toggleSidebar']);
 
 const { user, logout } = useAuth();
 
 const handleLogout = async () => {
   await logout();
+  
+  /* Force a browser reload. 
+  This wipes all memory, variables, and Firestore caches instantly.
+  It effectively "restarts" the app for the next user. */
+  window.location.href = "/login";
 };
 </script>
 
 <style scoped>
 .navbar {
-  /* Use the variable */
   height: var(--navbar-height);
-  
-  display: flex; justify-content: space-between; align-items: center;
-  background-color: white; padding: 0 20px;
-  border-bottom: 1px solid #e0e0e0; 
-  position: sticky; top: 0; z-index: 50;
-  /* Ensure resizing doesn't squash the nav */
-  flex-shrink: 0; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 0 var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-navbar);
+  flex-shrink: 0;
+  box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.02);
 }
-/* ... rest of your styles ... */
 
-.nav-left { display: flex; align-items: center; gap: 20px; }
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
 
 .hamburger-btn {
-  background: none; border: none; cursor: pointer; padding: 5px;
-  color: #555; display: flex; align-items: center; border-radius: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3125rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  border-radius: var(--border-radius);
 }
-.hamburger-btn:hover { background-color: #f0f0f0; }
 
-.brand-container { display: flex; align-items: center; gap: 10px; }
+.hamburger-btn:hover {
+  background-color: #f0f0f0;
+}
 
-.clock-icon { color: #4285F4; }
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.clock-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-primary);
+}
 
 .brand-text {
-  font-size: 20px; font-weight: 600; color: #4285F4; letter-spacing: -0.5px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  letter-spacing: -0.03rem;
 }
 
-.nav-actions { display: flex; align-items: center; }
-.user-info { display: flex; align-items: center; gap: 15px; }
-.user-email { font-size: 14px; color: #555; display: none; } /* Hide email on small screens if needed */
+.nav-actions {
+  display: flex;
+  align-items: center;
+}
 
-/* Show email on larger screens */
-@media (min-width: 768px) {
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.9375rem;
+}
+
+.user-email {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: none;
+}
+
+@media (min-width: 48rem) {
   .user-email { display: block; }
 }
 
 .logout-btn {
-  background-color: #f1f3f4; color: #333; border: none; padding: 8px 16px;
-  border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;
+  background-color: #f1f3f4;
+  color: var(--text-main);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
   transition: background 0.2s;
 }
-.logout-btn:hover { background-color: #e8eaed; }
+
+.logout-btn:hover {
+  background-color: #e8eaed;
+}
 </style>
