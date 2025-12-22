@@ -29,35 +29,6 @@
       "decision_status": "pending",
       "decision_notes": "Chloe beat you to it!"
     },
-    "7kmxgPVHQtrGmZIix3C0": {
-      "user_id": {
-        "_firestore": {
-          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-        },
-        "_path": {
-          "segments": [
-            "users",
-            "9d7rGqO6viw4uq52FoLi"
-          ]
-        },
-        "_converter": {}
-      },
-      "date_start": {
-        "_seconds": 1748889600,
-        "_nanoseconds": 0
-      },
-      "date_end": {
-        "_seconds": 1749148799,
-        "_nanoseconds": 0
-      },
-      "requested_reason": "annual leave",
-      "requested_date": {
-        "_seconds": 1741336980,
-        "_nanoseconds": 0
-      },
-      "decision_status": "pending",
-      "decision_notes": ""
-    },
     "1YWZdh2fP8UCFNjj0XYw": {
       "user_id": {
         "_firestore": {
@@ -87,7 +58,7 @@
       "decision_status": "yes",
       "decision_notes": ""
     },
-    "rdOjIJMaZ34E5VOMl81h": {
+    "7kmxgPVHQtrGmZIix3C0": {
       "user_id": {
         "_firestore": {
           "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
@@ -95,25 +66,25 @@
         "_path": {
           "segments": [
             "users",
-            "fG3p8H4qR6kL9s2VbN7J"
+            "9d7rGqO6viw4uq52FoLi"
           ]
         },
         "_converter": {}
       },
       "date_start": {
-        "_seconds": 1751481600,
+        "_seconds": 1748889600,
         "_nanoseconds": 0
       },
       "date_end": {
-        "_seconds": 1751827199,
+        "_seconds": 1749148799,
         "_nanoseconds": 0
       },
       "requested_reason": "annual leave",
       "requested_date": {
-        "_seconds": 1746100860,
+        "_seconds": 1741336980,
         "_nanoseconds": 0
       },
-      "decision_status": "yes",
+      "decision_status": "pending",
       "decision_notes": ""
     },
     "SixGXsnZyH80zG90f4Dh": {
@@ -144,6 +115,2230 @@
       },
       "decision_status": "denied",
       "decision_notes": "Chloe beat you to it!"
+    },
+    "rdOjIJMaZ34E5VOMl81h": {
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "fG3p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1751481600,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1751827199,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "annual leave",
+      "requested_date": {
+        "_seconds": 1746100860,
+        "_nanoseconds": 0
+      },
+      "decision_status": "yes",
+      "decision_notes": ""
+    }
+  },
+  "practice_users": {
+    "L6ibPL4PhUbrAPvT99J2": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "1VuX7TBstwT6ig4aE68KK2UAa323"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "is_administrator": true,
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "PA2GkzCCDaHkwks7WMRw": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "vxmWn5MFL9ciKVd3LiCXc5L1hvM2"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "preferred_surgeries": {
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "is_administrator": true,
+      "is_employee": true
+    },
+    "fOdPTlTIGDiYd2YdnTtv": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "3AH7ckeGauB6wuwJj2Q3"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      },
+      "end_date": {
+        "_seconds": 1788246000,
+        "_nanoseconds": 0
+      },
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "PwtEvAm963MCk64bIZ9M": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "9d7rGqO6viw4uq52FoLi"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": true,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 1239577200,
+        "_nanoseconds": 184000000
+      },
+      "end_date": {
+        "_seconds": 1766620800,
+        "_nanoseconds": 712000000
+      },
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "yZLPEB9BNnvBtoxy4NyO": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "GyraCc1u2Q87DcqVPExc"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 860089200,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "3sUAKgVJXUf8JwdIuIw6": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "PpEzliOHXLP7q74PtWQd"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Hygienist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 860089200,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "0uUxPPkFLY729JrJnbcb": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "delJr4EMbfGEefqnvh1O"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 1244847600,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "xbmfMS8p5oBbKFGkgywY": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "fG3p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 1704067200,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "BkQOski8lrS6OILa9Nbq": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "gOvF6VWkzWZsOLlwcYkW"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Nurse",
+      "is_administrator": false,
+      "is_employee": false,
+      "start_date": {
+        "_seconds": 1244847600,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "yYzVz6Jv0MQKKqS6YKvq": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "mN5p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 1685577600,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "Q4tEHbXT6oEfXkSnZBLs": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "mynUylqCUH8PaqB7gXXQ"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Nurse",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 1072915200,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "HQG7xvQiEmAUG5razIQb": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "pd9uSPWgBHzkqE2lbsM0"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "is_employee": false,
+      "start_date": {
+        "_seconds": 1715468400,
+        "_nanoseconds": 0
+      },
+      "end_date": {
+        "_seconds": 1746226800,
+        "_nanoseconds": 0
+      },
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "TffpjF42fIeCvqF5LcaK": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "r8fPNPbncIC5s25s9d2P"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 1672531200,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
+    },
+    "QpHyLsMOi8U7ayW35uxy": {
+      "practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "user": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "s2VbN7JmN5p8H4qR6kL9"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "is_employee": true,
+      "start_date": {
+        "_seconds": 1694736000,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      }
     }
   },
   "practices": {
@@ -152,7 +2347,7 @@
       "address": "1 The Willows\nBallchester\nB1 1AB",
       "_subcollections": {
         "minimum_operating_staff": {
-          "gPMj42RFrBseCKcA02tN": {
+          "U6c8X0qssEiLj6d4B4Sz": {
             "role_id": {
               "_firestore": {
                 "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
@@ -162,7 +2357,7 @@
                   "practices",
                   "N386X3cd0NNAJt6Lxwrl",
                   "roles",
-                  "ASUy8xKAXGuVM5DEgKqa"
+                  "CqlB32wkgQA2WRxHZgUl"
                 ]
               },
               "_converter": {}
@@ -176,14 +2371,14 @@
                   "practices",
                   "N386X3cd0NNAJt6Lxwrl",
                   "surgeries",
-                  "0HqLa4DSCkp8xdsJCXno"
+                  "WyCPjTbrhiI3Jnn3JAPO"
                 ]
               },
               "_converter": {}
             },
             "staff_count": 1,
-            "role_name": "Dentist",
-            "surgery_name": "Morning"
+            "role_name": "Receptionist",
+            "surgery_name": "Afternoon"
           },
           "aEbN2VB7UYRTjIUfH6Iq": {
             "role_id": {
@@ -218,6 +2413,39 @@
             "role_name": "Dentist",
             "surgery_name": "Afternoon"
           },
+          "gPMj42RFrBseCKcA02tN": {
+            "role_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "ASUy8xKAXGuVM5DEgKqa"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "0HqLa4DSCkp8xdsJCXno"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Dentist",
+            "surgery_name": "Morning"
+          },
           "hIGCfwAyZyg6Os2OswrF": {
             "role_id": {
               "_firestore": {
@@ -249,39 +2477,6 @@
             },
             "staff_count": 2,
             "role_name": "Nurse",
-            "surgery_name": "Afternoon"
-          },
-          "U6c8X0qssEiLj6d4B4Sz": {
-            "role_id": {
-              "_firestore": {
-                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-              },
-              "_path": {
-                "segments": [
-                  "practices",
-                  "N386X3cd0NNAJt6Lxwrl",
-                  "roles",
-                  "CqlB32wkgQA2WRxHZgUl"
-                ]
-              },
-              "_converter": {}
-            },
-            "surgery_id": {
-              "_firestore": {
-                "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-              },
-              "_path": {
-                "segments": [
-                  "practices",
-                  "N386X3cd0NNAJt6Lxwrl",
-                  "surgeries",
-                  "WyCPjTbrhiI3Jnn3JAPO"
-                ]
-              },
-              "_converter": {}
-            },
-            "staff_count": 1,
-            "role_name": "Receptionist",
             "surgery_name": "Afternoon"
           },
           "mDOxytjbe57fTFdxXv9g": {
@@ -319,11 +2514,6 @@
           }
         },
         "roles": {
-          "ASUy8xKAXGuVM5DEgKqa": {
-            "name": "Dentist",
-            "type": "Practitioner",
-            "icon_url": "https://picsum.photos/id/237/512/512"
-          },
           "0jA2jzsNL1IIUNH2AH0w": {
             "name": "Hygienist",
             "type": "Practitioner",
@@ -333,6 +2523,11 @@
             "name": "Administrative",
             "type": "Assistant",
             "icon_url": "https://picsum.photos/id/244/512/512"
+          },
+          "ASUy8xKAXGuVM5DEgKqa": {
+            "name": "Dentist",
+            "type": "Practitioner",
+            "icon_url": "https://picsum.photos/id/237/512/512"
           },
           "CqlB32wkgQA2WRxHZgUl": {
             "name": "Receptionist",
@@ -499,57 +2694,6 @@
       "role_name": "Dentist",
       "surgery_name": "Morning"
     },
-    "xZ1jK7sL5mN3pT9gB2vC": {
-      "date": {
-        "_seconds": 1765497600,
-        "_nanoseconds": 569000000
-      },
-      "user_id": {
-        "_firestore": {
-          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-        },
-        "_path": {
-          "segments": [
-            "users",
-            "fG3p8H4qR6kL9s2VbN7J"
-          ]
-        },
-        "_converter": {}
-      },
-      "roster_status": "draft",
-      "is_resolved": false,
-      "role_id": {
-        "_firestore": {
-          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-        },
-        "_path": {
-          "segments": [
-            "practices",
-            "N386X3cd0NNAJt6Lxwrl",
-            "roles",
-            "ASUy8xKAXGuVM5DEgKqa"
-          ]
-        },
-        "_converter": {}
-      },
-      "surgery_id": {
-        "_firestore": {
-          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-        },
-        "_path": {
-          "segments": [
-            "practices",
-            "N386X3cd0NNAJt6Lxwrl",
-            "surgeries",
-            "0HqLa4DSCkp8xdsJCXno"
-          ]
-        },
-        "_converter": {}
-      },
-      "user_name": "Dr. Chloe Davis",
-      "role_name": "Dentist",
-      "surgery_name": "Morning"
-    },
     "kL9s2VbN7JmN5p8H4qR6": {
       "date": {
         "_seconds": 1765584000,
@@ -598,57 +2742,6 @@
         "_converter": {}
       },
       "user_name": "Dr. Olivia Martinez",
-      "role_name": "Dentist",
-      "surgery_name": "Morning"
-    },
-    "p8H4qR6kL9s2VbN7JmN5": {
-      "date": {
-        "_seconds": 1765497600,
-        "_nanoseconds": 0
-      },
-      "user_id": {
-        "_firestore": {
-          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-        },
-        "_path": {
-          "segments": [
-            "users",
-            "s2VbN7JmN5p8H4qR6kL9"
-          ]
-        },
-        "_converter": {}
-      },
-      "roster_status": "draft",
-      "is_resolved": false,
-      "role_id": {
-        "_firestore": {
-          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-        },
-        "_path": {
-          "segments": [
-            "practices",
-            "N386X3cd0NNAJt6Lxwrl",
-            "roles",
-            "ASUy8xKAXGuVM5DEgKqa"
-          ]
-        },
-        "_converter": {}
-      },
-      "surgery_id": {
-        "_firestore": {
-          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
-        },
-        "_path": {
-          "segments": [
-            "practices",
-            "N386X3cd0NNAJt6Lxwrl",
-            "surgeries",
-            "0HqLa4DSCkp8xdsJCXno"
-          ]
-        },
-        "_converter": {}
-      },
-      "user_name": "Dr. James Wilson",
       "role_name": "Dentist",
       "surgery_name": "Morning"
     },
@@ -703,6 +2796,57 @@
       "role_name": "Dentist",
       "surgery_name": "Morning"
     },
+    "p8H4qR6kL9s2VbN7JmN5": {
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 0
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "s2VbN7JmN5p8H4qR6kL9"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. James Wilson",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    },
     "urHrNFH2pe32y79lctly": {
       "date": {
         "_seconds": 1765497600,
@@ -753,277 +2897,311 @@
       "user_name": "Harry Smith",
       "role_name": "Nurse",
       "surgery_name": "Morning"
+    },
+    "xZ1jK7sL5mN3pT9gB2vC": {
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 569000000
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "fG3p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. Chloe Davis",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
     }
   },
   "users": {
+    "1VuX7TBstwT6ig4aE68KK2UAa323": {
+      "address": "2 Horse Street\nBarchester\nB1 1AA",
+      "email": "douglas.yellow@gmail.com",
+      "profile_image": "https://avatar.com/a90792asc.ico",
+      "name": "Douglas Yellow",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "3AH7ckeGauB6wuwJj2Q3": {
+      "email": "susan.day@mail.com",
+      "address": "707 Redwood Ct\nBarchester\nB2 3WX",
+      "profile_image": "https://avatar.com/a90790asc.ico",
+      "name": "Susan Day",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
     "9d7rGqO6viw4uq52FoLi": {
       "name": "Dr. Evelyn Reeds",
       "email": "evelyn.reeds@mail.com",
-      "start_date": {
-        "_seconds": 1239577200,
-        "_nanoseconds": 184000000
-      },
-      "usual_working_days": [
-        "Monday",
-        "Tuesday",
-        "Wednesday"
-      ],
-      "end_date": {
-        "_seconds": 1766620800,
-        "_nanoseconds": 712000000
-      },
-      "is_administrator": true,
-      "is_employee": true,
       "address": "12 Horse Street\nBarchester\nB1 1AA",
-      "role": "Dentist",
-      "profile_image": "https://picsum.photos/id/238/512/512"
-    },
-    "r8fPNPbncIC5s25s9d2P": {
-      "name": "Dr. Ben Carter",
-      "email": "ben.carter@mail.com",
-      "start_date": {
-        "_seconds": 1672531200,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Thursday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
-      "address": "45 Oak Avenue\nBarchester\nB1 2CD",
-      "role": "Dentist",
-      "profile_image": "https://picsum.photos/id/239/512/512"
-    },
-    "fG3p8H4qR6kL9s2VbN7J": {
-      "name": "Dr. Chloe Davis",
-      "email": "chloe.davis@mail.com",
-      "start_date": {
-        "_seconds": 1704067200,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Thursday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
-      "address": "7 Prime Street\nBarchester\nB1 3EF",
-      "role": "Dentist",
-      "profile_image": "https://picsum.photos/id/240/512/512"
-    },
-    "mN5p8H4qR6kL9s2VbN7J": {
-      "name": "Dr. Olivia Martinez",
-      "email": "olivia.martinez@mail.com",
-      "start_date": {
-        "_seconds": 1685577600,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Tuesday",
-        "Wednesday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
-      "address": "15 River Road\nBarchester\nB1 4GH",
-      "role": "Dentist",
-      "profile_image": "https://picsum.photos/id/241/512/512"
-    },
-    "s2VbN7JmN5p8H4qR6kL9": {
-      "name": "Dr. James Wilson",
-      "email": "james.wilson@mail.com",
-      "start_date": {
-        "_seconds": 1694736000,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
-      "address": "22 Forest Drive\nBarchester\nB1 5IJ",
-      "role": "Dentist",
-      "profile_image": "https://picsum.photos/id/242/512/512"
-    },
-    "delJr4EMbfGEefqnvh1O": {
-      "name": "Dr. Able Baker",
-      "email": "able.baker@mail.com",
-      "start_date": {
-        "_seconds": 1244847600,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Wednesday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
-      "address": "101 Willow Lane\nBarchester\nB1 6KL",
-      "role": "Dentist",
-      "profile_image": "https://avatar.com/a90790asc.ico"
-    },
-    "pd9uSPWgBHzkqE2lbsM0": {
-      "name": "Dr. Benny Goodman",
-      "email": "benny.goodman@mail.com",
-      "start_date": {
-        "_seconds": 1715468400,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Tuesday",
-        "Thursday"
-      ],
-      "end_date": {
-        "_seconds": 1746226800,
-        "_nanoseconds": 0
-      },
-      "is_administrator": false,
-      "is_employee": false,
-      "address": "202 Maple Street\nBarchester\nB1 7MN",
-      "role": "Dentist",
-      "profile_image": "https://avatar.com/8uac-ia=sc.ico"
+      "profile_image": "https://picsum.photos/id/238/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
     },
     "GyraCc1u2Q87DcqVPExc": {
       "name": "Dr. Jack Smith",
       "email": "jack.smith@mail.com",
-      "start_date": {
-        "_seconds": 860089200,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
       "address": "303 Birch Road\nBarchester\nB1 8OP",
-      "role": "Dentist",
-      "profile_image": "https://avatar.com/acs9-amc.ico"
-    },
-    "mynUylqCUH8PaqB7gXXQ": {
-      "name": "Harry Smith",
-      "email": "harry.smith@mail.com",
-      "start_date": {
-        "_seconds": 1072915200,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Tuesday",
-        "Wednesday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
-      "address": "404 Cedar Blvd\nBarchester\nB1 9QR",
-      "role": "Nurse",
-      "profile_image": "https://avatar.com/a90790asc.ico"
-    },
-    "gOvF6VWkzWZsOLlwcYkW": {
-      "name": "Riya Khatri",
-      "email": "riya.khatri@mail.com",
-      "start_date": {
-        "_seconds": 1244847600,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Thursday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": false,
-      "address": "505 Pine St\nBarchester\nB2 1ST",
-      "role": "Nurse",
-      "profile_image": "https://avatar.com/8uac-ia=sc.ico"
+      "profile_image": "https://avatar.com/acs9-amc.ico",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
     },
     "PpEzliOHXLP7q74PtWQd": {
       "name": "Jiya Khatri",
       "email": "jiya.khatri@mail.com",
-      "start_date": {
-        "_seconds": 860089200,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Tuesday",
-        "Wednesday",
-        "Thursday"
-      ],
-      "end_date": null,
-      "is_administrator": false,
-      "is_employee": true,
       "address": "606 Spruce Ave\nBarchester\nB2 2UV",
-      "role": "Hygienist",
-      "profile_image": "https://avatar.com/64ac3s.ico"
+      "profile_image": "https://avatar.com/64ac3s.ico",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
     },
-    "3AH7ckeGauB6wuwJj2Q3": {
-      "name": "Susan Day",
-      "email": "susan.day@mail.com",
-      "start_date": {
-        "_seconds": 475887600,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Friday"
-      ],
-      "end_date": {
-        "_seconds": 1788246000,
-        "_nanoseconds": 0
-      },
-      "is_administrator": false,
-      "is_employee": true,
-      "address": "707 Redwood Ct\nBarchester\nB2 3WX",
-      "role": "Receptionist",
-      "profile_image": "https://avatar.com/a90790asc.ico"
+    "delJr4EMbfGEefqnvh1O": {
+      "name": "Dr. Able Baker",
+      "email": "able.baker@mail.com",
+      "address": "101 Willow Lane\nBarchester\nB1 6KL",
+      "profile_image": "https://avatar.com/a90790asc.ico",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "fG3p8H4qR6kL9s2VbN7J": {
+      "name": "Dr. Chloe Davis",
+      "email": "chloe.davis@mail.com",
+      "address": "7 Prime Street\nBarchester\nB1 3EF",
+      "profile_image": "https://picsum.photos/id/240/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "gOvF6VWkzWZsOLlwcYkW": {
+      "name": "Riya Khatri",
+      "email": "riya.khatri@mail.com",
+      "address": "505 Pine St\nBarchester\nB2 1ST",
+      "profile_image": "https://avatar.com/8uac-ia=sc.ico",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "mN5p8H4qR6kL9s2VbN7J": {
+      "name": "Dr. Olivia Martinez",
+      "email": "olivia.martinez@mail.com",
+      "address": "15 River Road\nBarchester\nB1 4GH",
+      "profile_image": "https://picsum.photos/id/241/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "mynUylqCUH8PaqB7gXXQ": {
+      "name": "Harry Smith",
+      "email": "harry.smith@mail.com",
+      "address": "404 Cedar Blvd\nBarchester\nB1 9QR",
+      "profile_image": "https://avatar.com/a90790asc.ico",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "pd9uSPWgBHzkqE2lbsM0": {
+      "name": "Dr. Benny Goodman",
+      "email": "benny.goodman@mail.com",
+      "address": "202 Maple Street\nBarchester\nB1 7MN",
+      "profile_image": "https://avatar.com/8uac-ia=sc.ico",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "r8fPNPbncIC5s25s9d2P": {
+      "name": "Dr. Ben Carter",
+      "email": "ben.carter@mail.com",
+      "address": "45 Oak Avenue\nBarchester\nB1 2CD",
+      "profile_image": "https://picsum.photos/id/239/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    "s2VbN7JmN5p8H4qR6kL9": {
+      "name": "Dr. James Wilson",
+      "email": "james.wilson@mail.com",
+      "address": "22 Forest Drive\nBarchester\nB1 5IJ",
+      "profile_image": "https://picsum.photos/id/242/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
     },
     "vxmWn5MFL9ciKVd3LiCXc5L1hvM2": {
-      "name": "Robin Yellow",
-      "email": "robinyellow@gmail.com",
-      "start_date": {
-        "_seconds": 475887600,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": true,
-      "is_employee": true,
       "address": "1 Horse Street\nBarchester\nB1 1AA",
-      "role": "Receptionist",
-      "profile_image": "https://avatar.com/a90791asc.ico"
-    },
-    "1VuX7TBstwT6ig4aE68KK2UAa323": {
-      "name": "Douglas Yellow",
-      "email": "douglas.yellow@gmail.com",
-      "start_date": {
-        "_seconds": 475887600,
-        "_nanoseconds": 0
-      },
-      "usual_working_days": [
-        "Monday",
-        "Friday"
-      ],
-      "end_date": null,
-      "is_administrator": true,
-      "is_employee": true,
-      "address": "2 Horse Street\nBarchester\nB1 1AA",
-      "role": "Receptionist",
-      "profile_image": "https://avatar.com/a90792asc.ico"
+      "email": "robinyellow@gmail.com",
+      "profile_image": "https://avatar.com/a90791asc.ico",
+      "name": "Robin Yellow",
+      "current_practice": {
+        "_firestore": {
+          "projectId": import.meta.env.VITE_FIREBASE_PROJECT_ID
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
     }
   },
   "warnings": {
