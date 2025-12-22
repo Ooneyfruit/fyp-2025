@@ -1,10 +1,12 @@
 <template>
   <div>
-    <div 
-      v-if="isOpen" 
-      class="mobile-overlay" 
-      @click="$emit('close')"
-    ></div>
+    <Transition name="fade-overlay">
+      <div 
+        v-if="isOpen && isMobile" 
+        class="mobile-overlay" 
+        @click="$emit('close')"
+      ></div>
+    </Transition>
 
     <aside class="sidebar" :class="{ 'open': isOpen }">
       <nav class="sidebar-nav">
@@ -15,11 +17,11 @@
           class="nav-item"
           :class="{ active: route.path === item.path }" 
           @click.prevent="handleNavigation(item)" 
-          :title="!isOpen ? item.name : ''" 
+          :title="(!isOpen && !isMobile) ? item.name : ''" 
         >
           <span class="icon">{{ item.icon }}</span>
           
-          <span class="label" :class="{ 'hidden': !isOpen }">
+          <span class="label" :class="{ 'visible': isOpen }">
             {{ item.name }}
           </span>
         </a>
@@ -33,7 +35,11 @@ import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 
-defineProps({ isOpen: Boolean });
+defineProps({ 
+  isOpen: Boolean,
+  isMobile: Boolean 
+});
+
 const emit = defineEmits(['close']);
 const { user } = useAuth();
 const router = useRouter();
@@ -41,7 +47,7 @@ const route = useRoute();
 
 const allMenuItems = [
   { name: 'Home', icon: '🏠', path: '/', adminOnly: false },
-  { name: 'Staff Management', icon: '👥', path: '/staff', adminOnly: true },
+  { name: 'User Management', icon: '👥', path: '/users', adminOnly: true },
 ];
 
 const menuItems = computed(() => {
@@ -49,33 +55,33 @@ const menuItems = computed(() => {
 });
 
 const handleNavigation = (item) => {
-  if (window.innerWidth < 768) emit('close');
+  if (window.innerWidth < 768) {
+    emit('close');
+  }
   router.push(item.path);
 };
 </script>
 
 <style scoped>
-/* Base Styles */
 .sidebar {
-  top: var(--navbar-height);
+  /* Ensure it starts exactly where the fixed navbar ends */
+  top: var(--navbar-height); 
   bottom: 0;
   position: fixed;
   left: 0;
   background: white;
   border-right: 1px solid var(--border-color);
-  z-index: var(--z-sidebar);
   
-  /* Transitions */
+  /* Below Navbar (60), Above Content (1) */
+  z-index: var(--z-sidebar); 
+  
   transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
-  overflow-x: hidden; /* Hide text when it slides out */
-  white-space: nowrap; /* Prevent text wrapping during animation */
-
-  /* Default State */
+  overflow-x: hidden;
+  white-space: nowrap;
   width: var(--sidebar-slim-width);
-  transform: translateX(0); 
 }
 
-/* Open State */
+/* Open/Large State */
 .sidebar.open {
   width: var(--sidebar-width);
 }
@@ -85,9 +91,7 @@ const handleNavigation = (item) => {
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 0.75rem 0; /* Adjust padding to center the icon when slim */
-  padding-left: 1.5rem; /* Fixed left padding ensures icon stays in place */
-  
+  padding-left: 1.5rem;
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 500;
@@ -101,26 +105,26 @@ const handleNavigation = (item) => {
 
 .icon {
   font-size: 1.25rem;
-  min-width: 1.5rem; /* Ensure icon reserves space */
+  min-width: 1.5rem;
   text-align: center;
 }
 
-/* Text Label Logic */
 .label {
   margin-left: 0.75rem;
-  opacity: 1;
+  opacity: 0; /* Default: hidden (prevents flashing) */
+  pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
-/* Label Hiding Logic */
-.label.hidden {
-  opacity: 0;
-  pointer-events: none; /* Prevent clicking hidden text */
+.label.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-/* Mobile Overrides */
+/* MOBILE OVERRIDES */
 @media (max-width: 48rem) {
   .sidebar {
+    /* On mobile, width is always full, transform handles visibility */
     width: var(--sidebar-width);
     transform: translateX(-100%);
   }
@@ -128,15 +132,27 @@ const handleNavigation = (item) => {
   .sidebar.open {
     transform: translateX(0);
   }
-  
-  .label.hidden {
-    opacity: 1; 
-  }
-  
-  .mobile-overlay {
-    display: block;
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: var(--z-overlay);
-  }
+}
+
+/* Overlay Animation */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(31, 41, 55, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-overlay);
+}
+
+.fade-overlay-enter-active,
+.fade-overlay-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-overlay-enter-from,
+.fade-overlay-leave-to {
+  opacity: 0;
 }
 </style>

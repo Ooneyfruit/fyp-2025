@@ -46,17 +46,23 @@ const handleLogout = async () => {
 
 <style scoped>
 .navbar {
+  /* Changed from sticky to fixed for total viewport lock */
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
   height: var(--navbar-height);
+  
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: white;
   padding: 0 var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: var(--z-navbar);
-  flex-shrink: 0;
+  
+  /* Highest level in the app */
+  z-index: var(--z-navbar); 
+  
   box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.02);
 }
 

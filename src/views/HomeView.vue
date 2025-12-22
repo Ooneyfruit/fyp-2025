@@ -5,8 +5,8 @@
       subtitle="Welcome to RotaDent."
     />
     
-    <button @click="$router.push('/staff')" class="action-btn">
-      Go to Staff Management
+    <button @click="$router.push('/users')" class="action-btn">
+      Go to User Management
     </button>
   </PageContainer>
 </template>
