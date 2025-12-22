@@ -4561,7 +4561,8 @@
         },
         "_converter": {}
       },
-      "profile_image": "https://picsum.photos/id/31/512/512"
+      "profile_image": "https://picsum.photos/id/31/512/512",
+      "address": "Placeholder Address"
     },
     "vGkruGTbzyONC30epJmg7yu8MyF3": {
       "name": "Frank Succession",
@@ -4578,7 +4579,8 @@
         },
         "_converter": {}
       },
-      "profile_image": "https://picsum.photos/id/395/512/512"
+      "profile_image": "https://picsum.photos/id/395/512/512",
+      "address": "Placeholder Address"
     }
   },
   "warnings": {
