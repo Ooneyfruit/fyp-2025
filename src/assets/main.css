@@ -1,53 +1,53 @@
-/* src/assets/main.css */
+/* src/assets/main.css - Semantic Color & Layering Update */
 :root {
-  /* Layout Dimensions */
   --navbar-height: 3.75rem;
   --sidebar-width: 16.25rem;
   --sidebar-slim-width: 4.5rem;
-  
-  /* Animation Speed */
   --anim-speed: 0.3s;
   
-  /* Z-Index Layers */
-  --z-negative: -1;
+  /* Stacking Context (Z-INDEX SOURCE OF TRUTH) */
   --z-normal: 1;
-  --z-overlay: 40;  /* The black backdrop */
-  --z-sidebar: 50;  /* The side menu */
-  --z-navbar: 60;   /* The top bar (always on top) */
+  --z-overlay: 40;
+  --z-sidebar: 50;
+  --z-navbar: 60;
 
-  /* Brand Colours */
-  --color-primary: #4285F4;
-  --color-danger: #e74c3c;
-  --color-success: #2ecc71;
-  --color-warning: #f1c40f;
+  /* Semantic Colors */
+  --color-primary: #2563eb;    
+  --color-danger: #dc2626;
+  --color-success: #166534;    
+  --color-success-bg: #f0fdf4; 
+  --color-warning: #9a3412;    
+  --color-warning-bg: #fff7ed; 
   
-  /* Text Colours */
-  --text-main: #333333;
-  --text-muted: #555555;
+  --text-main: #111827;        
+  --text-muted: #4b5563;       
   --text-light: #ffffff;
   
-  /* Spacing Scale */
   --spacing-xs: 0.5rem;
   --spacing-sm: 0.75rem;
   --spacing-md: 1.25rem;
   --spacing-lg: 2.5rem;
   
-  /* Borders */
-  --border-radius: 0.25rem;
-  --border-color: #e0e0e0;
+  --border-radius: 0.5rem;     
+  --border-color: #e5e7eb;
+
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: var(--font-family);
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
+  font-family: var(--font-family);
+  background-color: #f9fafb;
   color: var(--text-main);
-  overflow-x: hidden; 
-  font-size: 16px; /* Baseline for REM units is 16px */
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
 }
 
-/* Global Reset for Buttons */
-button {
-  font-family: inherit;
+.main-content {
+  position: relative;
+  z-index: var(--z-normal); /* Content is always at the base layer */
 }
