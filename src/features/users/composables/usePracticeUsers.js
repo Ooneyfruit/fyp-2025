@@ -12,18 +12,29 @@ export function usePracticeUsers() {
   const profileListeners = new Map(); // UID -> Unsubscribe
 
   const startLiveSync = (practiceId) => {
-    console.log(`%c[usePracticeUsers] 🧪 HYPER-LOG: Starting Sync for ${practiceId}`, "color: cyan; font-weight: bold");
-    
     if (listListener) listListener();
     
-    const q = query(
-      collection(db, "practice_users"),
-      where("practice", "==", doc(db, "practices", practiceId))
-    );
+    const practiceRef = doc(db, "practices", practiceId);
+    const bridgeCol = collection(db, "practice_users");
+
+    // DATA PROTECTION: 
+    // If user is admin, fetch all users in the practice.
+    // If not admin, fetch only their own record.
+    let q;
+    if (authUser.value?.is_administrator) {
+      console.log("[usePracticeUsers] Admin Sync: Fetching all practice members.");
+      q = query(bridgeCol, where("practice", "==", practiceRef));
+    } else {
+      console.log("[usePracticeUsers] User Sync: Restricted to self.");
+      const userRef = doc(db, "users", authUser.value.uid);
+      q = query(
+        bridgeCol, 
+        where("practice", "==", practiceRef),
+        where("user", "==", userRef)
+      );
+    }
 
     listListener = onSnapshot(q, (snapshot) => {
-      console.log(`[usePracticeUsers] 📥 Membership List Update: ${snapshot.docs.length} docs`);
-      
       const snapshotUids = new Set();
       memberships.value = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 
@@ -31,24 +42,20 @@ export function usePracticeUsers() {
         const uid = mDoc.data().user.id;
         snapshotUids.add(uid);
 
-        // ATTACH NESTED LISTENER: If we aren't already watching this specific user
         if (!profileListeners.has(uid)) {
-          console.log(`[usePracticeUsers] 🛰️ Spawning Profile Listener: users/${uid}`);
           const unsub = onSnapshot(mDoc.data().user, (pSnap) => {
             if (pSnap.exists()) {
-              console.log(`%c[usePracticeUsers] ✨ LIVE UPDATE: ${pSnap.data().name}`, "color: #ff00ff");
               profileStore.value[uid] = pSnap.data();
             }
-          }, (err) => console.error(`[usePracticeUsers] ❌ Profile Error (${uid}):`, err.message));
+          }, (err) => console.error(`[usePracticeUsers] Profile Error (${uid}):`, err.message));
           
           profileListeners.set(uid, unsub);
         }
       });
 
-      // CLEANUP: If a user is removed from the practice, stop listening to their profile
+      // Cleanup listeners for users no longer in the result set
       profileListeners.forEach((unsub, uid) => {
         if (!snapshotUids.has(uid)) {
-          console.log(`[usePracticeUsers] ✂️ Removing Listener for user/${uid}`);
           unsub();
           profileListeners.delete(uid);
           delete profileStore.value[uid];
@@ -56,12 +63,13 @@ export function usePracticeUsers() {
       });
 
       isLoading.value = false;
+    }, (err) => {
+      console.error("[usePracticeUsers] Sync Error:", err.message);
+      isLoading.value = false;
     });
   };
 
-  // THE REACTIVE JOIN: This re-runs whenever memberships OR profileStore changes
   const users = computed(() => {
-    console.log("[usePracticeUsers] 🔄 Computed Join re-calculating...");
     return memberships.value.map(m => ({
       ...m,
       profile: profileStore.value[m.user.id] || { name: 'Joining...' }
@@ -72,14 +80,18 @@ export function usePracticeUsers() {
     if (listListener) listListener();
     profileListeners.forEach(u => u());
     profileListeners.clear();
-    console.log("[usePracticeUsers] 🧹 All Listeners Destroyed.");
   };
 
   onUnmounted(cleanup);
 
-  watch(() => authUser.value?.practiceRef?.id, (newId) => {
-    if (newId) startLiveSync(newId);
-    else { memberships.value = []; cleanup(); }
+  // Watch for changes in either the Practice ID OR the Admin status
+  watch(() => [authUser.value?.practiceRef?.id, authUser.value?.is_administrator], ([newId, isAdmin]) => {
+    if (newId) {
+      startLiveSync(newId);
+    } else {
+      memberships.value = [];
+      cleanup();
+    }
   }, { immediate: true });
 
   return { users, isLoading };

@@ -23,10 +23,13 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue';
-// FIXED: Import the ref directly; do not re-declare it below
+import { useRouter, useRoute } from 'vue-router';
 import { user } from './composables/useAuth';
 import NavBar from './components/layout/NavBar.vue';
 import SideMenu from './components/layout/SideMenu.vue';
+
+const router = useRouter();
+const route = useRoute();
 
 const isMobile = ref(window.innerWidth < 768);
 const desktopPreference = ref(localStorage.getItem('isSidebarOpen') === 'true');
@@ -62,6 +65,15 @@ onMounted(() => {
 });
 
 onUnmounted(() => window.removeEventListener('resize', handleResize));
+
+// SECURITY WATCHER:
+// Detects if a user loses admin status while viewing an admin-only page
+watch(() => [user.value?.is_administrator, route.path], ([isAdmin, path]) => {
+  if (user.value && route.meta.requiresAdmin && !isAdmin) {
+    console.warn("[App] Access Revoked: Redirecting to Home.");
+    router.push('/');
+  }
+}, { immediate: true });
 
 watch(user, (val) => {
   if (val) {
