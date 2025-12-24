@@ -131,3 +131,38 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   display: flex;
   flex-direction: column;
 }
+
+/* Surface Utilities */
+.rd-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: transform var(--anim-speed) ease, box-shadow var(--anim-speed) ease;
+}
+
+.rd-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+.rd-card-body {
+  border-top: 1px solid var(--border-color);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Global Animations */
+@keyframes rd-spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: rd-spin 0.8s linear infinite;
+}
