@@ -1,28 +1,47 @@
 /* src/assets/main.css */
 :root {
+  /* Layout Dimensions */
   --navbar-height: 3.75rem;
   --sidebar-width: 16.25rem;
   --sidebar-slim-width: 4.5rem;
   --anim-speed: 0.3s;
   
-  /* Stacking Context */
+  /* Stacking Context (Z-INDEX Hierarchy) */
+  --z-below: -1;
   --z-normal: 1;
-  --z-overlay: 40;
-  --z-sidebar: 50;
-  --z-navbar: 60;
+  --z-sticky: 100;
+  --z-overlay: 400;
+  --z-sidebar: 500;
+  --z-navbar: 600;
+  --z-modal: 1000;
+  --z-tooltip: 1100;
 
-  /* Semantic Colors */
-  --color-primary: #2563eb;    
-  --color-danger: #dc2626;
-  --color-success: #166534;    
-  --color-success-bg: #f0fdf4; 
-  --color-warning: #9a3412;    
-  --color-warning-bg: #fff7ed; 
+  /* Color System (HSL for dynamic shading) */
+  --hue-primary: 221;
+  --hue-danger: 0;
+  --hue-success: 142;
+  --hue-warning: 16;
+
+  --color-primary: hsl(var(--hue-primary), 83%, 53%);
+  --color-primary-hover: hsl(var(--hue-primary), 83%, 45%);
   
-  --text-main: #111827;        
-  --text-muted: #4b5563;       
-  --text-light: #ffffff;
+  --color-danger: hsl(var(--hue-danger), 72%, 51%);
   
+  --color-success: hsl(var(--hue-success), 70%, 25%);
+  --color-success-bg: hsl(var(--hue-success), 80%, 96%);
+  
+  --color-warning: hsl(var(--hue-warning), 80%, 33%);
+  --color-warning-bg: hsl(var(--hue-warning), 100%, 96%);
+  
+  /* Typography & Neutral Scale */
+  --text-main: hsl(221, 39%, 11%);
+  --text-muted: hsl(215, 16%, 34%);
+  --text-light: hsl(0, 0%, 100%);
+  
+  --border-color: hsl(214, 32%, 91%);
+  --bg-app: hsl(210, 40%, 98%);
+
+  /* Spacing Scale */
   --spacing-xs: 0.5rem;
   --spacing-sm: 0.75rem;
   --spacing-md: 1.25rem;
@@ -34,25 +53,43 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-* {
+/* Base Reset & Box Model */
+*, *::before, *::after {
   box-sizing: border-box;
-  font-family: var(--font-family);
+}
+
+html {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: #f9fafb;
-  color: var(--text-main);
-  -webkit-font-smoothing: antialiased;
   margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* BASE POSITIONING (Instant Snap)
-   We use the classes applied by index.html to prevent any initial sliding.
-*/
+/* Performance: Targeted inheritance for form elements */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+/* Modern Media Reset */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Global Layout Orchestration */
 .main-content {
   position: relative;
   z-index: var(--z-normal);
+  min-height: calc(100vh - var(--navbar-height));
   padding-top: var(--navbar-height);
   margin-left: var(--sidebar-slim-width);
 }
@@ -73,4 +110,24 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 
 .is-animate-ready .sidebar {
   transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
+}
+
+/* Utility: Accessible Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Smooth Transitions for Layout Shifts */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
