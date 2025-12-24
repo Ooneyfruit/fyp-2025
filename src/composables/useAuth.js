@@ -10,11 +10,10 @@ const provider = new GoogleAuthProvider();
 let profileListener = null;
 
 const startProfileListener = (firebaseUser) => {
-  if (profileListener) profileListener(); // Clean up existing listener
+  if (profileListener) profileListener(); 
 
   const userRef = doc(db, "users", firebaseUser.uid);
   
-  // The error callback (second argument) prevents the infinite retry loop
   profileListener = onSnapshot(userRef, async (userSnap) => {
     if (!userSnap.exists()) {
       user.value = null;
@@ -28,29 +27,32 @@ const startProfileListener = (firebaseUser) => {
     try {
       if (!practiceRef) throw new Error("No practice context assigned.");
 
-      // Fetch membership for the current practice context
       const membershipId = `${firebaseUser.uid}_${practiceRef.id}`;
-      const mSnap = await getDoc(doc(db, "practice_users", membershipId));
+      // Fetch membership and practice metadata in parallel
+      const [mSnap, pSnap] = await Promise.all([
+        getDoc(doc(db, "practice_users", membershipId)),
+        getDoc(practiceRef)
+      ]);
+
       const mData = mSnap.exists() ? mSnap.data() : { is_administrator: false, role: 'Guest' };
+      const practiceName = pSnap.exists() ? pSnap.data().name : "Unknown Practice";
 
       user.value = {
         uid: firebaseUser.uid,
         ...userData,
-        ...mData, // Permissions for the active practice
-        practiceRef: practiceRef 
+        ...mData, 
+        practiceRef: practiceRef,
+        activePracticeName: practiceName // Contextual name for toasts
       };
       
-      console.log(`Context Updated: ${user.value.name} | Active Practice: ${practiceRef.id}`);
     } catch (e) {
-      console.error("Context Switch Failed:", e.message);
-      // Fallback: set basic info even if practice-specific fetch fails
-      user.value = { uid: firebaseUser.uid, ...userData, is_administrator: false };
+      console.error("[useAuth] Context Update Failed:", e.message);
+      user.value = { uid: firebaseUser.uid, ...userData, is_administrator: false, activePracticeName: 'Error' };
     } finally {
       isAuthReady.value = true;
     }
   }, (error) => {
-    // This stops the browser from looping on a permission error
-    console.error("Firestore Listener Error:", error.message);
+    console.error("[useAuth] Listener Error:", error.message);
     isAuthReady.value = true;
   });
 };
