@@ -1,12 +1,10 @@
 <template>
   <header class="page-header">
-    <div class="title-group">
-      <div class="title-line">
-        <h1>{{ title }}</h1>
-        <slot />
-      </div>
-      <p v-if="subtitle" class="subtitle">{{ subtitle }}</p>
+    <div class="title-line">
+      <h1>{{ title }}</h1>
+      <slot />
     </div>
+    <p v-if="subtitle" class="subtitle">{{ subtitle }}</p>
   </header>
 </template>
 
@@ -19,31 +17,28 @@ defineProps({
 
 <style scoped>
 .page-header {
-  /* FIXED: Removed margin-bottom and flex properties. 
-     The parent wrapper now handles the layout and spacing. */
-  margin: 0; 
+  margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .title-line {
   display: flex;
-  align-items: center;
-  gap: 0.9375rem; 
-  /* Space between Title and Subtitle */
-  margin-bottom: 0.25rem; /* Reduced from 0.5rem for a tighter look */
-  flex-wrap: wrap;
+  align-items: baseline; /* Align slots (like badges) to the text baseline */
+  gap: var(--spacing-sm);
 }
 
 h1 {
   font-size: 1.75rem;
   font-weight: 500;
   margin: 0;
-  line-height: 1.1; /* Ensures no extra vertical height from line-height */
+  line-height: 1.1;
   color: var(--text-main);
 }
 
 .subtitle {
-  margin: 0;
+  margin: var(--spacing-xs) 0 0 0;
   font-size: 1rem;
   color: var(--text-muted);
   line-height: 1.4;

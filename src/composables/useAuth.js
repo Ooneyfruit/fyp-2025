@@ -1,70 +1,78 @@
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 
 export const user = ref(null);
 export const isAuthReady = ref(false);
 const provider = new GoogleAuthProvider();
 
-window.authDebug = reactive({ uid: null, practice: null, isAdmin: false });
+let profileListener = null;
 
-const fetchFullProfile = async (firebaseUser) => {
-  if (!firebaseUser) {
-    user.value = null;
-    isAuthReady.value = true;
-    return;
-  }
+const startProfileListener = (firebaseUser) => {
+  if (profileListener) profileListener(); // Clean up existing listener
 
-  console.log("Auth: Starting fetch for", firebaseUser.uid);
+  const userRef = doc(db, "users", firebaseUser.uid);
+  
+  // The error callback (second argument) prevents the infinite retry loop
+  profileListener = onSnapshot(userRef, async (userSnap) => {
+    if (!userSnap.exists()) {
+      user.value = null;
+      isAuthReady.value = true;
+      return;
+    }
 
-  try {
-    // 1. Get Base Profile
-    const userSnap = await getDoc(doc(db, "users", firebaseUser.uid));
-    if (!userSnap.exists()) throw new Error("Base profile missing");
-    
     const userData = userSnap.data();
     const practiceRef = userData.current_practice;
-    console.log("Auth: User current practice set to:", practiceRef.path);
 
-    // 2. Find Membership in intersection collection
-    // We use a query instead of a direct ID to avoid ID-mismatch errors
-    const q = query(
-      collection(db, "practice_users"),
-      where("user", "==", doc(db, "users", firebaseUser.uid)),
-      where("practice", "==", practiceRef)
-    );
+    try {
+      if (!practiceRef) throw new Error("No practice context assigned.");
 
-    const intersectSnap = await getDocs(q);
-    const intersectData = !intersectSnap.empty ? intersectSnap.docs[0].data() : {};
+      // Fetch membership for the current practice context
+      const membershipId = `${firebaseUser.uid}_${practiceRef.id}`;
+      const mSnap = await getDoc(doc(db, "practice_users", membershipId));
+      const mData = mSnap.exists() ? mSnap.data() : { is_administrator: false, role: 'Guest' };
 
-    // 3. Assemble complete user
-    user.value = {
-      uid: firebaseUser.uid,
-      ...userData,
-      ...intersectData,
-      practiceRef: practiceRef // Essential DocumentReference for UserView
-    };
-
-    window.authDebug.uid = firebaseUser.uid;
-    window.authDebug.practice = practiceRef.path;
-    window.authDebug.isAdmin = intersectData.is_administrator || false;
-    
-    console.log("Auth: Profile ready. Admin Status:", user.value.is_administrator);
-  } catch (e) {
-    console.error("Auth Join Failed:", e.message);
-  } finally {
+      user.value = {
+        uid: firebaseUser.uid,
+        ...userData,
+        ...mData, // Permissions for the active practice
+        practiceRef: practiceRef 
+      };
+      
+      console.log(`Context Updated: ${user.value.name} | Active Practice: ${practiceRef.id}`);
+    } catch (e) {
+      console.error("Context Switch Failed:", e.message);
+      // Fallback: set basic info even if practice-specific fetch fails
+      user.value = { uid: firebaseUser.uid, ...userData, is_administrator: false };
+    } finally {
+      isAuthReady.value = true;
+    }
+  }, (error) => {
+    // This stops the browser from looping on a permission error
+    console.error("Firestore Listener Error:", error.message);
     isAuthReady.value = true;
-  }
+  });
 };
 
-onAuthStateChanged(auth, fetchFullProfile);
+onAuthStateChanged(auth, (firebaseUser) => {
+  if (firebaseUser) {
+    startProfileListener(firebaseUser);
+  } else {
+    if (profileListener) profileListener();
+    user.value = null;
+    isAuthReady.value = true;
+  }
+});
 
 export function useAuth() {
   return { 
     user, 
     isAuthReady, 
     login: () => signInWithPopup(auth, provider),
-    logout: async () => { await signOut(auth); window.location.href = "/login"; }
+    logout: async () => { 
+      if (profileListener) profileListener();
+      await signOut(auth); 
+    }
   };
 }

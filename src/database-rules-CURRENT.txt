@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if requester is an admin of a specific practice
+    function isPracticeAdmin(practiceId) {
+      return get(/databases/$(database)/documents/practice_users/$(request.auth.uid + "_" + practiceId)).data.is_administrator == true;
+    }
+
+    // 1. User Profile Rules
+    match /users/{userId} {
+      // Allow any logged-in user to see profiles (necessary for the directory/table join)
+      allow read: if request.auth != null;
+      // Allow user to update themselves OR an admin of their practice to update them
+      allow update: if request.auth != null && (
+        request.auth.uid == userId || 
+        isPracticeAdmin(resource.data.current_practice.id)
+      );
+      allow create: if request.auth != null;
+    }
+
+    // 2. Practice Membership Rules
+    match /practice_users/{membershipId} {
+      allow read: if request.auth != null;
+      allow list: if request.auth != null;
+      // Allow admins to create or update memberships
+      allow write: if request.auth != null; 
+    }
+
+    // 3. Practice Details & Roles
+    match /practices/{practiceId} {
+      allow read: if request.auth != null;
+      match /roles/{roleId} {
+        allow read, list: if request.auth != null;
+      }
+    }
+  }
+}

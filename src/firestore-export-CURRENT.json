@@ -1,0 +1,4827 @@
+{
+  "absences": [
+    {
+      "id": "0dsd68ktjtDl5nGunwxu",
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "9d7rGqO6viw4uq52FoLi"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1765787400,
+        "_nanoseconds": 103000000
+      },
+      "date_end": {
+        "_seconds": 1765906200,
+        "_nanoseconds": 51000000
+      },
+      "requested_reason": "annual leave and dog walking",
+      "requested_date": {
+        "_seconds": 1765368523,
+        "_nanoseconds": 632000000
+      },
+      "decision_status": "pending",
+      "decision_notes": "Chloe beat you to it!"
+    },
+    {
+      "id": "1YWZdh2fP8UCFNjj0XYw",
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "r8fPNPbncIC5s25s9d2P"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1749398400,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1749657599,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "sickness",
+      "requested_date": {
+        "_seconds": 1743952020,
+        "_nanoseconds": 0
+      },
+      "decision_status": "yes",
+      "decision_notes": ""
+    },
+    {
+      "id": "7kmxgPVHQtrGmZIix3C0",
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "9d7rGqO6viw4uq52FoLi"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1748889600,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1749148799,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "annual leave",
+      "requested_date": {
+        "_seconds": 1741336980,
+        "_nanoseconds": 0
+      },
+      "decision_status": "pending",
+      "decision_notes": ""
+    },
+    {
+      "id": "SixGXsnZyH80zG90f4Dh",
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "3AH7ckeGauB6wuwJj2Q3"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1751481600,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1751740799,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "annual leave",
+      "requested_date": {
+        "_seconds": 1746100920,
+        "_nanoseconds": 0
+      },
+      "decision_status": "denied",
+      "decision_notes": "Chloe beat you to it!"
+    },
+    {
+      "id": "rdOjIJMaZ34E5VOMl81h",
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "fG3p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "date_start": {
+        "_seconds": 1751481600,
+        "_nanoseconds": 0
+      },
+      "date_end": {
+        "_seconds": 1751827199,
+        "_nanoseconds": 0
+      },
+      "requested_reason": "annual leave",
+      "requested_date": {
+        "_seconds": 1746100860,
+        "_nanoseconds": 0
+      },
+      "decision_status": "yes",
+      "decision_notes": ""
+    }
+  ],
+  "practice_users": [
+    {
+      "id": "1VuX7TBstwT6ig4aE68KK2UAa323_N386X3cd0NNAJt6Lxwrl",
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "is_administrator": true,
+      "end_date": null,
+      "is_employee": true,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "1VuX7TBstwT6ig4aE68KK2UAa323"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      },
+      "updated_at": {
+        "_seconds": 1766557915,
+        "_nanoseconds": 112000000
+      }
+    },
+    {
+      "id": "1VuX7TBstwT6ig4aE68KK2UAa323_XlaoQpVBKN33eJJAggCy",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "XlaoQpVBKN33eJJAggCy"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "1VuX7TBstwT6ig4aE68KK2UAa323"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      },
+      "updated_at": {
+        "_seconds": 1766558020,
+        "_nanoseconds": 592000000
+      },
+      "is_administrator": true
+    },
+    {
+      "id": "3AH7ckeGauB6wuwJj2Q3_N386X3cd0NNAJt6Lxwrl",
+      "end_date": {
+        "_seconds": 1788246000,
+        "_nanoseconds": 0
+      },
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 964000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "3AH7ckeGauB6wuwJj2Q3"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "3AH7ckeGauB6wuwJj2Q3_XlaoQpVBKN33eJJAggCy",
+      "end_date": {
+        "_seconds": 1788246000,
+        "_nanoseconds": 0
+      },
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "XlaoQpVBKN33eJJAggCy"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 964000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "3AH7ckeGauB6wuwJj2Q3"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "9d7rGqO6viw4uq52FoLi_N386X3cd0NNAJt6Lxwrl",
+      "end_date": {
+        "_seconds": 1766620800,
+        "_nanoseconds": 712000000
+      },
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 962000000
+      },
+      "is_administrator": true,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "9d7rGqO6viw4uq52FoLi"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1239577200,
+        "_nanoseconds": 184000000
+      }
+    },
+    {
+      "id": "GyraCc1u2Q87DcqVPExc_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 965000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "GyraCc1u2Q87DcqVPExc"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 860089200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "PpEzliOHXLP7q74PtWQd_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Hygienist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 960000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "PpEzliOHXLP7q74PtWQd"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 860089200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "T5JNWElHuWVZ7X2ivVQgewQOdSs2_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 963000000
+      },
+      "is_administrator": true,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "T5JNWElHuWVZ7X2ivVQgewQOdSs2"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1715863200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "T5JNWElHuWVZ7X2ivVQgewQOdSs2_XlaoQpVBKN33eJJAggCy",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "XlaoQpVBKN33eJJAggCy"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 962000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "T5JNWElHuWVZ7X2ivVQgewQOdSs2"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1715863200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "delJr4EMbfGEefqnvh1O_N386X3cd0NNAJt6Lxwrl",
+      "is_employee": true,
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "delJr4EMbfGEefqnvh1O"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1244847600,
+        "_nanoseconds": 0
+      },
+      "end_date": null,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 957000000
+      }
+    },
+    {
+      "id": "fG3p8H4qR6kL9s2VbN7J_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 965000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "fG3p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1704067200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "gOvF6VWkzWZsOLlwcYkW_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": false,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Nurse",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 961000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "gOvF6VWkzWZsOLlwcYkW"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1244847600,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "hmLW6PxeUsx2OpHXG0va_N386X3cd0NNAJt6Lxwrl",
+      "is_employee": false,
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766557936,
+        "_nanoseconds": 131000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "hmLW6PxeUsx2OpHXG0va"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1766557936,
+        "_nanoseconds": 131000000
+      }
+    },
+    {
+      "id": "mN5p8H4qR6kL9s2VbN7J_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 965000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "mN5p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1685577600,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "mynUylqCUH8PaqB7gXXQ_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Nurse",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 962000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "mynUylqCUH8PaqB7gXXQ"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1072915200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "pd9uSPWgBHzkqE2lbsM0_N386X3cd0NNAJt6Lxwrl",
+      "end_date": {
+        "_seconds": 1746226800,
+        "_nanoseconds": 0
+      },
+      "is_employee": false,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 961000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "pd9uSPWgBHzkqE2lbsM0"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1715468400,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "r8fPNPbncIC5s25s9d2P_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 963000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "r8fPNPbncIC5s25s9d2P"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1672531200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "s2VbN7JmN5p8H4qR6kL9_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Dentist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 963000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "s2VbN7JmN5p8H4qR6kL9"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1694736000,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "vGkruGTbzyONC30epJmg7yu8MyF3_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 960000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "vGkruGTbzyONC30epJmg7yu8MyF3"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1715863200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "vGkruGTbzyONC30epJmg7yu8MyF3_XlaoQpVBKN33eJJAggCy",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "XlaoQpVBKN33eJJAggCy"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 964000000
+      },
+      "is_administrator": false,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "vGkruGTbzyONC30epJmg7yu8MyF3"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1715863200,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "vxmWn5MFL9ciKVd3LiCXc5L1hvM2_N386X3cd0NNAJt6Lxwrl",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 961000000
+      },
+      "is_administrator": true,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "vxmWn5MFL9ciKVd3LiCXc5L1hvM2"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "vxmWn5MFL9ciKVd3LiCXc5L1hvM2_XlaoQpVBKN33eJJAggCy",
+      "end_date": null,
+      "is_employee": true,
+      "preferred_surgeries": {
+        "Monday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Thursday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "kRPk2xZRHRkexyjMwL7J"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Friday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ],
+        "Wednesday": [
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "0HqLa4DSCkp8xdsJCXno"
+              ]
+            },
+            "_converter": {}
+          },
+          {
+            "_firestore": {
+              "projectId": "fyp-2025-52340"
+            },
+            "_path": {
+              "segments": [
+                "practices",
+                "N386X3cd0NNAJt6Lxwrl",
+                "surgeries",
+                "WyCPjTbrhiI3Jnn3JAPO"
+              ]
+            },
+            "_converter": {}
+          }
+        ]
+      },
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "XlaoQpVBKN33eJJAggCy"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Receptionist",
+      "updated_at": {
+        "_seconds": 1766553499,
+        "_nanoseconds": 963000000
+      },
+      "is_administrator": true,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "vxmWn5MFL9ciKVd3LiCXc5L1hvM2"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 475887600,
+        "_nanoseconds": 0
+      }
+    }
+  ],
+  "practices": [
+    {
+      "id": "N386X3cd0NNAJt6Lxwrl",
+      "name": "Arch Dental Surgery",
+      "address": "1 The Willows\nBallchester\nB1 1AB",
+      "_subcollections": {
+        "minimum_operating_staff": [
+          {
+            "id": "U6c8X0qssEiLj6d4B4Sz",
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "CqlB32wkgQA2WRxHZgUl"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Receptionist",
+            "surgery_name": "Afternoon"
+          },
+          {
+            "id": "aEbN2VB7UYRTjIUfH6Iq",
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "ASUy8xKAXGuVM5DEgKqa"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Dentist",
+            "surgery_name": "Afternoon"
+          },
+          {
+            "id": "gPMj42RFrBseCKcA02tN",
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "ASUy8xKAXGuVM5DEgKqa"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "0HqLa4DSCkp8xdsJCXno"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Dentist",
+            "surgery_name": "Morning"
+          },
+          {
+            "id": "hIGCfwAyZyg6Os2OswrF",
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "7ZZZJwmKsktSPaz2NoUh"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 2,
+            "role_name": "Nurse",
+            "surgery_name": "Afternoon"
+          },
+          {
+            "id": "mDOxytjbe57fTFdxXv9g",
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "0jA2jzsNL1IIUNH2AH0w"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "kRPk2xZRHRkexyjMwL7J"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_name": "Hygienist",
+            "surgery_name": "Evening"
+          }
+        ],
+        "roles": [
+          {
+            "id": "0jA2jzsNL1IIUNH2AH0w",
+            "name": "Hygienist",
+            "type": "Practitioner",
+            "icon_url": "https://picsum.photos/id/243/512/512"
+          },
+          {
+            "id": "7ZZZJwmKsktSPaz2NoUh",
+            "name": "Administrative",
+            "type": "Assistant",
+            "icon_url": "https://picsum.photos/id/244/512/512"
+          },
+          {
+            "id": "ASUy8xKAXGuVM5DEgKqa",
+            "name": "Dentist",
+            "type": "Practitioner",
+            "icon_url": "https://picsum.photos/id/237/512/512"
+          },
+          {
+            "id": "CqlB32wkgQA2WRxHZgUl",
+            "name": "Receptionist",
+            "type": "Administrative",
+            "icon_url": "https://picsum.photos/id/245/512/512"
+          }
+        ],
+        "surgeries": [
+          {
+            "id": "0HqLa4DSCkp8xdsJCXno",
+            "days_of_operation": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "end_time": {
+              "_seconds": 39600,
+              "_nanoseconds": 0
+            },
+            "start_time": {
+              "_seconds": 27000,
+              "_nanoseconds": 0
+            },
+            "name": "Morning"
+          },
+          {
+            "id": "WyCPjTbrhiI3Jnn3JAPO",
+            "name": "Afternoon",
+            "start_time": {
+              "_seconds": 46800,
+              "_nanoseconds": 0
+            },
+            "end_time": {
+              "_seconds": 63000,
+              "_nanoseconds": 0
+            },
+            "days_of_operation": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ]
+          },
+          {
+            "id": "kRPk2xZRHRkexyjMwL7J",
+            "name": "Evening",
+            "start_time": {
+              "_seconds": 68400,
+              "_nanoseconds": 0
+            },
+            "end_time": {
+              "_seconds": 75600,
+              "_nanoseconds": 0
+            },
+            "days_of_operation": [
+              "Thursday"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "XlaoQpVBKN33eJJAggCy",
+      "address": "456 Elm Street\nAnytown\nB12AB",
+      "name": "Deadly Rival Surgery",
+      "_subcollections": {
+        "minimum_operating_staff": [
+          {
+            "id": "U6c8X0qssEiLj6d4B4Sz",
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "CqlB32wkgQA2WRxHZgUl"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_name": "Afternoon",
+            "role_name": "Receptionist"
+          },
+          {
+            "id": "aEbN2VB7UYRTjIUfH6Iq",
+            "role_name": "Dentist",
+            "staff_count": 1,
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "ASUy8xKAXGuVM5DEgKqa"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_name": "Afternoon",
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            }
+          },
+          {
+            "id": "gPMj42RFrBseCKcA02tN",
+            "surgery_name": "Morning",
+            "staff_count": 1,
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "0HqLa4DSCkp8xdsJCXno"
+                ]
+              },
+              "_converter": {}
+            },
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "ASUy8xKAXGuVM5DEgKqa"
+                ]
+              },
+              "_converter": {}
+            },
+            "role_name": "Dentist"
+          },
+          {
+            "id": "hIGCfwAyZyg6Os2OswrF",
+            "staff_count": 2,
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "7ZZZJwmKsktSPaz2NoUh"
+                ]
+              },
+              "_converter": {}
+            },
+            "surgery_name": "Afternoon",
+            "role_name": "Nurse",
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "WyCPjTbrhiI3Jnn3JAPO"
+                ]
+              },
+              "_converter": {}
+            }
+          },
+          {
+            "id": "mDOxytjbe57fTFdxXv9g",
+            "surgery_name": "Evening",
+            "role_name": "Hygienist",
+            "role_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "roles",
+                  "0jA2jzsNL1IIUNH2AH0w"
+                ]
+              },
+              "_converter": {}
+            },
+            "staff_count": 1,
+            "surgery_id": {
+              "_firestore": {
+                "projectId": "fyp-2025-52340"
+              },
+              "_path": {
+                "segments": [
+                  "practices",
+                  "N386X3cd0NNAJt6Lxwrl",
+                  "surgeries",
+                  "kRPk2xZRHRkexyjMwL7J"
+                ]
+              },
+              "_converter": {}
+            }
+          }
+        ],
+        "roles": [
+          {
+            "id": "0jA2jzsNL1IIUNH2AH0w",
+            "type": "Practitioner",
+            "icon_url": "https://picsum.photos/id/243/512/512",
+            "name": "Hygienist"
+          },
+          {
+            "id": "7ZZZJwmKsktSPaz2NoUh",
+            "type": "Assistant",
+            "name": "Administrative",
+            "icon_url": "https://picsum.photos/id/244/512/512"
+          },
+          {
+            "id": "ASUy8xKAXGuVM5DEgKqa",
+            "name": "Dentist",
+            "icon_url": "https://picsum.photos/id/237/512/512",
+            "type": "Practitioner"
+          },
+          {
+            "id": "CqlB32wkgQA2WRxHZgUl",
+            "type": "Administrative",
+            "icon_url": "https://picsum.photos/id/245/512/512",
+            "name": "Receptionist"
+          }
+        ],
+        "surgeries": [
+          {
+            "id": "0HqLa4DSCkp8xdsJCXno",
+            "name": "Morning",
+            "start_time": {
+              "_seconds": 27000,
+              "_nanoseconds": 0
+            },
+            "days_of_operation": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "end_time": {
+              "_seconds": 39600,
+              "_nanoseconds": 0
+            }
+          },
+          {
+            "id": "WyCPjTbrhiI3Jnn3JAPO",
+            "end_time": {
+              "_seconds": 63000,
+              "_nanoseconds": 0
+            },
+            "days_of_operation": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "name": "Afternoon",
+            "start_time": {
+              "_seconds": 46800,
+              "_nanoseconds": 0
+            }
+          },
+          {
+            "id": "kRPk2xZRHRkexyjMwL7J",
+            "name": "Evening",
+            "start_time": {
+              "_seconds": 68400,
+              "_nanoseconds": 0
+            },
+            "end_time": {
+              "_seconds": 75600,
+              "_nanoseconds": 0
+            },
+            "days_of_operation": [
+              "Thursday"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "shifts": [
+    {
+      "id": "HZ1rijv0TbBfIcDM91KS",
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 569000000
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "9d7rGqO6viw4uq52FoLi"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. Evelyn Reeds",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    },
+    {
+      "id": "Yq7vsmL1a3g1P8Z4h9yU",
+      "date": {
+        "_seconds": 1766102400,
+        "_nanoseconds": 569000000
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "r8fPNPbncIC5s25s9d2P"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. Ben Carter",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    },
+    {
+      "id": "kL9s2VbN7JmN5p8H4qR6",
+      "date": {
+        "_seconds": 1765584000,
+        "_nanoseconds": 0
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "mN5p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. Olivia Martinez",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    },
+    {
+      "id": "lLiKtdbCGdonu5pUSgt0",
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 0
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "delJr4EMbfGEefqnvh1O"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. Able Baker",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    },
+    {
+      "id": "p8H4qR6kL9s2VbN7JmN5",
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 0
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "s2VbN7JmN5p8H4qR6kL9"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. James Wilson",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    },
+    {
+      "id": "urHrNFH2pe32y79lctly",
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 0
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "mynUylqCUH8PaqB7gXXQ"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "7ZZZJwmKsktSPaz2NoUh"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Harry Smith",
+      "role_name": "Nurse",
+      "surgery_name": "Morning"
+    },
+    {
+      "id": "xZ1jK7sL5mN3pT9gB2vC",
+      "date": {
+        "_seconds": 1765497600,
+        "_nanoseconds": 569000000
+      },
+      "user_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "fG3p8H4qR6kL9s2VbN7J"
+          ]
+        },
+        "_converter": {}
+      },
+      "roster_status": "draft",
+      "is_resolved": false,
+      "role_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "roles",
+            "ASUy8xKAXGuVM5DEgKqa"
+          ]
+        },
+        "_converter": {}
+      },
+      "surgery_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl",
+            "surgeries",
+            "0HqLa4DSCkp8xdsJCXno"
+          ]
+        },
+        "_converter": {}
+      },
+      "user_name": "Dr. Chloe Davis",
+      "role_name": "Dentist",
+      "surgery_name": "Morning"
+    }
+  ],
+  "users": [
+    {
+      "id": "1VuX7TBstwT6ig4aE68KK2UAa323",
+      "profile_image": "https://picsum.photos/id/49/512/512",
+      "email": "douglas.yellow@gmail.com",
+      "address": "2 Horse Street\nBarchester\nB1 1AA",
+      "name": "Douglas Yellow",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    {
+      "id": "3AH7ckeGauB6wuwJj2Q3",
+      "address": "707 Redwood Ct\nBarchester\nB2 3WX",
+      "name": "Susan Day",
+      "profile_image": "https://picsum.photos/id/131/512/512",
+      "email": "susan.day@mail.com",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      }
+    },
+    {
+      "id": "9d7rGqO6viw4uq52FoLi",
+      "name": "Dr. Evelyn Reeds",
+      "profile_image": "https://picsum.photos/id/480/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "address": "12 Horse Street\nBarchester\nB1 1AA",
+      "email": "evelyn.reeds@reallyreallyreallyreallyreallylongemail.com"
+    },
+    {
+      "id": "GyraCc1u2Q87DcqVPExc",
+      "profile_image": "https://picsum.photos/id/60/512/512",
+      "name": "Dr. Jack Smith",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "address": "303 Birch Road\nBarchester\nB1 8OP",
+      "email": "jack.smith@mail.com"
+    },
+    {
+      "id": "PpEzliOHXLP7q74PtWQd",
+      "address": "606 Spruce Ave\nBarchester\nB2 2UV",
+      "email": "jiya.khatri@mail.com",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "name": "Jiya Khatri",
+      "profile_image": "https://picsum.photos/id/155/512/512"
+    },
+    {
+      "id": "T5JNWElHuWVZ7X2ivVQgewQOdSs2",
+      "address": "Placeholder Address",
+      "profile_image": "https://picsum.photos/id/31/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "email": "ooneyfruit@gmail.com",
+      "name": "Ooney Fruit"
+    },
+    {
+      "id": "delJr4EMbfGEefqnvh1O",
+      "email": "able.baker@mail.com",
+      "profile_image": "https://picsum.photos/id/335/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "address": "101 Willow Lane\nBarchester\nB1 6KL",
+      "name": "Dr. Able Baker"
+    },
+    {
+      "id": "fG3p8H4qR6kL9s2VbN7J",
+      "email": "chloe.davis@mail.com",
+      "name": "Dr. Chloe Davis",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "address": "7 Prime Street\nBarchester\nB1 3EF",
+      "profile_image": "https://picsum.photos/id/297/512/512"
+    },
+    {
+      "id": "gOvF6VWkzWZsOLlwcYkW",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "profile_image": "https://picsum.photos/id/196/512/512",
+      "address": "505 Pine St\nBarchester\nB2 1ST",
+      "email": "riya.khatri@mail.com",
+      "name": "Riya Khatri"
+    },
+    {
+      "id": "hmLW6PxeUsx2OpHXG0va",
+      "address": "berkshire",
+      "name": "John Smith",
+      "email": "john.smith@mail.com",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "profile_image": "https://picsum.photos/id/490/512/512"
+    },
+    {
+      "id": "mN5p8H4qR6kL9s2VbN7J",
+      "profile_image": "https://picsum.photos/id/341/512/512",
+      "name": "Dr. Olivia Martinez",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "email": "olivia.martinez@mail.com",
+      "address": "15 River Road\nBarchester\nB1 4GH"
+    },
+    {
+      "id": "mynUylqCUH8PaqB7gXXQ",
+      "address": "404 Cedar Blvd\nBarchester\nB1 9QR",
+      "profile_image": "https://picsum.photos/id/124/512/512",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "email": "harry.smith@mail.com",
+      "name": "Harry Smith"
+    },
+    {
+      "id": "pd9uSPWgBHzkqE2lbsM0",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "address": "202 Maple Street\nBarchester\nB1 7MN",
+      "email": "benny.goodman@mail.com",
+      "profile_image": "https://picsum.photos/id/163/512/512",
+      "name": "Dr. Benny Goodman"
+    },
+    {
+      "id": "r8fPNPbncIC5s25s9d2P",
+      "address": "45 Oak Avenue\nBarchester\nB1 2CD",
+      "name": "Dr. Ben Carter",
+      "email": "ben.carter@mail.com",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "profile_image": "https://picsum.photos/id/373/512/512"
+    },
+    {
+      "id": "s2VbN7JmN5p8H4qR6kL9",
+      "address": "22 Forest Drive\nBarchester\nB1 5IJ",
+      "email": "james.wilson@mail.com",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "name": "Dr. James Wilson",
+      "profile_image": "https://picsum.photos/id/395/512/512"
+    },
+    {
+      "id": "vGkruGTbzyONC30epJmg7yu8MyF3",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "address": "Placeholder Address",
+      "email": "franksuccession@gmail.com",
+      "name": "Frank Succession",
+      "profile_image": "https://picsum.photos/id/395/512/512"
+    },
+    {
+      "id": "vxmWn5MFL9ciKVd3LiCXc5L1hvM2",
+      "profile_image": "https://picsum.photos/id/340/512/512",
+      "email": "robinyellow@gmail.com",
+      "name": "Robin Yellow",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "address": "1 Horse Street\nBarchester\nB1 1AA"
+    }
+  ],
+  "warnings": [
+    {
+      "id": "tRKkC6Fr037IRwChC2dN",
+      "shift_id": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "shifts",
+            "HZ1rijv0TbBfIcDM91KS"
+          ]
+        },
+        "_converter": {}
+      },
+      "type": "Absence Clash",
+      "reason": "Evelyn has booked time off but is scheduled here",
+      "required_min_staff": 3,
+      "current_assigned_staff": 2,
+      "date_created": {
+        "_seconds": 1765207109,
+        "_nanoseconds": 256000000
+      }
+    }
+  ]
+}

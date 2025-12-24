@@ -19,7 +19,9 @@
           @click.prevent="handleNavigation(item)" 
           :title="(!isOpen && !isMobile) ? item.name : ''" 
         >
-          <span class="icon">{{ item.icon }}</span>
+          <span class="icon">
+            <component :is="item.icon" />
+          </span>
           
           <span class="label" :class="{ 'visible': isOpen }">
             {{ item.name }}
@@ -31,10 +33,14 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, watch, markRaw } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { useLayout } from '../composables/useLayout';
+
+// Component Assets
+import IconHome from './icons/IconHome.vue';
+import IconUsers from './icons/IconUsers.vue';
 
 const props = defineProps({ 
   isOpen: Boolean,
@@ -49,17 +55,15 @@ const { user } = useAuth();
 const router = useRouter();
 const route = useRoute();
 
-/**
- * Keep the global state in sync with the prop so the 
- * ResizeObserver in the table knows when space changes.
- */
+// Sync global layout state for the table's ResizeObserver
 watch(() => props.isOpen, (newVal) => {
   isSidebarOpen.value = newVal;
 }, { immediate: true });
 
 const allMenuItems = [
-  { name: 'Home', icon: '🏠', path: '/', adminOnly: false },
-  { name: 'User Management', icon: '👥', path: '/users', adminOnly: true },
+  /* markRaw is essential when storing components in arrays */
+  { name: 'Home', icon: markRaw(IconHome), path: '/', adminOnly: false },
+  { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true },
 ];
 
 const menuItems = computed(() => {
@@ -82,39 +86,45 @@ const handleNavigation = (item) => {
   position: fixed;
   left: 0;
   background: white;
-  border-right: 1px solid var(--border-color);
+  border-right: 0.0625rem solid var(--border-color);
   z-index: var(--z-sidebar); 
   transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
   overflow-x: hidden;
   white-space: nowrap;
-  width: var(--sidebar-slim-width);
+  width: var(--sidebar-slim-width); /* 4.5rem */
 }
 
-.sidebar.open {
-  width: var(--sidebar-width);
-}
-
+.sidebar.open { width: var(--sidebar-width); }
 .sidebar-nav { padding: var(--spacing-md) 0; }
 
 .nav-item {
   display: flex;
   align-items: center;
-  padding-left: 1.5rem;
+  /* 1.5rem padding + 1.5rem icon = 3rem. 
+     In a 4.5rem slim sidebar, this leaves 1.5rem on the right for balance. */
+  padding-left: 1.5rem; 
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 500;
   border-left: 0.25rem solid transparent;
   font-size: 1rem;
   height: 3rem;
+  line-height: 1; /* Anchors content box */
 }
 
 .nav-item:hover { background-color: #f5f5f5; }
 .nav-item.active { background-color: #e8f0fe; color: #1967d2; border-left-color: #1967d2; }
 
 .icon {
-  font-size: 1.25rem;
-  min-width: 1.5rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  /* FIXED: flex-shrink ensures the logo doesn't disappear in slim mode */
+  flex-shrink: 0; 
+  /* OPTICAL NUDGE: Anchors icon to visual cap-height baseline */
+  transform: translateY(-0.0625rem);
 }
 
 .label {
@@ -122,12 +132,11 @@ const handleNavigation = (item) => {
   opacity: 0; 
   pointer-events: none;
   transition: opacity 0.2s ease;
+  /* OPTICAL NUDGE: Anchors text baseline to icon base */
+  transform: translateY(0.0625rem);
 }
 
-.label.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
+.label.visible { opacity: 1; pointer-events: auto; }
 
 @media (max-width: 48rem) {
   .sidebar {
