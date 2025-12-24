@@ -9,8 +9,8 @@
 </template>
 
 <script setup>
-import { useAuth } from '../composables/useAuth';
-import AppLoading from './ui/AppLoading.vue';
+import { useAuth } from '../../composables/useAuth';
+import AppLoading from '../shared/AppLoading.vue';
 
 const { isAuthReady } = useAuth();
 </script>

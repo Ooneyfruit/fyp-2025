@@ -41,12 +41,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import AppTable from '../ui/AppTable.vue';
-import AppCardList from '../ui/AppCardList.vue';
-import UserIdentity from '../domain/UserIdentity.vue';
-import UserStatusPills from '../domain/UserStatusPills.vue';
-import UserActionButtons from '../domain/UserActionButtons.vue';
-import { useBreakpoints } from '../../composables/useBreakpoints';
+import AppTable from '../../../components/shared/AppTable.vue';
+import AppCardList from '../../../components/shared/AppCardList.vue';
+import UserIdentity from './UserIdentity.vue';
+import UserStatusPills from './UserStatusPills.vue';
+import UserActionButtons from './UserActionButtons.vue';
+import { useBreakpoints } from '../../../composables/useBreakpoints';
 
 const props = defineProps({ users: Array });
 defineEmits(['edit']);

@@ -20,9 +20,9 @@
 
 <script setup>
 // Shared Layout Components
-import PageHeader from '../components/PageHeader.vue';
-import PageContainer from '../components/PageContainer.vue';
-import PageAction from '../components/ui/PageAction.vue';
+import PageHeader from '../components/layout/PageHeader.vue';
+import PageContainer from '../components/layout/PageContainer.vue';
+import PageAction from '../components/shared/PageAction.vue';
 import IconUsers from '../components/icons/IconUsers.vue';
 </script>
 

@@ -38,8 +38,8 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useAuth } from '../composables/useAuth';
-import { db } from '../firebase';
+import { useAuth } from '../../composables/useAuth';
+import { db } from '../../services/firebase';
 import { 
   collection, 
   query, 
@@ -49,8 +49,8 @@ import {
   updateDoc, 
   getDoc 
 } from 'firebase/firestore';
-import IconMenu from './icons/IconMenu.vue';
-import IconClock from './icons/IconClock.vue';
+import IconMenu from '../icons/IconMenu.vue';
+import IconClock from '../icons/IconClock.vue';
 
 defineEmits(['toggleSidebar']);
 

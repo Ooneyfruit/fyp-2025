@@ -1,26 +1,5 @@
-<template>
-  <div style="padding: 2rem; max-width: 600px; margin: 0 auto; font-family: sans-serif;">
-    <h1 style="color: #2563eb;">Database Structure Repair</h1>
-    <p>This utility will convert all <code>practice_users</code> documents to the required deterministic ID format: <code>{userId}_{practiceId}</code>.</p>
-    
-    <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-      <h3 style="margin-top: 0;">Logs:</h3>
-      <pre style="font-size: 0.8rem; white-space: pre-wrap;">{{ logs.join('\n') || 'Waiting to start...' }}</pre>
-    </div>
-
-    <button 
-      @click="runRepair" 
-      :disabled="loading"
-      style="background: #2563eb; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;"
-    >
-      {{ loading ? 'Processing...' : 'Run Repair Now' }}
-    </button>
-  </div>
-</template>
-
-<script setup>
 import { ref } from 'vue';
-import { db } from '../services/firebase';
+import { db } from './firebase';
 import { collection, getDocs, doc, writeBatch } from 'firebase/firestore';
 
 const logs = ref([]);
@@ -80,4 +59,3 @@ const runRepair = async () => {
     loading.value = false;
   }
 };
-</script>

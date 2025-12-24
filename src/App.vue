@@ -25,8 +25,8 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 // FIXED: Import the ref directly; do not re-declare it below
 import { user } from './composables/useAuth';
-import NavBar from './components/NavBar.vue';
-import SideMenu from './components/SideMenu.vue';
+import NavBar from './components/layout/NavBar.vue';
+import SideMenu from './components/layout/SideMenu.vue';
 
 const isMobile = ref(window.innerWidth < 768);
 const desktopPreference = ref(localStorage.getItem('isSidebarOpen') === 'true');

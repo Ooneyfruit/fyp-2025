@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import BasePill from '../ui/BasePill.vue';
+import BasePill from '../../../components/shared/BasePill.vue';
 
 defineProps({
   member: { type: Object, required: true },

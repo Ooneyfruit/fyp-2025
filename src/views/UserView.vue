@@ -26,14 +26,14 @@
 
 <script setup>
 import { ref } from 'vue';
-import { usePracticeUsers } from '../composables/usePracticeUsers';
-import AuthGuard from '../components/AuthGuard.vue';
-import PageHeader from '../components/PageHeader.vue';
-import PageContainer from '../components/PageContainer.vue';
-import UserModal from '../components/UserModal.vue';
-import AppLoading from '../components/ui/AppLoading.vue';
-import PageAction from '../components/ui/PageAction.vue';
-import UserDataViewAdapter from '../components/adapters/UserDataViewAdapter.vue';
+import { usePracticeUsers } from '../features/users/composables/usePracticeUsers';
+import AuthGuard from '../components/layout/AuthGuard.vue';
+import PageHeader from '../components/layout/PageHeader.vue';
+import PageContainer from '../components/layout/PageContainer.vue';
+import UserModal from '../features/users/components/UserModal.vue';
+import AppLoading from '../components/shared/AppLoading.vue';
+import PageAction from '../components/shared/PageAction.vue';
+import UserDataViewAdapter from '../features/users/components/UserDataViewAdapter.vue';
 
 const { users, loading } = usePracticeUsers();
 

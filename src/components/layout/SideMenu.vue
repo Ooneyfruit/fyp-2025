@@ -35,12 +35,12 @@
 <script setup>
 import { computed, watch, markRaw } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useAuth } from '../composables/useAuth';
-import { useLayout } from '../composables/useLayout';
+import { useAuth } from '../../composables/useAuth';
+import { useLayout } from '../../composables/useLayout';
 
 // Component Assets
-import IconHome from './icons/IconHome.vue';
-import IconUsers from './icons/IconUsers.vue';
+import IconHome from '../icons/IconHome.vue';
+import IconUsers from '../icons/IconUsers.vue';
 
 const props = defineProps({ 
   isOpen: Boolean,
