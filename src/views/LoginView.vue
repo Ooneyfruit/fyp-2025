@@ -12,18 +12,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 
-const { login } = useAuth();
+const { user, login } = useAuth();
 const router = useRouter();
 const errorMsg = ref("");
+
+// FORCED REDIRECT: If a user is already detected, kick them to the dashboard immediately
+watchEffect(() => {
+  if (user.value) {
+    console.log("[LoginView] Active session detected. Redirecting to home.");
+    router.push('/');
+  }
+});
 
 const handleLogin = async () => {
   try {
     await login(); 
-    router.push('/'); 
+    // Successful login will be caught by the watchEffect above
   } catch (err) {
     console.error(err);
     errorMsg.value = "Login failed. Please try again.";
@@ -38,7 +46,7 @@ const handleLogin = async () => {
   justify-content: center; 
   align-items: center;
   background-color: #f0f2f5;
-  padding: var(--spacing-md); /* Prevent edge touching on mobile */
+  padding: var(--spacing-md);
 }
 
 .login-card {
@@ -70,12 +78,6 @@ const handleLogin = async () => {
   transition: background 0.2s;
 }
 
-.google-btn:hover {
-  background-color: #357ae8;
-}
-
-.error { 
-  color: var(--color-danger); 
-  margin-top: 0.9375rem; 
-}
+.google-btn:hover { background-color: #357ae8; }
+.error { color: var(--color-danger); margin-top: 0.9375rem; }
 </style>

@@ -1,25 +1,26 @@
 import HomeView from '../views/HomeView.vue';
 import UserView from '../views/UserView.vue';
 import LoginView from '../views/LoginView.vue';
-import AdminRepairView from '../views/AdminRepairView.vue'; // Add this import
-import { auth, db } from '../services/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import AdminRepairView from '../views/AdminRepairView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { user, isAuthReady } from '../composables/useAuth';
 import { watch } from 'vue';
 
 const routes = [
   { path: '/', component: HomeView },
-  { path: '/users', component: UserView, meta: { requiresAdmin: true } },
+  { 
+    path: '/users', 
+    component: UserView, 
+    meta: { requiresAdmin: true } 
+  },
   { path: '/login', component: LoginView },
-  { path: '/repair', component: AdminRepairView } // Add this route temporarily
+  { path: '/repair', component: AdminRepairView }
 ];
 
 const router = createRouter({ history: createWebHistory(), routes });
 
 router.beforeEach(async (to, from, next) => {
-  // 1. Wait for Auth to resolve (Atomic Sync from Step 2)
+  // 1. Wait for Auth and Contextual Permissions to resolve
   if (!isAuthReady.value) {
     await new Promise(resolve => {
       const unwatch = watch(isAuthReady, (ready) => {
@@ -33,18 +34,17 @@ router.beforeEach(async (to, from, next) => {
 
   const currentUser = user.value;
 
-  // 2. Protect Admin Routes
-  if (to.meta.requiresAdmin) {
-    // Check the verified is_administrator status for the current practice context
-    if (!currentUser || !currentUser.is_administrator) {
-      console.warn("Security Alert: Unauthorized access attempt to Admin route.");
-      return next('/');
-    }
-  }
-
-  // 3. Protect Authenticated Routes
+  // 2. Handle Login Redirection
   if (!currentUser && to.path !== '/login') {
     return next('/login');
+  }
+
+  // 3. Protect Admin Routes
+  if (to.meta.requiresAdmin) {
+    if (!currentUser || currentUser.is_administrator !== true) {
+      console.error("Router Block: Admin privileges required for", to.path);
+      return next('/');
+    }
   }
 
   next();
