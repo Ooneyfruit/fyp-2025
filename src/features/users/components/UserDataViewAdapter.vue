@@ -22,7 +22,7 @@
       </template>
     </AppTable>
 
-    <AppCardList v-else :items="users">
+    <BaseCardList v-else :items="users">
       <template #card-header="{ item }">
         <div class="card-identity-wrapper">
           <UserIdentity :profile="item.profile" />
@@ -35,14 +35,14 @@
         <div class="detail-row"><span class="label">Joined</span><span class="date-text">{{ formatDate(item.start_date) }}</span></div>
         <div class="detail-row"><span class="label">Ends</span><span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span></div>
       </template>
-    </AppCardList>
+    </BaseCardList>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import AppTable from '../../../components/shared/AppTable.vue';
-import AppCardList from '../../../components/shared/AppCardList.vue';
+import BaseCardList from '../../../components/shared/BaseCardList.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';
 import UserActionButtons from './UserActionButtons.vue';
