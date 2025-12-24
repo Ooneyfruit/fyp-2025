@@ -31,19 +31,31 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
+import { useLayout } from '../composables/useLayout';
 
-defineProps({ 
+const props = defineProps({ 
   isOpen: Boolean,
   isMobile: Boolean 
 });
 
 const emit = defineEmits(['close']);
+
+// Restore layout composable just to SYNC the state, not drive it
+const { isSidebarOpen } = useLayout();
 const { user } = useAuth();
 const router = useRouter();
 const route = useRoute();
+
+/**
+ * Keep the global state in sync with the prop so the 
+ * ResizeObserver in the table knows when space changes.
+ */
+watch(() => props.isOpen, (newVal) => {
+  isSidebarOpen.value = newVal;
+}, { immediate: true });
 
 const allMenuItems = [
   { name: 'Home', icon: '🏠', path: '/', adminOnly: false },
@@ -55,6 +67,7 @@ const menuItems = computed(() => {
 });
 
 const handleNavigation = (item) => {
+  // Restore original window-width check for closing
   if (window.innerWidth < 768) {
     emit('close');
   }
@@ -64,24 +77,19 @@ const handleNavigation = (item) => {
 
 <style scoped>
 .sidebar {
-  /* Ensure it starts exactly where the fixed navbar ends */
   top: var(--navbar-height); 
   bottom: 0;
   position: fixed;
   left: 0;
   background: white;
   border-right: 1px solid var(--border-color);
-  
-  /* Below Navbar (60), Above Content (1) */
   z-index: var(--z-sidebar); 
-  
   transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
   overflow-x: hidden;
   white-space: nowrap;
   width: var(--sidebar-slim-width);
 }
 
-/* Open/Large State */
 .sidebar.open {
   width: var(--sidebar-width);
 }
@@ -111,7 +119,7 @@ const handleNavigation = (item) => {
 
 .label {
   margin-left: 0.75rem;
-  opacity: 0; /* Default: hidden (prevents flashing) */
+  opacity: 0; 
   pointer-events: none;
   transition: opacity 0.2s ease;
 }
@@ -121,20 +129,16 @@ const handleNavigation = (item) => {
   pointer-events: auto;
 }
 
-/* MOBILE OVERRIDES */
 @media (max-width: 48rem) {
   .sidebar {
-    /* On mobile, width is always full, transform handles visibility */
     width: var(--sidebar-width);
     transform: translateX(-100%);
   }
-
   .sidebar.open {
     transform: translateX(0);
   }
 }
 
-/* Overlay Animation */
 .mobile-overlay {
   position: fixed;
   top: 0;

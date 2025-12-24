@@ -12,37 +12,33 @@
 
 <script setup>
 defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  subtitle: {
-    type: String,
-    default: ''
-  }
+  title: { type: String, required: true },
+  subtitle: { type: String, default: '' }
 });
 </script>
 
 <style scoped>
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--spacing-lg);
+  /* FIXED: Removed margin-bottom and flex properties. 
+     The parent wrapper now handles the layout and spacing. */
+  margin: 0; 
+  padding: 0;
 }
 
 .title-line {
   display: flex;
   align-items: center;
   gap: 0.9375rem; 
-  margin-bottom: 0.5rem;
-  flex-wrap: wrap; /* Good for mobile if title is long */
+  /* Space between Title and Subtitle */
+  margin-bottom: 0.25rem; /* Reduced from 0.5rem for a tighter look */
+  flex-wrap: wrap;
 }
 
 h1 {
   font-size: 1.75rem;
   font-weight: 500;
   margin: 0;
+  line-height: 1.1; /* Ensures no extra vertical height from line-height */
   color: var(--text-main);
 }
 
@@ -50,5 +46,6 @@ h1 {
   margin: 0;
   font-size: 1rem;
   color: var(--text-muted);
+  line-height: 1.4;
 }
 </style>
