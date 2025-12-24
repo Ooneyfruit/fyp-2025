@@ -2,7 +2,7 @@ import HomeView from '../views/HomeView.vue';
 import UserView from '../views/UserView.vue';
 import LoginView from '../views/LoginView.vue';
 import AdminRepairView from '../views/AdminRepairView.vue'; // Add this import
-import { auth, db } from '../firebase';
+import { auth, db } from '../services/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { createRouter, createWebHistory } from 'vue-router';

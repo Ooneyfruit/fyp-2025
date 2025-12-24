@@ -1,7 +1,7 @@
 import { ref, watch, onUnmounted, computed } from 'vue';
-import { db } from '../firebase';
+import { db } from '../../../services/firebase';
 import { collection, query, where, onSnapshot, doc } from 'firebase/firestore';
-import { user as authUser } from './useAuth';
+import { user as authUser } from '../../../composables/useAuth';
 
 export function usePracticeUsers() {
   const memberships = ref([]); // Raw membership documents

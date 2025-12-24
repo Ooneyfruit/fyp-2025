@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import IconEdit from '../icons/IconEdit.vue';
+import IconEdit from '../../../components/icons/IconEdit.vue';
 </script>
 
 <style scoped>

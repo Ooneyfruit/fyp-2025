@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { auth, db } from '../firebase';
+import { auth, db } from '../services/firebase';
 import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 

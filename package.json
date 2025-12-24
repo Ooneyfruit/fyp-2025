@@ -2,7 +2,7 @@
   "name": "fyp-2025",
   "version": "1.0.0",
   "description": "Final Year Project 2025",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "npm run dev",
     "test": "vitest",

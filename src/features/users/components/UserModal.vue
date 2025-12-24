@@ -65,11 +65,11 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { db } from '../firebase';
+import { db } from '../../../services/firebase';
 import { collection, getDocs, doc, writeBatch, Timestamp } from 'firebase/firestore';
-import BaseModal from './BaseModal.vue';
-import PageAction from './ui/PageAction.vue';
-import { user as authUser } from '../composables/useAuth';
+import BaseModal from '../../../components/shared/BaseModal.vue';
+import PageAction from '../../../components/shared/PageAction.vue';
+import { user as authUser } from '../../../composables/useAuth';
 
 const props = defineProps({ initialData: Object });
 const emit = defineEmits(['close']);
