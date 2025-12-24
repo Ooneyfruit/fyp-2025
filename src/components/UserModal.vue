@@ -52,9 +52,12 @@
 
       <div class="form-actions">
         <button type="button" class="btn-cancel" @click="handleClose">Cancel</button>
-        <button type="submit" class="btn-save" :disabled="saving || !isDirty">
-          {{ saving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Account') }}
-        </button>
+        <PageAction 
+          type="submit"
+          :label="saving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Account')"
+          :disabled="saving || !isDirty"
+          :processing="saving"
+        />
       </div>
     </form>
   </BaseModal>
@@ -63,8 +66,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { db } from '../firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, writeBatch, Timestamp } from 'firebase/firestore';
 import BaseModal from './BaseModal.vue';
+import PageAction from './ui/PageAction.vue';
+import { user as authUser } from '../composables/useAuth';
 
 const props = defineProps({ initialData: Object });
 const emit = defineEmits(['close']);
@@ -74,7 +79,6 @@ const saving = ref(false);
 const loadingRoles = ref(true);
 const isEdit = computed(() => !!props.initialData);
 
-// HYDRATION: Correctly map from the joined profile object
 const form = ref({
   name: props.initialData?.profile?.name || '',
   email: props.initialData?.profile?.email || '',
@@ -83,59 +87,85 @@ const form = ref({
   is_administrator: props.initialData?.is_administrator || false,
   is_employee: props.initialData?.is_employee ?? true,
   profile_image: props.initialData?.profile?.profile_image || '',
-  user_id: props.initialData?.user?.id || '' 
+  user_id: props.initialData?.user?.id || props.initialData?.user?._path?.segments[1] || '' 
 });
 
 const initialState = ref("");
+const isDirty = computed(() => JSON.stringify(form.value) !== initialState.value);
+
+const handleClose = () => {
+  console.log("[UserModal] Closing Modal.");
+  emit('close');
+};
 
 onMounted(async () => {
+  console.log("[UserModal] OPENED. Initial Form Data:", JSON.parse(JSON.stringify(form.value)));
   initialState.value = JSON.stringify(form.value);
+
   try {
-    // Note: Assuming static practice ID for this example
-    const rolesRef = collection(db, "practices", "N386X3cd0NNAJt6Lxwrl", "roles");
+    const practiceId = authUser.value?.practiceRef?.id;
+    console.log(`[UserModal] Requester Practice Context: ${practiceId}`);
+    
+    const rolesRef = collection(db, "practices", practiceId, "roles");
     const snap = await getDocs(rolesRef);
     rolesList.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    console.log(`[UserModal] SUCCESS: Loaded ${rolesList.value.length} roles for select.`);
+  } catch (err) {
+    console.error("[UserModal] ERROR: Could not fetch practice roles.", err.message);
   } finally { 
     loadingRoles.value = false; 
   }
 });
 
-const isDirty = computed(() => JSON.stringify(form.value) !== initialState.value);
-
 const save = async () => {
   if (saving.value) return;
+  console.log("%c[UserModal] SAVE INITIATED", "color: orange; font-weight: bold");
   saving.value = true;
   
+  const batch = writeBatch(db);
+  
   try {
-    const userRef = doc(db, "users", form.value.user_id);
-    const userPayload = {
+    const targetUserId = form.value.user_id || doc(collection(db, "users")).id;
+    const userRef = doc(db, "users", targetUserId);
+    const activePracticeRef = authUser.value.practiceRef;
+
+    console.log(`[UserModal] TARGET UID: ${targetUserId}`);
+    console.log(`[UserModal] TARGET PRACTICE: ${activePracticeRef.id}`);
+
+    // 1. Update Identity
+    const identityUpdate = {
       name: form.value.name,
       email: form.value.email,
       address: form.value.address,
-      profile_image: form.value.profile_image
+      profile_image: form.value.profile_image || 'https://via.placeholder.com/40',
+      current_practice: activePracticeRef 
     };
-    // Update Identity
-    await setDoc(userRef, userPayload, { merge: true });
+    console.log("[UserModal] Identity Data:", identityUpdate);
+    batch.set(userRef, identityUpdate, { merge: true });
 
-    const practiceRef = doc(db, "practices", "N386X3cd0NNAJt6Lxwrl");
-    const membershipPayload = {
+    // 2. Update Membership
+    const membershipId = `${targetUserId}_${activePracticeRef.id}`;
+    const membershipRef = doc(db, "practice_users", membershipId);
+    
+    const membershipUpdate = {
       role: form.value.role,
       is_administrator: form.value.is_administrator,
       is_employee: form.value.is_employee,
       user: userRef,
-      practice: practiceRef,
+      practice: activePracticeRef,
       start_date: props.initialData?.start_date || new Date(),
-      end_date: props.initialData?.end_date || null
+      updated_at: Timestamp.now()
     };
+    console.log("[UserModal] Membership Data:", membershipUpdate);
+    batch.set(membershipRef, membershipUpdate, { merge: true });
 
-    if (isEdit.value) {
-      await updateDoc(doc(db, "practice_users", props.initialData.id), membershipPayload);
-    } else {
-      await addDoc(collection(db, "practice_users"), membershipPayload);
-    }
-    emit('close');
+    console.log("[UserModal] COMMITING BATCH...");
+    await batch.commit();
+    console.log("%c[UserModal] BATCH COMMIT SUCCESSFUL", "color: green; font-weight: bold");
+    handleClose();
   } catch (err) {
-    alert("Error: " + err.message);
+    console.error("%c[UserModal] BATCH COMMIT FAILED", "color: red; font-weight: bold", err.message);
+    alert(`Save Failure: ${err.message}`);
   } finally {
     saving.value = false;
   }
@@ -143,57 +173,26 @@ const save = async () => {
 </script>
 
 <style scoped>
-.modern-form { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 1.5rem; 
-  width: 100%;
-  box-sizing: border-box; /* Crucial for padding/width consistency */
-}
-
+.modern-form { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; box-sizing: border-box; }
 .form-section { display: flex; flex-direction: column; gap: 0.8rem; }
-.section-header { font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.4rem; }
+.section-header { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 0.0625rem solid #f3f4f6; padding-bottom: 0.4rem; }
 .field { display: flex; flex-direction: column; gap: 0.3rem; }
-.field label { font-size: 0.85rem; font-weight: 600; color: #374151; }
-
-/* Grid Gaps fix border intersection */
+.field label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
 .grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.25rem; }
-
-input, select, textarea { 
-  padding: 0.65rem; 
-  border: 1px solid #e5e7eb; 
-  border-radius: 0.5rem; 
-  font-size: 0.9rem; 
-  width: 100%;
-  box-sizing: border-box; /* Prevents input from overflowing right padding */
-}
-
-.address-textarea {
-  resize: vertical; 
-  min-height: calc(1.5lh + 1.2rem); 
-  line-height: 1.5;
-}
-
+input, select, textarea { padding: 0.65rem; border: 0.0625rem solid var(--border-color); border-radius: var(--border-radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; }
+.address-textarea { resize: vertical; min-height: 4rem; line-height: 1.5; }
 .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .toggle-card { display: flex; justify-content: space-between; align-items: center; background: #f9fafb; padding: 0.75rem; border-radius: 0.75rem; }
 .toggle-info span { display: block; font-size: 0.85rem; font-weight: 600; }
-.toggle-info small { font-size: 0.7rem; color: #6b7280; }
-
+.toggle-info small { font-size: 0.7rem; color: var(--text-muted); }
 .switch { appearance: none; width: 2.2rem; height: 1.2rem; background: #d1d5db; border-radius: 1rem; position: relative; cursor: pointer; }
 .switch:checked { background: var(--color-primary); }
-.switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 0.95rem; height: 0.95rem; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+.switch::after { content: ''; position: absolute; top: 0.125rem; left: 0.125rem; width: 0.95rem; height: 0.95rem; background: #fff; border-radius: 50%; transition: transform 0.2s; }
 .switch:checked::after { transform: translateX(1rem); }
-
-.form-actions { display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid #f3f4f6; margin-top: auto; }
-.btn-save { background: var(--color-primary); color: white; border: none; padding: 0.65rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
-.btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-cancel { background: transparent; border: 1px solid #e5e7eb; padding: 0.65rem 1.5rem; border-radius: 0.5rem; color: #4b5563; font-weight: 500; cursor: pointer; }
-
-@media (max-width: 40rem) {
-  .grid-layout, .toggle-grid { grid-template-columns: 1fr; gap: 1rem; }
-}
-
+.form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; padding-top: 1.25rem; border-top: 0.0625rem solid #f3f4f6; margin-top: auto; }
+.btn-cancel { background: transparent; border: 0.0625rem solid var(--border-color); padding: 0.6rem 1.25rem; border-radius: var(--border-radius); color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.9375rem; }
 .skeleton-form { display: flex; flex-direction: column; gap: 1.5rem; }
 .skeleton-field { height: 3.5rem; background: #f9fafb; border-radius: 0.5rem; }
 .skeleton-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 40rem) { .grid-layout, .toggle-grid { grid-template-columns: 1fr; gap: 1rem; } }
 </style>
