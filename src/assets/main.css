@@ -1,11 +1,11 @@
-/* src/assets/main.css - Semantic Color & Layering Update */
+/* src/assets/main.css */
 :root {
   --navbar-height: 3.75rem;
   --sidebar-width: 16.25rem;
   --sidebar-slim-width: 4.5rem;
   --anim-speed: 0.3s;
   
-  /* Stacking Context (Z-INDEX SOURCE OF TRUTH) */
+  /* Stacking Context */
   --z-normal: 1;
   --z-overlay: 40;
   --z-sidebar: 50;
@@ -47,7 +47,30 @@ body {
   margin: 0;
 }
 
+/* BASE POSITIONING (Instant Snap)
+   We use the classes applied by index.html to prevent any initial sliding.
+*/
 .main-content {
   position: relative;
-  z-index: var(--z-normal); /* Content is always at the base layer */
+  z-index: var(--z-normal);
+  padding-top: var(--navbar-height);
+  margin-left: var(--sidebar-slim-width);
+}
+
+html.initial-layout-wide .main-content { margin-left: var(--sidebar-width); }
+html.initial-layout-slim .main-content { margin-left: var(--sidebar-slim-width); }
+html.initial-layout-mobile .main-content { margin-left: 0; }
+
+html.initial-layout-wide .sidebar { width: var(--sidebar-width); }
+html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
+
+/* TRANSITION ACTIVATION:
+   Enabled only after the stabilization logic in App.vue completes.
+*/
+.is-animate-ready .main-content {
+  transition: margin-left var(--anim-speed) ease;
+}
+
+.is-animate-ready .sidebar {
+  transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
 }

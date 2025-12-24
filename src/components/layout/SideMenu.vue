@@ -33,19 +33,29 @@
 </template>
 
 <script setup>
-import { computed, markRaw } from 'vue';
+import { computed, watch, markRaw } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuth } from '../../composables/useAuth';
+import { useLayout } from '../../composables/useLayout';
 
+// Component Assets
 import IconHome from '../icons/IconHome.vue';
 import IconUsers from '../icons/IconUsers.vue';
 
-const props = defineProps({ isOpen: Boolean, isMobile: Boolean });
-const emit = defineEmits(['close']);
+const props = defineProps({ 
+  isOpen: Boolean,
+  isMobile: Boolean 
+});
 
+const emit = defineEmits(['close']);
+const { isSidebarOpen } = useLayout();
 const { user } = useAuth();
 const router = useRouter();
 const route = useRoute();
+
+watch(() => props.isOpen, (newVal) => {
+  isSidebarOpen.value = newVal;
+}, { immediate: true });
 
 const allMenuItems = [
   { name: 'Home', icon: markRaw(IconHome), path: '/', adminOnly: false },
@@ -57,55 +67,95 @@ const menuItems = computed(() => {
 });
 
 const handleNavigation = (item) => {
-  if (window.innerWidth < 768) emit('close');
+  if (window.innerWidth < 768) {
+    emit('close');
+  }
   router.push(item.path);
 };
 </script>
 
 <style scoped>
 .sidebar {
-  top: var(--navbar-height); bottom: 0; position: fixed; left: 0;
-  background: white; border-right: 1px solid var(--border-color);
+  top: var(--navbar-height); 
+  bottom: 0;
+  position: fixed;
+  left: 0;
+  background: white;
+  border-right: 0.0625rem solid var(--border-color);
   z-index: var(--z-sidebar); 
-  /* Transitions are active here but suppressed via parent class in App.vue on load */
-  transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
-  overflow-x: hidden; white-space: nowrap;
-  width: var(--sidebar-slim-width); /* Default desktop state */
+  overflow-x: hidden;
+  white-space: nowrap;
+  width: var(--sidebar-slim-width);
+  /* Transition removed here; now handled by .is-ready in main.css */
 }
 
 .sidebar.open { width: var(--sidebar-width); }
 .sidebar-nav { padding: var(--spacing-md) 0; }
 
 .nav-item {
-  display: flex; align-items: center; padding-left: 1.5rem; 
-  text-decoration: none; color: var(--text-muted);
-  font-weight: 500; border-left: 0.25rem solid transparent;
+  display: flex;
+  align-items: center;
+  padding-left: 1.5rem; 
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  border-left: 0.25rem solid transparent;
+  font-size: 1rem;
   height: 3rem;
+  line-height: 1;
 }
 
 .nav-item:hover { background-color: #f5f5f5; }
-.nav-item.active { background-color: #e8f0fe; color: var(--color-primary); border-left-color: var(--color-primary); }
+.nav-item.active { background-color: #e8f0fe; color: #1967d2; border-left-color: #1967d2; }
 
-.icon { width: 1.5rem; height: 1.5rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.label { margin-left: 0.75rem; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0; 
+  transform: translateY(-0.0625rem);
+}
+
+.label {
+  margin-left: 0.75rem;
+  opacity: 0; 
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  transform: translateY(0.0625rem);
+}
+
 .label.visible { opacity: 1; pointer-events: auto; }
 
 @media (max-width: 48rem) {
   .sidebar {
-    /* IMPORTANT: width is NOT forced to full-width here. 
-       It inherits var(--sidebar-slim-width) from above, preventing the "stretch" glitch.
-    */
-    transform: translateX(-105%); 
-    transition: transform var(--anim-speed) ease;
-  }
-  .sidebar.open { 
-    /* Force full width only when mobile menu is actually toggled open */
     width: var(--sidebar-width);
-    transform: translateX(0); 
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
   }
 }
 
-.mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(31, 41, 55, 0.3); backdrop-filter: blur(2px); z-index: var(--z-overlay); }
-.fade-overlay-enter-active, .fade-overlay-leave-active { transition: opacity 0.3s ease; }
-.fade-overlay-enter-from, .fade-overlay-leave-to { opacity: 0; }
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(31, 41, 55, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-overlay);
+}
+
+.fade-overlay-enter-active,
+.fade-overlay-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-overlay-enter-from,
+.fade-overlay-leave-to {
+  opacity: 0;
+}
 </style>

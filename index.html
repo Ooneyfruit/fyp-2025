@@ -5,10 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:;base64,=">
     <title>User Management</title>
+    <script>
+      (function() {
+        const isMobile = window.innerWidth < 768;
+        const preference = localStorage.getItem('isSidebarOpen');
+        // Default to wide if no preference exists, or use the stored value
+        const isWide = isMobile ? false : (preference === null ? true : preference === 'true');
+        
+        document.documentElement.classList.add(isWide ? 'initial-layout-wide' : 'initial-layout-slim');
+        if (isMobile) document.documentElement.classList.add('initial-layout-mobile');
+      })();
+    </script>
 </head>
 <body>
     <div id="app"></div>
-    
     <script type="module" src="/src/main.js"></script>
 </body>
 </html>
