@@ -309,8 +309,8 @@
         "_nanoseconds": 0
       },
       "updated_at": {
-        "_seconds": 1766557915,
-        "_nanoseconds": 112000000
+        "_seconds": 1766594860,
+        "_nanoseconds": 820000000
       }
     },
     {
@@ -468,11 +468,11 @@
         "_seconds": 475887600,
         "_nanoseconds": 0
       },
+      "is_administrator": true,
       "updated_at": {
-        "_seconds": 1766558020,
-        "_nanoseconds": 592000000
-      },
-      "is_administrator": true
+        "_seconds": 1766583043,
+        "_nanoseconds": 227000000
+      }
     },
     {
       "id": "3AH7ckeGauB6wuwJj2Q3_N386X3cd0NNAJt6Lxwrl",
@@ -616,10 +616,6 @@
         "_converter": {}
       },
       "role": "Receptionist",
-      "updated_at": {
-        "_seconds": 1766553499,
-        "_nanoseconds": 964000000
-      },
       "is_administrator": false,
       "user": {
         "_firestore": {
@@ -636,6 +632,10 @@
       "start_date": {
         "_seconds": 475887600,
         "_nanoseconds": 0
+      },
+      "updated_at": {
+        "_seconds": 1766591773,
+        "_nanoseconds": 947000000
       }
     },
     {
@@ -800,6 +800,44 @@
       "start_date": {
         "_seconds": 475887600,
         "_nanoseconds": 0
+      }
+    },
+    {
+      "id": "7Xgb9SDz6Ww8rRt0UJUR_N386X3cd0NNAJt6Lxwrl",
+      "is_employee": true,
+      "practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "role": "Administrative",
+      "updated_at": {
+        "_seconds": 1766582879,
+        "_nanoseconds": 44000000
+      },
+      "is_administrator": true,
+      "user": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "users",
+            "7Xgb9SDz6Ww8rRt0UJUR"
+          ]
+        },
+        "_converter": {}
+      },
+      "start_date": {
+        "_seconds": 1766582879,
+        "_nanoseconds": 44000000
       }
     },
     {
@@ -1767,8 +1805,8 @@
         ]
       },
       "updated_at": {
-        "_seconds": 1766553499,
-        "_nanoseconds": 957000000
+        "_seconds": 1766595784,
+        "_nanoseconds": 315000000
       }
     },
     {
@@ -4480,6 +4518,7 @@
       "profile_image": "https://picsum.photos/id/49/512/512",
       "email": "douglas.yellow@gmail.com",
       "address": "2 Horse Street\nBarchester\nB1 1AA",
+      "is_current_practice_admin": true,
       "name": "Douglas Yellow",
       "current_practice": {
         "_firestore": {
@@ -4497,7 +4536,6 @@
     {
       "id": "3AH7ckeGauB6wuwJj2Q3",
       "address": "707 Redwood Ct\nBarchester\nB2 3WX",
-      "name": "Susan Day",
       "profile_image": "https://picsum.photos/id/131/512/512",
       "email": "susan.day@mail.com",
       "current_practice": {
@@ -4511,7 +4549,29 @@
           ]
         },
         "_converter": {}
-      }
+      },
+      "name": "Susan Day",
+      "is_current_practice_admin": false
+    },
+    {
+      "id": "7Xgb9SDz6Ww8rRt0UJUR",
+      "profile_image": "https://via.placeholder.com/40",
+      "address": "61 bollocks street",
+      "name": "Blah Blah",
+      "email": "blahblah@mail.com",
+      "current_practice": {
+        "_firestore": {
+          "projectId": "fyp-2025-52340"
+        },
+        "_path": {
+          "segments": [
+            "practices",
+            "N386X3cd0NNAJt6Lxwrl"
+          ]
+        },
+        "_converter": {}
+      },
+      "is_current_practice_admin": true
     },
     {
       "id": "9d7rGqO6viw4uq52FoLi",
@@ -4530,7 +4590,8 @@
         "_converter": {}
       },
       "address": "12 Horse Street\nBarchester\nB1 1AA",
-      "email": "evelyn.reeds@reallyreallyreallyreallyreallylongemail.com"
+      "email": "evelyn.reeds@reallyreallyreallyreallyreallylongemail.com",
+      "is_current_practice_admin": true
     },
     {
       "id": "GyraCc1u2Q87DcqVPExc",
@@ -4549,7 +4610,8 @@
         "_converter": {}
       },
       "address": "303 Birch Road\nBarchester\nB1 8OP",
-      "email": "jack.smith@mail.com"
+      "email": "jack.smith@mail.com",
+      "is_current_practice_admin": false
     },
     {
       "id": "PpEzliOHXLP7q74PtWQd",
@@ -4568,12 +4630,16 @@
         "_converter": {}
       },
       "name": "Jiya Khatri",
-      "profile_image": "https://picsum.photos/id/155/512/512"
+      "profile_image": "https://picsum.photos/id/155/512/512",
+      "is_current_practice_admin": false
     },
     {
       "id": "T5JNWElHuWVZ7X2ivVQgewQOdSs2",
       "address": "Placeholder Address",
       "profile_image": "https://picsum.photos/id/31/512/512",
+      "email": "ooneyfruit@gmail.com",
+      "name": "Ooney Fruit",
+      "is_current_practice_admin": false,
       "current_practice": {
         "_firestore": {
           "projectId": "fyp-2025-52340"
@@ -4581,13 +4647,11 @@
         "_path": {
           "segments": [
             "practices",
-            "N386X3cd0NNAJt6Lxwrl"
+            "XlaoQpVBKN33eJJAggCy"
           ]
         },
         "_converter": {}
-      },
-      "email": "ooneyfruit@gmail.com",
-      "name": "Ooney Fruit"
+      }
     },
     {
       "id": "delJr4EMbfGEefqnvh1O",
@@ -4606,6 +4670,7 @@
         "_converter": {}
       },
       "address": "101 Willow Lane\nBarchester\nB1 6KL",
+      "is_current_practice_admin": false,
       "name": "Dr. Able Baker"
     },
     {
@@ -4625,7 +4690,8 @@
         "_converter": {}
       },
       "address": "7 Prime Street\nBarchester\nB1 3EF",
-      "profile_image": "https://picsum.photos/id/297/512/512"
+      "profile_image": "https://picsum.photos/id/297/512/512",
+      "is_current_practice_admin": false
     },
     {
       "id": "gOvF6VWkzWZsOLlwcYkW",
@@ -4644,7 +4710,8 @@
       "profile_image": "https://picsum.photos/id/196/512/512",
       "address": "505 Pine St\nBarchester\nB2 1ST",
       "email": "riya.khatri@mail.com",
-      "name": "Riya Khatri"
+      "name": "Riya Khatri",
+      "is_current_practice_admin": false
     },
     {
       "id": "hmLW6PxeUsx2OpHXG0va",
@@ -4663,7 +4730,8 @@
         },
         "_converter": {}
       },
-      "profile_image": "https://picsum.photos/id/490/512/512"
+      "profile_image": "https://picsum.photos/id/490/512/512",
+      "is_current_practice_admin": false
     },
     {
       "id": "mN5p8H4qR6kL9s2VbN7J",
@@ -4682,7 +4750,8 @@
         "_converter": {}
       },
       "email": "olivia.martinez@mail.com",
-      "address": "15 River Road\nBarchester\nB1 4GH"
+      "address": "15 River Road\nBarchester\nB1 4GH",
+      "is_current_practice_admin": false
     },
     {
       "id": "mynUylqCUH8PaqB7gXXQ",
@@ -4701,7 +4770,8 @@
         "_converter": {}
       },
       "email": "harry.smith@mail.com",
-      "name": "Harry Smith"
+      "name": "Harry Smith",
+      "is_current_practice_admin": false
     },
     {
       "id": "pd9uSPWgBHzkqE2lbsM0",
@@ -4720,7 +4790,8 @@
       "address": "202 Maple Street\nBarchester\nB1 7MN",
       "email": "benny.goodman@mail.com",
       "profile_image": "https://picsum.photos/id/163/512/512",
-      "name": "Dr. Benny Goodman"
+      "name": "Dr. Benny Goodman",
+      "is_current_practice_admin": false
     },
     {
       "id": "r8fPNPbncIC5s25s9d2P",
@@ -4739,7 +4810,8 @@
         },
         "_converter": {}
       },
-      "profile_image": "https://picsum.photos/id/373/512/512"
+      "profile_image": "https://picsum.photos/id/373/512/512",
+      "is_current_practice_admin": false
     },
     {
       "id": "s2VbN7JmN5p8H4qR6kL9",
@@ -4758,7 +4830,8 @@
         "_converter": {}
       },
       "name": "Dr. James Wilson",
-      "profile_image": "https://picsum.photos/id/395/512/512"
+      "profile_image": "https://picsum.photos/id/395/512/512",
+      "is_current_practice_admin": false
     },
     {
       "id": "vGkruGTbzyONC30epJmg7yu8MyF3",
@@ -4777,13 +4850,15 @@
       "address": "Placeholder Address",
       "email": "franksuccession@gmail.com",
       "name": "Frank Succession",
-      "profile_image": "https://picsum.photos/id/395/512/512"
+      "profile_image": "https://picsum.photos/id/395/512/512",
+      "is_current_practice_admin": false
     },
     {
       "id": "vxmWn5MFL9ciKVd3LiCXc5L1hvM2",
       "profile_image": "https://picsum.photos/id/340/512/512",
       "email": "robinyellow@gmail.com",
       "name": "Robin Yellow",
+      "address": "1 Horse Street\nBarchester\nB1 1AA",
       "current_practice": {
         "_firestore": {
           "projectId": "fyp-2025-52340"
@@ -4796,7 +4871,7 @@
         },
         "_converter": {}
       },
-      "address": "1 Horse Street\nBarchester\nB1 1AA"
+      "is_current_practice_admin": true
     }
   ],
   "warnings": [
