@@ -41,6 +41,11 @@
   --border-color: hsl(214, 32%, 91%);
   --bg-app: hsl(210, 40%, 98%);
 
+  /* Table Specific Semantics */
+  --table-header-bg: var(--bg-app);
+  --table-row-hover: hsl(210, 40%, 96%);
+  --table-row-border: hsl(214, 32%, 95%);
+
   /* Spacing Scale */
   --spacing-xs: 0.5rem;
   --spacing-sm: 0.75rem;
