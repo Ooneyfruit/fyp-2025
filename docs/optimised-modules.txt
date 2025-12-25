@@ -4,3 +4,4 @@
 /src/components/shared/BaseCard.vue
 /src/components/shared/BaseCardList.vue
 /src/components/shared/BaseSpinner.vue
+/src/components/shared/BaseTable.vue

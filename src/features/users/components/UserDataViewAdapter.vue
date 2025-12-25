@@ -4,23 +4,39 @@
       <p>Synchronizing Practice Identities...</p>
     </div>
 
-    <AppTable v-else-if="!isMobile" :headers="userHeaders" :items="users">
+    <BaseTable 
+      v-else-if="!isMobile" 
+      :headers="userHeaders" 
+      :items="users"
+    >
       <template #cell(member)="{ item }">
         <UserIdentity :profile="item.profile" />
       </template>
-      <template #cell(role)="{ item }"><UserStatusPills :member="item" type="role" /></template>
-      <template #cell(status)="{ item }"><UserStatusPills :member="item" type="admin" /></template>
-      <template #cell(contract)="{ item }"><UserStatusPills :member="item" type="contract" /></template>
+      
+      <template #cell(role)="{ item }">
+        <UserStatusPills :member="item" type="role" />
+      </template>
+      
+      <template #cell(status)="{ item }">
+        <UserStatusPills :member="item" type="admin" />
+      </template>
+      
+      <template #cell(contract)="{ item }">
+        <UserStatusPills :member="item" type="contract" />
+      </template>
+      
       <template #cell(joined)="{ item }">
         <span class="date-text">{{ formatDate(item.start_date) }}</span>
       </template>
+      
       <template #cell(endDate)="{ item }">
         <span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span>
       </template>
+      
       <template #cell(actions)="{ item }">
         <UserActionButtons @edit="$emit('edit', item)" />
       </template>
-    </AppTable>
+    </BaseTable>
 
     <BaseCardList v-else :items="users">
       <template #card-header="{ item }">
@@ -41,7 +57,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import AppTable from '../../../components/shared/AppTable.vue';
+import BaseTable from '../../../components/shared/BaseTable.vue'; // Updated import
 import BaseCardList from '../../../components/shared/BaseCardList.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';
@@ -62,21 +78,28 @@ const formatDate = (ts) => {
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
+/**
+ * 3. OPTIMIZED HEADER CONFIGURATION
+ * We now use semantic layout units. 
+ * - 'Member' takes all available space (1fr).
+ * - 'Actions' is center-aligned and tightly packed (min-content).
+ * - Date columns are assigned a readable fixed width.
+ */
 const userHeaders = [
-  { key: 'member', label: 'Member', style: { flex: '1 1 8rem' } }, 
-  { key: 'role', label: 'Role', style: { flex: '0 0 7rem' } },
-  { key: 'status', label: 'Status', style: { flex: '0 0 6rem' } },
-  { key: 'contract', label: 'Contract', style: { flex: '0 0 7rem' } },
-  { key: 'joined', label: 'Joined', style: { flex: '0 0 6.5rem' } },
-  { key: 'endDate', label: 'End Date', style: { flex: '0 0 6.5rem' } },
-  { key: 'actions', label: 'Actions', style: { flex: '0 0 4rem', display: 'flex', justifyContent: 'center' } }
+  { key: 'member', label: 'Member', width: '1fr' }, 
+  { key: 'role', label: 'Role', width: 'min-content' },
+  { key: 'status', label: 'Status', width: 'min-content' },
+  { key: 'contract', label: 'Contract', width: 'min-content' },
+  { key: 'joined', label: 'Joined', width: '8.5rem' },
+  { key: 'endDate', label: 'End Date', width: '8.5rem' },
+  { key: 'actions', label: 'Actions', width: 'min-content', align: 'center' }
 ];
 </script>
 
 <style scoped>
 .adapter-container { width: 100%; transition: width var(--anim-speed) ease; position: relative; min-height: 200px; }
 .loading-overlay { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-muted); font-style: italic; }
-.date-text { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+.date-text { font-size: 0.85rem; color: var(--text-main); white-space: nowrap; }
 .card-identity-wrapper { display: flex; align-items: flex-start; gap: 0.75rem; }
 .detail-row { display: grid; grid-template-columns: 6.25rem 1fr; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-xs); }
 .detail-row .label { color: var(--text-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
