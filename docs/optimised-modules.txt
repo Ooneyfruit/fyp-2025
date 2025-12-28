@@ -2,6 +2,7 @@
 /src/components/icons/*
 /src/components/shared/AppLoading.vue
 /src/components/shared/AppToast.vue
+/src/components/shared/BaseButton.vue
 /src/components/shared/BaseCard.vue
 /src/components/shared/BaseCardList.vue
 /src/components/shared/BaseModal.vue

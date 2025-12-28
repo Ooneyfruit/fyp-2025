@@ -1,22 +1,27 @@
 <template>
-  <button class="edit-action-btn" @click="$emit('edit')">
-    <IconEdit class="icon-edit" />
-  </button>
+  <div class="user-actions">
+    <BaseButton 
+      label="Edit User" 
+      :icon="IconEdit" 
+      variant="secondary"
+      icon-only
+      @click="$emit('edit')" 
+    />
+    
+    </div>
 </template>
 
 <script setup>
+import BaseButton from '../../../components/shared/BaseButton.vue';
 import IconEdit from '../../../components/icons/IconEdit.vue';
+
+defineEmits(['edit']);
 </script>
 
 <style scoped>
-.edit-action-btn { 
-  display: flex; justify-content: center; align-items: center;
-  background: none; border: 0.0625rem solid var(--border-color); 
-  color: var(--text-muted); padding: 0.45rem; border-radius: 0.375rem; 
-  cursor: pointer; transition: all var(--anim-speed) ease;
-}
-.icon-edit {
-  width: 1.125rem;
-  height: 1.125rem;
+.user-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  justify-content: center;
 }
 </style>

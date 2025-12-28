@@ -220,6 +220,14 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   border-color: var(--color-danger);
   color: var(--color-danger);
 }
+
 .rd-button-danger:hover:not(:disabled) {
-  background-color: hsl(var(--hue-danger), 72%, 97%);
+  background-color: hsl(var(--hue-danger), 72%, 97%); /* Light red tint */
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.rd-button-danger-solid {
+  background-color: var(--color-danger);
+  color: white;
 }
