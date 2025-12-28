@@ -62,7 +62,11 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-cancel" @click="close">Cancel</button>
+        <BaseButton 
+          label="Cancel" 
+          variant="secondary" 
+          @click="close" 
+        />
         <BaseButton 
           type="submit"
           :label="saving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Account')"
@@ -214,7 +218,6 @@ input, select, textarea { padding: 0.65rem; border: 1px solid var(--border-color
 .switch::after { content: ''; position: absolute; top: 0.125rem; left: 0.125rem; width: 0.95rem; height: 0.95rem; background: #fff; border-radius: 50%; transition: transform 0.2s; }
 .switch:checked::after { transform: translateX(1rem); }
 .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); margin-top: auto; }
-.btn-cancel { background: transparent; border: 1px solid var(--border-color); padding: 0.6rem 1.25rem; border-radius: var(--border-radius); color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.9375rem; }
 .skeleton-form { display: flex; flex-direction: column; gap: 1.5rem; }
 .skeleton-field { height: 3.5rem; background: #f9fafb; border-radius: 0.5rem; }
 .skeleton-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }

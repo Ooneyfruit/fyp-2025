@@ -8,13 +8,11 @@
       <pre style="font-size: 0.8rem; white-space: pre-wrap;">{{ logs.join('\n') || 'Waiting to start...' }}</pre>
     </div>
 
-    <button 
-      @click="runRepair" 
-      :disabled="loading"
-      style="background: #2563eb; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;"
-    >
-      {{ loading ? 'Processing...' : 'Run Repair Now' }}
-    </button>
+    <BaseButton 
+      :label="loading ? 'Processing...' : 'Run Repair Now'"
+      :processing="loading"
+      @click="runRepair"
+    />
   </div>
 </template>
 
@@ -22,6 +20,8 @@
 import { ref } from 'vue';
 import { db } from '../services/firebase';
 import { collection, getDocs, doc, writeBatch } from 'firebase/firestore';
+
+import BaseButton from '../components/shared/BaseButton.vue';
 
 const logs = ref([]);
 const loading = ref(false);
