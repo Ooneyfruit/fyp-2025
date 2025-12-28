@@ -6,20 +6,16 @@
           title="User Management" 
           subtitle="Manage personnel and permissions for your practice."
         />
-        <PageAction label="Add User" @click="openAddModal" />
+        <PageAction label="Add User" @click="userModal.open()" />
       </div>
 
-      <AppLoading v-if="loading" />
+      <AppLoading v-if="isLoading" />
       
       <div v-else class="main-content-area">
-        <UserDataViewAdapter :users="users" @edit="handleEditUser" />
+        <UserDataViewAdapter :users="users" @edit="(user) => userModal.open(user)" />
       </div>
 
-      <UserModal 
-        v-if="showModal" 
-        :initialData="selectedUser" 
-        @close="handleClose" 
-      />
+      <UserModal ref="userModal" />
     </PageContainer>
   </AuthGuard>
 </template>
@@ -35,26 +31,10 @@ import AppLoading from '../components/shared/AppLoading.vue';
 import PageAction from '../components/shared/PageAction.vue';
 import UserDataViewAdapter from '../features/users/components/UserDataViewAdapter.vue';
 
-const { users, loading } = usePracticeUsers();
+const { users, isLoading } = usePracticeUsers();
 
-// Explicitly initialized to false to prevent auto-open
-const showModal = ref(false);
-const selectedUser = ref(null);
-
-const openAddModal = () => {
-  selectedUser.value = null;
-  showModal.value = true;
-};
-
-const handleEditUser = (user) => {
-  selectedUser.value = user;
-  showModal.value = true;
-};
-
-const handleClose = () => {
-  showModal.value = false;
-  selectedUser.value = null;
-};
+// The only state the view needs is a reference to the component
+const userModal = ref(null);
 </script>
 
 <style scoped>
@@ -68,9 +48,6 @@ const handleClose = () => {
 }
 
 @media (max-width: 50rem) {
-  .header-layout-group {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
+  .header-layout-group { flex-direction: column; gap: var(--spacing-sm); }
 }
 </style>
