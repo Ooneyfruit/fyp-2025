@@ -6,7 +6,11 @@
           title="User Management" 
           subtitle="Manage personnel and permissions for your practice."
         />
-        <PageAction label="Add User" @click="userModal.open()" />
+        <BaseButton 
+          label="Add User" 
+          :icon="IconPlus"
+          @click="userModal.open()"
+        />
       </div>
 
       <AppLoading v-if="isLoading" />
@@ -28,8 +32,9 @@ import PageHeader from '../components/layout/PageHeader.vue';
 import PageContainer from '../components/layout/PageContainer.vue';
 import UserModal from '../features/users/components/UserModal.vue';
 import AppLoading from '../components/shared/AppLoading.vue';
-import PageAction from '../components/shared/PageAction.vue';
+import BaseButton from '../components/shared/BaseButton.vue';
 import UserDataViewAdapter from '../features/users/components/UserDataViewAdapter.vue';
+import IconPlus from '../components/icons/IconPlus.vue';
 
 const { users, isLoading } = usePracticeUsers();
 
