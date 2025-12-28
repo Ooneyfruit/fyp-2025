@@ -1,12 +1,9 @@
 <template>
   <Teleport to="body">
     <Transition name="toast-slide">
-      <div v-if="isVisible" class="toast-wrapper">
-        <div class="toast-card">
-          <div class="accent-bar"></div>
-          <div class="content">
-            <span class="message">{{ message }}</span>
-          </div>
+      <div v-show="isVisible" class="toast-overlay" role="status" aria-live="polite">
+        <div class="toast-body rd-card">
+          <span class="message">{{ message }}</span>
         </div>
       </div>
     </Transition>
@@ -19,11 +16,53 @@ const { message, isVisible } = useToast();
 </script>
 
 <style scoped>
-.toast-wrapper { position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%); z-index: 10001; pointer-events: none; width: 90%; max-width: 32rem; }
-.toast-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 0.75rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); display: flex; overflow: hidden; }
-.accent-bar { width: 0.375rem; background: var(--color-primary); flex-shrink: 0; }
-.content { padding: 1rem 1.25rem; flex: 1; background: #ffffff; }
-.message { color: var(--text-main); font-size: 0.9rem; font-weight: 500; white-space: pre-line; line-height: 1.4; }
-.toast-slide-enter-active, .toast-slide-leave-active { transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.toast-slide-enter-from, .toast-slide-leave-to { opacity: 0; transform: translate(-50%, 2rem); }
+.toast-overlay {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Ensures the toast stays above modals (z-modal is 1000) */
+  z-index: var(--z-tooltip); 
+  width: 100%;
+  max-width: 28rem;
+  padding: 0 var(--spacing-md);
+  pointer-events: none;
+}
+
+/* Theme Inheritance */
+.toast-body {
+  padding: 1rem 1.25rem;
+  pointer-events: auto;
+  /* INNOVATION: Instead of a separate div, we use an inset border-left */
+  border-left: 0.375rem solid var(--color-primary);
+  display: flex;
+  align-items: center;
+}
+
+.message {
+  color: var(--text-main);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+.toast-slide-enter-active,
+.toast-slide-leave-active {
+  /* Using a spring-like cubic bezier for a more "app-like" feel */
+  transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.toast-slide-enter-from,
+.toast-slide-leave-to {
+  opacity: 0;
+  transform: translate(-50%, 1.5rem) scale(0.95);
+}
+
+@media (max-width: 40rem) {
+  .toast-overlay {
+    bottom: 1rem;
+    max-width: 100%;
+  }
+}
 </style>

@@ -1,6 +1,7 @@
 /src/assets/main.css
 /src/components/icons/*
 /src/components/shared/AppLoading.vue
+/src/components/shared/AppToast.vue
 /src/components/shared/BaseCard.vue
 /src/components/shared/BaseCardList.vue
 /src/components/shared/BaseSpinner.vue

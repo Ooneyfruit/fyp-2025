@@ -19,6 +19,8 @@
     <main :class="user ? 'main-content' : 'full-screen'">
       <router-view />
     </main>
+
+    <AppToast />
   </div>
 </template>
 
@@ -27,12 +29,13 @@ import { ref, watch, onMounted, onUnmounted } from 'vue';
 import { user } from './composables/useAuth';
 import NavBar from './components/layout/NavBar.vue';
 import SideMenu from './components/layout/SideMenu.vue';
+import AppToast from './components/shared/AppToast.vue'; // Required import for global visibility
 
 const isMobile = ref(window.innerWidth < 768);
 const desktopPreference = ref(localStorage.getItem('isSidebarOpen') === 'true');
 const isSidebarOpen = ref(isMobile.value ? false : desktopPreference.value);
 
-// Testing constraint: Transitions only enable after layout stabilization
+// Transitions only enable after layout stabilization
 const canAnimate = ref(false);
 
 /**
