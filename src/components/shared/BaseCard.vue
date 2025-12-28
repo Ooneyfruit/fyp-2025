@@ -21,6 +21,6 @@
 
 /* Remove header margin if the body follows it, as padding handles it */
 .card-header + .card-body {
-  border-top: 1px solid #f1f5f9; /* Subtle divider */
+  border-top: 1px solid var(--border-color); /* Subtle divider */
 }
 </style>

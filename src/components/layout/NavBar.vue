@@ -96,6 +96,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useAuth } from '../../composables/useAuth';
+import { useToast } from '../../composables/useToast';
 import { db } from '../../services/firebase';
 import { collection, query, where, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 
@@ -106,7 +107,10 @@ import IconEdit from '../icons/IconEdit.vue';
 import UserModal from '../../features/users/components/UserModal.vue';
 
 defineEmits(['toggleSidebar']);
+
 const { user, logout } = useAuth();
+const { showToast } = useToast();
+
 const practices = ref([]);
 const isSettingsOpen = ref(false);
 const showAccountModal = ref(false);
@@ -116,17 +120,28 @@ const currentUserMemberData = computed(() => {
   if (!user.value) return null;
   return {
     ...user.value,
-    profile: { name: user.value.name, email: user.value.email, address: user.value.address, profile_image: user.value.profile_image },
+    profile: { 
+      name: user.value.name, 
+      email: user.value.email, 
+      address: user.value.address, 
+      profile_image: user.value.profile_image 
+    },
     user: { id: user.value.uid }
   };
 });
 
-const openAccountModal = () => { isSettingsOpen.value = false; showAccountModal.value = true; };
+const openAccountModal = () => { 
+  isSettingsOpen.value = false; 
+  showAccountModal.value = true; 
+};
 
 const loadUserPractices = async () => {
   if (!user.value?.uid) return;
   try {
-    const q = query(collection(db, "practice_users"), where("user", "==", doc(db, "users", user.value.uid)));
+    const q = query(
+      collection(db, "practice_users"), 
+      where("user", "==", doc(db, "users", user.value.uid))
+    );
     const snap = await getDocs(q);
     const list = [];
     for (const mDoc of snap.docs) {
@@ -136,22 +151,43 @@ const loadUserPractices = async () => {
       if (pSnap.exists()) list.push({ id: pSnap.id, ...pSnap.data() });
     }
     practices.value = list.sort((a, b) => a.name.localeCompare(b.name));
-  } catch (err) { console.error(err); }
+  } catch (err) { 
+    console.error(err); 
+  }
 };
 
 const handleSwitch = async (practiceId) => {
   if (!practiceId || practiceId === user.value.practiceRef?.id) return;
-  isSettingsOpen.value = false;
-  await updateDoc(doc(db, "users", user.value.uid), { current_practice: doc(db, "practices", practiceId) });
+  
+  const selectedPractice = practices.value.find(p => p.id === practiceId);
+
+  try {
+    await updateDoc(doc(db, "users", user.value.uid), { 
+      current_practice: doc(db, "practices", practiceId) 
+    });
+    
+    // Trigger the toast notification
+    showToast(`Switched to ${selectedPractice?.name || 'new practice'}`);
+  } catch (err) {
+    console.error("[NavBar] Switch Failed:", err);
+    showToast("Failed to switch practice. Please try again.");
+  }
 };
 
-const handleLogout = async () => { isSettingsOpen.value = false; await logout(); window.location.href = "/login"; };
+const handleLogout = async () => { 
+  isSettingsOpen.value = false; 
+  await logout(); 
+  window.location.href = "/login"; 
+};
 
 onMounted(() => {
   loadUserPractices();
   window.addEventListener('resize', () => isMobile.value = window.innerWidth < 768);
 });
-watch(() => user.value?.uid, (uid) => { if (uid) loadUserPractices(); });
+
+watch(() => user.value?.uid, (uid) => { 
+  if (uid) loadUserPractices(); 
+});
 </script>
 
 <style scoped>
@@ -181,7 +217,7 @@ watch(() => user.value?.uid, (uid) => { if (uid) loadUserPractices(); });
 .edit-btn-static { width: 1.1rem; height: 1.1rem; display: flex; align-items: center; }
 .edit-icon { width: 1.1rem; height: 1.1rem; color: var(--text-muted); transition: color 0.2s; }
 
-/* Active and Hover states turned Blue */
+/* Active and Hover states to turn Blue */
 .profile-trigger:hover, .profile-trigger.is-active { background: #eff6ff; }
 .profile-trigger:hover .email-label, .profile-trigger.is-active .email-label,
 .profile-trigger:hover .edit-icon, .profile-trigger.is-active .edit-icon { color: var(--color-primary); }
