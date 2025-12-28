@@ -171,3 +171,55 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 .animate-spin {
   animation: rd-spin 0.8s linear infinite;
 }
+
+/* Add to src/assets/main.css */
+
+.rd-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1;
+  transition: all var(--anim-speed) ease;
+  white-space: nowrap;
+}
+
+.rd-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Variant Definitions */
+.rd-button-primary {
+  background-color: var(--color-primary);
+  color: var(--text-light);
+}
+.rd-button-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.rd-button-secondary {
+  background-color: white;
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+.rd-button-secondary:hover:not(:disabled) {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+}
+
+.rd-button-danger {
+  background-color: white;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+.rd-button-danger:hover:not(:disabled) {
+  background-color: hsl(var(--hue-danger), 72%, 97%);
+}

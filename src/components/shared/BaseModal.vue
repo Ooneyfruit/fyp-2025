@@ -104,7 +104,7 @@ onUnmounted(() => {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   transform-origin: center;
   z-index: 1;
-  width: calc(100% - (var(--spacing-md) * 2));
+  width: calc(100% - (var(--spacing-lg) * 2));
   max-height: min(45rem, 90vh);
 }
 

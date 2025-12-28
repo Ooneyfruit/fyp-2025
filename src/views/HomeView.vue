@@ -7,26 +7,23 @@
       />
       
       <div class="action-stack">
-        <PageAction 
+        <BaseButton 
           label="Edit My Profile" 
+          :icon="IconEdit"
           @click="userModal.open(user)"
-        >
-          <template #icon><IconEdit /></template>
-        </PageAction>
+        />
 
-        <PageAction 
+        <BaseButton 
           label="Open Test Modal" 
+          :icon="IconPlus"
           @click="showTestModal = true"
-        >
-          <template #icon><IconPlus /></template>
-        </PageAction>
+        />
 
-        <PageAction 
+        <BaseButton 
           label="Trigger Test Toast" 
+          :icon="IconClock"
           @click="handleTestToast"
-        >
-          <template #icon><IconClock /></template>
-        </PageAction>
+        />
       </div>
     </div>
 
@@ -54,7 +51,7 @@ import { useToast } from '../composables/useToast';
 // Layout & Modal Components
 import PageHeader from '../components/layout/PageHeader.vue';
 import PageContainer from '../components/layout/PageContainer.vue';
-import PageAction from '../components/shared/PageAction.vue';
+import BaseButton from '../components/shared/BaseButton.vue';
 import BaseModal from '../components/shared/BaseModal.vue';
 import UserModal from '../features/users/components/UserModal.vue';
 

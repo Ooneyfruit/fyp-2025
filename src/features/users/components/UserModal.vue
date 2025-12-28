@@ -63,7 +63,7 @@
 
       <div class="form-actions">
         <button type="button" class="btn-cancel" @click="close">Cancel</button>
-        <PageAction 
+        <BaseButton 
           type="submit"
           :label="saving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Account')"
           :disabled="saving || !isDirty"
@@ -80,7 +80,7 @@ import { db } from '../../../services/firebase';
 import { collection, getDocs, doc, writeBatch, Timestamp } from 'firebase/firestore';
 import { user as authUser } from '../../../composables/useAuth';
 import BaseModal from '../../../components/shared/BaseModal.vue';
-import PageAction from '../../../components/shared/PageAction.vue';
+import BaseButton from '../../../components/shared/BaseButton.vue';
 
 // STATE MANAGEMENT
 const isVisible = ref(false);
