@@ -1,8 +1,15 @@
 <template>
-  <BaseModal :title="isEdit ? 'Update User Profile' : 'Register New User'" @request-close="handleClose">
+  <BaseModal 
+    :show="isVisible" 
+    :title="isEdit ? 'Update User Profile' : 'Register New User'" 
+    @request-close="close"
+  >
     <div v-if="loadingRoles" class="skeleton-form">
       <div class="skeleton-field"></div>
-      <div class="skeleton-grid"><div class="skeleton-field"></div><div class="skeleton-field"></div></div>
+      <div class="skeleton-grid">
+        <div class="skeleton-field"></div>
+        <div class="skeleton-field"></div>
+      </div>
     </div>
 
     <form v-else @submit.prevent="save" class="modern-form">
@@ -46,12 +53,16 @@
         <div class="section-header">Contact Information</div>
         <div class="field">
           <label>Address</label>
-          <textarea v-model="form.address" class="address-textarea" placeholder="Residential address..."></textarea>
+          <textarea 
+            v-model="form.address" 
+            class="address-textarea" 
+            placeholder="Residential address..."
+          ></textarea>
         </div>
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-cancel" @click="handleClose">Cancel</button>
+        <button type="button" class="btn-cancel" @click="close">Cancel</button>
         <PageAction 
           type="submit"
           :label="saving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Account')"
@@ -64,107 +75,120 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { db } from '../../../services/firebase';
 import { collection, getDocs, doc, writeBatch, Timestamp } from 'firebase/firestore';
+import { user as authUser } from '../../../composables/useAuth';
 import BaseModal from '../../../components/shared/BaseModal.vue';
 import PageAction from '../../../components/shared/PageAction.vue';
-import { user as authUser } from '../../../composables/useAuth';
 
-const props = defineProps({ initialData: Object });
-const emit = defineEmits(['close']);
-
-const rolesList = ref([]);
+// STATE MANAGEMENT
+const isVisible = ref(false);
+const isEdit = ref(false);
 const saving = ref(false);
 const loadingRoles = ref(true);
-const isEdit = computed(() => !!props.initialData);
+const rolesList = ref([]);
+const initialState = ref("");
 
-const form = ref({
-  name: props.initialData?.profile?.name || '',
-  email: props.initialData?.profile?.email || '',
-  address: props.initialData?.profile?.address || '',
-  role: props.initialData?.role || '',
-  is_administrator: props.initialData?.is_administrator || false,
-  is_employee: props.initialData?.is_employee ?? true,
-  profile_image: props.initialData?.profile?.profile_image || '',
-  user_id: props.initialData?.user?.id || props.initialData?.user?._path?.segments[1] || '' 
+// FORM DATA
+const defaultForm = () => ({
+  name: '',
+  email: '',
+  address: '',
+  role: '',
+  is_administrator: false,
+  is_employee: true,
+  profile_image: '',
+  user_id: ''
 });
 
-const initialState = ref("");
+const form = ref(defaultForm());
+
+// RESTORED: Dirty state detection
 const isDirty = computed(() => JSON.stringify(form.value) !== initialState.value);
 
-const handleClose = () => {
-  console.log("[UserModal] Closing Modal.");
-  emit('close');
+/**
+ * EXPOSED LOGIC PATTERN
+ * Parent components call these methods to trigger the modal.
+ */
+const open = (userData = null) => {
+  if (userData) {
+    isEdit.value = true;
+    form.value = {
+      name: userData.profile?.name || userData.name || '',
+      email: userData.profile?.email || userData.email || '',
+      address: userData.profile?.address || userData.address || '',
+      role: userData.role || '',
+      is_administrator: userData.is_administrator || false,
+      is_employee: userData.is_employee ?? true,
+      profile_image: userData.profile?.profile_image || userData.profile_image || '',
+      user_id: userData.user?.id || userData.uid || userData.user?._path?.segments[1] || ''
+    };
+  } else {
+    isEdit.value = false;
+    form.value = defaultForm();
+  }
+  
+  // Snap original state for dirty checking
+  initialState.value = JSON.stringify(form.value);
+  isVisible.value = true;
+  console.log("[UserModal] Opened with data:", JSON.parse(initialState.value));
 };
 
-onMounted(async () => {
-  console.log("[UserModal] OPENED. Initial Form Data:", JSON.parse(JSON.stringify(form.value)));
-  initialState.value = JSON.stringify(form.value);
+const close = () => {
+  isVisible.value = false;
+};
 
+defineExpose({ open, close });
+
+onMounted(async () => {
   try {
     const practiceId = authUser.value?.practiceRef?.id;
-    console.log(`[UserModal] Requester Practice Context: ${practiceId}`);
-    
-    const rolesRef = collection(db, "practices", practiceId, "roles");
-    const snap = await getDocs(rolesRef);
-    rolesList.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    console.log(`[UserModal] SUCCESS: Loaded ${rolesList.value.length} roles for select.`);
+    if (practiceId) {
+      const snap = await getDocs(collection(db, "practices", practiceId, "roles"));
+      rolesList.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
   } catch (err) {
-    console.error("[UserModal] ERROR: Could not fetch practice roles.", err.message);
-  } finally { 
-    loadingRoles.value = false; 
+    console.error("[UserModal] Roles fetch failed:", err.message);
+  } finally {
+    loadingRoles.value = false;
   }
 });
 
 const save = async () => {
   if (saving.value) return;
-  console.log("%c[UserModal] SAVE INITIATED", "color: orange; font-weight: bold");
   saving.value = true;
-  
   const batch = writeBatch(db);
-  
+
   try {
     const targetUserId = form.value.user_id || doc(collection(db, "users")).id;
     const userRef = doc(db, "users", targetUserId);
     const activePracticeRef = authUser.value.practiceRef;
 
-    console.log(`[UserModal] TARGET UID: ${targetUserId}`);
-    console.log(`[UserModal] TARGET PRACTICE: ${activePracticeRef.id}`);
-
-    // 1. Update Identity
-    const identityUpdate = {
+    // 1. Identity Update
+    batch.set(userRef, {
       name: form.value.name,
       email: form.value.email,
       address: form.value.address,
       profile_image: form.value.profile_image || 'https://via.placeholder.com/40',
       current_practice: activePracticeRef 
-    };
-    console.log("[UserModal] Identity Data:", identityUpdate);
-    batch.set(userRef, identityUpdate, { merge: true });
+    }, { merge: true });
 
-    // 2. Update Membership
+    // 2. Membership Update
     const membershipId = `${targetUserId}_${activePracticeRef.id}`;
-    const membershipRef = doc(db, "practice_users", membershipId);
-    
-    const membershipUpdate = {
+    batch.set(doc(db, "practice_users", membershipId), {
       role: form.value.role,
       is_administrator: form.value.is_administrator,
       is_employee: form.value.is_employee,
       user: userRef,
       practice: activePracticeRef,
-      start_date: props.initialData?.start_date || new Date(),
       updated_at: Timestamp.now()
-    };
-    console.log("[UserModal] Membership Data:", membershipUpdate);
-    batch.set(membershipRef, membershipUpdate, { merge: true });
+    }, { merge: true });
 
-    console.log("[UserModal] COMMITING BATCH...");
     await batch.commit();
-    console.log("%c[UserModal] BATCH COMMIT SUCCESSFUL", "color: green; font-weight: bold");
-    handleClose();
+    close();
   } catch (err) {
-    console.error("%c[UserModal] BATCH COMMIT FAILED", "color: red; font-weight: bold", err.message);
+    console.error("[UserModal] Save failed:", err.message);
     alert(`Save Failure: ${err.message}`);
   } finally {
     saving.value = false;
@@ -175,11 +199,11 @@ const save = async () => {
 <style scoped>
 .modern-form { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; box-sizing: border-box; }
 .form-section { display: flex; flex-direction: column; gap: 0.8rem; }
-.section-header { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 0.0625rem solid #f3f4f6; padding-bottom: 0.4rem; }
+.section-header { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; }
 .field { display: flex; flex-direction: column; gap: 0.3rem; }
 .field label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
 .grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.25rem; }
-input, select, textarea { padding: 0.65rem; border: 0.0625rem solid var(--border-color); border-radius: var(--border-radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; }
+input, select, textarea { padding: 0.65rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 0.9rem; width: 100%; box-sizing: border-box; }
 .address-textarea { resize: vertical; min-height: 4rem; line-height: 1.5; }
 .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .toggle-card { display: flex; justify-content: space-between; align-items: center; background: #f9fafb; padding: 0.75rem; border-radius: 0.75rem; }
@@ -189,8 +213,8 @@ input, select, textarea { padding: 0.65rem; border: 0.0625rem solid var(--border
 .switch:checked { background: var(--color-primary); }
 .switch::after { content: ''; position: absolute; top: 0.125rem; left: 0.125rem; width: 0.95rem; height: 0.95rem; background: #fff; border-radius: 50%; transition: transform 0.2s; }
 .switch:checked::after { transform: translateX(1rem); }
-.form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; padding-top: 1.25rem; border-top: 0.0625rem solid #f3f4f6; margin-top: auto; }
-.btn-cancel { background: transparent; border: 0.0625rem solid var(--border-color); padding: 0.6rem 1.25rem; border-radius: var(--border-radius); color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.9375rem; }
+.form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); margin-top: auto; }
+.btn-cancel { background: transparent; border: 1px solid var(--border-color); padding: 0.6rem 1.25rem; border-radius: var(--border-radius); color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.9375rem; }
 .skeleton-form { display: flex; flex-direction: column; gap: 1.5rem; }
 .skeleton-field { height: 3.5rem; background: #f9fafb; border-radius: 0.5rem; }
 .skeleton-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
