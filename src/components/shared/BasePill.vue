@@ -1,34 +1,64 @@
 <template>
-  <span :class="['pill-bubble', typeClass]">
-    <slot />
+  <span 
+    class="rd-pill" 
+    :class="[`rd-pill-${variant}`]"
+  >
+    <div v-if="$slots.icon" class="rd-pill-icon-frame" aria-hidden="true">
+      <slot name="icon" />
+    </div>
+    
+    <span class="rd-pill-label">
+      <slot />
+    </span>
   </span>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+/**
+ * BasePill.vue
+ * A functional wrapper for the .rd-pill design system tokens.
+ * Styles are predominantly managed in src/assets/main.css.
+ */
 
-const props = defineProps({
-  // e.g., 'primary', 'success', 'warning', 'muted', 'admin'
-  variant: { type: String, default: 'muted' }
+defineProps({
+  /**
+   * Visual variant corresponding to the .rd-pill-{variant} classes in main.css.
+   */
+  variant: {
+    type: String,
+    default: 'muted',
+    validator: (v) => [
+      'primary', 
+      'success', 
+      'warning', 
+      'danger', 
+      'admin', 
+      'muted'
+    ].includes(v)
+  }
 });
-
-const typeClass = computed(() => `variant-${props.variant}`);
 </script>
 
 <style scoped>
-.pill-bubble { 
-  padding: 0.2rem 0.6rem; 
-  border-radius: 2rem; 
-  font-size: 0.7rem; 
-  font-weight: 600; 
-  display: inline-flex; 
-  white-space: nowrap; 
-  width: fit-content; 
+/* Component-level optical adjustments not included in the global utility classes */
+
+.rd-pill-icon-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
 }
-/* Style variants mapping to your existing CSS */
-.variant-muted { border: 1px solid var(--border-color); color: var(--text-muted); }
-.variant-primary { background: #f3f4f6; color: #4b5563; }
-.variant-admin { background: #eff6ff; color: #1e40af; }
-.variant-success { background: var(--color-success-bg); color: var(--color-success); }
-.variant-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+
+/* Ensure any SVG passed into the icon slot scales correctly to the pill height */
+.rd-pill-icon-frame :deep(svg) {
+  width: 100%;
+  height: 100%;
+}
+
+/* Optical nudge to vertically align uppercase text labels with the icons */
+.rd-pill-label {
+  transform: translateY(0.035rem);
+}
 </style>
