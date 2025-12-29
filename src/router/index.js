@@ -1,70 +1,53 @@
-import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import StaffView from '../views/StaffView.vue';
+import UserView from '../views/UserView.vue';
 import LoginView from '../views/LoginView.vue';
-import { auth, db } from '../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import AdminRepairView from '../views/AdminRepairView.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import { user, isAuthReady } from '../composables/useAuth';
+import { watch } from 'vue';
 
 const routes = [
   { path: '/', component: HomeView },
   { 
-    path: '/staff', 
-    component: StaffView,
+    path: '/users', 
+    component: UserView, 
     meta: { requiresAdmin: true } 
   },
-  { path: '/login', component: LoginView }
+  { path: '/login', component: LoginView },
+  { path: '/repair', component: AdminRepairView }
 ];
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-});
-
-// Helper: Wait for Auth to Initialize
-const getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const removeListener = onAuthStateChanged(auth, 
-      (user) => {
-        removeListener(); 
-        resolve(user);
-      },
-      reject
-    );
-  });
-};
+const router = createRouter({ history: createWebHistory(), routes });
 
 router.beforeEach(async (to, from, next) => {
-  const currentUser = await getCurrentUser();
-  let isAdmin = false;
+  // 1. Wait for Auth and Contextual Permissions to resolve
+  if (!isAuthReady.value) {
+    await new Promise(resolve => {
+      const unwatch = watch(isAuthReady, (ready) => {
+        if (ready) { 
+          unwatch(); 
+          resolve(); 
+        }
+      });
+    });
+  }
 
-  if (currentUser) {
-    // Must manually fetch the profile here to be 100% sure 
-    // it is the latest role before routing.
-    try {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      if (userDoc.exists() && userDoc.data().is_administrator) {
-        isAdmin = true;
-      }
-    } catch (e) {
-      console.error("Router Admin Check Failed:", e);
+  const currentUser = user.value;
+
+  // 2. Handle Login Redirection
+  if (!currentUser && to.path !== '/login') {
+    return next('/login');
+  }
+
+  // 3. Protect Admin Routes
+  if (to.meta.requiresAdmin) {
+    if (!currentUser || currentUser.is_administrator !== true) {
+      console.error("Router Block: Admin privileges required for", to.path);
+      return next('/');
     }
   }
 
-  // Navigation Logic
-  if (to.meta.requiresAdmin && !isAdmin) {
-    // If trying to access Staff but not admin, go Home
-    next('/'); 
-  } else if (!currentUser && to.path !== '/login') {
-    // If not logged in, go to Login
-    next('/login');
-  } else if (currentUser && to.path === '/login') {
-    // If logged in, don't show Login page
-    next('/');
-  } else {
-    // Allow navigation
-    next();
-  }
+  next();
 });
 
 export default router;

@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ABSURDLY PERMISSIVE: Verification that rules are not the issue.
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
