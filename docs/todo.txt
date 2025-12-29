@@ -1,0 +1,2 @@
+- navbar mobile pop up should disappear when clicked off by switching to side menu etc.
+- side menu should be able to be swiped away
