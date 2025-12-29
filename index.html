@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="data:;base64,=">
-    <title>User Management</title>
+    <meta name="theme-color" content="#1d4ed8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="RotaDent">
+    
+    <link rel="apple-touch-icon" href="/ios/180.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/ios/32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/ios/16.png">
+
+    <title>RotaDent | User Management</title>
     <script>
       (function() {
         const isMobile = window.innerWidth < 768;
         const preference = localStorage.getItem('isSidebarOpen');
-        // Default to wide if no preference exists, or use the stored value
         const isWide = isMobile ? false : (preference === null ? true : preference === 'true');
         
         document.documentElement.classList.add(isWide ? 'initial-layout-wide' : 'initial-layout-slim');
