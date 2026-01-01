@@ -217,7 +217,7 @@ watch(() => user.value?.uid, (uid) => {
 .nav-left { display: flex; align-items: center; gap: var(--spacing-md); }
 .brand-container { display: flex; align-items: center; gap: 0.675rem; min-width: 140px; }
 .brand-text { font-size: 1.25rem; font-weight: 600; color: var(--color-primary); white-space: nowrap; }
-.logo-icon { width: 2rem; height: 2rem; color: var(--color-primary); }
+.logo-icon { width: 1.9rem; height: 1.9rem; color: var(--color-primary); }
 .nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--spacing-lg); }
 .desktop-content { display: flex; align-items: center; gap: var(--spacing-lg); }
 .profile-trigger {
