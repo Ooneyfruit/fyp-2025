@@ -10,7 +10,7 @@
       />
 
       <div class="brand-container">
-        <IconClock class="clock-icon" />
+        <IconLogoInvert class="logo-icon" />
         <span class="brand-text">RotaDent</span>
       </div>
     </div>
@@ -113,7 +113,7 @@ import BaseButton from '../shared/BaseButton.vue';
 import UserModal from '../../features/users/components/UserModal.vue';
 
 import IconMenu from '../icons/IconMenu.vue';
-import IconClock from '../icons/IconClock.vue';
+import IconLogoInvert from '../icons/IconLogoInvert.vue';
 import IconSettings from '../icons/IconSettings.vue';
 import IconEdit from '../icons/IconEdit.vue';
 
@@ -215,9 +215,9 @@ watch(() => user.value?.uid, (uid) => {
   border-bottom: 1px solid var(--border-color); z-index: var(--z-navbar);
 }
 .nav-left { display: flex; align-items: center; gap: var(--spacing-md); }
-.brand-container { display: flex; align-items: center; gap: 0.625rem; min-width: 140px; }
+.brand-container { display: flex; align-items: center; gap: 0.675rem; min-width: 140px; }
 .brand-text { font-size: 1.25rem; font-weight: 600; color: var(--color-primary); white-space: nowrap; }
-.clock-icon { width: 1.5rem; height: 1.5rem; color: var(--color-primary); }
+.logo-icon { width: 2rem; height: 2rem; color: var(--color-primary); }
 .nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--spacing-lg); }
 .desktop-content { display: flex; align-items: center; gap: var(--spacing-lg); }
 .profile-trigger {
