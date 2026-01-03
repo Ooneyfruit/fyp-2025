@@ -40,37 +40,54 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a robust, accessible modal dialog system 
+ * with built-in scroll locking, keyboard dismissal, and flexible sizing.
+ */
 import { watch, onUnmounted } from 'vue';
 import IconClose from '../icons/IconClose.vue';
 
+// Define configuration for appearance and visibility state.
 const props = defineProps({ 
   title: { type: String, default: 'Modal Window' },
   show: { type: Boolean, default: false },
-  // Variants: 'sm', 'md', 'lg'
+  // Controls the maximum width of the modal container.
   size: { type: String, default: 'md' }
 });
 
+// Define events for state management and cleanup notifications.
 const emit = defineEmits(['request-close', 'closed']);
 
+/**
+ * Forwards a request to the parent component to toggle the visibility state.
+ */
 const handleRequestClose = () => emit('request-close');
 
+/**
+ * Monitors keyboard events to provide standard escape-key dismissal logic.
+ * @param {KeyboardEvent} e - The keyboard event object.
+ */
 const handleKeyDown = (e) => {
+  // Only trigger dismissal if the escape key is pressed while the modal is active.
   if (e.key === 'Escape' && props.show) handleRequestClose();
 };
 
 /**
- * BODY SCROLL LOCKING
+ * Manage global side effects when the modal state changes.
  */
 watch(() => props.show, (isVisible) => {
   if (isVisible) {
+    // Disable body scrolling to prevent layout shifting behind the modal.
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', handleKeyDown);
   } else {
+    // Restore default scroll behavior and clean up event listeners.
     document.body.style.overflow = '';
     window.removeEventListener('keydown', handleKeyDown);
   }
 }, { immediate: true });
 
+// Ensure global side effects are cleared if the component is destroyed.
 onUnmounted(() => { 
   document.body.style.overflow = '';
   window.removeEventListener('keydown', handleKeyDown);
@@ -78,16 +95,19 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Layout: full-screen fixed container to center the modal dialog. */
 .modal-root {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Maintain position above standard content and navigation. */
   z-index: var(--z-modal); 
   padding: var(--spacing-md);
 }
 
+/* Overlay: dimmed background with light blurring to focus user attention. */
 .modal-overlay {
   position: absolute;
   inset: 0;
@@ -96,6 +116,7 @@ onUnmounted(() => {
   transition: opacity 0.15s ease-out;
 }
 
+/* Container: the physical card structure of the modal. */
 .modal-container {
   position: relative;
   background: white;
@@ -105,23 +126,25 @@ onUnmounted(() => {
   transform-origin: center;
   z-index: 1;
   width: calc(100% - (var(--spacing-lg) * 2));
+  /* Constrain height to ensure the modal remains within the viewport on small screens. */
   max-height: min(45rem, 90vh);
 }
 
-/* Sizing Logic */
+/* Sizing Logic: max-width definitions for various modal sizes. */
 .size-sm .modal-container { max-width: 24rem; }
 .size-md .modal-container { max-width: 36rem; }
 .size-lg .modal-container { max-width: 54rem; }
 
+/* Layout: responsiveness and padding adjustments for larger viewports. */
 @media (min-width: 48rem) {
   .modal-root {
     padding: var(--spacing-lg) var(--spacing-lg);
   }
 }
 
+/* Header: layout and visual separation from the main body content. */
 .modal-header {
   justify-content: space-between;
-  /* RESTORED: Tiny dividing line separating title from body */
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -132,6 +155,7 @@ onUnmounted(() => {
   color: var(--text-main);
 }
 
+/* Controls: dismissal button styling and interactive states. */
 .close-btn {
   background: none;
   border: none;
@@ -155,12 +179,14 @@ onUnmounted(() => {
   height: 1.25rem;
 }
 
+/* Body: internal padding and scroll management for long content. */
 .modal-body {
   padding: var(--spacing-md);
   flex: 1;
   overflow-y: auto;
 }
 
+/* Footer: background and border logic to anchor actions at the bottom. */
 .modal-footer {
   padding: var(--spacing-sm) var(--spacing-md);
   border-top: 1px solid var(--border-color);
@@ -169,9 +195,7 @@ onUnmounted(() => {
   border-bottom-right-radius: inherit;
 }
 
-/**
- * PREMIUM ANIMATION SYSTEM
- */
+/* Animation: complex transitions for opacity and scale to create a high-quality feel. */
 .rd-modal-enter-active {
   transition: opacity 0.15s cubic-bezier(0.25, 1, 0.5, 1);
 }

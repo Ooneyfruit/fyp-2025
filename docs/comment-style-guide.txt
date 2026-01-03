@@ -7,7 +7,8 @@ Target: JavaScript, Vue (SFC), CSS, HTML
    - Describe current functionality and intent. Do not include change logs, "TODO" timestamps, or historical diffs.
    - Maintain a "higher-than-average" comment density: explain the 'why' behind complex logic, not just the 'what'.
    - Keep comments concise but technically precise.
-   - Use sentence case.
+   - Use sentence case. This means at least the first letter of a comment or sentence should be in upper case.
+   - End sentences and comments in a full stop.
    - Do not describe ownership of files.
 
 2. JavaScript & Vue Script Blocks
@@ -20,7 +21,7 @@ Target: JavaScript, Vue (SFC), CSS, HTML
       * @param {string} end - ISO timestamp
       * @returns {number} Duration in hours
       */
-   - Logic Blocks: Use double slashes (//) for inline explanations. Place the comment on the line preceding the code.
+   - Logic Blocks: Use double slashes (//) for inline explanations. Place the comment on the line preceding the code. Always use sentence case.
      Example:
      // Verify user permissions before initiating the delete sequence
      if (user.role === 'admin') { ... }

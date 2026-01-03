@@ -10,17 +10,22 @@
   </div>
 </template>
 
+<script setup>
+/**
+ * Primary responsibility: Provides a structural container component that implements the 
+ * standard project card styling with optional header and body slots.
+ */
+</script>
+
 <style scoped>
-/* Specific overrides for the component version of the card.
-  The heavy lifting is done by .rd-card in main.css 
-*/
+/* Layout: Component-specific overrides to augment the global .rd-card utility. */
 .base-card {
   display: flex;
   flex-direction: column;
 }
 
-/* Remove header margin if the body follows it, as padding handles it */
+/* Visual divider: Adds a subtle border between the header and body to improve content separation. */
 .card-header + .card-body {
-  border-top: 1px solid var(--border-color); /* Subtle divider */
+  border-top: 1px solid var(--border-color);
 }
 </style>

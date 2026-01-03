@@ -15,6 +15,11 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a scalable 'hamburger' menu icon for navigation controls.
+ */
+
+// Define component properties for visual customization.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });
