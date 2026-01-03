@@ -1,7 +1,18 @@
 <template>
-<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path fill="#fff" d="M0 0h18v18H0z"/>
-  <path fill-rule="evenodd" clip-rule="evenodd" d="M1 9a8 8 0 0 0 13.497 5.812l-6.286-4.737A1.33 1.33 0 0 1 7.667 9V1.11A8 8 0 0 0 1 9m6.667 6.667h2.667v-2.323l-2.667-2.01z" fill="#2463eb"/>
-  <path d="M13.809 4.864a3.475 3.475 0 0 0-3.472-3.475l-.003 6.947 5.77 4.347A8 8 0 0 0 17 9c0-1.127-.233-2.05-.654-3.024-.303 1.477-1.135 2.612-2.29 3.495l-2.064-1.556a3.48 3.48 0 0 0 1.817-3.051" fill="#2463eb"/>
+<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <mask id="a" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="-1" width="14" height="15">
+    <path d="M14 0H0v14h14z" fill="#fff"/>
+    <path d="M7 7v5m0-5 .654.493M7 7V.223h1a3.635 3.635 0 1 1 0 7.27h-.344m0 0 4.936 3.72" stroke="#000" stroke-width="2"/>
+  </mask>
+  <g mask="url(#a)">
+    <path d="M1 7a6 6 0 1 0 12 0A6 6 0 0 0 1 7" fill="#2463eb"/>
+  </g>
+  <mask id="b" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+    <path d="M14 0H0v14h14z" fill="#fff"/>
+    <path d="M7 0v7l5.591 4.213" stroke="#000" stroke-width="2" stroke-linejoin="round"/>
+  </mask>
+  <g mask="url(#b)">
+    <path d="m7 7 1.493 1.125" stroke="#2463eb" stroke-width="4" stroke-linecap="square"/>
+  </g>
 </svg>
 </template>
