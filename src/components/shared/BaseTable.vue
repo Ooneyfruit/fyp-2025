@@ -48,13 +48,23 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a flexible, grid-based data table component designed for 
+ * accessibility and dynamic content rendering.
+ */
 import { computed } from 'vue';
 
+// Define configuration for table structure and data items.
 const props = defineProps({
   headers: { type: Array, required: true },
   items: { type: Array, required: true }
 });
 
+/**
+ * Calculates a css grid template string based on the width property of each header object.
+ * Defaults to fractional units if no width is specified.
+ * @returns {string} A space-separated list of column widths.
+ */
 const gridTemplate = computed(() => {
   return props.headers
     .map(h => h.width || '1fr')
@@ -63,7 +73,7 @@ const gridTemplate = computed(() => {
 </script>
 
 <style scoped>
-/* The container uses .rd-card from main.css to handle primary surface styling */
+/* Layout: handles container constraints and overflow behavior. */
 .base-table-wrapper {
   overflow: hidden;
 }
@@ -73,7 +83,7 @@ const gridTemplate = computed(() => {
   width: 100%;
 }
 
-/* Shared Cell Properties */
+/* Cells: shared structural properties for both header and body segments. */
 .cell {
   padding: var(--spacing-sm) var(--spacing-md);
   display: flex;
@@ -82,7 +92,7 @@ const gridTemplate = computed(() => {
   transition: background-color var(--anim-speed) ease;
 }
 
-/* Header Cells */
+/* Header: visual treatment for column labels and branding-aligned backgrounds. */
 .table-header-group {
   display: contents;
 }
@@ -98,7 +108,7 @@ const gridTemplate = computed(() => {
   height: 3.5rem;
 }
 
-/* Body Rows/Cells */
+/* Body: interactive row styling and minimum height definitions. */
 .table-body-group {
   display: contents;
 }
@@ -115,21 +125,22 @@ const gridTemplate = computed(() => {
   min-height: 4.5rem;
 }
 
+/* Cleanup: removes the trailing border from the final row to maintain container integrity. */
 .table-row:last-child .body-cell {
   border-bottom: none;
 }
 
-/* Interaction: Coordinated Hover with main.css variables */
+/* Interaction: coordinated hover state using unified theme variables. */
 .table-row:hover .body-cell {
   background-color: var(--table-row-hover);
 }
 
-/* Alignment Helpers */
+/* Alignment: utility classes for positioning content horizontally within cells. */
 .align-left { justify-content: flex-start; text-align: left; }
 .align-center { justify-content: center; text-align: center; }
 .align-right { justify-content: flex-end; text-align: right; }
 
-/* Empty State Handling */
+/* State: styling and layout for the empty data message. */
 .empty-state {
   grid-column: 1 / -1;
   padding: var(--spacing-lg);

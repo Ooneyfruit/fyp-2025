@@ -14,6 +14,9 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a standardized loading interface for both inline content and full-page transitions.
+ */
 import { computed } from 'vue';
 import BaseSpinner from './BaseSpinner.vue';
 
@@ -21,11 +24,12 @@ const props = defineProps({
   fullScreen: { type: Boolean, default: false }
 });
 
-// Full page loading typically looks better with a slightly larger indicator
+// Increase spinner dimensions for full-screen states to ensure visual prominence.
 const spinnerSize = computed(() => props.fullScreen ? '2rem' : '1.5rem');
 </script>
 
 <style scoped>
+/* Layout: center alignment and spacing for the loading indicator. */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -36,6 +40,7 @@ const spinnerSize = computed(() => props.fullScreen ? '2rem' : '1.5rem');
   padding: var(--spacing-lg) var(--spacing-md);
 }
 
+/* State: viewport expansion used during initial app boots or route transitions. */
 .loading-container.full-page {
   height: 100vh;
   padding: 0;
@@ -45,7 +50,7 @@ const spinnerSize = computed(() => props.fullScreen ? '2rem' : '1.5rem');
 .loading-text {
   font-size: 0.9375rem;
   font-weight: 500;
-  /* Optical nudge to align text with the circular weight of the spinner */
+  /* Optical nudge to align text with the visual center of the circular spinner. */
   transform: translateY(0.0625rem);
 }
 </style>

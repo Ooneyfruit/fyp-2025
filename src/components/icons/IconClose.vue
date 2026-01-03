@@ -14,6 +14,11 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a scalable 'X' icon for closing modals or dismissing alerts.
+ */
+
+// Define component properties with default visual styling.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

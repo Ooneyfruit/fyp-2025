@@ -11,17 +11,23 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a global notification system that renders messages at the bottom of the viewport.
+ */
 import { useToast } from '../../composables/useToast';
+
+// Consume the global toast state from the shared composition function.
 const { message, isVisible } = useToast();
 </script>
 
 <style scoped>
+/* Layout: fixed overlay anchored to the bottom center of the screen. */
 .toast-overlay {
   position: fixed;
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
-  /* Ensures the toast stays above modals (z-modal is 1000) */
+  /* Ensure the toast remains visible above modals and other high-level ui elements. */
   z-index: var(--z-tooltip); 
   width: 100%;
   max-width: 28rem;
@@ -29,11 +35,11 @@ const { message, isVisible } = useToast();
   pointer-events: none;
 }
 
-/* Theme Inheritance */
+/* Theme: Card styling with a distinctive brand accent border. */
 .toast-body {
   padding: 1rem 1.25rem;
   pointer-events: auto;
-  /* INNOVATION: Instead of a separate div, we use an inset border-left */
+  /* Use an inset left border to indicate notification status without extra html elements. */
   border-left: 0.375rem solid var(--color-primary);
   display: flex;
   align-items: center;
@@ -47,9 +53,10 @@ const { message, isVisible } = useToast();
   white-space: pre-line;
 }
 
+/* Animation: Slide and fade logic for enter/leave states. */
 .toast-slide-enter-active,
 .toast-slide-leave-active {
-  /* Using a spring-like cubic bezier for a more "app-like" feel */
+  /* Use a spring-like cubic bezier to create a more responsive mobile feel. */
   transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
@@ -59,6 +66,7 @@ const { message, isVisible } = useToast();
   transform: translate(-50%, 1.5rem) scale(0.95);
 }
 
+/* Responsive: Reduce margins and expand width for smaller viewports. */
 @media (max-width: 40rem) {
   .toast-overlay {
     bottom: 1rem;
