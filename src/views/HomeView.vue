@@ -1,7 +1,7 @@
 <template>
-  <PageContainer>
+  <AppPageContainer>
     <div class="header-layout-group">
-      <PageHeader 
+      <AppPageHeader 
         title="Hello, world!" 
         :subtitle="`Welcome to RotaDent, ${user?.name || 'User'}.`"
       />
@@ -40,7 +40,7 @@
       </div>
     </BaseModal>
 
-  </PageContainer>
+  </AppPageContainer>
 </template>
 
 <script setup>
@@ -49,8 +49,8 @@ import { useAuth } from '../composables/useAuth';
 import { useToast } from '../composables/useToast';
 
 // Layout & Modal Components
-import PageHeader from '../components/layout/PageHeader.vue';
-import PageContainer from '../components/layout/PageContainer.vue';
+import AppPageHeader from '../components/layout/AppPageHeader.vue';
+import AppPageContainer from '../components/layout/AppPageContainer.vue';
 import BaseButton from '../components/shared/BaseButton.vue';
 import BaseModal from '../components/shared/BaseModal.vue';
 import UserModal from '../features/users/components/UserModal.vue';
