@@ -1,29 +1,29 @@
 <template>
   <div>
-    <Transition name="fade-overlay">
+    <Transition name="fade">
       <div 
-        v-if="isOpen && isMobile" 
+        v-if="isSidebarOpen && isMobile" 
         class="mobile-overlay" 
-        @click="$emit('close')"
+        @click="closeSidebar"
       ></div>
     </Transition>
 
-    <aside class="sidebar" :class="{ 'open': isOpen }">
+    <aside class="sidebar" :class="{ 'open': isSidebarOpen }">
       <nav class="sidebar-nav">
         <a 
-          v-for="item in menuItems" 
+          v-for="item in filteredMenuItems" 
           :key="item.name"
           href="#" 
           class="nav-item"
           :class="{ active: route.path === item.path }" 
           @click.prevent="handleNavigation(item)" 
-          :title="(!isOpen && !isMobile) ? item.name : ''" 
+          :title="(!isSidebarOpen && !isMobile) ? item.name : ''" 
         >
           <span class="icon">
             <component :is="item.icon" />
           </span>
           
-          <span class="label" :class="{ 'visible': isOpen }">
+          <span class="label" :class="{ 'visible': isSidebarOpen }">
             {{ item.name }}
           </span>
         </a>
@@ -33,48 +33,51 @@
 </template>
 
 <script setup>
-import { computed, watch, markRaw } from 'vue';
+/**
+ * Navigation sidebar providing primary application routing.
+ * Manages responsive states and administrative access control.
+ */
+import { computed, markRaw } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuth } from '../../composables/useAuth';
 import { useLayout } from '../../composables/useLayout';
 
-// Component Assets
+// Component assets.
 import IconHome from '../icons/IconHome.vue';
 import IconUsers from '../icons/IconUsers.vue';
 
-const props = defineProps({ 
-  isOpen: Boolean,
-  isMobile: Boolean 
-});
-
-const emit = defineEmits(['close']);
-const { isSidebarOpen } = useLayout();
-const { user } = useAuth();
-const router = useRouter();
-const route = useRoute();
-
-watch(() => props.isOpen, (newVal) => {
-  isSidebarOpen.value = newVal;
-}, { immediate: true });
-
-const allMenuItems = [
+// Define navigation structure outside the reactive scope for performance.
+const MENU_CONFIG = [
   { name: 'Home', icon: markRaw(IconHome), path: '/', adminOnly: false },
   { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true },
 ];
 
-const menuItems = computed(() => {
-  return allMenuItems.filter(item => item.adminOnly ? user.value?.is_administrator : true);
+const { isSidebarOpen, isMobile, closeSidebar } = useLayout();
+const { user } = useAuth();
+const router = useRouter();
+const route = useRoute();
+
+// Filter items based on the current user's administrative privileges.
+const filteredMenuItems = computed(() => {
+  return MENU_CONFIG.filter(item => 
+    item.adminOnly ? user.value?.is_administrator : true
+  );
 });
 
+/**
+ * Handles internal routing and collapses the menu on mobile devices.
+ * @param {Object} item - The menu item configuration object.
+ */
 const handleNavigation = (item) => {
-  if (window.innerWidth < 768) {
-    emit('close');
+  if (isMobile.value) {
+    closeSidebar();
   }
   router.push(item.path);
 };
 </script>
 
 <style scoped>
+/* Layout: primary sidebar container and positioning */
 .sidebar {
   top: var(--navbar-height); 
   bottom: 0;
@@ -86,12 +89,17 @@ const handleNavigation = (item) => {
   overflow-x: hidden;
   white-space: nowrap;
   width: var(--sidebar-slim-width);
-  /* Transition removed here; now handled by .is-ready in main.css */
 }
 
-.sidebar.open { width: var(--sidebar-width); }
-.sidebar-nav { padding: var(--spacing-md) 0; }
+.sidebar.open { 
+  width: var(--sidebar-width); 
+}
 
+.sidebar-nav { 
+  padding: var(--spacing-md) 0; 
+}
+
+/* Items: interactive navigation links */
 .nav-item {
   display: flex;
   align-items: center;
@@ -105,8 +113,15 @@ const handleNavigation = (item) => {
   line-height: 1;
 }
 
-.nav-item:hover { background-color: #f5f5f5; }
-.nav-item.active { background-color: #e8f0fe; color: #1967d2; border-left-color: #1967d2; }
+.nav-item:hover { 
+  background-color: #f5f5f5; 
+}
+
+.nav-item.active { 
+  background-color: #e8f0fe; 
+  color: #1967d2; 
+  border-left-color: #1967d2; 
+}
 
 .icon {
   display: flex;
@@ -118,6 +133,7 @@ const handleNavigation = (item) => {
   transform: translateY(-0.0625rem);
 }
 
+/* Labels: text visibility linked to sidebar state */
 .label {
   margin-left: 0.75rem;
   opacity: 0; 
@@ -126,8 +142,12 @@ const handleNavigation = (item) => {
   transform: translateY(0.0625rem);
 }
 
-.label.visible { opacity: 1; pointer-events: auto; }
+.label.visible { 
+  opacity: 1; 
+  pointer-events: auto; 
+}
 
+/* Responsive: mobile view transformations */
 @media (max-width: 48rem) {
   .sidebar {
     width: var(--sidebar-width);
@@ -138,6 +158,7 @@ const handleNavigation = (item) => {
   }
 }
 
+/* Overlay: dimming background for mobile interaction focus */
 .mobile-overlay {
   position: fixed;
   top: 0;
@@ -147,15 +168,5 @@ const handleNavigation = (item) => {
   background: rgba(31, 41, 55, 0.3);
   backdrop-filter: blur(2px);
   z-index: var(--z-overlay);
-}
-
-.fade-overlay-enter-active,
-.fade-overlay-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-overlay-enter-from,
-.fade-overlay-leave-to {
-  opacity: 0;
 }
 </style>

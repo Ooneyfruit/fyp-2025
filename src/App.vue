@@ -9,11 +9,7 @@
   >
     <template v-if="user">
       <NavBar @toggleSidebar="toggleSidebar" />
-      <SideMenu 
-        :isOpen="isSidebarOpen" 
-        :isMobile="isMobile"
-        @close="closeSidebar" 
-      />
+      <AppSideMenu />
     </template>
 
     <main :class="user ? 'main-content' : 'full-screen'">
@@ -41,99 +37,43 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue';
-import { useRegisterSW } from 'virtual:pwa-register/vue'; // PWA Lifecycle Hook
+/**
+ * Main application shell.
+ * Orchestrates global layout states and applies the dynamic stabilization lockout.
+ */
+import { onMounted } from 'vue';
+import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { user } from './composables/useAuth';
+import { useLayout, initLayoutStabilization } from './composables/useLayout';
+
+// Shared layout and UI components.
 import NavBar from './components/layout/NavBar.vue';
-import SideMenu from './components/layout/SideMenu.vue';
+import AppSideMenu from './components/layout/AppSideMenu.vue';
 import AppToast from './components/shared/AppToast.vue';
 import BaseButton from './components/shared/BaseButton.vue';
 
-const isMobile = ref(window.innerWidth < 768);
-const desktopPreference = ref(localStorage.getItem('isSidebarOpen') === 'true');
-const isSidebarOpen = ref(isMobile.value ? false : desktopPreference.value);
+const { isSidebarOpen, isMobile, canAnimate, toggleSidebar } = useLayout();
 
-// Transitions only enable after layout stabilization
-const canAnimate = ref(false);
-
-/**
- * PWA REGISTRATION & UPDATE STRATEGY
- * needRefresh becomes true when a new service worker is detected.
- */
 const { needRefresh, updateServiceWorker } = useRegisterSW({
-  onRegistered(r) {
-    console.log('[PWA] Service Worker Registered');
-  },
-  onNeedRefresh() {
-    console.log('[PWA] New version detected; showing refresh prompt.');
-  }
+  onRegistered() { console.log('[PWA] Service Worker Registered'); },
+  onNeedRefresh() { console.log('[PWA] Version update available.'); }
 });
-
-const syncHtmlClasses = (isOpen) => {
-  document.documentElement.classList.toggle('initial-layout-wide', isOpen);
-  document.documentElement.classList.toggle('initial-layout-slim', !isOpen);
-};
-
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-  syncHtmlClasses(isSidebarOpen.value);
-  
-  if (!isMobile.value) {
-    desktopPreference.value = isSidebarOpen.value;
-    localStorage.setItem('isSidebarOpen', isSidebarOpen.value);
-  }
-};
-
-const closeSidebar = () => {
-  isSidebarOpen.value = false;
-  syncHtmlClasses(false);
-};
-
-const handleResize = () => {
-  const wasMobile = isMobile.value;
-  isMobile.value = window.innerWidth < 768;
-
-  if (wasMobile !== isMobile.value) {
-    document.documentElement.classList.toggle('initial-layout-mobile', isMobile.value);
-    if (isMobile.value) {
-      isSidebarOpen.value = false;
-    } else {
-      isSidebarOpen.value = desktopPreference.value;
-    }
-    syncHtmlClasses(isSidebarOpen.value);
-  }
-};
 
 onMounted(() => {
-  window.addEventListener('resize', handleResize);
-  
   /**
-   * DYNAMIC STABILIZATION LOGIC:
-   * Safety window to ensure hydration is finished before allowing CSS slides.
+   * Triggers the conservative stabilization window.
+   * Only allows animations once the browser has proven sustained main-thread availability.
    */
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        canAnimate.value = true;
-        console.log("[App] Layout stabilized. Smooth transitions enabled.");
-      }, 1000);
-    });
-  });
+  initLayoutStabilization();
 });
-
-onUnmounted(() => window.removeEventListener('resize', handleResize));
-
-watch(user, (val) => {
-  if (val) {
-    isSidebarOpen.value = isMobile.value ? false : desktopPreference.value;
-    syncHtmlClasses(isSidebarOpen.value);
-  }
-}, { immediate: true });
 </script>
 
 <style scoped>
-.app-layout { min-height: 100vh; }
+.app-layout { 
+  min-height: 100vh; 
+}
 
+/* Sidebar context: spacing rules for the main content area */
 .is-sidebar-open:not(.is-mobile) .main-content { 
   margin-left: var(--sidebar-width); 
 }
@@ -148,7 +88,6 @@ watch(user, (val) => {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
-  /* Ensures the banner stays above the sidebar but below high-level tooltips */
   z-index: var(--z-modal); 
   background: white;
   padding: 1rem 1.5rem;
@@ -183,17 +122,21 @@ watch(user, (val) => {
   font-size: 0.8125rem;
 }
 
-/* Animation context matching the toast component style */
 .pwa-fade-enter-active, .pwa-fade-leave-active {
   transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
+
 .pwa-fade-enter-from, .pwa-fade-leave-to {
   opacity: 0;
   transform: translate(-50%, 2rem);
 }
 
 @media (max-width: 48rem) { 
-  .main-content { margin-left: 0; } 
-  .pwa-update-banner { bottom: 1rem; }
+  .main-content { 
+    margin-left: 0; 
+  } 
+  .pwa-update-banner { 
+    bottom: 1rem; 
+  }
 }
 </style>

@@ -13,6 +13,7 @@
 /src/components/layout/AppPageContainer.vue
 /src/components/layout/AppPageHeader.vue
 /src/components/layout/AppPageHeaderGroup.vue
+/src/components/layout/AppSideMenu.vue
 /src/components/shared/AppLoading.vue
 /src/components/shared/AppToast.vue
 /src/components/shared/BaseButton.vue
