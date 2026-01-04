@@ -185,6 +185,13 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   gap: 0.75rem;
 }
 
+/* Layout: standard page constraints and vertical structure. */
+.rd-page-container {
+  padding: var(--spacing-lg);
+  max-width: 75rem;
+  margin: 0 auto;
+}
+
 /* Utility: base configuration for the button design system. */
 .rd-button {
   display: inline-flex;

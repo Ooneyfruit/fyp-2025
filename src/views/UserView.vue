@@ -1,8 +1,8 @@
 <template>
   <AppAuthGuard>
-    <PageContainer>
+    <AppPageContainer>
       <div class="header-layout-group">
-        <PageHeader 
+        <AppPageHeader 
           title="User Management" 
           subtitle="Manage personnel and permissions for your practice."
         />
@@ -20,7 +20,7 @@
       </div>
 
       <UserModal ref="userModal" />
-    </PageContainer>
+    </AppPageContainer>
   </AppAuthGuard>
 </template>
 
@@ -28,8 +28,8 @@
 import { ref } from 'vue';
 import { usePracticeUsers } from '../features/users/composables/usePracticeUsers';
 import AppAuthGuard from '../components/layout/AppAuthGuard.vue';
-import PageHeader from '../components/layout/PageHeader.vue';
-import PageContainer from '../components/layout/PageContainer.vue';
+import AppPageHeader from '../components/layout/AppPageHeader.vue';
+import AppPageContainer from '../components/layout/AppPageContainer.vue';
 import UserModal from '../features/users/components/UserModal.vue';
 import AppLoading from '../components/shared/AppLoading.vue';
 import BaseButton from '../components/shared/BaseButton.vue';
