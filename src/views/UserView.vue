@@ -1,5 +1,5 @@
 <template>
-  <AuthGuard>
+  <AppAuthGuard>
     <PageContainer>
       <div class="header-layout-group">
         <PageHeader 
@@ -21,13 +21,13 @@
 
       <UserModal ref="userModal" />
     </PageContainer>
-  </AuthGuard>
+  </AppAuthGuard>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { usePracticeUsers } from '../features/users/composables/usePracticeUsers';
-import AuthGuard from '../components/layout/AuthGuard.vue';
+import AppAuthGuard from '../components/layout/AppAuthGuard.vue';
 import PageHeader from '../components/layout/PageHeader.vue';
 import PageContainer from '../components/layout/PageContainer.vue';
 import UserModal from '../features/users/components/UserModal.vue';
