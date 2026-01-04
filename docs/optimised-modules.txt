@@ -1,4 +1,4 @@
 # Avoid changing these files/folders/files in folders if possible
-/src/assets/main.css
 /src/components/icons/*
 /src/components/shared/*
+/src/components/layout/AppAuthGuard.vue

@@ -1,12 +1,16 @@
 /* src/assets/main.css */
-:root {
-  /* Layout Dimensions */
+
+/**
+ * Global configuration: design tokens, spacing scales, and semantic variables.
+ */
+ :root {
+  /* Layout: configuration for primary container dimensions and animation speeds. */
   --navbar-height: 3.75rem;
   --sidebar-width: 16.25rem;
   --sidebar-slim-width: 4.5rem;
   --anim-speed: 0.3s;
   
-  /* Stacking Context (Z-INDEX Hierarchy) */
+  /* Stacking: z-index hierarchy to manage vertical layer distribution. */
   --z-below: -1;
   --z-normal: 1;
   --z-sticky: 100;
@@ -16,7 +20,7 @@
   --z-modal: 1000;
   --z-tooltip: 1100;
 
-  /* Color System (HSL for dynamic shading) */
+  /* Color: HSL system for dynamic shading and brand consistency. */
   --hue-primary: 221;
   --hue-danger: 0;
   --hue-success: 142;
@@ -33,7 +37,7 @@
   --color-warning: hsl(var(--hue-warning), 80%, 33%);
   --color-warning-bg: hsl(var(--hue-warning), 100%, 96%);
   
-  /* Typography & Neutral Scale */
+  /* Neutral: typography and surface color tokens. */
   --text-main: hsl(221, 39%, 11%);
   --text-muted: hsl(215, 16%, 34%);
   --text-light: hsl(0, 0%, 100%);
@@ -41,12 +45,12 @@
   --border-color: hsl(214, 32%, 91%);
   --bg-app: hsl(210, 40%, 98%);
 
-  /* Table Specific Semantics */
+  /* Table: specific semantic variables for grid-based data layouts. */
   --table-header-bg: var(--bg-app);
   --table-row-hover: hsl(210, 40%, 96%);
   --table-row-border: hsl(214, 32%, 95%);
 
-  /* Spacing Scale */
+  /* Scale: spacing and radius tokens used across all components. */
   --spacing-xs: 0.5rem;
   --spacing-sm: 0.75rem;
   --spacing-md: 1.25rem;
@@ -57,7 +61,7 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Base Reset & Box Model */
+/* Base: reset and box-model stabilization. */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -77,19 +81,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Form Element targeted inheritance */
+/* Inheritance: form element font and color synchronization. */
 input, button, textarea, select {
   font: inherit;
   color: inherit;
 }
 
-/* Modern Media Reset */
+/* Media: standard reset for visual elements and svg scalability. */
 img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
 
-/* Global Layout Orchestration */
+/* Orchestration: global layout positioning and sidebar spacing. */
 .main-content {
   position: relative;
   z-index: var(--z-normal);
@@ -98,7 +102,7 @@ img, picture, video, canvas, svg {
   margin-left: var(--sidebar-slim-width);
 }
 
-/* Teleport Script Classes (index.html synchronization) */
+/* States: layout overrides based on initial hydration classes. */
 html.initial-layout-wide .main-content { margin-left: var(--sidebar-width); }
 html.initial-layout-slim .main-content { margin-left: var(--sidebar-slim-width); }
 html.initial-layout-mobile .main-content { margin-left: 0; }
@@ -106,7 +110,7 @@ html.initial-layout-mobile .main-content { margin-left: 0; }
 html.initial-layout-wide .sidebar { width: var(--sidebar-width); }
 html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 
-/* Enabled only after hydration stabilization in App.vue */
+/* Animation: layout transitions enabled only after hydration is stable. */
 .is-animate-ready .main-content {
   transition: margin-left var(--anim-speed) ease;
 }
@@ -115,7 +119,7 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
 }
 
-/* Accessibility */
+/* Accessibility: visually hidden utility for screen readers. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -128,14 +132,34 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   border-width: 0;
 }
 
-/* Smooth Transitions for Layout Shifts */
+/* Layout: main container structure for vertical expansion. */
 .app-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Surface Utilities */
+/* Global: standard rotation keyframes for loading states. */
+@keyframes rd-spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: rd-spin 0.8s linear infinite;
+}
+
+/* Transitions: standardized utility for entrance and exit opacity. */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--anim-speed) ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Surface: container utilities for the card design system. */
 .rd-card {
   background: white;
   border: 1px solid var(--border-color);
@@ -161,16 +185,7 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   gap: 0.75rem;
 }
 
-/* Global Animations */
-@keyframes rd-spin {
-  to { transform: rotate(360deg); }
-}
-
-.animate-spin {
-  animation: rd-spin 0.8s linear infinite;
-}
-
-/* Button Utilities */
+/* Utility: base configuration for the button design system. */
 .rd-button {
   display: inline-flex;
   align-items: center;
@@ -193,7 +208,7 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   cursor: not-allowed;
 }
 
-/* Variant Definitions */
+/* Variants: specific color mappings for button types. */
 .rd-button-primary {
   background-color: var(--color-primary);
   color: var(--text-light);
@@ -227,7 +242,7 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   color: white;
 }
 
-/* Centralized Pill Utilities (.rd-pill) */
+/* Utility: status and categorization pills with brand color logic. */
 .rd-pill {
   display: inline-flex;
   align-items: center;
