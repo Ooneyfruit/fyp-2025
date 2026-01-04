@@ -2,3 +2,4 @@
 /src/components/icons/*
 /src/components/shared/*
 /src/components/layout/AppAuthGuard.vue
+/src/components/layout/AppPageContainer.vue
