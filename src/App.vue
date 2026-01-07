@@ -13,11 +13,7 @@
     </template>
 
     <main :class="user ? 'main-content' : 'full-screen'">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+      <router-view />
     </main>
 
     <AppToast />
@@ -27,7 +23,7 @@
 <script setup>
 /**
  * Main application shell.
- * Orchestrates global layout states, feature API integration, and PWA updates.
+ * Orchestrates global layout states and manages PWA update notifications.
  */
 import { onMounted, watch } from 'vue';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
@@ -35,10 +31,8 @@ import { user } from './composables/useAuth';
 import { useLayout, initLayoutStabilization } from './composables/useLayout';
 import { useToast } from './composables/useToast';
 
-// Feature API: consolidated entry point for navigation capabilities.
-import { NavBar } from './features/navbar/navbarAPI';
-
 // Shared layout and UI components.
+import { NavBar } from './features/navbar/navbarAPI';
 import AppSideMenu from './components/layout/AppSideMenu.vue';
 import AppToast from './components/shared/AppToast.vue';
 
@@ -73,7 +67,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Layout: core shell dimensions and vertical expansion */
+/* Layout: core shell dimensions */
 .app-layout { 
   min-height: 100vh; 
 }
@@ -83,7 +77,6 @@ onMounted(() => {
   margin-left: var(--sidebar-width); 
 }
 
-/* Responsive: override content margins for small screens */
 .is-mobile .main-content { 
   margin-left: 0; 
 }

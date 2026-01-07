@@ -44,7 +44,7 @@ export function initLayoutStabilization() {
   if (typeof window === 'undefined') return;
 
   let idleCheckCount = 0;
-  const REQUIRED_STABLE_CHECKS = 3; // Must pass 3 consecutive idle checks.
+  const REQUIRED_STABLE_CHECKS = 6; // Must pass 3 consecutive idle checks.
 
   const verifyStability = () => {
     const wait = window.requestIdleCallback || ((cb) => setTimeout(cb, 50));

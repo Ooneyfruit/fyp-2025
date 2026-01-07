@@ -104,7 +104,7 @@ onUnmounted(() => {
   justify-content: center;
   /* Maintain position above standard content and navigation. */
   z-index: var(--z-modal); 
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
 }
 
 /* Overlay: dimmed background with light blurring to focus user attention. */
@@ -125,7 +125,7 @@ onUnmounted(() => {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   transform-origin: center;
   z-index: 1;
-  width: calc(100% - (var(--spacing-lg) * 2));
+  width: calc(100% - (var(--spacing-md) * 2));
   /* Constrain height to ensure the modal remains within the viewport on small screens. */
   max-height: min(45rem, 90vh);
 }
@@ -138,7 +138,7 @@ onUnmounted(() => {
 /* Layout: responsiveness and padding adjustments for larger viewports. */
 @media (min-width: 48rem) {
   .modal-root {
-    padding: var(--spacing-lg) var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-sm);
   }
 }
 
