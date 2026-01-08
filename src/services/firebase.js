@@ -10,7 +10,6 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 /**
  * Firebase project configuration.
- * Values are retrieved from the environment to support multi-stage deployments.
  */
 const firebaseConfig = {
   apiKey: "AIzaSyA8FOAF73dNCrLlIMB_2pMQXHFSAEXFLEQ",

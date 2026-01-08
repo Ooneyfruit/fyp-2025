@@ -24,3 +24,10 @@
 /src/components/shared/BasePill.vue
 /src/components/shared/BaseSpinner.vue
 /src/components/shared/BaseTable.vue
+/src/features/navbar/components/NavBar.vue
+/src/features/navbar/components/NavPracticeSwitcher.vue
+/src/features/navbar/components/NavUserDropdown.vue
+/src/features/navbar/components/NavUserMenu.vue
+/src/features/navbar/components/NavUserTrigger.vue
+/src/features/navbar/composables/userUserPractices.js
+/src/features/navbar/navbarAPI.js
