@@ -121,7 +121,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
   transform: translate(-50%, 1.5rem) scale(0.95);
 }
 
-/* Responsive: Optimize layout for mobile viewports. */
+/* Responsive: Optimize layout for mobile viewports using a dynamic wrapping strategy. */
 @media (max-width: 40rem) {
   .toast-overlay {
     bottom: 1rem;
@@ -129,13 +129,16 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
   }
 
   .toast-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
+    /* Logic: utilize wrapping instead of a forced column to prevent unnecessary vertical expansion. */
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem var(--spacing-sm);
   }
 
   .actions {
-    width: 100%;
+    /* Logic: push actions to the end to maintain horizontal hierarchy where space allows. */
+    margin-left: auto;
+    flex-shrink: 0;
     justify-content: flex-end;
   }
 }
