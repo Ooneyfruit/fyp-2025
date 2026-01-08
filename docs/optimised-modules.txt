@@ -1,4 +1,5 @@
 # Avoid changing these files/folders/files in folders if possible
+/src/components/icons/IconChevronDown.vue
 /src/components/icons/IconClock.vue
 /src/components/icons/IconClose.vue
 /src/components/icons/IconEdit.vue

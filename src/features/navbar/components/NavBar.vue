@@ -16,7 +16,7 @@
     </div>
 
     <div v-if="user" class="nav-actions">
-      <NavPracticeSwitcher v-if="!isMobile" />
+      <NavPracticeSwitcher v-if="!isMobile" class="desktop-switcher" />
       <NavUserMenu />
     </div>
 
@@ -55,6 +55,7 @@ provide('userModal', userModalRef);
 </script>
 
 <style scoped>
+/* Layout: fixed position shell for the top navigation bar. */
 .navbar {
   position: fixed;
   top: 0;
@@ -101,5 +102,9 @@ provide('userModal', userModalRef);
   align-items: center;
   justify-content: flex-end;
   gap: var(--spacing-lg);
+}
+
+.desktop-switcher {
+  width: auto;
 }
 </style>
