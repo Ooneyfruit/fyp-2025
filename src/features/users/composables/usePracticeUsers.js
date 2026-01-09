@@ -105,12 +105,16 @@ export function usePracticeUsers() {
   };
 
   /**
-   * Aggregates membership data with profile information from the global cache.
+   * Aggregates membership data with profile information.
+   * Logic: explicitly includes the document ID in the profile object for avatar detection.
    */
   const users = computed(() => {
     return memberships.value.map(m => ({
       ...m,
-      profile: globalProfileStore.value[m.user.id] || { name: 'Loading...' }
+      profile: {
+        id: m.user.id,
+        ...(globalProfileStore.value[m.user.id] || { name: 'Loading...' })
+      }
     })).sort((a, b) => (a.profile?.name || "").localeCompare(b.profile?.name || ""));
   });
 

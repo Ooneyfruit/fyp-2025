@@ -1,6 +1,6 @@
 <template>
   <div class="rd-select-group" :class="{ 'is-fluid': fluid }">
-    <label v-if="label" :for="id" class="rd-select-label">{{ label }}</label>
+    <label v-if="label" :for="id" class="rd-field-label">{{ label }}</label>
     <div class="select-wrapper">
       <select 
         :id="id"
@@ -22,30 +22,20 @@
 <script setup>
 /**
  * Standardized form selection component.
- * Acts as a functional wrapper for the global rd-select classes and manages focus transitions.
+ * Logic: provides a visual wrapper for native selects with an animated chevron.
  */
 import IconChevronDown from '../icons/IconChevronDown.vue';
 
 defineProps({
   modelValue: { type: [String, Number], default: '' },
   label: { type: String, default: '' },
-  /**
-   * Semantic identifiers for accessibility and browser autofill support.
-   */
   id: { type: String, default: undefined },
   name: { type: String, default: undefined },
-  /**
-   * Visual theme variant. 
-   * Maps to the primary, secondary, and danger global classes.
-   */
   variant: { 
     type: String, 
     default: 'secondary',
     validator: (v) => ['primary', 'secondary', 'danger'].includes(v)
   },
-  /**
-   * If true, the component will expand to 100% of its container width.
-   */
   fluid: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false }
 });
@@ -53,61 +43,54 @@ defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 /**
- * Synchronizes the internal selection state and clears active focus.
- * Blurring the element prevents a lingering focus outline after the menu closes.
+ * Synchronizes the internal state and forces a blur to reset animations.
  * @param {Event} event - the native change event.
  */
 const handleChange = (event) => {
   emit('update:modelValue', event.target.value);
   
-  // Logic: remove focus to trigger the CSS transition back from the focus state.
+  // Logic: force the select to lose focus so the chevron spins back to its default state.
   event.target.blur();
 };
 </script>
 
 <style scoped>
-/* Layout: orchestration for the select label and wrapper structure. */
-.rd-select-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  width: fit-content;
+.rd-select-group { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.5rem; 
+  width: fit-content; 
 }
 
-.rd-select-group.is-fluid {
-  width: 100%;
+.rd-select-group.is-fluid { 
+  width: 100%; 
 }
 
-.rd-select-label {
-  font-size: 0.725rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  padding-left: 0.1rem;
-  letter-spacing: 0.025em;
-  cursor: pointer;
+.select-wrapper { 
+  position: relative; 
+  display: flex; 
+  align-items: center; 
+  width: 100%; 
 }
 
-.select-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-/* Surface: positioning and interaction logic for the overlay icon. */
+/* Surface: positioning and animation logic for the overlay icon. */
 .select-icon {
   position: absolute;
   right: 0.75rem;
   width: 1rem;
   height: 1rem;
-  pointer-events: none; /* Ensure clicks pass through to the underlying select element. */
-  transition: transform var(--anim-speed) ease;
+  pointer-events: none; /* Logic: allow click events to pass through to the select element. */
+  transition: transform var(--anim-speed) ease, color var(--anim-speed) ease;
 }
 
-/* State: toggle icon orientation when the select is active or focused. */
+/* State: rotate the icon 180 degrees when the select is active or focused. */
 .rd-select:focus + .select-icon {
   transform: rotate(180deg);
+}
+
+/* Logic: override global select height to match rd-input exactly. */
+.rd-select { 
+  height: 2.75rem !important; 
 }
 
 /* Theme: dynamic icon coloring based on the select variant. */
