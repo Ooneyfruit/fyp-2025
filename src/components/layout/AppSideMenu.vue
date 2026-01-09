@@ -5,10 +5,20 @@
         v-if="isSidebarOpen && isMobile" 
         class="mobile-overlay" 
         @click="closeSidebar"
+        @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove"
+        @touchend="handleTouchEnd"
       ></div>
     </Transition>
 
-    <aside class="sidebar" :class="{ 'open': isSidebarOpen }">
+    <aside 
+      class="sidebar" 
+      :class="{ 'open': isSidebarOpen, 'is-swiping': isSwiping }"
+      :style="swipeTransform"
+      @touchstart="handleTouchStart"
+      @touchmove="handleTouchMove"
+      @touchend="handleTouchEnd"
+    >
       <nav class="sidebar-nav">
         <a 
           v-for="item in filteredMenuItems" 
@@ -34,19 +44,19 @@
 
 <script setup>
 /**
- * Navigation sidebar providing primary application routing.
- * Manages responsive states and administrative access control.
+ * Navigation sidebar with enhanced touch interaction.
+ * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
  */
 import { computed, markRaw } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuth } from '../../composables/useAuth';
 import { useLayout } from '../../composables/useLayout';
+import { useSwipeAway } from '../../composables/useSwipeAway';
 
-// Component assets.
+// Component icons.
 import IconHome from '../icons/IconHome.vue';
 import IconUsers from '../icons/IconUsers.vue';
 
-// Define navigation structure outside the reactive scope for performance.
 const MENU_CONFIG = [
   { name: 'Home', icon: markRaw(IconHome), path: '/', adminOnly: false },
   { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true },
@@ -57,7 +67,22 @@ const { user } = useAuth();
 const router = useRouter();
 const route = useRoute();
 
-// Filter items based on the current user's administrative privileges.
+// Gesture logic is active only when the sidebar is visible on mobile.
+const isSwipeEnabled = computed(() => isMobile.value && isSidebarOpen.value);
+
+// Initialize generalized swipe logic to drive the sidebar animation.
+const { 
+  isSwiping, 
+  swipeTransform, 
+  handleTouchStart, 
+  handleTouchMove, 
+  handleTouchEnd 
+} = useSwipeAway({
+  threshold: 80,
+  onTrigger: closeSidebar,
+  enabled: isSwipeEnabled
+});
+
 const filteredMenuItems = computed(() => {
   return MENU_CONFIG.filter(item => 
     item.adminOnly ? user.value?.is_administrator : true
@@ -65,8 +90,8 @@ const filteredMenuItems = computed(() => {
 });
 
 /**
- * Handles internal routing and collapses the menu on mobile devices.
- * @param {Object} item - The menu item configuration object.
+ * Handles navigation events and ensures menu closure on mobile.
+ * @param {Object} item - Navigation item metadata.
  */
 const handleNavigation = (item) => {
   if (isMobile.value) {
@@ -77,7 +102,7 @@ const handleNavigation = (item) => {
 </script>
 
 <style scoped>
-/* Layout: primary sidebar container and positioning */
+/* Sidebar container with transition logic for state changes */
 .sidebar {
   top: var(--navbar-height); 
   bottom: 0;
@@ -89,6 +114,12 @@ const handleNavigation = (item) => {
   overflow-x: hidden;
   white-space: nowrap;
   width: var(--sidebar-slim-width);
+  transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* Prevent transition conflicts during active manual swiping */
+.sidebar.is-swiping {
+  transition: none;
 }
 
 .sidebar.open { 
@@ -99,7 +130,6 @@ const handleNavigation = (item) => {
   padding: var(--spacing-md) 0; 
 }
 
-/* Items: interactive navigation links */
 .nav-item {
   display: flex;
   align-items: center;
@@ -130,16 +160,13 @@ const handleNavigation = (item) => {
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0; 
-  transform: translateY(-0.0625rem);
 }
 
-/* Labels: text visibility linked to sidebar state */
 .label {
   margin-left: 0.75rem;
   opacity: 0; 
   pointer-events: none;
   transition: opacity 0.2s ease;
-  transform: translateY(0.0625rem);
 }
 
 .label.visible { 
@@ -147,7 +174,7 @@ const handleNavigation = (item) => {
   pointer-events: auto; 
 }
 
-/* Responsive: mobile view transformations */
+/* Mobile positioning logic */
 @media (max-width: 48rem) {
   .sidebar {
     width: var(--sidebar-width);
@@ -158,7 +185,7 @@ const handleNavigation = (item) => {
   }
 }
 
-/* Overlay: dimming background for mobile interaction focus */
+/* Overlay serves as the touch proxy for viewport-wide gestures */
 .mobile-overlay {
   position: fixed;
   top: 0;
@@ -168,5 +195,6 @@ const handleNavigation = (item) => {
   background: rgba(31, 41, 55, 0.3);
   backdrop-filter: blur(2px);
   z-index: var(--z-overlay);
+  touch-action: none;
 }
 </style>
