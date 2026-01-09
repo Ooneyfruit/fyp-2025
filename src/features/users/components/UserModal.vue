@@ -199,7 +199,7 @@ const save = async () => {
       name: form.value.name,
       email: form.value.email,
       address: form.value.address,
-      profile_image: form.value.profile_image || 'https://via.placeholder.com/40',
+      profile_image: form.value.profile_image || '',
       current_practice: pRef
     }, { merge: true });
 
