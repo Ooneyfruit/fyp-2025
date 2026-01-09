@@ -363,3 +363,124 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   background: hsl(var(--hue-danger), 72%, 96%);
   color: var(--color-danger);
 }
+
+/* Forms: standardized section headers and layout structures. */
+.rd-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Grid: intelligent row distribution. */
+.rd-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.5rem;
+  align-items: end; /* Aligns inputs to the baseline even if labels differ */
+}
+
+/* Layout: primary form orchestration for vertical flow. */
+.rd-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Consistent vertical padding between blocks */
+  width: 100%;
+}
+
+.rd-section-header {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Fields: labeling and height synchronization. */
+.rd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rd-field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  padding-left: 0.1rem;
+}
+
+.rd-grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.25rem; }
+@media (max-width: 40rem) { .rd-grid-layout { grid-template-columns: 1fr; } }
+
+/* Danger Zone: specialized layout for destructive actions. */
+.rd-danger-zone {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rd-warning-box {
+  background: hsl(var(--hue-danger), 100%, 98%);
+  border: 1px solid hsl(var(--hue-danger), 100%, 90%);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
+
+/* Toggle: slider and card primitives. */
+.rd-toggle-card { 
+  display: flex; justify-content: space-between; align-items: center; 
+  background: var(--table-row-hover); padding: 0.75rem; border-radius: 0.75rem; 
+}
+.rd-toggle-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.rd-toggle-title { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+.rd-toggle-subtitle { font-size: 0.7rem; color: var(--text-muted); }
+
+/* Toggle: core switch styles for BaseToggle. */
+.rd-toggle { position: relative; display: inline-block; width: 2.2rem; height: 1.2rem; flex-shrink: 0; }
+.rd-toggle-input { opacity: 0; width: 0; height: 0; }
+.rd-toggle-slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #d1d5db; transition: .2s; border-radius: 1rem;
+}
+.rd-toggle-slider:before {
+  position: absolute; content: ""; height: 0.95rem; width: 0.95rem;
+  left: 0.125rem; bottom: 0.125rem; background-color: white; transition: .2s; border-radius: 50%;
+}
+.rd-toggle-input:checked + .rd-toggle-slider { background-color: var(--color-primary); }
+.rd-toggle-input:checked + .rd-toggle-slider:before { transform: translateX(1rem); }
+
+/* Inputs: unified height for single-line elements. */
+.rd-input {
+  height: 2.75rem; /* Fixed height for row alignment */
+  padding: 0 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.9375rem;
+  background: white;
+  width: 100%;
+  transition: border-color var(--anim-speed) ease;
+}
+
+.rd-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px hsl(var(--hue-primary), 83%, 95%);
+}
+
+.rd-textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.9375rem;
+  min-height: 5rem;
+  width: 100%;
+  resize: vertical;
+}
