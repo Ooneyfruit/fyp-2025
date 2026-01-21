@@ -13,7 +13,7 @@
           class="role-title"
           :style="getRoleBadgeStyle(item.role.id)"
         >
-          {{ item.role.name }}
+          {{ toSentenceCase(item.role.name) }}
         </div>
         <div class="surgery-subtitle">
           {{ item.surgery.name }}
@@ -61,15 +61,35 @@ defineEmits(['slot-click']);
 
 const { getRoleColor } = useRotaColors();
 
+// --- Helpers ---
+
+/**
+ * Converts a string to sentence case (first letter upper, rest lower).
+ * @param {string} str - The input string
+ * @returns {string} Formatted string
+ */
+const toSentenceCase = (str) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
 // --- Table Configuration ---
 
 const tableHeaders = computed(() => {
   return [
-    { key: 'header_col', label: 'Role / Surgery', width: '220px', align: 'left' },
+    { 
+      key: 'header_col', 
+      label: 'Role / Surgery', 
+      // Using minmax(0, X) is critical here.
+      // Unlike fit-content, minmax(0, 14rem) allows the column to shrink below
+      // the intrinsic width of its content (min-content), forcing truncation.
+      width: 'minmax(0, 10rem)', 
+      align: 'left' 
+    },
     ...props.days.map(d => ({
       key: d.key,
       label: d.label,
-      width: '1fr',
+      width: 'minmax(0, 1fr)',
       align: 'left',
       headerClass: d.isToday ? 'header-today' : '' 
     }))
@@ -78,6 +98,11 @@ const tableHeaders = computed(() => {
 
 // --- Styling Helpers ---
 
+/**
+ * Generates style object for role badges based on role ID.
+ * @param {string} roleId - The ID of the role
+ * @returns {object} Style object with color properties
+ */
 const getRoleBadgeStyle = (roleId) => {
   const c = getRoleColor(roleId);
   return { 
@@ -95,12 +120,19 @@ const getRoleBadgeStyle = (roleId) => {
   flex-direction: column;
   justify-content: center;
   height: 100%;
+  
+  /* CRITICAL: These styles ensure the content respects the parent's width cap. */
+  /* Without this, the grid item's implicit 'min-width: auto' would force the column open. */
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .role-title {
   font-weight: 700;
   font-size: 0.75rem;
-  text-transform: uppercase;
+  /* Removed text-transform: uppercase so sentence case helper works */
   letter-spacing: 0.05em;
   margin-bottom: 0.25rem;
   padding: 2px 6px;
@@ -108,12 +140,23 @@ const getRoleBadgeStyle = (roleId) => {
   display: inline-block;
   border: 1px solid transparent;
   align-self: flex-start;
+  
+  /* Ensure badges also truncate if they exceed the narrow column width */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .surgery-subtitle {
   color: var(--text-muted);
   font-size: 0.85rem;
   padding-left: 4px;
+  
+  /* Ensure subtitle truncates */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Cell Layout */
@@ -131,5 +174,5 @@ const getRoleBadgeStyle = (roleId) => {
   font-weight: 800 !important;
 }
 
-.empty-state-content { padding: 3rem; text-align: center; color: var(--text-muted); }
+.empty-state-content { padding: 5rem; text-align: center; color: var(--text-muted); }
 </style>
