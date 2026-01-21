@@ -11,19 +11,25 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a flexible layout utility for rendering a collection 
+ * of data objects into a standardized vertical list of card components.
+ */
 import BaseCard from './BaseCard.vue';
 
+// Define the configuration properties for the list data and its visual presentation.
 defineProps({
+  // The array of data objects to be transformed into card elements.
   items: { 
     type: Array, 
     required: true 
   },
-  // Allows the user to specify which field to use for the Vue key
+  // The object property name used to provide a unique key for list reconciliation.
   keyField: { 
     type: String, 
     default: 'id' 
   },
-  // Controls the vertical spacing between cards
+  // The vertical gap between list items, defined using standard css units.
   gap: { 
     type: String, 
     default: '1.5rem' 
@@ -32,6 +38,7 @@ defineProps({
 </script>
 
 <style scoped>
+/* Layout: flexible column container utilizing custom properties for vertical spacing. */
 .card-list {
   display: flex;
   flex-direction: column;

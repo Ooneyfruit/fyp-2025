@@ -14,6 +14,11 @@
 </template>
 
 <script setup>
+/**
+ * Primary responsibility: provides a scalable plus icon for adding items or creating new records.
+ */
+
+// Define component properties for visual customization.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

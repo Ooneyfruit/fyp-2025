@@ -1,40 +1,40 @@
+/**
+ * file: ooneyfruit/fyp-2025/fyp-2025-ui-testing/src/composables/useToast.js
+ * Primary responsibility: manages the global state for the notification system.
+ */
 import { ref } from 'vue';
 
-// GLOBAL SINGLETON STATE
-// Moving these outside the function ensures every component shares 
-// the same reactive references.
+// Global Singleton State
+// These refs are defined outside the function to ensure state persistence across components.
 const message = ref("");
 const isVisible = ref(false);
+const actionLabel = ref(null);
+const actionCallback = ref(null);
 let timeout = null;
 
 export function useToast() {
   /**
    * Triggers a global toast notification.
    * @param {string} msg - The message to display.
-   * @param {number} duration - Time in ms before auto-hiding.
+   * @param {Object} options - Configuration for duration and actions.
    */
-  const showToast = (msg, duration = 4000) => {
-    // Clear any existing timer to prevent overlapping hide events
-    console.log(`%c[useToast] TRIGGERED: "${msg}"`, "color: #3b82f6; font-weight: bold");
-    
-    // Clear existing timer if user spams the button
-    if (timeout) {
-      console.log("[useToast] Clearing existing timeout.");
-      clearTimeout(timeout);
-    }
+  const showToast = (msg, { duration = 4000, action = null } = {}) => {
+    if (timeout) clearTimeout(timeout);
 
     message.value = msg;
     isVisible.value = true;
+    actionLabel.value = action?.label || null;
+    actionCallback.value = action?.callback || null;
     
-    timeout = setTimeout(() => {
-      isVisible.value = false;
-      console.log("[useToast] Hide animation started.");
-    }, duration);
+    // Only set a timer if duration is greater than zero.
+    // This allows for persistent "sticky" toasts.
+    if (duration > 0) {
+      timeout = setTimeout(() => {
+        isVisible.value = false;
+      }, duration);
+    }
   };
 
-  /**
-   * Immediately hides the active toast.
-   */
   const hideToast = () => {
     isVisible.value = false;
     if (timeout) clearTimeout(timeout);
@@ -43,7 +43,12 @@ export function useToast() {
   return { 
     message, 
     isVisible, 
+    actionLabel,
     showToast,
-    hideToast 
+    hideToast,
+    handleAction: () => {
+      if (actionCallback.value) actionCallback.value();
+      hideToast();
+    }
   };
 }

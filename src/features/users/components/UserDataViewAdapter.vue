@@ -57,7 +57,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import BaseTable from '../../../components/shared/BaseTable.vue'; // Updated import
+import BaseTable from '../../../components/shared/BaseTable.vue'; 
 import BaseCardList from '../../../components/shared/BaseCardList.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';
@@ -70,7 +70,10 @@ defineEmits(['edit']);
 onMounted(() => console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`));
 
 const adapterRoot = ref(null);
-const { isMobile } = useBreakpoints(adapterRoot);
+
+// Uses a higher threshold (60rem) here to force the switch to card view earlier.
+// This prevents the table columns from becoming too cramped before the transition occurs.
+const { isMobile } = useBreakpoints(adapterRoot, 60);
 
 const formatDate = (ts) => {
   if (!ts) return null;
@@ -79,14 +82,12 @@ const formatDate = (ts) => {
 };
 
 /**
- * 3. OPTIMIZED HEADER CONFIGURATION
- * We now use semantic layout units. 
- * - 'Member' takes all available space (1fr).
- * - 'Actions' is center-aligned and tightly packed (min-content).
- * - Date columns are assigned a readable fixed width.
+ * The 'member' column uses minmax() to enforce readability.
+ * Calculation: Icon (2.25rem) + Gap (0.75rem) + Text (4.5rem) + Padding (~2rem) = ~9.5rem.
+ * Has min-width set to 10rem to guarantee the text is at least twice the icon width.
  */
 const userHeaders = [
-  { key: 'member', label: 'Member', width: '1fr' }, 
+  { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' }, 
   { key: 'role', label: 'Role', width: 'min-content' },
   { key: 'status', label: 'Status', width: 'min-content' },
   { key: 'contract', label: 'Contract', width: 'min-content' },
