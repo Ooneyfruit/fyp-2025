@@ -1,40 +1,38 @@
 <template>
-  <main 
-    class="rd-page-container" 
-    :class="{ 'rd-page-container--fluid': fluid }"
-  >
+  <main class="page-container" :class="{ 'is-fluid': fluid }">
     <slot />
   </main>
 </template>
 
-<script>
+<script setup>
 /**
- * Provides a standardized layout wrapper for top-level pages.
- * Handles primary content constraints, accessibility landmarks, and fluid layout options.
+ * Standard page wrapper to ensure consistent padding and max-width constraints.
+ * Now supports a 'fluid' mode for wide data tables.
  */
-export default {
-  name: 'AppPageContainer',
-  props: {
-    /**
-     * Determines if the container should ignore the maximum width constraint.
-     * Useful for data-heavy views like calendars or large tables.
-     */
-    fluid: {
-      type: Boolean,
-      default: false
-    }
-  }
-}
+defineProps({
+  fluid: { type: Boolean, default: false }
+});
 </script>
 
 <style scoped>
-/* Layout: specific overrides for the container component. */
-.rd-page-container {
+.page-container {
+  padding: var(--spacing-md);
+  margin: 0 auto;
   width: 100%;
+  max-width: var(--container-width, 60rem); /* Default constrained width */
+  transition: max-width 0.3s ease;
 }
 
-/* Variant: edge-to-edge layout for data-dense interfaces. */
-.rd-page-container--fluid {
-  max-width: none;
+/* * Fluid mode removes the strict max-width to use available screen real estate.
+ * Useful for large data tables like the Rota.
+ */
+.page-container.is-fluid {
+  max-width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+@media (max-width: 48rem) {
+  .page-container { padding: var(--spacing-sm); }
+  .page-container.is-fluid { padding: var(--spacing-sm); }
 }
 </style>

@@ -23,6 +23,7 @@
             v-for="(item, index) in items" 
             :key="item.id || index" 
             class="table-row"
+            :class="getRowClasses(item)"
             role="row"
           >
             <div 
@@ -51,51 +52,49 @@
 /**
  * Primary responsibility: provides a flexible, grid-based data table component designed for 
  * accessibility and dynamic content rendering.
+ * * Update 2.0: Added support for dynamic row classes to facilitate grouping visuals.
  */
 import { computed } from 'vue';
 
-// Define configuration for table structure and data items.
 const props = defineProps({
   headers: { type: Array, required: true },
-  items: { type: Array, required: true }
+  items: { type: Array, required: true },
+  // Optional function to derive classes for a specific row item
+  rowClass: { type: Function, default: () => [] }
 });
 
-/**
- * Calculates a css grid template string based on the width property of each header object.
- * Defaults to fractional units if no width is specified.
- * @returns {string} A space-separated list of column widths.
- */
 const gridTemplate = computed(() => {
   return props.headers
     .map(h => h.width || '1fr')
     .join(' ');
 });
+
+const getRowClasses = (item) => {
+  const classes = props.rowClass(item);
+  return Array.isArray(classes) ? classes : [classes];
+};
 </script>
 
 <style scoped>
-/* Layout: handles container constraints and overflow behavior. */
 .base-table-wrapper {
-  overflow: hidden;
+  overflow-x: auto; /* Allow scrolling on small screens if content forces width */
 }
 
 .base-table {
   display: grid;
   width: 100%;
+  min-width: 600px; /* Ensure table structure holds on very small screens */
 }
 
-/* Cells: shared structural properties for both header and body segments. */
 .cell {
   padding: var(--spacing-sm) var(--spacing-md);
   display: flex;
   align-items: center;
   overflow: hidden;
-  transition: background-color var(--anim-speed) ease;
 }
 
-/* Header: visual treatment for column labels and branding-aligned backgrounds. */
-.table-header-group {
-  display: contents;
-}
+/* Header Styling */
+.table-header-group { display: contents; }
 
 .header-cell {
   background: var(--table-header-bg);
@@ -106,41 +105,37 @@ const gridTemplate = computed(() => {
   border-bottom: 1px solid var(--border-color);
   letter-spacing: 0.05em;
   height: 3.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-/* Body: interactive row styling and minimum height definitions. */
-.table-body-group {
-  display: contents;
-}
-
-.table-row {
-  display: contents;
-}
+/* Body Styling */
+.table-body-group { display: contents; }
+.table-row { display: contents; }
 
 .body-cell {
   background: white;
   font-size: 0.9375rem;
   color: var(--text-main);
   border-bottom: 1px solid var(--table-row-border);
-  min-height: 4.5rem;
+  min-height: 5.5rem; /* Increased height for rota slots */
 }
 
-/* Cleanup: removes the trailing border from the final row to maintain container integrity. */
+/* Grouping Logic (Used by RotaView via :row-class) */
+.table-row.role-group-middle .body-cell {
+  border-bottom: 1px dashed var(--border-color); /* Faint separator for sub-items */
+}
+
+/* Hide border for the very last item always */
 .table-row:last-child .body-cell {
   border-bottom: none;
 }
 
-/* Interaction: coordinated hover state using unified theme variables. */
-.table-row:hover .body-cell {
-  background-color: var(--table-row-hover);
-}
-
-/* Alignment: utility classes for positioning content horizontally within cells. */
 .align-left { justify-content: flex-start; text-align: left; }
 .align-center { justify-content: center; text-align: center; }
 .align-right { justify-content: flex-end; text-align: right; }
 
-/* State: styling and layout for the empty data message. */
 .empty-state {
   grid-column: 1 / -1;
   padding: var(--spacing-lg);
