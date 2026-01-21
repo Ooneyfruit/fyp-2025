@@ -1,4 +1,4 @@
-import HomeView from '../views/HomeView.vue';
+import RotaView from '../views/RotaView.vue';
 import UserView from '../views/UserView.vue';
 import LoginView from '../views/LoginView.vue';
 import AdminRepairView from '../views/AdminRepairView.vue';
@@ -7,7 +7,7 @@ import { user, isAuthReady } from '../composables/useAuth';
 import { watch } from 'vue';
 
 const routes = [
-  { path: '/', component: HomeView },
+  { path: '/', component: RotaView }, // Updated to point to the new Rota view
   { 
     path: '/users', 
     component: UserView, 
