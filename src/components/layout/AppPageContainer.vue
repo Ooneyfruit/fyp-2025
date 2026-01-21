@@ -19,7 +19,7 @@ defineProps({
   padding: var(--spacing-md);
   margin: 0 auto;
   width: 100%;
-  max-width: var(--container-width, 60rem); /* Default constrained width */
+  max-width: var(--container-width, 70rem); /* Default constrained width */
   transition: max-width 0.3s ease;
 }
 
