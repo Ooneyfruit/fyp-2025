@@ -1,4 +1,5 @@
 import { ref, computed, watch } from 'vue';
+import { useRotaResponsiveLogic } from './useRotaResponsiveLogic';
 
 /**
  * Manages date logic for the Rota view, including persistence and navigation.
@@ -11,7 +12,7 @@ export function useRotaDates(breakpoints) {
 
   /**
    * Adjusts a date object to the start of its week (Monday).
-   * @param {Date|string} date 
+   * @param {Date|string} date - The date to adjust
    * @returns {Date} The Monday of the containing week
    */
   const getStartOfWeek = (date) => {
@@ -19,6 +20,7 @@ export function useRotaDates(breakpoints) {
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
     d.setDate(diff);
+    d.setHours(0, 0, 0, 0);
     return d;
   };
 
@@ -31,14 +33,21 @@ export function useRotaDates(breakpoints) {
     if (saved) {
       const d = new Date(saved);
       if (!isNaN(d.getTime())) {
-        currentStartDate.value = getStartOfWeek(d);
+        currentStartDate.value = breakpoints.isMobile.value ? d : getStartOfWeek(d);
         return;
       }
     }
-    currentStartDate.value = getStartOfWeek(new Date());
+    // Default to today if mobile, or start of week if desktop
+    const now = new Date();
+    currentStartDate.value = breakpoints.isMobile.value 
+      ? new Date(now.setHours(0, 0, 0, 0)) 
+      : getStartOfWeek(now);
   };
 
   initDate();
+
+  // [Logic] Enshrine the responsive switching logic in the dedicated composable
+  useRotaResponsiveLogic(breakpoints.isMobile, currentStartDate, getStartOfWeek);
 
   watch(currentStartDate, (newDate) => {
     localStorage.setItem(STORAGE_KEY, newDate.toISOString());
@@ -81,6 +90,10 @@ export function useRotaDates(breakpoints) {
     return startStr === endStr ? startStr : `${startStr} - ${endStr}`;
   });
 
+  /**
+   * Moves the view by a standard period (Week or 3 Days).
+   * @param {number} direction - Positive for forward, negative for backward
+   */
   const changePeriod = (direction) => {
     const d = new Date(currentStartDate.value);
     const offset = breakpoints.isMobile.value ? 3 : 7;
@@ -88,8 +101,22 @@ export function useRotaDates(breakpoints) {
     currentStartDate.value = d;
   };
 
+  /**
+   * Moves the view by a single day.
+   * Used for fine precision navigation in 3-day view.
+   * @param {number} direction - Positive for forward, negative for backward
+   */
+  const changeDay = (direction) => {
+    const d = new Date(currentStartDate.value);
+    d.setDate(d.getDate() + direction);
+    currentStartDate.value = d;
+  };
+
   const goToToday = () => {
-    currentStartDate.value = getStartOfWeek(new Date());
+    const now = new Date();
+    currentStartDate.value = breakpoints.isMobile.value 
+      ? new Date(now.setHours(0, 0, 0, 0)) 
+      : getStartOfWeek(now);
   };
 
   /**
@@ -107,35 +134,16 @@ export function useRotaDates(breakpoints) {
     // Move the month on the anchor date
     anchor.setMonth(anchor.getMonth() + months);
     
-    // Snap back to the Monday of that new anchor's week
-    currentStartDate.value = getStartOfWeek(anchor);
+    // Snap back to the Monday of that new anchor's week if on desktop
+    currentStartDate.value = breakpoints.isMobile.value ? anchor : getStartOfWeek(anchor);
   };
-
-  watch(() => breakpoints.isMobile.value, (isMobile) => {
-    const now = new Date();
-    const currentViewStart = new Date(currentStartDate.value);
-    const viewWeekStart = getStartOfWeek(currentViewStart);
-    const viewWeekEnd = new Date(viewWeekStart);
-    viewWeekEnd.setDate(viewWeekEnd.getDate() + 6);
-    
-    const isCurrentRealTimeWeek = now >= viewWeekStart && now <= viewWeekEnd;
-
-    if (isMobile) {
-      if (isCurrentRealTimeWeek) {
-        currentStartDate.value = getStartOfWeek(now);
-      } else {
-        currentStartDate.value = viewWeekStart;
-      }
-    } else {
-      currentStartDate.value = viewWeekStart;
-    }
-  });
 
   return {
     currentStartDate,
     visibleDays,
     monthLabel,
     changePeriod,
+    changeDay,
     goToToday,
     jumpMonth
   };

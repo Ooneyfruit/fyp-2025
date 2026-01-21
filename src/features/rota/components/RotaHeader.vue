@@ -2,11 +2,13 @@
   <div class="rota-header-section">
     <AppPageHeaderGroup :title="title">
       <div class="controls">
+        
         <BaseButton 
           variant="ghost"
           @click="$emit('navigate-month', -1)"
           aria-label="Previous Month"
           title="Back 1 Month"
+          class="nav-btn-text"
         >
           Prev Month
         </BaseButton>
@@ -14,14 +16,26 @@
         <BaseButton 
           variant="outline"
           @click="$emit('navigate-period', -1)"
-          aria-label="Previous Week"
+          :aria-label="periodLabelPrev"
+          :title="periodLabelPrev"
         >
           <template #icon>
             <IconChevronDown class="rotate-90" />
           </template>
-          Prev Week
+          {{ periodButtonTextPrev }}
         </BaseButton>
         
+        <BaseButton 
+          v-if="isMobile"
+          variant="ghost"
+          class="icon-btn-sm"
+          @click="$emit('navigate-day', -1)"
+          aria-label="Previous Day"
+          title="Back 1 Day"
+        >
+          <IconChevronDown class="rotate-90" />
+        </BaseButton>
+
         <div class="date-controls">
           <span class="date-range">{{ dateRangeLabel }}</span>
           <BaseButton 
@@ -35,22 +49,36 @@
         </div>
 
         <BaseButton 
+          v-if="isMobile"
+          variant="ghost" 
+          class="icon-btn-sm"
+          @click="$emit('navigate-day', 1)"
+          aria-label="Next Day"
+          title="Forward 1 Day"
+        >
+          <IconChevronDown class="rotate-270" />
+        </BaseButton>
+
+        <BaseButton 
           variant="outline"
           @click="$emit('navigate-period', 1)"
-          aria-label="Next Week"
+          :aria-label="periodLabelNext"
+          :title="periodLabelNext"
         >
-          Next Week
+          {{ periodButtonTextNext }}
           <IconChevronDown class="rotate-270 icon-right" />
         </BaseButton>
 
-         <BaseButton 
+        <BaseButton 
           variant="ghost"
           @click="$emit('navigate-month', 1)"
           aria-label="Next Month"
           title="Forward 1 Month"
+          class="nav-btn-text"
         >
           Next Month
         </BaseButton>
+
       </div>
     </AppPageHeaderGroup>
     
@@ -59,18 +87,27 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import AppPageHeaderGroup from '../../../components/layout/AppPageHeaderGroup.vue';
 import BaseButton from '../../../components/shared/BaseButton.vue';
 import IconChevronDown from '../../../components/icons/IconChevronDown.vue';
 
-defineProps({
+const props = defineProps({
   title: { type: String, default: 'Practice Rota' },
   monthLabel: { type: String, default: '' },
   dateRangeLabel: { type: String, default: '' },
-  showTodayButton: { type: Boolean, default: false }
+  showTodayButton: { type: Boolean, default: false },
+  isMobile: { type: Boolean, default: false }
 });
 
-defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
+defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today']);
+
+// Computed labels for dynamic verbiage (3 Days vs Week)
+const periodButtonTextPrev = computed(() => props.isMobile ? 'Prev 3 Days' : 'Prev Week');
+const periodButtonTextNext = computed(() => props.isMobile ? 'Next 3 Days' : 'Next Week');
+
+const periodLabelPrev = computed(() => props.isMobile ? 'Back 3 Days' : 'Back 1 Week');
+const periodLabelNext = computed(() => props.isMobile ? 'Forward 3 Days' : 'Forward 1 Week');
 </script>
 
 <style scoped>
@@ -88,6 +125,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  flex-wrap: wrap; /* Allows wrapping on very small screens if necessary */
 }
 
 .date-controls {
@@ -96,6 +134,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
   align-items: center;
   justify-content: center;
   min-width: 9rem;
+  padding: 0 var(--spacing-xs);
 }
 
 .date-range {
@@ -116,18 +155,32 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
   background: #eff6ff !important;
 }
 
+/* Specific Utilities */
+.icon-btn-sm {
+  padding: 4px;
+  height: auto;
+  min-width: auto;
+  color: var(--text-muted);
+}
+.icon-btn-sm:hover {
+  color: var(--primary-color);
+  background-color: var(--bg-hover);
+}
+
+.nav-btn-text {
+  min-width: fit-content;
+}
+
 /* Icon Utilities */
 .rotate-90 { transform: rotate(90deg); }
 .rotate-270 { transform: rotate(-90deg); }
 
-/* Custom styling to align the right-side icon in the Next Week button */
 .icon-right {
   display: inline-block;
   vertical-align: middle;
   width: 1.15rem;
   height: 1.15rem;
   margin-left: 0.5rem;
-  /* Visual adjustment to match BaseButton's icon alignment */
   transform: rotate(-90deg) translateY(1px); 
 }
 </style>
