@@ -2,14 +2,14 @@
   <BaseTable 
     :headers="tableHeaders" 
     :items="rows"
-    :row-class="getRowClass"
     :vertical-lines="true"
+    group-by="role.id"
     class="rota-table"
   >
     <template #cell(header_col)="{ item }">
-      <div v-if="item.type === 'data'" class="header-col-inner">
+      <div class="header-col-inner">
         <div 
-          v-if="item.isRoleStart" 
+          v-if="item._isGroupStart" 
           class="role-title"
           :style="getRoleBadgeStyle(item.role.id)"
         >
@@ -26,10 +26,7 @@
       :key="day.iso" 
       #[`cell(${day.key})`]="{ item }"
     >
-      <div 
-        v-if="item.type === 'data'" 
-        class="cell-wrapper"
-      >
+      <div class="cell-wrapper">
         <RotaSlot 
           :shifts="getShifts(item.role.id, item.surgery.id, day.iso)"
           :role-id="item.role.id"
@@ -56,8 +53,8 @@ import { useRotaColors } from '../composables/useRotaColors';
 
 const props = defineProps({
   days: { type: Array, required: true },
-  rows: { type: Array, required: true }, // The flattened rows
-  getShifts: { type: Function, required: true } // Function to retrieve shifts for a cell
+  rows: { type: Array, required: true },
+  getShifts: { type: Function, required: true }
 });
 
 defineEmits(['slot-click']);
@@ -89,28 +86,9 @@ const getRoleBadgeStyle = (roleId) => {
     borderColor: c.accent
   };
 };
-
-const getRowClass = (item) => {
-  if (item.type === 'spacer') return 'row-spacer';
-  
-  const classes = ['row-data'];
-  if (item.isRoleStart) classes.push('role-group-start');
-  if (item.isRoleEnd) classes.push('role-group-end');
-  else classes.push('role-group-middle');
-  
-  return classes.join(' ');
-};
 </script>
 
 <style scoped>
-/* Spacer Row: Invisible gap */
-:deep(.row-spacer .body-cell), :deep(.row-spacer .header-cell) {
-  background: transparent;
-  border: none;
-  height: 1.5rem; 
-  pointer-events: none;
-}
-
 /* Header Column Styling */
 .header-col-inner {
   display: flex;
@@ -129,6 +107,7 @@ const getRowClass = (item) => {
   border-radius: 4px;
   display: inline-block;
   border: 1px solid transparent;
+  align-self: flex-start;
 }
 
 .surgery-subtitle {
@@ -141,39 +120,15 @@ const getRowClass = (item) => {
 .cell-wrapper {
   width: 100%;
   height: 100%;
-  min-height: 4.5rem;
   display: flex;
-  padding: 2px; 
-  position: relative;
 }
 
 /* Header Highlight for Today */
-:deep(th.header-today) {
+:deep(th.header-today), 
+:deep(.header-cell.header-today) {
   color: #2563eb !important; 
   background-color: #eff6ff !important; 
   font-weight: 800 !important;
-}
-
-/* Rounding Logic */
-:deep(.role-group-start .body-cell:first-child) { border-top-left-radius: var(--border-radius); }
-:deep(.role-group-start .body-cell:last-child) { border-top-right-radius: var(--border-radius); }
-:deep(.role-group-end .body-cell:first-child) { border-bottom-left-radius: var(--border-radius); }
-:deep(.role-group-end .body-cell:last-child) { border-bottom-right-radius: var(--border-radius); }
-
-/* Borders for Group Visuals */
-:deep(.row-data .body-cell) {
-  border-bottom: 1px solid var(--border-color);
-  background: white; 
-  overflow: hidden; 
-}
-
-:deep(.role-group-middle .body-cell), 
-:deep(.role-group-start .body-cell) {
-  border-bottom: 1px solid #f1f5f9; 
-}
-
-:deep(.role-group-end .body-cell) {
-  border-bottom: 1px solid var(--border-color);
 }
 
 .empty-state-content { padding: 3rem; text-align: center; color: var(--text-muted); }
