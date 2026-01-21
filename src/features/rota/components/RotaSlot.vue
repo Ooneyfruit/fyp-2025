@@ -4,8 +4,10 @@
     :class="{ 
       'has-data': hasData,
       'slot-weekend': isWeekend,
-      'slot-weekday': !isWeekend,
-      'slot-today': isToday
+      'slot-past': isBeforeToday && !isWeekend,
+      'slot-weekday': !isWeekend && !isBeforeToday,
+      'slot-today': isToday,
+      'slot-weekend-past': isWeekend && isBeforeToday
     }"
     role="button"
     tabindex="0"
@@ -52,7 +54,8 @@ const props = defineProps({
   shifts: { type: Array, default: () => [] },
   roleId: { type: String, default: null },
   isWeekend: { type: Boolean, default: false },
-  isToday: { type: Boolean, default: false }
+  isToday: { type: Boolean, default: false },
+  isBeforeToday: { type: Boolean, default: false }
 });
 
 defineEmits(['click']);
@@ -103,7 +106,17 @@ const getInitials = (name) => {
 
 .rota-slot.slot-weekend {
   background-color: #f3f4f6; 
+  border: 1px solid #e2e4e7; 
+}
+.rota-slot.slot-weekend-past {
+  background-color: #f3f4f6; 
   border: 1px solid transparent; 
+}
+
+/* New style for past days (mild grey) */
+.rota-slot.slot-past {
+  background-color: transparent;
+  border: 0px solid #e2e8f0;
 }
 
 .rota-slot.slot-today {
@@ -130,6 +143,9 @@ const getInitials = (name) => {
   border-color: transparent;
   background-color: #f3f4f6; 
 }
+.rota-slot.has-data.slot-past {
+  background-color: transparent;
+}
 .rota-slot.has-data.slot-today {
   border-color: #93c5fd;
   background-color: #eff6ff;
@@ -155,12 +171,9 @@ const getInitials = (name) => {
   pointer-events: none; /* Allows hover/click to pass through to .rota-slot */
 }
 
-.rota-slot:hover .empty-placeholder,
-.rota-slot.slot-today .empty-placeholder {
-  opacity: 1;
-}
-
+/* Modified: Only show placeholder on hover for all slots, including Today */
 .rota-slot:hover .empty-placeholder {
+  opacity: 1;
   color: #3b82f6;
   transform: scale(1.1);
 }

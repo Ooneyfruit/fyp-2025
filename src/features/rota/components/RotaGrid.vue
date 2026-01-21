@@ -32,6 +32,7 @@
           :role-id="item.role.id"
           :is-weekend="day.isWeekend"
           :is-today="day.isToday"
+          :is-before-today="day.isBeforeToday"
           @click="$emit('slot-click', { rowItem: item, day })"
         />
       </div>
