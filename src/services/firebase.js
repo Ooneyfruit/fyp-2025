@@ -1,7 +1,16 @@
+/* src/services/firebase.js */
 import { initializeApp } from 'firebase/app';
-import { initializeFirestore } from 'firebase/firestore';
+import { 
+  getFirestore, 
+  initializeFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
+/**
+ * Firebase project configuration.
+ */
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,13 +22,18 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Transport Fix: Standard HTTPS prevents AdBlock "Beacon/Stream" detection
-const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true,
-  useFetchStreams: false
+/**
+ * Initialize Firestore with persistent local caching enabled.
+ * This utilizes the indexedDb-based persistent cache to improve load speeds across sessions.
+ * Multiple tab management is enabled to synchronize the cache across browser instances.
+ */
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
 });
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export { db, auth, provider };
+export { auth, provider };

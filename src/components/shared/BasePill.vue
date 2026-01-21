@@ -15,14 +15,14 @@
 
 <script setup>
 /**
- * BasePill.vue
- * A functional wrapper for the .rd-pill design system tokens.
- * Styles are predominantly managed in src/assets/main.css.
+ * Primary responsibility: Provides a standardized, functional wrapper for small status 
+ * indicators and categorization tags within the RotaDent design system.
  */
 
 defineProps({
   /**
-   * Visual variant corresponding to the .rd-pill-{variant} classes in main.css.
+   * The visual theme variation of the pill. 
+   * This maps directly to the .rd-pill-{variant} utility classes in the global stylesheet.
    */
   variant: {
     type: String,
@@ -40,8 +40,7 @@ defineProps({
 </script>
 
 <style scoped>
-/* Component-level optical adjustments not included in the global utility classes */
-
+/* Layout: specific dimensions for icon containers within the pill. */
 .rd-pill-icon-frame {
   display: flex;
   align-items: center;
@@ -51,13 +50,13 @@ defineProps({
   flex-shrink: 0;
 }
 
-/* Ensure any SVG passed into the icon slot scales correctly to the pill height */
+/* Internal: ensures any svg passed into the icon slot scales correctly to fit the container. */
 .rd-pill-icon-frame :deep(svg) {
   width: 100%;
   height: 100%;
 }
 
-/* Optical nudge to vertically align uppercase text labels with the icons */
+/* Alignment: applies a minor vertical nudge to balance the visual baseline of uppercase labels. */
 .rd-pill-label {
   transform: translateY(0.035rem);
 }

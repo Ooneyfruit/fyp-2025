@@ -1,0 +1,41 @@
+RotaDent Project Commenting Style Guide
+Version: 1.0
+Target: JavaScript, Vue (SFC), CSS, HTML
+
+1. General Principles
+   - Use sentence case or lowercase. Never use ALL CAPS for emphasis.
+   - Describe current functionality and intent. Do not include change logs, "TODO" timestamps, or historical diffs.
+   - Maintain a "higher-than-average" comment density: explain the 'why' behind complex logic, not just the 'what'.
+   - Keep comments concise but technically precise.
+   - Use sentence case. This means at least the first letter of a comment or sentence should be in upper case.
+   - End sentences and comments in a full stop.
+   - Do not describe ownership of files.
+
+2. JavaScript & Vue Script Blocks
+   - File Headers: Use a brief block comment at the top of files to describe the primary responsibility of the module.
+   - Functions: Use JSDoc-style blocks for all exported functions or complex internal methods.
+     Example:
+     /**
+      * Calculates the shift duration based on start and end timestamps.
+      * @param {string} start - ISO timestamp
+      * @param {string} end - ISO timestamp
+      * @returns {number} Duration in hours
+      */
+   - Logic Blocks: Use double slashes (//) for inline explanations. Place the comment on the line preceding the code. Always use sentence case.
+     Example:
+     // Verify user permissions before initiating the delete sequence
+     if (user.role === 'admin') { ... }
+
+3. Vue Template Blocks
+   - Use standard HTML comments to demarcate major UI sections (e.g., navigation, data tables, modals). Don't number them.
+     Example: 
+     CSS / SCSS Blocks
+   - Use block comments to group related styles or explain non-obvious layout hacks (e.g., flexbox centering workarounds).
+     Example: 
+     /* Layout: Sidebar navigation state transitions */
+     .sidebar-enter-active { ... }
+
+5. Prohibited Practices
+   - No commented-out code blocks (delete them; use Git for history).
+   - No redundant comments (e.g., i++; // increment i).
+   - No "shouting" (no exclamation marks or caps).

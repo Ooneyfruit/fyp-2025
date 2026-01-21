@@ -1,9 +1,69 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { VitePWA } from 'vite-plugin-pwa';
 
+/**
+ * Primary Vite configuration.
+ * Orchestrates build tooling, plugin integrations, and development server behavior.
+ */
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    
+    /**
+     * PWA Configuration: manages service worker generation and web manifest.
+     * Implements an offline-first strategy for the application shell.
+     */
+    VitePWA({
+      registerType: 'prompt',
+      injectRegister: 'auto',
+      
+      // Asset Management: define which files are pre-cached for offline availability.
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,vue}'],
+        navigateFallback: 'index.html',
+        
+        // Performance: exclude Firestore sync endpoints from service worker interception.
+        // This ensures the SDK-level persistence handles data synchronization without conflicts.
+        navigateFallbackDenylist: [/^\/__/], 
+      },
+      
+      // Manifest: metadata for platform-level integration and home screen installation.
+      manifest: {
+        name: 'RotaDent',
+        short_name: 'RotaDent',
+        description: 'Advanced Dental Practice Rota Management',
+        theme_color: '#1d4ed8', // Synchronized with --color-primary.
+        background_color: '#f8fafc', // Synchronized with --bg-app.
+        display: 'standalone',
+        
+        icons: [
+          {
+            src: 'android/android-launchericon-192-192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'android/android-launchericon-512-512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: 'android/android-launchericon-512-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      }
+    })
+  ],
+  
+  /**
+   * Development Server: local configuration for port mapping and environment stability.
+   */
   server: {
-    port: 3000
+    port: 3000,
+    strictPort: true
   }
-})
+});

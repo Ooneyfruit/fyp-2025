@@ -1,12 +1,16 @@
 /* src/assets/main.css */
-:root {
-  /* Layout Dimensions */
+
+/**
+ * Global configuration: design tokens, spacing scales, and semantic variables.
+ */
+ :root {
+  /* Layout: configuration for primary container dimensions and animation speeds. */
   --navbar-height: 3.75rem;
   --sidebar-width: 16.25rem;
   --sidebar-slim-width: 4.5rem;
   --anim-speed: 0.3s;
   
-  /* Stacking Context (Z-INDEX Hierarchy) */
+  /* Stacking: z-index hierarchy to manage vertical layer distribution. */
   --z-below: -1;
   --z-normal: 1;
   --z-sticky: 100;
@@ -16,7 +20,7 @@
   --z-modal: 1000;
   --z-tooltip: 1100;
 
-  /* Color System (HSL for dynamic shading) */
+  /* Color: HSL system for dynamic shading and brand consistency. */
   --hue-primary: 221;
   --hue-danger: 0;
   --hue-success: 142;
@@ -33,7 +37,7 @@
   --color-warning: hsl(var(--hue-warning), 80%, 33%);
   --color-warning-bg: hsl(var(--hue-warning), 100%, 96%);
   
-  /* Typography & Neutral Scale */
+  /* Neutral: typography and surface color tokens. */
   --text-main: hsl(221, 39%, 11%);
   --text-muted: hsl(215, 16%, 34%);
   --text-light: hsl(0, 0%, 100%);
@@ -41,12 +45,12 @@
   --border-color: hsl(214, 32%, 91%);
   --bg-app: hsl(210, 40%, 98%);
 
-  /* Table Specific Semantics */
+  /* Table: specific semantic variables for grid-based data layouts. */
   --table-header-bg: var(--bg-app);
   --table-row-hover: hsl(210, 40%, 96%);
   --table-row-border: hsl(214, 32%, 95%);
 
-  /* Spacing Scale */
+  /* Scale: spacing and radius tokens used across all components. */
   --spacing-xs: 0.5rem;
   --spacing-sm: 0.75rem;
   --spacing-md: 1.25rem;
@@ -57,7 +61,7 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Base Reset & Box Model */
+/* Base: reset and box-model stabilization. */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -77,19 +81,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Form Element targeted inheritance */
+/* Inheritance: form element font and color synchronization. */
 input, button, textarea, select {
   font: inherit;
   color: inherit;
 }
 
-/* Modern Media Reset */
+/* Media: standard reset for visual elements and svg scalability. */
 img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
 
-/* Global Layout Orchestration */
+/* Orchestration: global layout positioning and sidebar spacing. */
 .main-content {
   position: relative;
   z-index: var(--z-normal);
@@ -98,7 +102,7 @@ img, picture, video, canvas, svg {
   margin-left: var(--sidebar-slim-width);
 }
 
-/* Teleport Script Classes (index.html synchronization) */
+/* States: layout overrides based on initial hydration classes. */
 html.initial-layout-wide .main-content { margin-left: var(--sidebar-width); }
 html.initial-layout-slim .main-content { margin-left: var(--sidebar-slim-width); }
 html.initial-layout-mobile .main-content { margin-left: 0; }
@@ -106,7 +110,7 @@ html.initial-layout-mobile .main-content { margin-left: 0; }
 html.initial-layout-wide .sidebar { width: var(--sidebar-width); }
 html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 
-/* Enabled only after hydration stabilization in App.vue */
+/* Animation: layout transitions enabled only after hydration is stable. */
 .is-animate-ready .main-content {
   transition: margin-left var(--anim-speed) ease;
 }
@@ -115,7 +119,7 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
 }
 
-/* Accessibility */
+/* Accessibility: visually hidden utility for screen readers. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -128,14 +132,43 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   border-width: 0;
 }
 
-/* Smooth Transitions for Layout Shifts */
+/* Layout: main container structure for vertical expansion. */
 .app-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Surface Utilities */
+/* Global: standard rotation and entrance keyframes. */
+@keyframes rd-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rd-slide-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-spin {
+  animation: rd-spin 0.8s linear infinite;
+}
+
+.animate-slide-in {
+  animation: rd-slide-in 0.2s ease-out;
+}
+
+/* Transitions: standardized utility for entrance and exit opacity. */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--anim-speed) ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Surface: container utilities for the card design system. */
 .rd-card {
   background: white;
   border: 1px solid var(--border-color);
@@ -161,16 +194,71 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   gap: 0.75rem;
 }
 
-/* Global Animations */
-@keyframes rd-spin {
-  to { transform: rotate(360deg); }
+/* Layout: card extensions for complex data structures. */
+.rd-card-divider {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
 }
 
-.animate-spin {
-  animation: rd-spin 0.8s linear infinite;
+.rd-card-footer {
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+  padding-top: 1rem;
 }
 
-/* Button Utilities */
+/* Form: base configuration for the selection design system. */
+.rd-select {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 2.5rem 0.65rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1;
+  transition: all var(--anim-speed) ease;
+  appearance: none;
+  width: 100%;
+}
+
+.rd-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rd-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px hsl(var(--hue-primary), 83%, 95%);
+}
+
+/* Variants: specific color mappings for select types. */
+.rd-select-primary {
+  background-color: var(--color-primary);
+  color: var(--text-light);
+}
+
+.rd-select-secondary {
+  background-color: white;
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+
+.rd-select-danger {
+  background-color: white;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* Layout: standard page constraints and vertical structure. */
+.rd-page-container {
+  padding: var(--spacing-lg);
+  max-width: 75rem;
+  margin: 0 auto;
+}
+
+/* Utility: base configuration for the button design system. */
 .rd-button {
   display: inline-flex;
   align-items: center;
@@ -193,7 +281,7 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   cursor: not-allowed;
 }
 
-/* Variant Definitions */
+/* Variants: specific color mappings for button types. */
 .rd-button-primary {
   background-color: var(--color-primary);
   color: var(--text-light);
@@ -227,7 +315,7 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   color: white;
 }
 
-/* Centralized Pill Utilities (.rd-pill) */
+/* Utility: status and categorization pills with brand color logic. */
 .rd-pill {
   display: inline-flex;
   align-items: center;
@@ -274,4 +362,125 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 .rd-pill-danger {
   background: hsl(var(--hue-danger), 72%, 96%);
   color: var(--color-danger);
+}
+
+/* Forms: standardized section headers and layout structures. */
+.rd-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Grid: intelligent row distribution. */
+.rd-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.5rem;
+  align-items: end; /* Aligns inputs to the baseline even if labels differ */
+}
+
+/* Layout: primary form orchestration for vertical flow. */
+.rd-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Consistent vertical padding between blocks */
+  width: 100%;
+}
+
+.rd-section-header {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Fields: labeling and height synchronization. */
+.rd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rd-field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  padding-left: 0.1rem;
+}
+
+.rd-grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.25rem; }
+@media (max-width: 40rem) { .rd-grid-layout { grid-template-columns: 1fr; } }
+
+/* Danger Zone: specialized layout for destructive actions. */
+.rd-danger-zone {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rd-warning-box {
+  background: hsl(var(--hue-danger), 100%, 98%);
+  border: 1px solid hsl(var(--hue-danger), 100%, 90%);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
+
+/* Toggle: slider and card primitives. */
+.rd-toggle-card { 
+  display: flex; justify-content: space-between; align-items: center; 
+  background: var(--table-row-hover); padding: 0.75rem; border-radius: 0.75rem; 
+}
+.rd-toggle-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.rd-toggle-title { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+.rd-toggle-subtitle { font-size: 0.7rem; color: var(--text-muted); }
+
+/* Toggle: core switch styles for BaseToggle. */
+.rd-toggle { position: relative; display: inline-block; width: 2.2rem; height: 1.2rem; flex-shrink: 0; }
+.rd-toggle-input { opacity: 0; width: 0; height: 0; }
+.rd-toggle-slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #d1d5db; transition: .2s; border-radius: 1rem;
+}
+.rd-toggle-slider:before {
+  position: absolute; content: ""; height: 0.95rem; width: 0.95rem;
+  left: 0.125rem; bottom: 0.125rem; background-color: white; transition: .2s; border-radius: 50%;
+}
+.rd-toggle-input:checked + .rd-toggle-slider { background-color: var(--color-primary); }
+.rd-toggle-input:checked + .rd-toggle-slider:before { transform: translateX(1rem); }
+
+/* Inputs: unified height for single-line elements. */
+.rd-input {
+  height: 2.75rem; /* Fixed height for row alignment */
+  padding: 0 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.9375rem;
+  background: white;
+  width: 100%;
+  transition: border-color var(--anim-speed) ease;
+}
+
+.rd-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px hsl(var(--hue-primary), 83%, 95%);
+}
+
+.rd-textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.9375rem;
+  min-height: 5rem;
+  width: 100%;
+  resize: vertical;
 }

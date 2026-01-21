@@ -28,17 +28,19 @@
 
 <script setup>
 /**
- * BaseButton.vue
- * Supports 'primary', 'secondary', and 'danger' variants.
+ * Primary responsibility: provides a flexible button component that supports navigation, 
+ * various visual states, and semantic variations.
  */
 
+// Define component properties for behavior and visual styling.
 defineProps({
   label: { type: String, required: true },
   to: { type: [String, Object], default: null },
   disabled: { type: Boolean, default: false },
   processing: { type: Boolean, default: false },
   /**
-   * Now includes 'danger' for destructive actions.
+   * The visual theme of the button. 
+   * Validates against the three core system variants.
    */
   variant: { 
     type: String, 
@@ -49,10 +51,12 @@ defineProps({
   iconOnly: { type: Boolean, default: false }
 });
 
+// Define emitted events for parent component interaction.
 defineEmits(['click']);
 </script>
 
 <style scoped>
+/* Layout: specific dimensions for icon-only button states. */
 .rd-button.is-icon-only {
   padding: 0.5rem;
   width: 2.5rem;
@@ -60,6 +64,7 @@ defineEmits(['click']);
   aspect-ratio: 1 / 1;
 }
 
+/* Layout: centering and optical alignment for icons. */
 .icon-frame {
   display: flex;
   align-items: center;
@@ -67,6 +72,7 @@ defineEmits(['click']);
   width: 1.15rem;
   height: 1.15rem;
   flex-shrink: 0;
+  /* Shift icon up slightly to account for the visual weight of the button container. */
   transform: translateY(-0.0625rem);
 }
 
@@ -75,10 +81,12 @@ defineEmits(['click']);
   height: 100%;
 }
 
+/* Alignment: vertical nudge to improve legibility and balance the baseline. */
 .button-label {
   transform: translateY(0.0625rem);
 }
 
+/* State: visual feedback for ongoing operations. */
 .is-processing {
   cursor: wait;
 }

@@ -9,11 +9,7 @@
   >
     <template v-if="user">
       <NavBar @toggleSidebar="toggleSidebar" />
-      <SideMenu 
-        :isOpen="isSidebarOpen" 
-        :isMobile="isMobile"
-        @close="closeSidebar" 
-      />
+      <AppSideMenu />
     </template>
 
     <main :class="user ? 'main-content' : 'full-screen'">
@@ -25,90 +21,58 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue';
-import { user } from './composables/useAuth';
-import NavBar from './components/layout/NavBar.vue';
-import SideMenu from './components/layout/SideMenu.vue';
-import AppToast from './components/shared/AppToast.vue'; // Required import for global visibility
-
-const isMobile = ref(window.innerWidth < 768);
-const desktopPreference = ref(localStorage.getItem('isSidebarOpen') === 'true');
-const isSidebarOpen = ref(isMobile.value ? false : desktopPreference.value);
-
-// Transitions only enable after layout stabilization
-const canAnimate = ref(false);
-
 /**
- * Synchronizes the global HTML classes used by the index.html teleport script
- * to maintain consistent positioning until Vue state takes over completely.
+ * Main application shell.
+ * Orchestrates global layout states and manages PWA update notifications.
  */
-const syncHtmlClasses = (isOpen) => {
-  document.documentElement.classList.toggle('initial-layout-wide', isOpen);
-  document.documentElement.classList.toggle('initial-layout-slim', !isOpen);
-};
+import { onMounted, watch } from 'vue';
+import { useRegisterSW } from 'virtual:pwa-register/vue';
+import { user } from './composables/useAuth';
+import { useLayout, initLayoutStabilization } from './composables/useLayout';
+import { useToast } from './composables/useToast';
 
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-  syncHtmlClasses(isSidebarOpen.value);
-  
-  if (!isMobile.value) {
-    desktopPreference.value = isSidebarOpen.value;
-    localStorage.setItem('isSidebarOpen', isSidebarOpen.value);
-  }
-};
+// Shared layout and UI components.
+import { NavBar } from './features/navbar/navbarAPI';
+import AppSideMenu from './components/layout/AppSideMenu.vue';
+import AppToast from './components/shared/AppToast.vue';
 
-const closeSidebar = () => {
-  isSidebarOpen.value = false;
-  syncHtmlClasses(false);
-};
+const { isSidebarOpen, isMobile, canAnimate, toggleSidebar } = useLayout();
+const { showToast } = useToast();
 
-const handleResize = () => {
-  const wasMobile = isMobile.value;
-  isMobile.value = window.innerWidth < 768;
-
-  if (wasMobile !== isMobile.value) {
-    document.documentElement.classList.toggle('initial-layout-mobile', isMobile.value);
-    if (isMobile.value) {
-      isSidebarOpen.value = false;
-    } else {
-      isSidebarOpen.value = desktopPreference.value;
-    }
-    syncHtmlClasses(isSidebarOpen.value);
-  }
-};
-
-onMounted(() => {
-  window.addEventListener('resize', handleResize);
-  
-  /**
-   * DYNAMIC STABILIZATION LOGIC:
-   * We wait for two animation frames to guarantee the browser has processed the
-   * static layout, then apply a 1000ms safety window. This is the 'minimum time'
-   * required to ensure hydration is finished before allowing CSS slides.
-   */
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        canAnimate.value = true;
-        console.log("[App] Layout stabilized. Smooth transitions enabled.");
-      }, 1000);
-    });
-  });
+const { needRefresh, updateServiceWorker } = useRegisterSW({
+  onRegistered() { console.log('[PWA] Service Worker Registered'); },
+  onNeedRefresh() { console.log('[PWA] Version update available.'); }
 });
 
-onUnmounted(() => window.removeEventListener('resize', handleResize));
-
-watch(user, (val) => {
-  if (val) {
-    isSidebarOpen.value = isMobile.value ? false : desktopPreference.value;
-    syncHtmlClasses(isSidebarOpen.value);
+// Watch for PWA refresh triggers and delegate to the global toast system.
+watch(needRefresh, (available) => {
+  if (available) {
+    showToast("A new version of RotaDent is available.", {
+      duration: 0,
+      action: {
+        label: "Refresh Now",
+        callback: updateServiceWorker
+      }
+    });
   }
-}, { immediate: true });
+});
+
+onMounted(() => {
+  /**
+   * Triggers the conservative stabilization window.
+   * Only allows animations once the browser has proven sustained main-thread availability.
+   */
+  initLayoutStabilization();
+});
 </script>
 
 <style scoped>
-.app-layout { min-height: 100vh; }
+/* Layout: core shell dimensions */
+.app-layout { 
+  min-height: 100vh; 
+}
 
+/* Sidebar context: spacing rules for the main content area */
 .is-sidebar-open:not(.is-mobile) .main-content { 
   margin-left: var(--sidebar-width); 
 }
@@ -117,7 +81,10 @@ watch(user, (val) => {
   margin-left: 0; 
 }
 
+/* Responsive: override content margins for small screens */
 @media (max-width: 48rem) { 
-  .main-content { margin-left: 0; } 
+  .main-content { 
+    margin-left: 0; 
+  } 
 }
 </style>
