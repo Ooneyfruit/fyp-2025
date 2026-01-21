@@ -13,7 +13,11 @@
     :title="iconOnly ? label : null"
     @click="!to && $emit('click')"
   >
-    <div v-if="icon || $slots.icon" class="icon-frame" aria-hidden="true">
+    <div 
+      v-if="(icon || $slots.icon) && iconPosition === 'left'" 
+      class="icon-frame" 
+      aria-hidden="true"
+    >
       <slot name="icon">
         <component :is="icon" />
       </slot>
@@ -25,6 +29,16 @@
         <slot>{{ label }}</slot>
       </template>
     </span>
+
+    <div 
+      v-if="(icon || $slots.icon) && iconPosition === 'right'" 
+      class="icon-frame" 
+      aria-hidden="true"
+    >
+      <slot name="icon">
+        <component :is="icon" />
+      </slot>
+    </div>
   </component>
 </template>
 
@@ -49,7 +63,16 @@ defineProps({
     validator: (v) => ['primary', 'secondary', 'danger', 'outline', 'ghost'].includes(v)
   },
   icon: { type: [Object, Function], default: null },
-  iconOnly: { type: Boolean, default: false }
+  iconOnly: { type: Boolean, default: false },
+  /**
+   * Defines the position of the icon relative to the label.
+   * Ignored if iconOnly is true.
+   */
+  iconPosition: {
+    type: String,
+    default: 'left',
+    validator: (v) => ['left', 'right'].includes(v)
+  }
 });
 
 defineEmits(['click']);

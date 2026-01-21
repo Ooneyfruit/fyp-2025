@@ -3,6 +3,7 @@
     
     <RotaHeader 
       :month-label="monthLabel"
+      :period-label="periodLabel"
       :date-range-label="dateRangeLabel"
       :show-today-button="!isCurrentWeek"
       @navigate-month="jumpMonth"
@@ -56,7 +57,8 @@ const breakpoints = useBreakpoints(ref(document.body), 80);
 const { 
   currentStartDate, 
   visibleDays, 
-  monthLabel, 
+  monthLabel,
+  periodLabel, 
   changePeriod, 
   goToToday, 
   jumpMonth 

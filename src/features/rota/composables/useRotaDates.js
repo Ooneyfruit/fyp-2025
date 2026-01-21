@@ -2,7 +2,8 @@ import { ref, computed, watch } from 'vue';
 
 /**
  * Manages date logic for the Rota view, including persistence and navigation.
- * @param {Object} breakpoints - Breakpoints composable for responsive logic
+ * Centralises logic for date periods (3-day vs 7-day) based on breakpoints.
+ * * @param {Object} breakpoints - Breakpoints composable for responsive logic
  * @returns {Object} Date state and control methods
  */
 export function useRotaDates(breakpoints) {
@@ -11,7 +12,7 @@ export function useRotaDates(breakpoints) {
 
   /**
    * Adjusts a date object to the start of its week (Monday).
-   * @param {Date|string} date 
+   * * @param {Date|string} date 
    * @returns {Date} The Monday of the containing week
    */
   const getStartOfWeek = (date) => {
@@ -81,6 +82,10 @@ export function useRotaDates(breakpoints) {
     return startStr === endStr ? startStr : `${startStr} - ${endStr}`;
   });
 
+  const periodLabel = computed(() => {
+    return breakpoints.isMobile.value ? '3 Days' : 'Week';
+  });
+
   const changePeriod = (direction) => {
     const d = new Date(currentStartDate.value);
     const offset = breakpoints.isMobile.value ? 3 : 7;
@@ -96,7 +101,7 @@ export function useRotaDates(breakpoints) {
    * Jumps the view by a specified number of months.
    * Anchors the jump to the Thursday (middle) of the current view to minimize
    * the "drift" that happens when aligning different length months to Mondays.
-   * @param {number} months - Number of months to jump
+   * * @param {number} months - Number of months to jump
    */
   const jumpMonth = (months) => {
     const current = new Date(currentStartDate.value);
@@ -135,6 +140,7 @@ export function useRotaDates(breakpoints) {
     currentStartDate,
     visibleDays,
     monthLabel,
+    periodLabel,
     changePeriod,
     goToToday,
     jumpMonth
