@@ -31,26 +31,18 @@ export function useRotaData(userRef) {
   };
 
   /**
-   * Flattens data and injects SPACER rows for visual grouping.
-   * This is key for the "Separate Job Titles" requirement.
+   * Flattens data for the grid.
+   * Returns purely data rows; visual spacing is handled by the Table component.
    */
   const flattenedRows = computed(() => {
     const rows = [];
     
-    practiceRoles.value.forEach((role, rIndex) => {
-      // Inject Spacer if not the first role
-      if (rIndex > 0) {
-        rows.push({ type: 'spacer', id: `spacer_${role.id}` });
-      }
-
-      practiceSurgeries.value.forEach((surgery, sIndex) => {
+    practiceRoles.value.forEach((role) => {
+      practiceSurgeries.value.forEach((surgery) => {
         rows.push({
-          type: 'data',
           id: `${role.id}_${surgery.id}`,
           role,
-          surgery,
-          isRoleStart: sIndex === 0,
-          isRoleEnd: sIndex === practiceSurgeries.value.length - 1
+          surgery
         });
       });
     });

@@ -3,11 +3,12 @@
     
     <RotaHeader 
       :month-label="monthLabel"
-      :period-label="periodLabel"
       :date-range-label="dateRangeLabel"
       :show-today-button="!isCurrentWeek"
+      :is-mobile="breakpoints.isMobile.value"
       @navigate-month="jumpMonth"
       @navigate-period="changePeriod"
+      @navigate-day="changeDay"
       @jump-today="goToToday"
     />
 
@@ -53,13 +54,13 @@ import RotaShiftModal from '../features/rota/components/RotaShiftModal.vue';
 const { user } = useAuth();
 const breakpoints = useBreakpoints(ref(document.body), 80);
 
-// 1. Date Management
+// 1. Date Management (includes new responsive logic)
 const { 
   currentStartDate, 
   visibleDays, 
-  monthLabel,
-  periodLabel, 
+  monthLabel, 
   changePeriod, 
+  changeDay,
   goToToday, 
   jumpMonth 
 } = useRotaDates(breakpoints);
