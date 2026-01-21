@@ -10,6 +10,7 @@ Target: JavaScript, Vue (SFC), CSS, HTML
    - Use sentence case. This means at least the first letter of a comment or sentence should be in upper case.
    - End sentences and comments in a full stop.
    - Do not describe ownership of files.
+   - Use British English, always.
 
 2. JavaScript & Vue Script Blocks
    - File Headers: Use a brief block comment at the top of files to describe the primary responsibility of the module.

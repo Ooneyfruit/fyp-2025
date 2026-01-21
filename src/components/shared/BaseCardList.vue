@@ -1,5 +1,11 @@
 <template>
-  <div class="card-list" :style="{ '--list-gap': gap }">
+  <div 
+    class="card-list" 
+    :style="{ 
+      '--list-gap': gap,
+      '--min-card-width': minCardWidth
+    }"
+  >
     <BaseCard v-for="(item, index) in items" :key="item[keyField] || index">
       <template v-if="$slots['card-header']" #header>
         <slot name="card-header" :item="item" />
@@ -12,8 +18,8 @@
 
 <script setup>
 /**
- * Primary responsibility: provides a flexible layout utility for rendering a collection 
- * of data objects into a standardized vertical list of card components.
+ * Primary responsibility: provides a flexible grid layout for rendering data objects.
+ * Automatically adjusts columns based on available width using CSS Grid.
  */
 import BaseCard from './BaseCard.vue';
 
@@ -29,19 +35,27 @@ defineProps({
     type: String, 
     default: 'id' 
   },
-  // The vertical gap between list items, defined using standard css units.
+  // The gap between list items, defined using standard css units.
   gap: { 
     type: String, 
     default: '1.5rem' 
+  },
+  // The minimum width a card can shrink to before wrapping to a new row.
+  minCardWidth: {
+    type: String,
+    default: '300px'
   }
 });
 </script>
 
 <style scoped>
-/* Layout: flexible column container utilizing custom properties for vertical spacing. */
+/* * Layout: Responsive grid container using auto-fit.
+ * 'auto-fit' collapses empty tracks, ensuring items expand to fill the row 
+ * even if there are fewer items than available columns (space filling).
+ */
 .card-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--min-card-width), 1fr));
   gap: var(--list-gap);
   width: 100%;
 }

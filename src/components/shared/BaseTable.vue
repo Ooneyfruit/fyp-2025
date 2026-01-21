@@ -2,6 +2,7 @@
   <div class="rd-card base-table-wrapper">
     <div 
       class="base-table" 
+      :class="{ 'has-vertical-lines': verticalLines }"
       :style="{ gridTemplateColumns: gridTemplate }"
       role="table"
     >
@@ -10,7 +11,10 @@
           v-for="col in headers" 
           :key="col.key" 
           class="cell header-cell"
-          :class="[`align-${col.align || 'left'}`]"
+          :class="[
+            `align-${col.align || 'left'}`,
+            col.headerClass
+          ]"
           role="columnheader"
         >
           {{ col.label }}
@@ -20,9 +24,17 @@
       <div class="table-body-group" role="rowgroup">
         <template v-if="items.length > 0">
           <div 
-            v-for="(item, index) in items" 
+            v-for="(item, index) in enrichedItems" 
             :key="item.id || index" 
             class="table-row"
+            :class="[
+              ...getRowClasses(item),
+              { 
+                'group-start': item._isGroupStart,
+                'group-end': item._isGroupEnd,
+                'group-middle': item._isGroupMiddle
+              }
+            ]"
             role="row"
           >
             <div 
@@ -49,104 +61,149 @@
 
 <script setup>
 /**
- * Primary responsibility: provides a flexible, grid-based data table component designed for 
- * accessibility and dynamic content rendering.
+ * Primary responsibility: provides a flexible, grid-based data table component.
+ * Supports visual grouping of rows via the 'groupBy' prop.
  */
 import { computed } from 'vue';
 
-// Define configuration for table structure and data items.
 const props = defineProps({
   headers: { type: Array, required: true },
-  items: { type: Array, required: true }
+  items: { type: Array, required: true },
+  rowClass: { type: Function, default: () => [] },
+  verticalLines: { type: Boolean, default: false },
+  /**
+   * Dot-notation path to the property used for grouping rows.
+   * Example: "role.id"
+   */
+  groupBy: { type: String, default: null }
 });
 
-/**
- * Calculates a css grid template string based on the width property of each header object.
- * Defaults to fractional units if no width is specified.
- * @returns {string} A space-separated list of column widths.
- */
+// Helper to access nested properties safely
+const getNestedValue = (obj, path) => {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+};
+
+const enrichedItems = computed(() => {
+  if (!props.groupBy) return props.items;
+
+  return props.items.map((item, index, arr) => {
+    const currentGroup = getNestedValue(item, props.groupBy);
+    const prevGroup = index > 0 ? getNestedValue(arr[index - 1], props.groupBy) : null;
+    const nextGroup = index < arr.length - 1 ? getNestedValue(arr[index + 1], props.groupBy) : null;
+
+    return {
+      ...item,
+      _isGroupStart: currentGroup !== prevGroup,
+      _isGroupEnd: currentGroup !== nextGroup,
+      _isGroupMiddle: currentGroup === prevGroup && currentGroup === nextGroup
+    };
+  });
+});
+
 const gridTemplate = computed(() => {
   return props.headers
     .map(h => h.width || '1fr')
     .join(' ');
 });
+
+const getRowClasses = (item) => {
+  const classes = props.rowClass(item);
+  return Array.isArray(classes) ? classes : [classes];
+};
 </script>
 
 <style scoped>
-/* Layout: handles container constraints and overflow behavior. */
 .base-table-wrapper {
-  overflow: hidden;
+  overflow-x: auto;
+  background: transparent; /* Wrapper shouldn't have bg, allows spacing to show */
+  border: none; /* Override standard card border */
+  box-shadow: none;
 }
 
 .base-table {
   display: grid;
   width: 100%;
+  min-width: 600px;
 }
 
-/* Cells: shared structural properties for both header and body segments. */
+/* Base Cell Styling */
 .cell {
   padding: var(--spacing-sm) var(--spacing-md);
   display: flex;
   align-items: center;
-  overflow: hidden;
-  transition: background-color var(--anim-speed) ease;
 }
 
-/* Header: visual treatment for column labels and branding-aligned backgrounds. */
-.table-header-group {
-  display: contents;
-}
+/* --- Header Styling --- */
+.table-header-group { display: contents; }
 
 .header-cell {
-  background: var(--table-header-bg);
+  background: white;
   font-size: 0.75rem;
   text-transform: uppercase;
   color: var(--text-muted);
   font-weight: 700;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--border-color);
   letter-spacing: 0.05em;
   height: 3.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 20; /* Ensure headers stay above content */
 }
 
-/* Body: interactive row styling and minimum height definitions. */
-.table-body-group {
-  display: contents;
-}
-
-.table-row {
-  display: contents;
-}
+/* --- Body Styling --- */
+.table-body-group { display: contents; }
+.table-row { display: contents; }
 
 .body-cell {
   background: white;
   font-size: 0.9375rem;
   color: var(--text-main);
-  border-bottom: 1px solid var(--table-row-border);
-  min-height: 4.5rem;
+  min-height: 5.5rem;
+  position: relative; /* Context for children */
+  z-index: 1;
 }
 
-/* Cleanup: removes the trailing border from the final row to maintain container integrity. */
-.table-row:last-child .body-cell {
-  border-bottom: none;
+/* --- Vertical Lines --- */
+.base-table.has-vertical-lines .header-cell:not(:last-child),
+.base-table.has-vertical-lines .body-cell:not(:last-child) {
+  border-right: 1px solid #f1f5f9;
 }
 
-/* Interaction: coordinated hover state using unified theme variables. */
-.table-row:hover .body-cell {
-  background-color: var(--table-row-hover);
+/* --- Grouping & Spacing Logic --- */
+
+/* 1. The Gap: Apply margin-top to the cells of the first row in a group */
+.table-row.group-start .body-cell {
+  margin-top: 1rem; /* The visual gap between groups */
+  border-top: 1px solid var(--border-color);
 }
 
-/* Alignment: utility classes for positioning content horizontally within cells. */
+/* 2. Top Rounded Corners for the group */
+.table-row.group-start .body-cell:first-child { border-top-left-radius: 8px; }
+.table-row.group-start .body-cell:last-child { border-top-right-radius: 8px; }
+
+/* 3. Bottom Rounded Corners for the group */
+.table-row.group-end .body-cell { border-bottom: 1px solid var(--border-color); }
+.table-row.group-end .body-cell:first-child { border-bottom-left-radius: 8px; }
+.table-row.group-end .body-cell:last-child { border-bottom-right-radius: 8px; }
+
+/* 4. Middle Rows: Connect visually */
+.table-row.group-middle .body-cell,
+.table-row.group-start .body-cell {
+  border-bottom: 1px solid #f8fafc; /* Very subtle divider inside group */
+}
+
+/* Alignment Utilities */
 .align-left { justify-content: flex-start; text-align: left; }
 .align-center { justify-content: center; text-align: center; }
 .align-right { justify-content: flex-end; text-align: right; }
 
-/* State: styling and layout for the empty data message. */
 .empty-state {
   grid-column: 1 / -1;
-  padding: var(--spacing-lg);
+  padding: 3rem;
   text-align: center;
   color: var(--text-muted);
-  font-style: italic;
   background: white;
+  border-radius: 8px;
+  margin-top: 1rem;
 }
 </style>

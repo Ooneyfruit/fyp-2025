@@ -54,11 +54,11 @@ import { useLayout } from '../../composables/useLayout';
 import { useSwipeAway } from '../../composables/useSwipeAway';
 
 // Component icons.
-import IconHome from '../icons/IconHome.vue';
+import IconCalendar from '../icons/IconCalendar.vue'; // Changed from IconHome
 import IconUsers from '../icons/IconUsers.vue';
 
 const MENU_CONFIG = [
-  { name: 'Home', icon: markRaw(IconHome), path: '/', adminOnly: false },
+  { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
   { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true },
 ];
 

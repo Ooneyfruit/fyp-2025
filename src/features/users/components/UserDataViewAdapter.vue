@@ -38,7 +38,11 @@
       </template>
     </BaseTable>
 
-    <BaseCardList v-else :items="users">
+    <BaseCardList 
+      v-else 
+      :items="users"
+      min-card-width="18rem"
+    >
       <template #card-header="{ item }">
         <div class="card-identity-wrapper">
           <UserIdentity :profile="item.profile" />
@@ -56,6 +60,10 @@
 </template>
 
 <script setup>
+/**
+ * Data Adapter for User Management.
+ * Switches between Table and Card views based on available container width.
+ */
 import { ref, onMounted } from 'vue';
 import BaseTable from '../../../components/shared/BaseTable.vue'; 
 import BaseCardList from '../../../components/shared/BaseCardList.vue';
@@ -71,9 +79,9 @@ onMounted(() => console.log(`[UserDataViewAdapter] Mounted with ${props.users?.l
 
 const adapterRoot = ref(null);
 
-// Uses a higher threshold (60rem) here to force the switch to card view earlier.
-// This prevents the table columns from becoming too cramped before the transition occurs.
-const { isMobile } = useBreakpoints(adapterRoot, 60);
+// Adjusted threshold to 62rem (approx 992px).
+// Increased to prevent the actions column from clipping before the switch to mobile view occurs.
+const { isMobile } = useBreakpoints(adapterRoot, 62);
 
 const formatDate = (ts) => {
   if (!ts) return null;
@@ -101,7 +109,16 @@ const userHeaders = [
 .adapter-container { width: 100%; transition: width var(--anim-speed) ease; position: relative; min-height: 200px; }
 .loading-overlay { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-muted); font-style: italic; }
 .date-text { font-size: 0.85rem; color: var(--text-main); white-space: nowrap; }
-.card-identity-wrapper { display: flex; align-items: flex-start; gap: 0.75rem; }
+
+/* Layout: Flex container for the card header. */
+.card-identity-wrapper { 
+  display: flex; 
+  align-items: flex-start; 
+  justify-content: space-between; 
+  gap: 0.75rem; 
+  width: 100%; /* Ensure the wrapper fills the card header width so space-between works */
+}
+
 .detail-row { display: grid; grid-template-columns: 6.25rem 1fr; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-xs); }
 .detail-row .label { color: var(--text-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
 </style>
