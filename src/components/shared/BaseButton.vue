@@ -113,11 +113,11 @@ defineEmits(['click']);
 
 /* Secondary: Grey Background */
 .rd-button-secondary {
-  background-color: #e2e8f0;
+  background-color: #f8f8f8;
   color: #1e293b;
 }
 .rd-button-secondary:not(:disabled):hover {
-  background-color: #cbd5e1;
+  background-color: #e9e9e9;
 }
 
 /* Danger: Red */

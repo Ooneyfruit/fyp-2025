@@ -83,7 +83,7 @@ const tableHeaders = computed(() => {
       // Using minmax(0, X) is critical here.
       // Unlike fit-content, minmax(0, 14rem) allows the column to shrink below
       // the intrinsic width of its content (min-content), forcing truncation.
-      width: 'minmax(0, 10rem)', 
+      width: 'minmax(0, 9.2rem)', 
       align: 'left' 
     },
     ...props.days.map(d => ({

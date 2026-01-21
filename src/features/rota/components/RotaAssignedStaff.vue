@@ -3,6 +3,7 @@
     <h4 class="section-heading">Assigned Staff</h4>
     
     <div v-if="staff.length > 0" class="staff-grid">
+
       <div 
         v-for="shift in staff" 
         :key="shift.id" 
@@ -29,7 +30,6 @@
         </div>
       </div>
     </div>
-    
     <p v-else class="empty-text">No staff currently assigned.</p>
   </div>
 </template>
@@ -132,7 +132,7 @@ const isException = (shift) => {
 
 .empty-text {
   font-style: italic;
-  color: var(--text-light);
+  color: var(--text-muted);
   font-size: 0.9rem;
   padding: 0.5rem 0;
 }
