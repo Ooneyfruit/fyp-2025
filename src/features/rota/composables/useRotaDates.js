@@ -1,19 +1,21 @@
 import { ref, computed, watch } from 'vue';
 
 /**
- * Manages date logic for the Rota view, including persistence and navigation.
- * Centralises logic for date periods (3-day vs 7-day) based on breakpoints.
- * @param {Object} breakpoints - Breakpoints composable for responsive logic
- * @returns {Object} Date state and control methods
+ * Manages date logic for the Rota view with persistence and cross-breakpoint consistency.
+ * Ensures a 'universal truth' for the currently viewed date to prevent navigation drift.
+ * @param {Object} breakpoints - Breakpoints composable for responsive logic.
+ * @returns {Object} Date state and control methods.
  */
 export function useRotaDates(breakpoints) {
   const STORAGE_KEY = 'rotadent_view_date';
-  const currentStartDate = ref(new Date());
+  
+  // The Anchor Date is the persistent 'point of truth' for the viewer's location in time.
+  const anchorDate = ref(new Date());
 
   /**
    * Adjusts a date object to the start of its week (Monday).
-   * @param {Date|string} date - The date to adjust
-   * @returns {Date} The Monday of the containing week
+   * @param {Date} date - The date to adjust.
+   * @returns {Date} The Monday of the containing week.
    */
   const getStartOfWeek = (date) => {
     const d = new Date(date);
@@ -25,56 +27,38 @@ export function useRotaDates(breakpoints) {
   };
 
   /**
-   * Initializes the view date.
-   * Checks localStorage for a saved date; otherwise defaults to the current week.
+   * Initialises the view from storage or defaults to today.
    */
-  const initDate = () => {
+  const init = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
     if (saved) {
       const d = new Date(saved);
       if (!isNaN(d.getTime())) {
-        currentStartDate.value = breakpoints.isMobile.value ? d : getStartOfWeek(d);
+        anchorDate.value = d;
         return;
       }
     }
-    // Default to today if mobile, or start of week if desktop
-    const now = new Date();
-    currentStartDate.value = breakpoints.isMobile.value 
-      ? new Date(now.setHours(0, 0, 0, 0)) 
-      : getStartOfWeek(now);
+    anchorDate.value = now;
   };
 
-  initDate();
+  init();
 
-  // Watch for breakpoint changes to adjust the view date logic responsively.
-  watch(breakpoints.isMobile, (mobileActive) => {
-    const now = new Date();
-    const currentViewStart = new Date(currentStartDate.value);
-    
-    // Calculate the boundaries of the week currently being viewed
-    const viewWeekStart = getStartOfWeek(currentViewStart);
-    const viewWeekEnd = new Date(viewWeekStart);
-    viewWeekEnd.setDate(viewWeekEnd.getDate() + 6);
-    
-    // Check if "Today" falls within the currently viewed week
-    const isCurrentRealTimeWeek = now >= viewWeekStart && now <= viewWeekEnd;
-
-    if (mobileActive) {
-      if (isCurrentRealTimeWeek) {
-        // Snap to "Today" if we are viewing the current week on mobile.
-        currentStartDate.value = new Date(now.setHours(0, 0, 0, 0));
-      } else {
-        // Otherwise, maintain the start of the week relative to the previous view.
-        currentStartDate.value = viewWeekStart;
-      }
-    } else {
-      // Always revert to Monday start when returning to desktop (7-day) view.
-      currentStartDate.value = viewWeekStart;
-    }
+  // Watch for changes to the anchor and persist to local storage.
+  watch(anchorDate, (val) => {
+    localStorage.setItem(STORAGE_KEY, val.toISOString());
   });
 
-  watch(currentStartDate, (newDate) => {
-    localStorage.setItem(STORAGE_KEY, newDate.toISOString());
+  /**
+   * Calculates the start date for the current view.
+   * Desktop (7-day) always snaps to Monday. Mobile (3-day) uses the exact anchor.
+   */
+  const currentStartDate = computed(() => {
+    return breakpoints.isMobile.value 
+      ? anchorDate.value 
+      : getStartOfWeek(anchorDate.value);
   });
 
   const visibleDays = computed(() => {
@@ -87,79 +71,59 @@ export function useRotaDates(breakpoints) {
       const d = new Date(start);
       d.setDate(d.getDate() + i);
       
-      const dayNum = d.getDay(); // 0 = Sun, 1 = Mon ...
       const iso = d.toISOString().split('T')[0];
-      
-      const isWeekend = dayNum === 0 || dayNum === 6;
-      const isToday = iso === todayStr;
-
       days.push({
         key: iso,
         iso,
         label: new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric' }).format(d),
         dateObj: d,
-        isWeekend,
-        isToday
+        isWeekend: d.getDay() === 0 || d.getDay() === 6,
+        isToday: iso === todayStr
       });
     }
     return days;
   });
 
   const monthLabel = computed(() => {
-    if (visibleDays.value.length === 0) return '';
+    if (!visibleDays.value.length) return '';
     const start = visibleDays.value[0].dateObj;
     const end = visibleDays.value[visibleDays.value.length - 1].dateObj;
-    const startStr = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(start);
-    const endStr = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(end);
-    return startStr === endStr ? startStr : `${startStr} - ${endStr}`;
+    const format = (d) => new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
+    
+    return format(start) === format(end) ? format(start) : `${format(start)} - ${format(end)}`;
   });
 
-  /**
-   * Moves the view by a standard period (Week or 3 Days).
-   * @param {number} direction - Positive for forward, negative for backward
-   */
   const changePeriod = (direction) => {
-    const d = new Date(currentStartDate.value);
+    const d = new Date(anchorDate.value);
     const offset = breakpoints.isMobile.value ? 3 : 7;
     d.setDate(d.getDate() + (direction * offset));
-    currentStartDate.value = d;
+    anchorDate.value = d;
   };
 
-  /**
-   * Moves the view by a single day.
-   * Used for fine precision navigation in 3-day view.
-   * @param {number} direction - Positive for forward, negative for backward
-   */
   const changeDay = (direction) => {
-    const d = new Date(currentStartDate.value);
+    const d = new Date(anchorDate.value);
     d.setDate(d.getDate() + direction);
-    currentStartDate.value = d;
+    anchorDate.value = d;
   };
 
   const goToToday = () => {
     const now = new Date();
-    currentStartDate.value = breakpoints.isMobile.value 
-      ? new Date(now.setHours(0, 0, 0, 0)) 
-      : getStartOfWeek(now);
+    now.setHours(0, 0, 0, 0);
+    anchorDate.value = now;
   };
 
-  /**
-   * Jumps the view by a specified number of months.
-   * Anchors the jump to the Thursday (middle) of the current view to minimize
-   * the "drift" that happens when aligning different length months to Mondays.
-   * @param {number} months - Number of months to jump
-   */
   const jumpMonth = (months) => {
-    const current = new Date(currentStartDate.value);
-    // Anchor to Thursday (Start + 3 days)
-    const anchor = new Date(current);
-    anchor.setDate(current.getDate() + 3);
+    const d = new Date(anchorDate.value);
+    const originalDay = d.getDate();
+    // Use the 1st of the month to prevent clipping issues with shorter months.
+    d.setDate(1);
+    d.setMonth(d.getMonth() + months);
     
-    // Move the month on the anchor date
-    anchor.setMonth(anchor.getMonth() + months);
+    // Restore the day, capped by the end of the new month.
+    const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(originalDay, lastDay));
     
-    // Snap back to the Monday of that new anchor's week if on desktop
-    currentStartDate.value = breakpoints.isMobile.value ? anchor : getStartOfWeek(anchor);
+    anchorDate.value = d;
   };
 
   return {
