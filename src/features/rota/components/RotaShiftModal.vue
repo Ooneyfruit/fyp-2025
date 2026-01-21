@@ -9,6 +9,7 @@
       
       <RotaAssignedStaff 
         :staff="currentStaffList"
+        :target-role-name="role.name"
         @remove="markForRemoval"
       />
 
@@ -40,7 +41,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { usePracticeUsers } from '../../users/composables/usePracticeUsers'; // Reuse existing logic
+import { usePracticeUsers } from '../../users/composables/usePracticeUsers'; 
 import BaseModal from '../../../components/shared/BaseModal.vue';
 import BaseButton from '../../../components/shared/BaseButton.vue';
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
@@ -57,7 +58,6 @@ const props = defineProps({
 const emit = defineEmits(['request-close', 'save']);
 
 // --- Use Shared User Logic ---
-// logic: Leveraging the robust syncing and profile resolution from the Users feature
 const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
 
 // --- Local State ---
@@ -65,7 +65,6 @@ const searchQuery = ref('');
 const pendingAdds = ref([]);
 const pendingRemoves = ref([]);
 
-// Reset local state on open
 watch(() => props.show, (isOpen) => {
   if (isOpen) {
     pendingAdds.value = [];
@@ -79,19 +78,14 @@ const modalTitle = computed(() =>
 );
 
 // --- Data Mapping ---
-
-/**
- * Transforms the complex structure from usePracticeUsers into a flat object
- * compatible with the Rota picker components.
- */
 const mappedMembers = computed(() => {
   return practiceUsers.value.map(member => ({
-    uid: member.profile.id,       // User UID
-    membershipId: member.id,      // Practice User Doc ID
-    userRef: member.user,         // Firestore Ref (needed for saving)
+    uid: member.profile.id,       
+    membershipId: member.id,      
+    userRef: member.user,         
     name: member.profile.name || 'Unknown Staff',
     email: member.profile.email,
-    roleName: member.role         // The string role name (e.g. "Dentist")
+    roleName: member.role         
   }));
 });
 
@@ -99,48 +93,58 @@ const mappedMembers = computed(() => {
 
 /**
  * Staff currently assigned (Props - Removals + Additions)
+ * ENRICHED: Now looks up the role for existing shifts to detect exceptions.
  */
 const currentStaffList = computed(() => {
-  // Existing shifts not marked for removal
-  const existing = props.shifts.filter(s => !pendingRemoves.value.includes(s.id));
+  // 1. Process Existing Shifts
+  const existing = props.shifts
+    .filter(s => !pendingRemoves.value.includes(s.id))
+    .map(s => {
+      // Robust ID check: s.user_id might be a string or a Firestore Reference object
+      const sUserId = s.user_id?.id || s.user_id; 
+      
+      // Find the member to get their current role
+      const match = mappedMembers.value.find(m => m.uid === sUserId);
+      
+      return {
+        ...s,
+        // Attach the Role Name if found, otherwise undefined (or 'Unknown')
+        roleName: match?.roleName 
+      };
+    });
   
-  // Pending additions mapped to shift-like objects for display
+  // 2. Process Pending Additions
   const newOnes = pendingAdds.value.map(m => ({
     id: `temp_${m.uid}`,
     user_name: m.name,
     isTemp: true,
-    originalMember: m
+    originalMember: m,
+    roleName: m.roleName 
   }));
 
   return [...existing, ...newOnes];
 });
 
-/**
- * Filtered pool of available members.
- * Excludes anyone already assigned or pending addition.
- */
 const availableStaffList = computed(() => {
-  const currentIds = currentStaffList.value.map(s => s.user_id?.id || s.originalMember?.uid);
+  // Combine IDs from both sources to exclude them from the picker
+  const currentIds = currentStaffList.value.map(s => {
+    // For existing shifts, user_id is the reference/ID
+    // For temps, originalMember.uid is the ID
+    return s.user_id?.id || s.user_id || s.originalMember?.uid;
+  });
+
   const query = searchQuery.value.toLowerCase();
 
   return mappedMembers.value.filter(m => {
-    // Exclude if in current list
     if (currentIds.includes(m.uid)) return false;
-    // Apply search filter
     return m.name.toLowerCase().includes(query);
   });
 });
 
-/**
- * Sub-list: Matching Role
- */
 const recommendedStaff = computed(() => {
   return availableStaffList.value.filter(m => m.roleName === props.role?.name);
 });
 
-/**
- * Sub-list: Non-matching Role (Exceptions)
- */
 const otherStaff = computed(() => {
   return availableStaffList.value.filter(m => m.roleName !== props.role?.name);
 });
@@ -162,10 +166,8 @@ const stageAddition = (member) => {
 
 const markForRemoval = (shift) => {
   if (shift.isTemp) {
-    // Just remove from pending array
     pendingAdds.value = pendingAdds.value.filter(m => m.uid !== shift.originalMember.uid);
   } else {
-    // Mark real ID for deletion
     pendingRemoves.value.push(shift.id);
   }
 };
@@ -179,7 +181,6 @@ const saveChanges = () => {
 
 const handleClose = () => emit('request-close');
 
-// Expose loading state for the picker component
 const isLoading = computed(() => usersLoading.value);
 </script>
 

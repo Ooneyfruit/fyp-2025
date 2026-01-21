@@ -21,7 +21,9 @@
     
     <span v-if="!iconOnly" class="button-label">
       <template v-if="processing">Processing...</template>
-      <template v-else>{{ label }}</template>
+      <template v-else>
+        <slot>{{ label }}</slot>
+      </template>
     </span>
   </component>
 </template>
@@ -32,30 +34,100 @@
  * various visual states, and semantic variations.
  */
 
-// Define component properties for behavior and visual styling.
 defineProps({
-  label: { type: String, required: true },
+  label: { type: String, default: '' }, // Not required if slot is used
   to: { type: [String, Object], default: null },
   disabled: { type: Boolean, default: false },
   processing: { type: Boolean, default: false },
   /**
    * The visual theme of the button. 
-   * Validates against the three core system variants.
+   * Supports core semantic types and visual styles.
    */
   variant: { 
     type: String, 
     default: 'primary',
-    validator: (v) => ['primary', 'secondary', 'danger'].includes(v)
+    validator: (v) => ['primary', 'secondary', 'danger', 'outline', 'ghost'].includes(v)
   },
   icon: { type: [Object, Function], default: null },
   iconOnly: { type: Boolean, default: false }
 });
 
-// Define emitted events for parent component interaction.
 defineEmits(['click']);
 </script>
 
 <style scoped>
+.rd-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--border-radius, 6px);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.rd-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- Variants --- */
+
+/* Primary: Solid Brand Color */
+.rd-button-primary {
+  background-color: var(--primary-color, #2563eb);
+  color: white;
+}
+.rd-button-primary:not(:disabled):hover {
+  background-color: var(--primary-color-dark, #1d4ed8);
+}
+
+/* Secondary: Grey Background */
+.rd-button-secondary {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+.rd-button-secondary:not(:disabled):hover {
+  background-color: #cbd5e1;
+}
+
+/* Danger: Red */
+.rd-button-danger {
+  background-color: #ef4444;
+  color: white;
+}
+.rd-button-danger:not(:disabled):hover {
+  background-color: #dc2626;
+}
+
+/* Outline: Border only */
+.rd-button-outline {
+  background-color: transparent;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+.rd-button-outline:not(:disabled):hover {
+  border-color: #94a3b8;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* Ghost: No border/bg until hover */
+.rd-button-ghost {
+  background-color: transparent;
+  color: #64748b;
+}
+.rd-button-ghost:not(:disabled):hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
 /* Layout: specific dimensions for icon-only button states. */
 .rd-button.is-icon-only {
   padding: 0.5rem;
@@ -72,7 +144,6 @@ defineEmits(['click']);
   width: 1.15rem;
   height: 1.15rem;
   flex-shrink: 0;
-  /* Shift icon up slightly to account for the visual weight of the button container. */
   transform: translateY(-0.0625rem);
 }
 
@@ -81,12 +152,10 @@ defineEmits(['click']);
   height: 100%;
 }
 
-/* Alignment: vertical nudge to improve legibility and balance the baseline. */
 .button-label {
   transform: translateY(0.0625rem);
 }
 
-/* State: visual feedback for ongoing operations. */
 .is-processing {
   cursor: wait;
 }
