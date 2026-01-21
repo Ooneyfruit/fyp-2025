@@ -2,6 +2,7 @@
   <div class="rd-card base-table-wrapper">
     <div 
       class="base-table" 
+      :class="{ 'has-vertical-lines': verticalLines }"
       :style="{ gridTemplateColumns: gridTemplate }"
       role="table"
     >
@@ -52,15 +53,15 @@
 /**
  * Primary responsibility: provides a flexible, grid-based data table component designed for 
  * accessibility and dynamic content rendering.
- * * Update 2.0: Added support for dynamic row classes to facilitate grouping visuals.
+ * * Update 2.1: Added verticalLines prop for distinct column separation.
  */
 import { computed } from 'vue';
 
 const props = defineProps({
   headers: { type: Array, required: true },
   items: { type: Array, required: true },
-  // Optional function to derive classes for a specific row item
-  rowClass: { type: Function, default: () => [] }
+  rowClass: { type: Function, default: () => [] },
+  verticalLines: { type: Boolean, default: false }
 });
 
 const gridTemplate = computed(() => {
@@ -77,13 +78,13 @@ const getRowClasses = (item) => {
 
 <style scoped>
 .base-table-wrapper {
-  overflow-x: auto; /* Allow scrolling on small screens if content forces width */
+  overflow-x: auto; 
 }
 
 .base-table {
   display: grid;
   width: 100%;
-  min-width: 600px; /* Ensure table structure holds on very small screens */
+  min-width: 600px; 
 }
 
 .cell {
@@ -119,15 +120,20 @@ const getRowClasses = (item) => {
   font-size: 0.9375rem;
   color: var(--text-main);
   border-bottom: 1px solid var(--table-row-border);
-  min-height: 5.5rem; /* Increased height for rota slots */
+  min-height: 5.5rem; 
+}
+
+/* --- Vertical Lines Feature --- */
+.base-table.has-vertical-lines .header-cell:not(:last-child),
+.base-table.has-vertical-lines .body-cell:not(:last-child) {
+  border-right: 1px solid #f1f5f9; /* Subtle divider */
 }
 
 /* Grouping Logic (Used by RotaView via :row-class) */
 .table-row.role-group-middle .body-cell {
-  border-bottom: 1px dashed var(--border-color); /* Faint separator for sub-items */
+  border-bottom: 1px dashed var(--border-color); 
 }
 
-/* Hide border for the very last item always */
 .table-row:last-child .body-cell {
   border-bottom: none;
 }

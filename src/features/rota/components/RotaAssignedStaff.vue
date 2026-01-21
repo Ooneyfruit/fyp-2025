@@ -7,17 +7,26 @@
         v-for="shift in staff" 
         :key="shift.id" 
         class="staff-card assigned"
+        role="button"
+        tabindex="0"
+        @click="$emit('remove', shift)"
+        @keydown.enter="$emit('remove', shift)"
+        title="Click to remove from shift"
       >
         <div class="staff-info">
-          <span class="staff-name" :title="shift.user_name">{{ shift.user_name }}</span>
+          <span class="staff-name">{{ shift.user_name }}</span>
+          
+          <span 
+            v-if="isException(shift)" 
+            class="exception-role"
+          >
+            {{ shift.roleName || 'Unknown Role' }}
+          </span>
         </div>
-        <button 
-          class="action-btn remove" 
-          @click="$emit('remove', shift)"
-          title="Remove from shift"
-        >
+
+        <div class="remove-indicator">
           <IconClose :stroke-width="2.5" />
-        </button>
+        </div>
       </div>
     </div>
     
@@ -28,11 +37,18 @@
 <script setup>
 import IconClose from '../../../components/icons/IconClose.vue';
 
-defineProps({
-  staff: { type: Array, default: () => [] }
+const props = defineProps({
+  staff: { type: Array, default: () => [] },
+  targetRoleName: { type: String, default: '' }
 });
 
 defineEmits(['remove']);
+
+const isException = (shift) => {
+  // If we don't know the role (e.g. data load issue), don't flag as exception to avoid noise
+  if (!shift.roleName) return false;
+  return shift.roleName !== props.targetRoleName;
+};
 </script>
 
 <style scoped>
@@ -47,7 +63,7 @@ defineEmits(['remove']);
 
 .staff-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Slightly wider for role text */
   gap: 0.5rem;
 }
 
@@ -56,47 +72,62 @@ defineEmits(['remove']);
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0.75rem;
-  background: white;
-  border: 1px solid var(--border-color);
+  
+  /* Default State: Info Style */
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
   border-radius: var(--border-radius);
+  
   user-select: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.staff-card.assigned {
-  background: #f0f9ff;
-  border-color: #bae6fd;
+/* Hover State: "Removal" Style */
+.staff-card:hover {
+  background-color: #fee2e2; /* Red-50 */
+  border-color: #fca5a5;    /* Red-300 */
+}
+
+/* On hover, change text colors to indicate destructive action */
+.staff-card:hover .staff-name { color: #b91c1c; /* Red-700 */ }
+.staff-card:hover .exception-role { color: #b91c1c; opacity: 0.8; }
+.staff-card:hover .remove-indicator { color: #b91c1c; }
+
+.staff-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .staff-name {
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 110px;
-  display: block;
 }
 
-.action-btn.remove {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-light);
+.exception-role {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-top: 1px;
+}
+
+.remove-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  transition: background-color 0.2s;
+  width: 1.25rem;
+  height: 1.25rem;
   margin-left: 0.5rem;
+  color: #bae6fd; /* Subtle when not hovered */
+  transition: color 0.2s ease;
   flex-shrink: 0;
-}
-
-.action-btn.remove:hover {
-  background-color: #fee2e2;
-  color: #ef4444;
 }
 
 .empty-text {
