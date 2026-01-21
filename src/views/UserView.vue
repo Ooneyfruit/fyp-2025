@@ -1,6 +1,6 @@
 <template>
   <AppAuthGuard>
-    <AppPageContainer>
+    <AppPageContainer fluid>
       <AppPageHeaderGroup 
         title="User Management" 
         subtitle="Manage personnel and permissions for your practice."

@@ -3,7 +3,8 @@ import { ref, onMounted, onUnmounted } from 'vue';
 /**
  * Monitors the container width to determine layout mode.
  * Allows components to specify a custom threshold for switching to mobile view.
- * @param {Object} targetRef - The Vue template ref to observe.
+ * Updated to use borderBoxSize for more accurate layout measurements.
+ * * @param {Object} targetRef - The Vue template ref to observe.
  * @param {number} [threshold=50] - The width in rems at which to switch to mobile mode.
  * @returns {Object} An object containing the isMobile reactive boolean.
  */
@@ -16,7 +17,10 @@ export function useBreakpoints(targetRef, threshold = 50) {
   // Observe resize events to dynamically update the state.
   const observer = new ResizeObserver((entries) => {
     for (let entry of entries) {
-      const widthRem = entry.contentRect.width / getRemValue();
+      // Prefer borderBoxSize to include padding in the width calculation.
+      // Fallback to contentRect if borderBoxSize is unavailable (legacy support).
+      const widthPx = entry.borderBoxSize?.[0]?.inlineSize ?? entry.contentRect.width;
+      const widthRem = widthPx / getRemValue();
       
       // Compare the current width against the provided threshold.
       // This allows the consumer to dictate when the layout breaks.
@@ -25,7 +29,10 @@ export function useBreakpoints(targetRef, threshold = 50) {
   });
 
   onMounted(() => {
-    if (targetRef.value) observer.observe(targetRef.value);
+    // Ensure the element exists before observing.
+    if (targetRef.value) {
+      observer.observe(targetRef.value);
+    }
   });
 
   onUnmounted(() => observer.disconnect());

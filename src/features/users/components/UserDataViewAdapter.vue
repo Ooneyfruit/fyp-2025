@@ -56,6 +56,10 @@
 </template>
 
 <script setup>
+/**
+ * Data Adapter for User Management.
+ * Switches between Table and Card views based on available container width.
+ */
 import { ref, onMounted } from 'vue';
 import BaseTable from '../../../components/shared/BaseTable.vue'; 
 import BaseCardList from '../../../components/shared/BaseCardList.vue';
@@ -71,9 +75,10 @@ onMounted(() => console.log(`[UserDataViewAdapter] Mounted with ${props.users?.l
 
 const adapterRoot = ref(null);
 
-// Uses a higher threshold (60rem) here to force the switch to card view earlier.
-// This prevents the table columns from becoming too cramped before the transition occurs.
-const { isMobile } = useBreakpoints(adapterRoot, 60);
+// Adjusted threshold to 50rem (800px).
+// The previous 60rem (960px) was too wide for the content area when including the sidebar,
+// causing the view to get stuck in mobile mode even on desktops.
+const { isMobile } = useBreakpoints(adapterRoot, 50);
 
 const formatDate = (ts) => {
   if (!ts) return null;
