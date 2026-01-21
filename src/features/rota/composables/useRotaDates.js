@@ -65,7 +65,11 @@ export function useRotaDates(breakpoints) {
     const days = [];
     const count = breakpoints.isMobile.value ? 3 : 7;
     const start = new Date(currentStartDate.value);
-    const todayStr = new Date().toISOString().split('T')[0];
+    
+    // Create a date object for 'today' set to midnight for accurate comparison.
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
 
     for (let i = 0; i < count; i++) {
       const d = new Date(start);
@@ -78,7 +82,8 @@ export function useRotaDates(breakpoints) {
         label: new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric' }).format(d),
         dateObj: d,
         isWeekend: d.getDay() === 0 || d.getDay() === 6,
-        isToday: iso === todayStr
+        isToday: iso === todayStr,
+        isBeforeToday: d < today
       });
     }
     return days;

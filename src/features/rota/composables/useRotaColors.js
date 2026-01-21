@@ -16,6 +16,12 @@ export function useRotaColors() {
     { bg: '#fef08a', accent: '#854d0e' }, // Yellow
     { bg: '#ffe4e6', accent: '#a03f58' }, // Rose
     { bg: '#e2e8f0', accent: '#334155' }, // Slate
+    { bg: '#e0f2fe', accent: '#0369a1' }, // Sky Blue
+    { bg: '#ffedd5', accent: '#c2410c' }, // Orange
+    { bg: '#fae8ff', accent: '#a21caf' }, // Fuchsia
+    { bg: '#fef08a', accent: '#854d0e' }, // Yellow
+    { bg: '#ffe4e6', accent: '#a03f58' }, // Rose
+    { bg: '#e2e8f0', accent: '#334155' }, // Slate
   ];
 
   /**
