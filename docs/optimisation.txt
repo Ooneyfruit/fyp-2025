@@ -13,6 +13,7 @@ We'll start with /src/components/layout/NavBar.vue
 //
 
 Check for these rudimentary things:
+- is there an existing component that be reused for this?
 - can it be split up further or is it at its reasonable logical limit? Is there an overreach of features in this component?
 - Is the name appropriate in the context of the project? think base vs. app vs. [feature] (like user) as a prefix based on the vue.js style guides (or some other name that has nothing to do with app or base if its appropriate)
 - is the file structure/location appropriate in the context of the project?
