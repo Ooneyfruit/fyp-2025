@@ -1,0 +1,37 @@
+Let's do a code review of the repository, we'll start with the User managements feature (/src/features/users). I say the feature, you do the analysis. Things I'm looking for are unnecessary code, overlapping code, things that can be repurposed, things that can be split up, things that can be optimised.
+
+//
+
+But, before you do anything, construct a plan of development
+
+//
+
+Let's do a code review of the repository, we'll go a file at a time. I say the file, you do the analyse. Things I'm looking for are unnecessary code, things that can be repurposed, things that can be split up, things that can be optimised.
+
+We'll start with /src/components/layout/NavBar.vue
+
+//
+
+Check for these rudimentary things:
+- can it be split up further or is it at its reasonable logical limit? Is there an overreach of features in this component?
+- Is the name appropriate in the context of the project? think base vs. app vs. [feature] (like user) as a prefix based on the vue.js style guides (or some other name that has nothing to do with app or base if its appropriate)
+- is the file structure/location appropriate in the context of the project?
+- can styles from it become more centralised than it currently is?
+- Can stylistic consistency be increased within it across the app?
+- Can it be optimised and improved?
+- is there anything that can be taken from or put in to main.css?
+- Is there code overlap?
+- Does it match the commenting style guide? (/docs/optimised-modules.txt)
+
+Vue style guides and style avoids:
+- https://vuejs.org/style-guide/rules-essential.html
+- https://vuejs.org/style-guide/rules-strongly-recommended.html
+- https://vuejs.org/style-guide/rules-recommended.html
+- https://vuejs.org/style-guide/rules-use-with-caution.html
+
+//
+
+My personal suggestions for this feature:
+- 
+ 
+I have already optimised the files listed in optimised-modules.txt.
