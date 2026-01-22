@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar">
     <div class="nav-left">
-      <BaseButton 
+      <BaseButton
         :icon="IconMenu"
         variant="secondary"
         icon-only

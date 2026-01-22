@@ -32,7 +32,11 @@ defineProps({
 }
 
 @media (max-width: 48rem) {
-  .page-container { padding: var(--spacing-sm); }
-  .page-container.is-fluid { padding: var(--spacing-sm); }
+  .page-container {
+    padding: var(--spacing-sm);
+  }
+  .page-container.is-fluid {
+    padding: var(--spacing-sm);
+  }
 }
 </style>

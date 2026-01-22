@@ -4,10 +4,10 @@
       <span class="rd-toggle-title">{{ title }}</span>
       <small v-if="subtitle" class="rd-toggle-subtitle">{{ subtitle }}</small>
     </div>
-    <BaseToggle 
-      :model-value="modelValue" 
+    <BaseToggle
+      :model-value="modelValue"
       :disabled="disabled"
-      @update:model-value="$emit('update:modelValue', $event)" 
+      @update:model-value="$emit('update:modelValue', $event)"
     />
   </div>
 </template>

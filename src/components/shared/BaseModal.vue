@@ -1,25 +1,27 @@
 <template>
   <Teleport to="body">
     <Transition name="rd-modal" @after-leave="$emit('closed')">
-      <div 
+      <div
         v-if="show"
-        class="modal-root" 
+        class="modal-root"
         :class="[`size-${size}`]"
-        role="dialog" 
-        aria-modal="true" 
+        role="dialog"
+        aria-modal="true"
         tabindex="-1"
       >
-        <div class="modal-overlay" @click="handleRequestClose"></div>
-        
+        <div class="modal-overlay" @click="handleRequestClose" />
+
         <div class="modal-container rd-card">
           <header class="modal-header rd-card-header">
             <slot name="header">
-              <h3 class="modal-title">{{ title }}</h3>
-              <button 
-                class="close-btn" 
-                @click="handleRequestClose" 
-                type="button" 
+              <h3 class="modal-title">
+                {{ title }}
+              </h3>
+              <button
+                class="close-btn"
+                type="button"
                 aria-label="Close"
+                @click="handleRequestClose"
               >
                 <IconClose :stroke-width="2.5" />
               </button>
@@ -41,14 +43,14 @@
 
 <script setup>
 /**
- * Primary responsibility: provides a robust, accessible modal dialog system 
+ * Primary responsibility: provides a robust, accessible modal dialog system
  * with built-in scroll locking, keyboard dismissal, and flexible sizing.
  */
 import { watch, onUnmounted } from 'vue';
 import IconClose from '../icons/IconClose.vue';
 
 // Define configuration for appearance and visibility state.
-const props = defineProps({ 
+const props = defineProps({
   title: { type: String, default: 'Modal Window' },
   show: { type: Boolean, default: false },
   // Controls the maximum width of the modal container.
@@ -75,20 +77,24 @@ const handleKeyDown = (e) => {
 /**
  * Manage global side effects when the modal state changes.
  */
-watch(() => props.show, (isVisible) => {
-  if (isVisible) {
-    // Disable body scrolling to prevent layout shifting behind the modal.
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-  } else {
-    // Restore default scroll behavior and clean up event listeners.
-    document.body.style.overflow = '';
-    window.removeEventListener('keydown', handleKeyDown);
-  }
-}, { immediate: true });
+watch(
+  () => props.show,
+  (isVisible) => {
+    if (isVisible) {
+      // Disable body scrolling to prevent layout shifting behind the modal.
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      // Restore default scroll behavior and clean up event listeners.
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  },
+  { immediate: true }
+);
 
 // Ensure global side effects are cleared if the component is destroyed.
-onUnmounted(() => { 
+onUnmounted(() => {
   document.body.style.overflow = '';
   window.removeEventListener('keydown', handleKeyDown);
 });
@@ -103,7 +109,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   /* Maintain position above standard content and navigation. */
-  z-index: var(--z-modal); 
+  z-index: var(--z-modal);
   padding: var(--spacing-sm);
 }
 
@@ -131,9 +137,15 @@ onUnmounted(() => {
 }
 
 /* Sizing Logic: max-width definitions for various modal sizes. */
-.size-sm .modal-container { max-width: 24rem; }
-.size-md .modal-container { max-width: 36rem; }
-.size-lg .modal-container { max-width: 54rem; }
+.size-sm .modal-container {
+  max-width: 24rem;
+}
+.size-md .modal-container {
+  max-width: 36rem;
+}
+.size-lg .modal-container {
+  max-width: 54rem;
+}
 
 /* Layout: responsiveness and padding adjustments for larger viewports. */
 @media (min-width: 48rem) {

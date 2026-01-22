@@ -9,7 +9,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   plugins: [
     vue(),
-    
+
     /**
      * PWA Configuration: manages service worker generation and web manifest.
      * Implements an offline-first strategy for the application shell.
@@ -17,17 +17,17 @@ export default defineConfig({
     VitePWA({
       registerType: 'prompt',
       injectRegister: 'auto',
-      
+
       // Asset Management: define which files are pre-cached for offline availability.
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,vue}'],
         navigateFallback: 'index.html',
-        
+
         // Performance: exclude Firestore sync endpoints from service worker interception.
         // This ensures the SDK-level persistence handles data synchronization without conflicts.
-        navigateFallbackDenylist: [/^\/__/], 
+        navigateFallbackDenylist: [/^\/__/]
       },
-      
+
       // Manifest: metadata for platform-level integration and home screen installation.
       manifest: {
         name: 'RotaDent',
@@ -36,7 +36,7 @@ export default defineConfig({
         theme_color: '#1d4ed8', // Synchronized with --color-primary.
         background_color: '#f8fafc', // Synchronized with --bg-app.
         display: 'standalone',
-        
+
         icons: [
           {
             src: 'android/android-launchericon-192-192.png',
@@ -58,12 +58,22 @@ export default defineConfig({
       }
     })
   ],
-  
+
   /**
    * Development Server: local configuration for port mapping and environment stability.
    */
   server: {
     port: 3000,
     strictPort: true
+  },
+
+  /**
+   * Vitest Configuration.
+   * Sets up the happy-dom environment for component testing.
+   */
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+    include: ['src/**/*.{test,spec}.{js,ts,vue}']
   }
 });

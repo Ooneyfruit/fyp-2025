@@ -1,14 +1,14 @@
 <template>
-  <div 
-    class="app-layout" 
-    :class="{ 
-      'is-sidebar-open': isSidebarOpen, 
+  <div
+    class="app-layout"
+    :class="{
+      'is-sidebar-open': isSidebarOpen,
       'is-mobile': isMobile,
-      'is-animate-ready': canAnimate 
+      'is-animate-ready': canAnimate
     }"
   >
     <template v-if="user">
-      <NavBar @toggleSidebar="toggleSidebar" />
+      <NavBar @toggle-sidebar="toggleSidebar" />
       <AppSideMenu />
     </template>
 
@@ -40,17 +40,21 @@ const { isSidebarOpen, isMobile, canAnimate, toggleSidebar } = useLayout();
 const { showToast } = useToast();
 
 const { needRefresh, updateServiceWorker } = useRegisterSW({
-  onRegistered() { console.log('[PWA] Service Worker Registered'); },
-  onNeedRefresh() { console.log('[PWA] Version update available.'); }
+  onRegistered() {
+    console.log('[PWA] Service Worker Registered');
+  },
+  onNeedRefresh() {
+    console.log('[PWA] Version update available.');
+  }
 });
 
 // Watch for PWA refresh triggers and delegate to the global toast system.
 watch(needRefresh, (available) => {
   if (available) {
-    showToast("A new version of RotaDent is available.", {
+    showToast('A new version of RotaDent is available.', {
       duration: 0,
       action: {
-        label: "Refresh Now",
+        label: 'Refresh Now',
         callback: updateServiceWorker
       }
     });
@@ -68,23 +72,23 @@ onMounted(() => {
 
 <style scoped>
 /* Layout: core shell dimensions */
-.app-layout { 
-  min-height: 100vh; 
+.app-layout {
+  min-height: 100vh;
 }
 
 /* Sidebar context: spacing rules for the main content area */
-.is-sidebar-open:not(.is-mobile) .main-content { 
-  margin-left: var(--sidebar-width); 
+.is-sidebar-open:not(.is-mobile) .main-content {
+  margin-left: var(--sidebar-width);
 }
 
-.is-mobile .main-content { 
-  margin-left: 0; 
+.is-mobile .main-content {
+  margin-left: 0;
 }
 
 /* Responsive: override content margins for small screens */
-@media (max-width: 48rem) { 
-  .main-content { 
-    margin-left: 0; 
-  } 
+@media (max-width: 48rem) {
+  .main-content {
+    margin-left: 0;
+  }
 }
 </style>

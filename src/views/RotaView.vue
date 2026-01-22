@@ -1,7 +1,6 @@
 <template>
   <AppPageContainer fluid>
-    
-    <RotaHeader 
+    <RotaHeader
       :month-label="monthLabel"
       :date-range-label="dateRangeLabel"
       :show-today-button="!isCurrentWeek"
@@ -12,14 +11,14 @@
       @jump-today="goToToday"
     />
 
-    <RotaGrid 
+    <RotaGrid
       :days="visibleDays"
       :rows="flattenedRows"
       :get-shifts="getShiftsForSlot"
       @slot-click="onSlotClick"
     />
 
-    <RotaShiftModal 
+    <RotaShiftModal
       v-if="selectedCell"
       :show="showModal"
       :role="selectedCell.role"
@@ -29,7 +28,6 @@
       @request-close="closeShiftModal"
       @save="onSaveShifts"
     />
-
   </AppPageContainer>
 </template>
 
@@ -40,7 +38,7 @@ import { useBreakpoints } from '../composables/useBreakpoints';
 import { useRotaDates } from '../features/rota/composables/useRotaDates';
 import { useRotaData } from '../features/rota/composables/useRotaData';
 import { createShift, deleteShift } from '../features/rota/rotaAPI';
-import { doc } from 'firebase/firestore'; 
+import { doc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 // Components
@@ -55,14 +53,14 @@ const { user } = useAuth();
 const breakpoints = useBreakpoints(ref(document.body), 80);
 
 // 1. Date Management (includes new responsive logic)
-const { 
-  currentStartDate, 
-  visibleDays, 
-  monthLabel, 
-  changePeriod, 
+const {
+  //currentStartDate,
+  visibleDays,
+  monthLabel,
+  changePeriod,
   changeDay,
-  goToToday, 
-  jumpMonth 
+  goToToday,
+  jumpMonth
 } = useRotaDates(breakpoints);
 
 // 2. Data Management
@@ -78,7 +76,7 @@ const dateRangeLabel = computed(() => {
 
 const isCurrentWeek = computed(() => {
   const today = new Date().toISOString().split('T')[0];
-  return visibleDays.value.some(d => d.iso === today);
+  return visibleDays.value.some((d) => d.iso === today);
 });
 
 // 4. Modal / Interaction Logic
@@ -103,32 +101,38 @@ const closeShiftModal = () => {
 const onSaveShifts = async ({ additions, removals }) => {
   try {
     const practiceId = user.value.practiceRef.id;
-    
+
     // Process Removals
-    await Promise.all(removals.map(id => deleteShift(id)));
+    await Promise.all(removals.map((id) => deleteShift(id)));
 
     // Process Additions
-    await Promise.all(additions.map(member => {
-      const roleRef = doc(db, `practices/${practiceId}/roles`, selectedCell.value.role.id);
-      const surgeryRef = doc(db, `practices/${practiceId}/surgeries`, selectedCell.value.surgery.id);
-      
-      const payload = {
-        date: selectedCell.value.date.iso,
-        user_id: member.userRef,
-        user_name: member.name,
-        role_id: roleRef,
-        role_name: selectedCell.value.role.name,
-        surgery_id: surgeryRef,
-        surgery_name: selectedCell.value.surgery.name
-      };
-      
-      return createShift(payload);
-    }));
+    await Promise.all(
+      additions.map((member) => {
+        const roleRef = doc(db, `practices/${practiceId}/roles`, selectedCell.value.role.id);
+        const surgeryRef = doc(
+          db,
+          `practices/${practiceId}/surgeries`,
+          selectedCell.value.surgery.id
+        );
+
+        const payload = {
+          date: selectedCell.value.date.iso,
+          user_id: member.userRef,
+          user_name: member.name,
+          role_id: roleRef,
+          role_name: selectedCell.value.role.name,
+          surgery_id: surgeryRef,
+          surgery_name: selectedCell.value.surgery.name
+        };
+
+        return createShift(payload);
+      })
+    );
 
     closeShiftModal();
-    loadData(); 
+    loadData();
   } catch (err) {
-    console.error("Failed to save changes", err);
+    console.error('Failed to save changes', err);
   }
 };
 

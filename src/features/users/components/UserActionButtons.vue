@@ -1,14 +1,13 @@
 <template>
   <div class="user-actions">
-    <BaseButton 
-      label="Edit User" 
-      :icon="IconEdit" 
+    <BaseButton
+      label="Edit User"
+      :icon="IconEdit"
       variant="secondary"
       icon-only
-      @click="$emit('edit')" 
+      @click="$emit('edit')"
     />
-    
-    </div>
+  </div>
 </template>
 
 <script setup>

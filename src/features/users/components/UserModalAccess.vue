@@ -1,18 +1,18 @@
 <template>
   <BaseFormBlock title="Employment & Access">
     <div class="rd-form-grid">
-      <BaseToggleDescription 
-        :model-value="modelValue.is_administrator" 
-        title="System admin" 
+      <BaseToggleDescription
+        :model-value="modelValue.is_administrator"
+        title="System admin"
         subtitle="Full administrative control"
         :disabled="isAdminToggleDisabled"
         @update:model-value="handleToggleAdmin"
       />
-      
-      <BaseToggleDescription 
-        :model-value="modelValue.is_employee" 
-        title="Internal employee" 
-        subtitle="Contractor if toggled off" 
+
+      <BaseToggleDescription
+        :model-value="modelValue.is_employee"
+        title="Internal employee"
+        subtitle="Contractor if toggled off"
         @update:model-value="handleToggleEmployee"
       />
     </div>
@@ -21,7 +21,10 @@
       <div v-if="showDemotionWarning" class="demotion-warning">
         <div class="warning-text">
           <strong>Privilege de-escalation.</strong>
-          <span>You are removing your own admin access. You will lose access to this dashboard after saving.</span>
+          <span
+            >You are removing your own admin access. You will lose access to this dashboard after
+            saving.</span
+          >
         </div>
         <BaseButton label="Cancel" variant="secondary" @click="abortDemotion" />
       </div>
@@ -99,6 +102,13 @@ const abortDemotion = () => {
   gap: 1.5rem;
   margin-top: 0.5rem;
 }
-.warning-text { display: flex; flex-direction: column; font-size: 0.85rem; color: var(--color-warning); }
-.warning-text strong { font-weight: 700; }
+.warning-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  color: var(--color-warning);
+}
+.warning-text strong {
+  font-weight: 700;
+}
 </style>

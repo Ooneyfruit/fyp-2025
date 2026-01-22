@@ -1,20 +1,17 @@
 <template>
   <div class="rd-card base-table-wrapper">
-    <div 
-      class="base-table" 
+    <div
+      class="base-table"
       :class="{ 'has-vertical-lines': verticalLines }"
       :style="{ gridTemplateColumns: gridTemplate }"
       role="table"
     >
       <div class="table-header-group" role="rowgroup">
-        <div 
-          v-for="col in headers" 
-          :key="col.key" 
+        <div
+          v-for="col in headers"
+          :key="col.key"
           class="cell header-cell"
-          :class="[
-            `align-${col.align || 'left'}`,
-            col.headerClass
-          ]"
+          :class="[`align-${col.align || 'left'}`, col.headerClass]"
           role="columnheader"
         >
           {{ col.label }}
@@ -23,13 +20,13 @@
 
       <div class="table-body-group" role="rowgroup">
         <template v-if="items.length > 0">
-          <div 
-            v-for="(item, index) in enrichedItems" 
-            :key="item.id || index" 
+          <div
+            v-for="(item, index) in enrichedItems"
+            :key="item.id || index"
             class="table-row"
             :class="[
               ...getRowClasses(item),
-              { 
+              {
                 'group-start': item._isGroupStart,
                 'group-end': item._isGroupEnd,
                 'group-middle': item._isGroupMiddle
@@ -37,9 +34,9 @@
             ]"
             role="row"
           >
-            <div 
-              v-for="col in headers" 
-              :key="col.key" 
+            <div
+              v-for="col in headers"
+              :key="col.key"
               class="cell body-cell"
               :class="[`align-${col.align || 'left'}`]"
               role="cell"
@@ -52,7 +49,7 @@
         </template>
 
         <div v-else class="empty-state">
-          <slot name="empty">No records found.</slot>
+          <slot name="empty"> No records found. </slot>
         </div>
       </div>
     </div>
@@ -101,9 +98,7 @@ const enrichedItems = computed(() => {
 });
 
 const gridTemplate = computed(() => {
-  return props.headers
-    .map(h => h.width || '1fr')
-    .join(' ');
+  return props.headers.map((h) => h.width || '1fr').join(' ');
 });
 
 const getRowClasses = (item) => {
@@ -134,7 +129,9 @@ const getRowClasses = (item) => {
 }
 
 /* --- Header Styling --- */
-.table-header-group { display: contents; }
+.table-header-group {
+  display: contents;
+}
 
 .header-cell {
   background: white;
@@ -151,8 +148,12 @@ const getRowClasses = (item) => {
 }
 
 /* --- Body Styling --- */
-.table-body-group { display: contents; }
-.table-row { display: contents; }
+.table-body-group {
+  display: contents;
+}
+.table-row {
+  display: contents;
+}
 
 .body-cell {
   background: white;
@@ -178,13 +179,23 @@ const getRowClasses = (item) => {
 }
 
 /* 2. Top Rounded Corners for the group */
-.table-row.group-start .body-cell:first-child { border-top-left-radius: 8px; }
-.table-row.group-start .body-cell:last-child { border-top-right-radius: 8px; }
+.table-row.group-start .body-cell:first-child {
+  border-top-left-radius: 8px;
+}
+.table-row.group-start .body-cell:last-child {
+  border-top-right-radius: 8px;
+}
 
 /* 3. Bottom Rounded Corners for the group */
-.table-row.group-end .body-cell { border-bottom: 1px solid var(--border-color); }
-.table-row.group-end .body-cell:first-child { border-bottom-left-radius: 8px; }
-.table-row.group-end .body-cell:last-child { border-bottom-right-radius: 8px; }
+.table-row.group-end .body-cell {
+  border-bottom: 1px solid var(--border-color);
+}
+.table-row.group-end .body-cell:first-child {
+  border-bottom-left-radius: 8px;
+}
+.table-row.group-end .body-cell:last-child {
+  border-bottom-right-radius: 8px;
+}
 
 /* 4. Middle Rows: Connect visually */
 .table-row.group-middle .body-cell,
@@ -193,9 +204,18 @@ const getRowClasses = (item) => {
 }
 
 /* Alignment Utilities */
-.align-left { justify-content: flex-start; text-align: left; }
-.align-center { justify-content: center; text-align: center; }
-.align-right { justify-content: flex-end; text-align: right; }
+.align-left {
+  justify-content: flex-start;
+  text-align: left;
+}
+.align-center {
+  justify-content: center;
+  text-align: center;
+}
+.align-right {
+  justify-content: flex-end;
+  text-align: right;
+}
 
 .empty-state {
   grid-column: 1 / -1;

@@ -12,7 +12,7 @@
 
 <script setup>
 /**
- * Primary responsibility: Provides a structural container component that implements the 
+ * Primary responsibility: Provides a structural container component that implements the
  * standard project card styling with optional header and body slots.
  */
 </script>

@@ -1,13 +1,13 @@
 <template>
   <label class="rd-toggle">
-    <input 
-      type="checkbox" 
-      :checked="modelValue" 
+    <input
+      type="checkbox"
+      :checked="modelValue"
       :disabled="disabled"
+      class="rd-toggle-input"
       @change="$emit('update:modelValue', $event.target.checked)"
-      class="rd-toggle-input" 
     />
-    <span class="rd-toggle-slider"></span>
+    <span class="rd-toggle-slider" />
   </label>
 </template>
 

@@ -4,56 +4,58 @@
       <p>Synchronizing Practice Identities...</p>
     </div>
 
-    <BaseTable 
-      v-else-if="!isMobile" 
-      :headers="userHeaders" 
-      :items="users"
-    >
+    <BaseTable v-else-if="!isMobile" :headers="userHeaders" :items="users">
       <template #cell(member)="{ item }">
         <UserIdentity :profile="item.profile" />
       </template>
-      
+
       <template #cell(role)="{ item }">
         <UserStatusPills :member="item" type="role" />
       </template>
-      
+
       <template #cell(status)="{ item }">
         <UserStatusPills :member="item" type="admin" />
       </template>
-      
+
       <template #cell(contract)="{ item }">
         <UserStatusPills :member="item" type="contract" />
       </template>
-      
+
       <template #cell(joined)="{ item }">
         <span class="date-text">{{ formatDate(item.start_date) }}</span>
       </template>
-      
+
       <template #cell(endDate)="{ item }">
         <span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span>
       </template>
-      
+
       <template #cell(actions)="{ item }">
         <UserActionButtons @edit="$emit('edit', item)" />
       </template>
     </BaseTable>
 
-    <BaseCardList 
-      v-else 
-      :items="users"
-      min-card-width="18rem"
-    >
+    <BaseCardList v-else :items="users" min-card-width="18rem">
       <template #card-header="{ item }">
         <div class="card-identity-wrapper">
           <UserIdentity :profile="item.profile" />
-          <UserActionButtons @edit="$emit('edit', item)" class="card-edit-btn" />
+          <UserActionButtons class="card-edit-btn" @edit="$emit('edit', item)" />
         </div>
       </template>
       <template #card-body="{ item }">
-        <div class="detail-row"><span class="label">Role</span><UserStatusPills :member="item" type="role" /></div>
-        <div class="detail-row"><span class="label">Status</span><UserStatusPills :member="item" type="admin" /></div>
-        <div class="detail-row"><span class="label">Joined</span><span class="date-text">{{ formatDate(item.start_date) }}</span></div>
-        <div class="detail-row"><span class="label">Ends</span><span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span></div>
+        <div class="detail-row">
+          <span class="label">Role</span><UserStatusPills :member="item" type="role" />
+        </div>
+        <div class="detail-row">
+          <span class="label">Status</span><UserStatusPills :member="item" type="admin" />
+        </div>
+        <div class="detail-row">
+          <span class="label">Joined</span
+          ><span class="date-text">{{ formatDate(item.start_date) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Ends</span
+          ><span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span>
+        </div>
       </template>
     </BaseCardList>
   </div>
@@ -65,7 +67,7 @@
  * Switches between Table and Card views based on available container width.
  */
 import { ref, onMounted } from 'vue';
-import BaseTable from '../../../components/shared/BaseTable.vue'; 
+import BaseTable from '../../../components/shared/BaseTable.vue';
 import BaseCardList from '../../../components/shared/BaseCardList.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';
@@ -75,7 +77,9 @@ import { useBreakpoints } from '../../../composables/useBreakpoints';
 const props = defineProps({ users: Array });
 defineEmits(['edit']);
 
-onMounted(() => console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`));
+onMounted(() =>
+  console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`)
+);
 
 const adapterRoot = ref(null);
 
@@ -95,7 +99,7 @@ const formatDate = (ts) => {
  * Has min-width set to 10rem to guarantee the text is at least twice the icon width.
  */
 const userHeaders = [
-  { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' }, 
+  { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' },
   { key: 'role', label: 'Role', width: 'min-content' },
   { key: 'status', label: 'Status', width: 'min-content' },
   { key: 'contract', label: 'Contract', width: 'min-content' },
@@ -106,19 +110,46 @@ const userHeaders = [
 </script>
 
 <style scoped>
-.adapter-container { width: 100%; transition: width var(--anim-speed) ease; position: relative; min-height: 200px; }
-.loading-overlay { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-muted); font-style: italic; }
-.date-text { font-size: 0.85rem; color: var(--text-main); white-space: nowrap; }
+.adapter-container {
+  width: 100%;
+  transition: width var(--anim-speed) ease;
+  position: relative;
+  min-height: 200px;
+}
+.loading-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.date-text {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  white-space: nowrap;
+}
 
 /* Layout: Flex container for the card header. */
-.card-identity-wrapper { 
-  display: flex; 
-  align-items: flex-start; 
-  justify-content: space-between; 
-  gap: 0.75rem; 
+.card-identity-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
   width: 100%; /* Ensure the wrapper fills the card header width so space-between works */
 }
 
-.detail-row { display: grid; grid-template-columns: 6.25rem 1fr; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-xs); }
-.detail-row .label { color: var(--text-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+.detail-row {
+  display: grid;
+  grid-template-columns: 6.25rem 1fr;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+.detail-row .label {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
 </style>
