@@ -1,14 +1,14 @@
-const admin = require('firebase-admin');
-const fs = require('fs');
+import { initializeApp, credential as _credential, firestore } from 'firebase-admin';
+import { writeFileSync } from 'fs';
 
 // Path to your service account key file
-const serviceAccount = require('./serviceAccount.json');
+import serviceAccount from './serviceAccount.json';
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+initializeApp({
+  credential: _credential.cert(serviceAccount)
 });
 
-const db = admin.firestore();
+const db = firestore();
 
 async function exportCollection(collectionRef) {
   const snapshot = await collectionRef.get();
@@ -34,21 +34,21 @@ async function exportCollection(collectionRef) {
 }
 
 async function runExport() {
-  console.log("Starting full database export...");
+  console.log('Starting full database export...');
   const exportData = {};
-  
+
   try {
     const collections = await db.listCollections();
-    
+
     for (const collection of collections) {
       console.log(`Exporting collection: ${collection.id}...`);
       exportData[collection.id] = await exportCollection(collection);
     }
 
-    fs.writeFileSync('firestore-export.json', JSON.stringify(exportData, null, 2));
-    console.log("Success! File saved as firestore-export.json");
+    writeFileSync('firestore-export.json', JSON.stringify(exportData, null, 2));
+    console.log('Success! File saved as firestore-export.json');
   } catch (error) {
-    console.error("Export failed:", error);
+    console.error('Export failed:', error);
   }
 }
 

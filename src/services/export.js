@@ -1,12 +1,12 @@
-const admin = require('firebase-admin');
-const fs = require('fs');
+import { initializeApp, credential as _credential, firestore } from 'firebase-admin';
+import { writeFileSync } from 'fs';
 
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+initializeApp({
+  credential: _credential.applicationDefault(),
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID
 });
 
-const db = admin.firestore();
+const db = firestore();
 const data = {};
 
 async function exportData() {
@@ -22,17 +22,18 @@ async function exportData() {
       if (subcollections.length > 0) {
         data[collectionId][doc.id]._subcollections = {};
         for (const subcollection of subcollections) {
-            const subcollectionId = subcollection.id;
-            data[collectionId][doc.id]._subcollections[subcollectionId] = {};
-            const subdocuments = await subcollection.get();
-            subdocuments.forEach(subdoc => {
-                data[collectionId][doc.id]._subcollections[subcollectionId][subdoc.id] = subdoc.data();
-            });
+          const subcollectionId = subcollection.id;
+          data[collectionId][doc.id]._subcollections[subcollectionId] = {};
+          const subdocuments = await subcollection.get();
+          subdocuments.forEach((subdocument) => {
+            data[collectionId][doc.id]._subcollections[subcollectionId][subdocument.id] =
+              subdocument.data();
+          });
         }
       }
     }
   }
-  fs.writeFileSync('firestore-export.json', JSON.stringify(data, null, 2));
+  writeFileSync('firestore-export.json', JSON.stringify(data, null, 2));
   console.log('Firestore data exported to firestore-export.json');
 }
 

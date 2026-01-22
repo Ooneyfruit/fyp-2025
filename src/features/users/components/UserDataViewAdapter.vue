@@ -63,6 +63,8 @@
 
 <script setup>
 /**
+ * UserDataViewAdapter
+ *
  * Data Adapter for User Management.
  * Switches between Table and Card views based on available container width.
  */
@@ -74,7 +76,14 @@ import UserStatusPills from './UserStatusPills.vue';
 import UserActionButtons from './UserActionButtons.vue';
 import { useBreakpoints } from '../../../composables/useBreakpoints';
 
-const props = defineProps({ users: Array });
+// Define props with explicit types and default values to prevent runtime warnings
+const props = defineProps({
+  users: {
+    type: Array,
+    default: () => []
+  }
+});
+
 defineEmits(['edit']);
 
 onMounted(() =>
@@ -87,6 +96,11 @@ const adapterRoot = ref(null);
 // Increased to prevent the actions column from clipping before the switch to mobile view occurs.
 const { isMobile } = useBreakpoints(adapterRoot, 62);
 
+/**
+ * Formats a timestamp into a readable date string.
+ * @param {Object|number} ts - Firestore timestamp or seconds
+ * @returns {string|null} Formatted date string (e.g. "01 Jan 2023")
+ */
 const formatDate = (ts) => {
   if (!ts) return null;
   const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000 || ts);
@@ -116,6 +130,7 @@ const userHeaders = [
   position: relative;
   min-height: 200px;
 }
+
 .loading-overlay {
   display: flex;
   align-items: center;
@@ -124,13 +139,14 @@ const userHeaders = [
   color: var(--text-muted);
   font-style: italic;
 }
+
 .date-text {
   font-size: 0.85rem;
   color: var(--text-main);
   white-space: nowrap;
 }
 
-/* Layout: Flex container for the card header. */
+/* Layout: Flex container for the card header */
 .card-identity-wrapper {
   display: flex;
   align-items: flex-start;
@@ -146,6 +162,7 @@ const userHeaders = [
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-xs);
 }
+
 .detail-row .label {
   color: var(--text-muted);
   font-weight: 600;
