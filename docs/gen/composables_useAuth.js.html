@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: composables/useAuth.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: composables/useAuth.js</h1>
+
+      <section>
+        <article>
+          <pre class="prettyprint source linenums"><code>/**
+ * Authentication and Profile Synchronization Composable.
+ * Logic: handles user sessions and ensures Google profile images are synced to Firestore.
+ */
+
+import { ref } from 'vue';
+import { auth, db } from '../services/firebase';
+import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { doc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
+
+export const user = ref(null);
+export const isAuthReady = ref(false);
+const provider = new GoogleAuthProvider();
+
+let profileListener = null;
+
+/**
+ * Synchronizes and overwrites the database profile image with the Google OAuth icon.
+ * Logic: triggers only if the Google URL is new, facilitating a slow migration to real icons.
+ * @param {string} uid - User ID.
+ * @param {string} googleUrl - The photo URL from the Google provider.
+ * @param {string} currentUrl - The existing URL in Firestore.
+ * @returns {Promise&lt;void>} Resolves when the update is complete or skipped.
+ */
+const syncProfileImage = async (uid, googleUrl, currentUrl) => {
+  if (googleUrl &amp;&amp; googleUrl !== currentUrl) {
+    const userRef = doc(db, 'users', uid);
+    try {
+      // Overwrite the field to capture the high-quality Google icon
+      await updateDoc(userRef, {
+        profile_image: googleUrl,
+        last_sync: new Date().toISOString()
+      });
+    } catch (e) {
+      console.warn('[useAuth] Failed to update profile image:', e.message);
+    }
+  }
+};
+
+/**
+ * Starts a real-time listener for the user profile and practice context.
+ * @param {object} firebaseUser - The authenticated Firebase user.
+ * @returns {void}
+ */
+const startProfileListener = (firebaseUser) => {
+  if (profileListener) profileListener();
+
+  const userRef = doc(db, 'users', firebaseUser.uid);
+
+  profileListener = onSnapshot(
+    userRef,
+    async (userSnap) => {
+      if (!userSnap.exists()) {
+        user.value = null;
+        isAuthReady.value = true;
+        return;
+      }
+
+      const userData = userSnap.data();
+
+      // Attempt to sync the profile image from the auth provider
+      syncProfileImage(firebaseUser.uid, firebaseUser.photoURL, userData.profile_image);
+
+      const practiceRef = userData.current_practice;
+
+      try {
+        if (!practiceRef) throw new Error('No practice context assigned.');
+
+        const membershipId = `${firebaseUser.uid}_${practiceRef.id}`;
+
+        // Concurrent fetch for membership and practice details
+        const [mSnap, pSnap] = await Promise.all([
+          getDoc(doc(db, 'practice_users', membershipId)),
+          getDoc(practiceRef)
+        ]);
+
+        const mData = mSnap.exists() ? mSnap.data() : { is_administrator: false, role: 'Guest' };
+        const practiceName = pSnap.exists() ? pSnap.data().name : 'Unknown Practice';
+
+        user.value = {
+          uid: firebaseUser.uid,
+          ...userData,
+          ...mData,
+          practiceRef: practiceRef,
+          activePracticeName: practiceName
+        };
+      } catch (e) {
+        console.error('[useAuth] Context Update Failed:', e.message);
+        user.value = {
+          uid: firebaseUser.uid,
+          ...userData,
+          is_administrator: false,
+          activePracticeName: 'Error'
+        };
+      } finally {
+        isAuthReady.value = true;
+      }
+    },
+    (error) => {
+      console.error('[useAuth] Listener Error:', error.message);
+      isAuthReady.value = true;
+    }
+  );
+};
+
+/**
+ * Global authentication observer.
+ */
+onAuthStateChanged(auth, (firebaseUser) => {
+  if (firebaseUser) {
+    startProfileListener(firebaseUser);
+  } else {
+    if (profileListener) profileListener();
+    user.value = null;
+    isAuthReady.value = true;
+  }
+});
+
+/**
+ * Exported auth interface.
+ * @returns {object} The auth state refs and login/logout methods.
+ */
+export function useAuth() {
+  return {
+    user,
+    isAuthReady,
+    login: () => signInWithPopup(auth, provider),
+    logout: async () => {
+      if (profileListener) profileListener();
+      await signOut(auth);
+    }
+  };
+}
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#db">db</a></li>
+        <li><a href="global.html#exportCollection">exportCollection</a></li>
+        <li><a href="global.html#exportData">exportData</a></li>
+        <li><a href="global.html#firebaseConfig">firebaseConfig</a></li>
+        <li><a href="global.html#getShiftDateIso">getShiftDateIso</a></li>
+        <li><a href="global.html#globalProfileStore">globalProfileStore</a></li>
+        <li><a href="global.html#importData">importData</a></li>
+        <li><a href="global.html#initLayoutStabilization">initLayoutStabilization</a></li>
+        <li><a href="global.html#isDocumentReference">isDocumentReference</a></li>
+        <li><a href="global.html#isRefMatch">isRefMatch</a></li>
+        <li><a href="global.html#isSidebarOpen">isSidebarOpen</a></li>
+        <li><a href="global.html#isTimestamp">isTimestamp</a></li>
+        <li><a href="global.html#processCollection">processCollection</a></li>
+        <li><a href="global.html#processDocument">processDocument</a></li>
+        <li><a href="global.html#processSubcollection">processSubcollection</a></li>
+        <li><a href="global.html#profileListeners">profileListeners</a></li>
+        <li><a href="global.html#reviveFirestoreTypes">reviveFirestoreTypes</a></li>
+        <li><a href="global.html#runExport">runExport</a></li>
+        <li><a href="global.html#setDocument">setDocument</a></li>
+        <li><a href="global.html#startProfileListener">startProfileListener</a></li>
+        <li><a href="global.html#syncProfileImage">syncProfileImage</a></li>
+        <li><a href="global.html#syncRootClasses">syncRootClasses</a></li>
+        <li><a href="global.html#updateLayoutState">updateLayoutState</a></li>
+        <li><a href="global.html#useAuth">useAuth</a></li>
+        <li><a href="global.html#useBreakpoints">useBreakpoints</a></li>
+        <li><a href="global.html#useClickOutside">useClickOutside</a></li>
+        <li><a href="global.html#useLayout">useLayout</a></li>
+        <li><a href="global.html#usePracticeUsers">usePracticeUsers</a></li>
+        <li><a href="global.html#useRotaColors">useRotaColors</a></li>
+        <li><a href="global.html#useRotaData">useRotaData</a></li>
+        <li><a href="global.html#useRotaDates">useRotaDates</a></li>
+        <li><a href="global.html#useSwipeAway">useSwipeAway</a></li>
+        <li><a href="global.html#useToast">useToast</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jan
+      22 2026 14:12:50 GMT+0000 (Greenwich Mean Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: services/altexptool.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: services/altexptool.js</h1>
+
+      <section>
+        <article>
+          <pre class="prettyprint source linenums"><code>/**
+ * Alternative Export Tool
+ * Provides a recursive approach to exporting Firestore data.
+ * Useful for deep trees where the standard export might miss nested subcollections.
+ */
+import { initializeApp, credential as _credential, firestore } from 'firebase-admin';
+import { writeFileSync } from 'fs';
+
+// Path to your service account key file.
+// Ensure this file exists in the same directory or update the path.
+import serviceAccount from './serviceAccount.json';
+
+initializeApp({
+  credential: _credential.cert(serviceAccount)
+});
+
+const db = firestore();
+
+/**
+ * Recursively exports a collection and its nested subcollections.
+ * traverses the document tree to capture data at any depth.
+ * @param {object} collectionRef - The Firestore collection reference to export.
+ * @returns {Promise&lt;Array&lt;object>>} A promise resolving to an array of document objects.
+ */
+async function exportCollection(collectionRef) {
+  const snapshot = await collectionRef.get();
+  const data = [];
+
+  for (const doc of snapshot.docs) {
+    const docData = doc.data();
+    const subcollections = await doc.ref.listCollections();
+    const subs = {};
+
+    // Recursively fetch subcollections (like roles/surgeries inside practices).
+    for (const sub of subcollections) {
+      subs[sub.id] = await exportCollection(sub);
+    }
+
+    // Construct the document object, optionally including subcollections.
+    data.push({
+      id: doc.id,
+      ...docData,
+      _subcollections: Object.keys(subs).length > 0 ? subs : undefined
+    });
+  }
+  return data;
+}
+
+/**
+ * Orchestrates the full database export process.
+ * Fetches all root collections and writes the result to a JSON file.
+ * @returns {Promise&lt;void>} Resolves when the export is complete.
+ */
+async function runExport() {
+  console.log('Starting full database export...');
+  const exportData = {};
+
+  try {
+    const collections = await db.listCollections();
+
+    for (const collection of collections) {
+      console.log(`Exporting collection: ${collection.id}...`);
+      exportData[collection.id] = await exportCollection(collection);
+    }
+
+    writeFileSync('firestore-export.json', JSON.stringify(exportData, null, 2));
+    console.log('Success! File saved as firestore-export.json');
+  } catch (error) {
+    console.error('Export failed:', error);
+  }
+}
+
+runExport();
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#db">db</a></li>
+        <li><a href="global.html#exportCollection">exportCollection</a></li>
+        <li><a href="global.html#exportData">exportData</a></li>
+        <li><a href="global.html#firebaseConfig">firebaseConfig</a></li>
+        <li><a href="global.html#getShiftDateIso">getShiftDateIso</a></li>
+        <li><a href="global.html#globalProfileStore">globalProfileStore</a></li>
+        <li><a href="global.html#importData">importData</a></li>
+        <li><a href="global.html#initLayoutStabilization">initLayoutStabilization</a></li>
+        <li><a href="global.html#isDocumentReference">isDocumentReference</a></li>
+        <li><a href="global.html#isRefMatch">isRefMatch</a></li>
+        <li><a href="global.html#isSidebarOpen">isSidebarOpen</a></li>
+        <li><a href="global.html#isTimestamp">isTimestamp</a></li>
+        <li><a href="global.html#processCollection">processCollection</a></li>
+        <li><a href="global.html#processDocument">processDocument</a></li>
+        <li><a href="global.html#processSubcollection">processSubcollection</a></li>
+        <li><a href="global.html#profileListeners">profileListeners</a></li>
+        <li><a href="global.html#reviveFirestoreTypes">reviveFirestoreTypes</a></li>
+        <li><a href="global.html#runExport">runExport</a></li>
+        <li><a href="global.html#setDocument">setDocument</a></li>
+        <li><a href="global.html#startProfileListener">startProfileListener</a></li>
+        <li><a href="global.html#syncProfileImage">syncProfileImage</a></li>
+        <li><a href="global.html#syncRootClasses">syncRootClasses</a></li>
+        <li><a href="global.html#updateLayoutState">updateLayoutState</a></li>
+        <li><a href="global.html#useAuth">useAuth</a></li>
+        <li><a href="global.html#useBreakpoints">useBreakpoints</a></li>
+        <li><a href="global.html#useClickOutside">useClickOutside</a></li>
+        <li><a href="global.html#useLayout">useLayout</a></li>
+        <li><a href="global.html#usePracticeUsers">usePracticeUsers</a></li>
+        <li><a href="global.html#useRotaColors">useRotaColors</a></li>
+        <li><a href="global.html#useRotaData">useRotaData</a></li>
+        <li><a href="global.html#useRotaDates">useRotaDates</a></li>
+        <li><a href="global.html#useSwipeAway">useSwipeAway</a></li>
+        <li><a href="global.html#useToast">useToast</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jan
+      22 2026 14:12:50 GMT+0000 (Greenwich Mean Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>

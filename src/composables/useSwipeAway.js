@@ -5,11 +5,11 @@
 import { ref, computed } from 'vue';
 
 /**
- * Manages touch states and calculates displacement.
- * @param {object} options - Configuration for the swipe behavior.
+ * Manages touch states and calculates horizontal displacement.
+ * @param {object} options - Configuration for the swipe behaviour.
  * @param {Function} options.onTrigger - Callback executed when swipe exceeds threshold.
  * @param {number} options.threshold - Distance in pixels required to trigger the action.
- * @param {import('vue').Ref<boolean>} options.enabled - Reactive toggle to activate logic.
+ * @param {object} options.enabled - Reactive Vue Ref used to toggle the logic state.
  * @returns {object} Touch handlers and reactive displacement states.
  */
 export function useSwipeAway({ onTrigger, threshold = 80, enabled }) {
@@ -24,7 +24,7 @@ export function useSwipeAway({ onTrigger, threshold = 80, enabled }) {
     return Math.min(0, delta);
   });
 
-  // Reactive transform object for direct template binding.
+  // Reactive transform object for direct template binding in the component.
   const swipeTransform = computed(() => {
     if (!isSwiping.value || swipeOffset.value === 0) return {};
     return {
@@ -34,10 +34,11 @@ export function useSwipeAway({ onTrigger, threshold = 80, enabled }) {
   });
 
   /**
-   * Initializes the touch tracking sequence.
+   * Initialises the touch tracking sequence.
    * @param {TouchEvent} event - Native touch start event.
    */
   const handleTouchStart = (event) => {
+    // Prevent tracking if the swipe logic is explicitly disabled via the reactive prop.
     if (!enabled.value) return;
     touchStartX.value = event.touches[0].clientX;
     touchCurrentX.value = event.touches[0].clientX;
@@ -49,12 +50,13 @@ export function useSwipeAway({ onTrigger, threshold = 80, enabled }) {
    * @param {TouchEvent} event - Native touch move event.
    */
   const handleTouchMove = (event) => {
+    // Only track movement if the initial touch sequence was successfully validated.
     if (!isSwiping.value) return;
     touchCurrentX.value = event.touches[0].clientX;
   };
 
   /**
-   * Evaluates gesture completion and resets state.
+   * Evaluates gesture completion and resets internal state.
    */
   const handleTouchEnd = () => {
     if (!isSwiping.value) return;
@@ -64,6 +66,7 @@ export function useSwipeAway({ onTrigger, threshold = 80, enabled }) {
       onTrigger();
     }
 
+    // Reset all tracking states to prepare for the next user interaction.
     isSwiping.value = false;
     touchStartX.value = 0;
     touchCurrentX.value = 0;
