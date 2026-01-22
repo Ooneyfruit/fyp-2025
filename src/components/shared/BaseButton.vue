@@ -23,7 +23,10 @@
       </slot>
     </div>
     
-    <span v-if="!iconOnly" class="button-label">
+    <span
+      v-if="!iconOnly"
+      class="button-label"
+    >
       <template v-if="processing">Processing...</template>
       <template v-else>
         <slot>{{ label }}</slot>

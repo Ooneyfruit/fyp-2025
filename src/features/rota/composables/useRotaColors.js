@@ -1,5 +1,3 @@
-import { computed } from 'vue';
-
 /**
  * Manages color logic for the Rota view.
  * - Generates consistent, accessible colors for Job Roles based on their ID.

@@ -3,8 +3,8 @@
     <BaseButton 
       variant="ghost" 
       :icon="IconChevronDoubleLeft" 
-      @click="$emit('navigate-month', -1)"
       title="Back 1 Month"
+      @click="$emit('navigate-month', -1)"
     >
       Month
     </BaseButton>
@@ -12,8 +12,8 @@
     <BaseButton 
       variant="outline" 
       :icon="IconChevronLeft" 
-      @click="$emit('navigate-period', -1)"
       title="Back 1 Week"
+      @click="$emit('navigate-period', -1)"
     >
       Prev Week
     </BaseButton>
@@ -35,8 +35,8 @@
       variant="outline" 
       :icon="IconChevronRight" 
       icon-position="right"
-      @click="$emit('navigate-period', 1)"
       title="Forward 1 Week"
+      @click="$emit('navigate-period', 1)"
     >
       Next Week
     </BaseButton>
@@ -45,8 +45,8 @@
       variant="ghost" 
       :icon="IconChevronDoubleRight" 
       icon-position="right"
-      @click="$emit('navigate-month', 1)"
       title="Forward 1 Month"
+      @click="$emit('navigate-month', 1)"
     >
       Month
     </BaseButton>
