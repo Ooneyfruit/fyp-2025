@@ -1,32 +1,3 @@
-<template>
-  <div class="rota-header-container">
-    <AppPageHeaderGroup :title="title" />
-
-    <div class="rota-nav-wrapper">
-      <RotaHeaderMobile 
-        v-if="isMobile"
-        :date-range-label="dateRangeLabel"
-        :month-label="monthLabel"
-        :show-today-button="showTodayButton"
-        @navigate-month="$emit('navigate-month', $event)"
-        @navigate-period="$emit('navigate-period', $event)"
-        @navigate-day="$emit('navigate-day', $event)"
-        @jump-today="$emit('jump-today')"
-      />
-
-      <RotaHeaderDesktop 
-        v-else
-        :date-range-label="dateRangeLabel"
-        :month-label="monthLabel"
-        :show-today-button="showTodayButton"
-        @navigate-month="$emit('navigate-month', $event)"
-        @navigate-period="$emit('navigate-period', $event)"
-        @jump-today="$emit('jump-today')"
-      />
-    </div>
-  </div>
-</template>
-
 <script setup>
 import AppPageHeaderGroup from '../../../components/layout/AppPageHeaderGroup.vue';
 import RotaHeaderDesktop from './RotaHeaderDesktop.vue';
@@ -47,6 +18,35 @@ defineProps({
 
 defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today']);
 </script>
+
+<template>
+  <div class="rota-header-container">
+    <AppPageHeaderGroup :title="title" />
+
+    <div class="rota-nav-wrapper">
+      <RotaHeaderMobile
+        v-if="isMobile"
+        :date-range-label="dateRangeLabel"
+        :month-label="monthLabel"
+        :show-today-button="showTodayButton"
+        @navigate-month="$emit('navigate-month', $event)"
+        @navigate-period="$emit('navigate-period', $event)"
+        @navigate-day="$emit('navigate-day', $event)"
+        @jump-today="$emit('jump-today')"
+      />
+
+      <RotaHeaderDesktop
+        v-else
+        :date-range-label="dateRangeLabel"
+        :month-label="monthLabel"
+        :show-today-button="showTodayButton"
+        @navigate-month="$emit('navigate-month', $event)"
+        @navigate-period="$emit('navigate-period', $event)"
+        @jump-today="$emit('jump-today')"
+      />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .rota-header-container {

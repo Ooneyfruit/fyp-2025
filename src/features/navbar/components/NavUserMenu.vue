@@ -1,25 +1,3 @@
-<template>
-  <div ref="menuRef" class="user-menu-coordinator">
-    <div v-if="!isMobile" class="desktop-layout">
-      <NavUserTrigger :email="user.email" @click="openAccountModal" />
-
-      <BaseButton label="Log Out" variant="secondary" @click="handleLogout" />
-    </div>
-
-    <div v-else class="mobile-layout">
-      <BaseButton
-        :icon="IconSettings"
-        variant="secondary"
-        icon-only
-        label="Settings"
-        @click="isOpen = !isOpen"
-      />
-
-      <NavUserDropdown v-if="isOpen" @edit="openAccountModal" @logout="handleLogout" />
-    </div>
-  </div>
-</template>
-
 <script setup>
 /**
  * User menu coordinator.
@@ -70,6 +48,28 @@ const handleLogout = async () => {
   window.location.href = '/login';
 };
 </script>
+
+<template>
+  <div ref="menuRef" class="user-menu-coordinator">
+    <div v-if="!isMobile" class="desktop-layout">
+      <NavUserTrigger :email="user.email" @click="openAccountModal" />
+
+      <BaseButton label="Log Out" variant="secondary" @click="handleLogout" />
+    </div>
+
+    <div v-else class="mobile-layout">
+      <BaseButton
+        :icon="IconSettings"
+        variant="secondary"
+        icon-only
+        label="Settings"
+        @click="isOpen = !isOpen"
+      />
+
+      <NavUserDropdown v-if="isOpen" @edit="openAccountModal" @logout="handleLogout" />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* Layout: orchestration for menu positioning. */

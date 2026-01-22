@@ -1,3 +1,39 @@
+<script setup>
+/**
+ * RotaStaffPicker
+ *
+ * Displays a searchable list of staff members categorized by their suitability
+ * for a specific role. Allows selection of a staff member.
+ */
+import IconPlus from '../../../components/icons/IconPlus.vue';
+
+// Define props with explicit types and default values to prevent runtime warnings
+defineProps({
+  searchQuery: {
+    type: String,
+    default: ''
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
+  },
+  targetRoleName: {
+    type: String,
+    default: ''
+  },
+  recommended: {
+    type: Array,
+    default: () => []
+  },
+  others: {
+    type: Array,
+    default: () => []
+  }
+});
+
+defineEmits(['update:searchQuery', 'add']);
+</script>
+
 <template>
   <div class="picker-section">
     <h4 class="section-heading">Add Staff</h4>
@@ -52,42 +88,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-/**
- * RotaStaffPicker
- *
- * Displays a searchable list of staff members categorized by their suitability
- * for a specific role. Allows selection of a staff member.
- */
-import IconPlus from '../../../components/icons/IconPlus.vue';
-
-// Define props with explicit types and default values to prevent runtime warnings
-defineProps({
-  searchQuery: {
-    type: String,
-    default: ''
-  },
-  isLoading: {
-    type: Boolean,
-    default: false
-  },
-  targetRoleName: {
-    type: String,
-    default: ''
-  },
-  recommended: {
-    type: Array,
-    default: () => []
-  },
-  others: {
-    type: Array,
-    default: () => []
-  }
-});
-
-defineEmits(['update:searchQuery', 'add']);
-</script>
 
 <style scoped>
 /* Layout: Container for the picker sidebar */

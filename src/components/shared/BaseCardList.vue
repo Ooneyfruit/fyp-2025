@@ -1,21 +1,3 @@
-<template>
-  <div
-    class="card-list"
-    :style="{
-      '--list-gap': gap,
-      '--min-card-width': minCardWidth
-    }"
-  >
-    <BaseCard v-for="(item, index) in items" :key="item[keyField] || index">
-      <template v-if="$slots['card-header']" #header>
-        <slot name="card-header" :item="item" />
-      </template>
-
-      <slot name="card-body" :item="item" />
-    </BaseCard>
-  </div>
-</template>
-
 <script setup>
 /**
  * Primary responsibility: provides a flexible grid layout for rendering data objects.
@@ -47,6 +29,24 @@ defineProps({
   }
 });
 </script>
+
+<template>
+  <div
+    class="card-list"
+    :style="{
+      '--list-gap': gap,
+      '--min-card-width': minCardWidth
+    }"
+  >
+    <BaseCard v-for="(item, index) in items" :key="item[keyField] || index">
+      <template v-if="$slots['card-header']" #header>
+        <slot name="card-header" :item="item" />
+      </template>
+
+      <slot name="card-body" :item="item" />
+    </BaseCard>
+  </div>
+</template>
 
 <style scoped>
 /* * Layout: Responsive grid container using auto-fit.

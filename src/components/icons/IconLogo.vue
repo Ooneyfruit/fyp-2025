@@ -1,3 +1,14 @@
+<script setup>
+/**
+ * Primary responsibility: provides the standard RotaDent brand logo with dynamic stroke scaling.
+ */
+
+// Define component properties with default weight matching the standard icon set.
+defineProps({
+  strokeWidth: { type: [Number, String], default: 2 }
+});
+</script>
+
 <template>
   <svg
     width="16"
@@ -46,14 +57,3 @@
     </defs>
   </svg>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides the standard RotaDent brand logo with dynamic stroke scaling.
- */
-
-// Define component properties with default weight matching the standard icon set.
-defineProps({
-  strokeWidth: { type: [Number, String], default: 2 }
-});
-</script>

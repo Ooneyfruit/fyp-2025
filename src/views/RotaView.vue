@@ -1,36 +1,3 @@
-<template>
-  <AppPageContainer fluid>
-    <RotaHeader
-      :month-label="monthLabel"
-      :date-range-label="dateRangeLabel"
-      :show-today-button="!isCurrentWeek"
-      :is-mobile="breakpoints.isMobile.value"
-      @navigate-month="jumpMonth"
-      @navigate-period="changePeriod"
-      @navigate-day="changeDay"
-      @jump-today="goToToday"
-    />
-
-    <RotaGrid
-      :days="visibleDays"
-      :rows="flattenedRows"
-      :get-shifts="getShiftsForSlot"
-      @slot-click="onSlotClick"
-    />
-
-    <RotaShiftModal
-      v-if="selectedCell"
-      :show="showModal"
-      :role="selectedCell.role"
-      :surgery="selectedCell.surgery"
-      :date="selectedCell.date"
-      :shifts="selectedCell.shifts"
-      @request-close="closeShiftModal"
-      @save="onSaveShifts"
-    />
-  </AppPageContainer>
-</template>
-
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useAuth } from '../composables/useAuth';
@@ -139,3 +106,36 @@ const onSaveShifts = async ({ additions, removals }) => {
 // Initial Data Load Trigger
 watch(() => user.value?.practiceRef?.id, loadData, { immediate: true });
 </script>
+
+<template>
+  <AppPageContainer fluid>
+    <RotaHeader
+      :month-label="monthLabel"
+      :date-range-label="dateRangeLabel"
+      :show-today-button="!isCurrentWeek"
+      :is-mobile="breakpoints.isMobile.value"
+      @navigate-month="jumpMonth"
+      @navigate-period="changePeriod"
+      @navigate-day="changeDay"
+      @jump-today="goToToday"
+    />
+
+    <RotaGrid
+      :days="visibleDays"
+      :rows="flattenedRows"
+      :get-shifts="getShiftsForSlot"
+      @slot-click="onSlotClick"
+    />
+
+    <RotaShiftModal
+      v-if="selectedCell"
+      :show="showModal"
+      :role="selectedCell.role"
+      :surgery="selectedCell.surgery"
+      :date="selectedCell.date"
+      :shifts="selectedCell.shifts"
+      @request-close="closeShiftModal"
+      @save="onSaveShifts"
+    />
+  </AppPageContainer>
+</template>

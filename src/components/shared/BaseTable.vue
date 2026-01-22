@@ -1,3 +1,54 @@
+<script setup>
+/**
+ * Primary responsibility: provides a flexible, grid-based data table component.
+ * Supports visual grouping of rows via the 'groupBy' prop.
+ */
+import { computed } from 'vue';
+
+const props = defineProps({
+  headers: { type: Array, required: true },
+  items: { type: Array, required: true },
+  rowClass: { type: Function, default: () => [] },
+  verticalLines: { type: Boolean, default: false },
+  /**
+   * Dot-notation path to the property used for grouping rows.
+   * Example: "role.id"
+   */
+  groupBy: { type: String, default: null }
+});
+
+// Helper to access nested properties safely
+const getNestedValue = (obj, path) => {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+};
+
+const enrichedItems = computed(() => {
+  if (!props.groupBy) return props.items;
+
+  return props.items.map((item, index, arr) => {
+    const currentGroup = getNestedValue(item, props.groupBy);
+    const prevGroup = index > 0 ? getNestedValue(arr[index - 1], props.groupBy) : null;
+    const nextGroup = index < arr.length - 1 ? getNestedValue(arr[index + 1], props.groupBy) : null;
+
+    return {
+      ...item,
+      _isGroupStart: currentGroup !== prevGroup,
+      _isGroupEnd: currentGroup !== nextGroup,
+      _isGroupMiddle: currentGroup === prevGroup && currentGroup === nextGroup
+    };
+  });
+});
+
+const gridTemplate = computed(() => {
+  return props.headers.map((h) => h.width || '1fr').join(' ');
+});
+
+const getRowClasses = (item) => {
+  const classes = props.rowClass(item);
+  return Array.isArray(classes) ? classes : [classes];
+};
+</script>
+
 <template>
   <div class="rd-card base-table-wrapper">
     <div
@@ -55,57 +106,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides a flexible, grid-based data table component.
- * Supports visual grouping of rows via the 'groupBy' prop.
- */
-import { computed } from 'vue';
-
-const props = defineProps({
-  headers: { type: Array, required: true },
-  items: { type: Array, required: true },
-  rowClass: { type: Function, default: () => [] },
-  verticalLines: { type: Boolean, default: false },
-  /**
-   * Dot-notation path to the property used for grouping rows.
-   * Example: "role.id"
-   */
-  groupBy: { type: String, default: null }
-});
-
-// Helper to access nested properties safely
-const getNestedValue = (obj, path) => {
-  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
-};
-
-const enrichedItems = computed(() => {
-  if (!props.groupBy) return props.items;
-
-  return props.items.map((item, index, arr) => {
-    const currentGroup = getNestedValue(item, props.groupBy);
-    const prevGroup = index > 0 ? getNestedValue(arr[index - 1], props.groupBy) : null;
-    const nextGroup = index < arr.length - 1 ? getNestedValue(arr[index + 1], props.groupBy) : null;
-
-    return {
-      ...item,
-      _isGroupStart: currentGroup !== prevGroup,
-      _isGroupEnd: currentGroup !== nextGroup,
-      _isGroupMiddle: currentGroup === prevGroup && currentGroup === nextGroup
-    };
-  });
-});
-
-const gridTemplate = computed(() => {
-  return props.headers.map((h) => h.width || '1fr').join(' ');
-});
-
-const getRowClasses = (item) => {
-  const classes = props.rowClass(item);
-  return Array.isArray(classes) ? classes : [classes];
-};
-</script>
 
 <style scoped>
 .base-table-wrapper {

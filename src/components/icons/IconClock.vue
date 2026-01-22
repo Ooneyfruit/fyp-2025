@@ -1,3 +1,14 @@
+<script setup>
+/**
+ * Primary responsibility: provides a scalable clock icon representing time or scheduling.
+ */
+
+// Define component properties with default visual styling.
+defineProps({
+  strokeWidth: { type: [Number, String], default: 2 }
+});
+</script>
+
 <template>
   <svg
     viewBox="0 0 24 24"
@@ -12,14 +23,3 @@
     <polyline points="12 6 12 12 16 14" />
   </svg>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides a scalable clock icon representing time or scheduling.
- */
-
-// Define component properties with default visual styling.
-defineProps({
-  strokeWidth: { type: [Number, String], default: 2 }
-});
-</script>

@@ -1,45 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="theme-color" content="#1d4ed8">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="RotaDent">
-    
-    <link rel="apple-touch-icon" href="/ios/180.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/ios/32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/ios/16.png">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color" content="#1d4ed8" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="RotaDent" />
+
+    <link rel="apple-touch-icon" href="/ios/180.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/ios/32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/ios/16.png" />
 
     <title>RotaDent | User Management</title>
-    
+
     <script>
       /**
        * Determines and applies the initial layout state before the main bundle executes.
-       * This prevents layout shifting (CLS) by synchronizing the document state 
+       * This prevents layout shifting (CLS) by synchronizing the document state
        * with the user's local persistence and viewport dimensions immediately.
        */
-      (function() {
+      (function () {
         const isMobile = window.innerWidth < 768;
         const preference = localStorage.getItem('isSidebarOpen');
-        
+
         // Logic: determine if the wide sidebar should be rendered based on persistence or default.
-        const isWide = isMobile ? false : (preference === null ? true : preference === 'true');
-        
-        document.documentElement.classList.add(isWide ? 'initial-layout-wide' : 'initial-layout-slim');
-        
+        const isWide = isMobile ? false : preference === null ? true : preference === 'true';
+
+        document.documentElement.classList.add(
+          isWide ? 'initial-layout-wide' : 'initial-layout-slim'
+        );
+
         // Logic: apply specific mobile overrides if the viewport is below the defined threshold.
         if (isMobile) {
           document.documentElement.classList.add('initial-layout-mobile');
         }
       })();
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
-</body>
+  </body>
 </html>

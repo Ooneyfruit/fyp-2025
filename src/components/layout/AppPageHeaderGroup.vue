@@ -1,15 +1,3 @@
-<template>
-  <div class="page-header-group">
-    <AppPageHeader :title="title" :subtitle="subtitle">
-      <slot name="extra" />
-    </AppPageHeader>
-
-    <div class="action-stack">
-      <slot />
-    </div>
-  </div>
-</template>
-
 <script setup>
 import AppPageHeader from './AppPageHeader.vue';
 
@@ -25,6 +13,18 @@ defineProps({
   subtitle: { type: String, default: '' }
 });
 </script>
+
+<template>
+  <div class="page-header-group">
+    <AppPageHeader :title="title" :subtitle="subtitle">
+      <slot name="extra" />
+    </AppPageHeader>
+
+    <div class="action-stack">
+      <slot />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* Layout: horizontal alignment for identity and actions with wrap support */

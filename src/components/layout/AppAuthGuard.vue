@@ -1,13 +1,3 @@
-<template>
-  <div class="app-auth-guard app-layout">
-    <Transition name="fade" mode="out-in">
-      <AppLoading v-if="!isAuthReady" full-screen> Checking authentication... </AppLoading>
-
-      <slot v-else />
-    </Transition>
-  </div>
-</template>
-
 <script setup>
 /**
  * Component logic for monitoring global authentication readiness.
@@ -18,6 +8,16 @@ import AppLoading from '../shared/AppLoading.vue';
 // Access the reactive readiness state from the auth composable
 const { isAuthReady } = useAuth();
 </script>
+
+<template>
+  <div class="app-auth-guard app-layout">
+    <Transition name="fade" mode="out-in">
+      <AppLoading v-if="!isAuthReady" full-screen> Checking authentication... </AppLoading>
+
+      <slot v-else />
+    </Transition>
+  </div>
+</template>
 
 <style scoped>
 /** * Layout: Component-specific overrides 

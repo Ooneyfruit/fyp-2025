@@ -1,17 +1,3 @@
-<template>
-  <header class="page-header">
-    <div class="title-line">
-      <h1>{{ title }}</h1>
-
-      <slot />
-    </div>
-
-    <p v-if="subtitle" class="subtitle">
-      {{ subtitle }}
-    </p>
-  </header>
-</template>
-
 <script setup>
 /**
  * Primary page heading component.
@@ -25,6 +11,20 @@ defineProps({
   subtitle: { type: String, default: '' }
 });
 </script>
+
+<template>
+  <header class="page-header">
+    <div class="title-line">
+      <h1>{{ title }}</h1>
+
+      <slot />
+    </div>
+
+    <p v-if="subtitle" class="subtitle">
+      {{ subtitle }}
+    </p>
+  </header>
+</template>
 
 <style scoped>
 /* Layout: standard vertical spacing for the header block */

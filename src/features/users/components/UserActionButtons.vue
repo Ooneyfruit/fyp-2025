@@ -1,3 +1,10 @@
+<script setup>
+import BaseButton from '../../../components/shared/BaseButton.vue';
+import IconEdit from '../../../components/icons/IconEdit.vue';
+
+defineEmits(['edit']);
+</script>
+
 <template>
   <div class="user-actions">
     <BaseButton
@@ -9,13 +16,6 @@
     />
   </div>
 </template>
-
-<script setup>
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import IconEdit from '../../../components/icons/IconEdit.vue';
-
-defineEmits(['edit']);
-</script>
 
 <style scoped>
 .user-actions {

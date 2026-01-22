@@ -1,53 +1,6 @@
-<template>
-  <component
-    :is="to ? 'router-link' : 'button'"
-    :to="to"
-    class="rd-button"
-    :class="[
-      `rd-button-${variant}`, 
-      { 'is-processing': processing, 'is-icon-only': iconOnly }
-    ]"
-    :disabled="disabled || processing"
-    :aria-busy="processing"
-    :aria-label="iconOnly ? label : null"
-    :title="iconOnly ? label : null"
-    @click="!to && $emit('click')"
-  >
-    <div 
-      v-if="(icon || $slots.icon) && iconPosition === 'left'" 
-      class="icon-frame" 
-      aria-hidden="true"
-    >
-      <slot name="icon">
-        <component :is="icon" />
-      </slot>
-    </div>
-    
-    <span
-      v-if="!iconOnly"
-      class="button-label"
-    >
-      <template v-if="processing">Processing...</template>
-      <template v-else>
-        <slot>{{ label }}</slot>
-      </template>
-    </span>
-
-    <div 
-      v-if="(icon || $slots.icon) && iconPosition === 'right'" 
-      class="icon-frame" 
-      aria-hidden="true"
-    >
-      <slot name="icon">
-        <component :is="icon" />
-      </slot>
-    </div>
-  </component>
-</template>
-
 <script setup>
 /**
- * Primary responsibility: provides a flexible button component that supports navigation, 
+ * Primary responsibility: provides a flexible button component that supports navigation,
  * various visual states, and semantic variations.
  */
 
@@ -57,11 +10,11 @@ defineProps({
   disabled: { type: Boolean, default: false },
   processing: { type: Boolean, default: false },
   /**
-   * The visual theme of the button. 
+   * The visual theme of the button.
    * Supports core semantic types and visual styles.
    */
-  variant: { 
-    type: String, 
+  variant: {
+    type: String,
     default: 'primary',
     validator: (v) => ['primary', 'secondary', 'danger', 'outline', 'ghost'].includes(v)
   },
@@ -81,13 +34,54 @@ defineProps({
 defineEmits(['click']);
 </script>
 
+<template>
+  <component
+    :is="to ? 'router-link' : 'button'"
+    :to="to"
+    class="rd-button"
+    :class="[`rd-button-${variant}`, { 'is-processing': processing, 'is-icon-only': iconOnly }]"
+    :disabled="disabled || processing"
+    :aria-busy="processing"
+    :aria-label="iconOnly ? label : null"
+    :title="iconOnly ? label : null"
+    @click="!to && $emit('click')"
+  >
+    <div
+      v-if="(icon || $slots.icon) && iconPosition === 'left'"
+      class="icon-frame"
+      aria-hidden="true"
+    >
+      <slot name="icon">
+        <component :is="icon" />
+      </slot>
+    </div>
+
+    <span v-if="!iconOnly" class="button-label">
+      <template v-if="processing">Processing...</template>
+      <template v-else>
+        <slot>{{ label }}</slot>
+      </template>
+    </span>
+
+    <div
+      v-if="(icon || $slots.icon) && iconPosition === 'right'"
+      class="icon-frame"
+      aria-hidden="true"
+    >
+      <slot name="icon">
+        <component :is="icon" />
+      </slot>
+    </div>
+  </component>
+</template>
+
 <style scoped>
 .rd-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  
+
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -163,7 +157,7 @@ defineEmits(['click']);
   aspect-ratio: 1 / 1;
 }
 
-/* Layout: centering and optical alignment for icons. */
+/* Layout: centring and optical alignment for icons. */
 .icon-frame {
   display: flex;
   align-items: center;

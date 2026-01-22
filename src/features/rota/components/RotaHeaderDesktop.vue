@@ -1,58 +1,3 @@
-<template>
-  <BaseSelectorBar>
-    <BaseButton 
-      variant="ghost" 
-      :icon="IconChevronDoubleLeft" 
-      title="Back 1 Month"
-      @click="$emit('navigate-month', -1)"
-    >
-      Month
-    </BaseButton>
-
-    <BaseButton 
-      variant="outline" 
-      :icon="IconChevronLeft" 
-      title="Back 1 Week"
-      @click="$emit('navigate-period', -1)"
-    >
-      Prev Week
-    </BaseButton>
-
-    <div class="date-info">
-      <span class="month-label">{{ monthLabel }}</span>
-      <span class="range-label">{{ dateRangeLabel }}</span>
-      
-      <button 
-        v-if="showTodayButton"
-        class="today-link-desktop"
-        @click="$emit('jump-today')"
-      >
-        Back to Today
-      </button>
-    </div>
-
-    <BaseButton 
-      variant="outline" 
-      :icon="IconChevronRight" 
-      icon-position="right"
-      title="Forward 1 Week"
-      @click="$emit('navigate-period', 1)"
-    >
-      Next Week
-    </BaseButton>
-
-    <BaseButton 
-      variant="ghost" 
-      :icon="IconChevronDoubleRight" 
-      icon-position="right"
-      title="Forward 1 Month"
-      @click="$emit('navigate-month', 1)"
-    >
-      Month
-    </BaseButton>
-  </BaseSelectorBar>
-</template>
-
 <script setup>
 import BaseSelectorBar from '../../../components/shared/BaseSelectorBar.vue';
 import BaseButton from '../../../components/shared/BaseButton.vue';
@@ -70,6 +15,57 @@ defineProps({
 defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
 </script>
 
+<template>
+  <BaseSelectorBar>
+    <BaseButton
+      variant="ghost"
+      :icon="IconChevronDoubleLeft"
+      title="Back 1 Month"
+      @click="$emit('navigate-month', -1)"
+    >
+      Month
+    </BaseButton>
+
+    <BaseButton
+      variant="outline"
+      :icon="IconChevronLeft"
+      title="Back 1 Week"
+      @click="$emit('navigate-period', -1)"
+    >
+      Prev Week
+    </BaseButton>
+
+    <div class="date-info">
+      <span class="month-label">{{ monthLabel }}</span>
+      <span class="range-label">{{ dateRangeLabel }}</span>
+
+      <button v-if="showTodayButton" class="today-link-desktop" @click="$emit('jump-today')">
+        Back to Today
+      </button>
+    </div>
+
+    <BaseButton
+      variant="outline"
+      :icon="IconChevronRight"
+      icon-position="right"
+      title="Forward 1 Week"
+      @click="$emit('navigate-period', 1)"
+    >
+      Next Week
+    </BaseButton>
+
+    <BaseButton
+      variant="ghost"
+      :icon="IconChevronDoubleRight"
+      icon-position="right"
+      title="Forward 1 Month"
+      @click="$emit('navigate-month', 1)"
+    >
+      Month
+    </BaseButton>
+  </BaseSelectorBar>
+</template>
+
 <style scoped>
 .date-info {
   display: flex;
@@ -78,7 +74,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
   justify-content: center;
   text-align: center;
   /* Min-width ensures buttons don't move when month name length changes */
-  min-width: 16rem; 
+  min-width: 16rem;
 }
 
 .range-label {

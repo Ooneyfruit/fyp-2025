@@ -4,6 +4,7 @@
     "esbenp.prettier-vscode",
     "vue.volar",
     "usernamehw.errorlens",
-    "streetsidesoftware.code-spell-checker"
+    "streetsidesoftware.code-spell-checker",
+    "webpro.vscode-knip"
   ]
 }

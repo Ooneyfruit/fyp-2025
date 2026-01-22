@@ -1,3 +1,14 @@
+<script setup>
+/**
+ * Primary responsibility: provides an inverted variation of the RotaDent logo for specific theme requirements.
+ */
+
+// Define component properties with default weight matching the standard icon set.
+defineProps({
+  strokeWidth: { type: [Number, String], default: 2 }
+});
+</script>
+
 <template>
   <svg
     width="14"
@@ -56,14 +67,3 @@
     </g>
   </svg>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides an inverted variation of the RotaDent logo for specific theme requirements.
- */
-
-// Define component properties with default weight matching the standard icon set.
-defineProps({
-  strokeWidth: { type: [Number, String], default: 2 }
-});
-</script>

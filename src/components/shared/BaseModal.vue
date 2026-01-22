@@ -1,3 +1,63 @@
+<script setup>
+/**
+ * Primary responsibility: provides a robust, accessible modal dialog system
+ * with built-in scroll locking, keyboard dismissal, and flexible sizing.
+ */
+import { watch, onUnmounted } from 'vue';
+import IconClose from '../icons/IconClose.vue';
+
+// Define configuration for appearance and visibility state.
+const props = defineProps({
+  title: { type: String, default: 'Modal Window' },
+  show: { type: Boolean, default: false },
+  // Controls the maximum width of the modal container.
+  size: { type: String, default: 'md' }
+});
+
+// Define events for state management and cleanup notifications.
+const emit = defineEmits(['request-close', 'closed']);
+
+/**
+ * Forwards a request to the parent component to toggle the visibility state.
+ * @returns {void}
+ */
+const handleRequestClose = () => emit('request-close');
+
+/**
+ * Monitors keyboard events to provide standard escape-key dismissal logic.
+ * @param {KeyboardEvent} e - The keyboard event object.
+ */
+const handleKeyDown = (e) => {
+  // Only trigger dismissal if the escape key is pressed while the modal is active.
+  if (e.key === 'Escape' && props.show) handleRequestClose();
+};
+
+/**
+ * Manage global side effects when the modal state changes.
+ */
+watch(
+  () => props.show,
+  (isVisible) => {
+    if (isVisible) {
+      // Disable body scrolling to prevent layout shifting behind the modal.
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      // Restore default scroll behavior and clean up event listeners.
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  },
+  { immediate: true }
+);
+
+// Ensure global side effects are cleared if the component is destroyed.
+onUnmounted(() => {
+  document.body.style.overflow = '';
+  window.removeEventListener('keydown', handleKeyDown);
+});
+</script>
+
 <template>
   <Teleport to="body">
     <Transition name="rd-modal" @after-leave="$emit('closed')">
@@ -40,65 +100,6 @@
     </Transition>
   </Teleport>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides a robust, accessible modal dialog system
- * with built-in scroll locking, keyboard dismissal, and flexible sizing.
- */
-import { watch, onUnmounted } from 'vue';
-import IconClose from '../icons/IconClose.vue';
-
-// Define configuration for appearance and visibility state.
-const props = defineProps({
-  title: { type: String, default: 'Modal Window' },
-  show: { type: Boolean, default: false },
-  // Controls the maximum width of the modal container.
-  size: { type: String, default: 'md' }
-});
-
-// Define events for state management and cleanup notifications.
-const emit = defineEmits(['request-close', 'closed']);
-
-/**
- * Forwards a request to the parent component to toggle the visibility state.
- */
-const handleRequestClose = () => emit('request-close');
-
-/**
- * Monitors keyboard events to provide standard escape-key dismissal logic.
- * @param {KeyboardEvent} e - The keyboard event object.
- */
-const handleKeyDown = (e) => {
-  // Only trigger dismissal if the escape key is pressed while the modal is active.
-  if (e.key === 'Escape' && props.show) handleRequestClose();
-};
-
-/**
- * Manage global side effects when the modal state changes.
- */
-watch(
-  () => props.show,
-  (isVisible) => {
-    if (isVisible) {
-      // Disable body scrolling to prevent layout shifting behind the modal.
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    } else {
-      // Restore default scroll behavior and clean up event listeners.
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    }
-  },
-  { immediate: true }
-);
-
-// Ensure global side effects are cleared if the component is destroyed.
-onUnmounted(() => {
-  document.body.style.overflow = '';
-  window.removeEventListener('keydown', handleKeyDown);
-});
-</script>
 
 <style scoped>
 /* Layout: full-screen fixed container to center the modal dialog. */

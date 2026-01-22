@@ -1,24 +1,3 @@
-<template>
-  <div class="rd-select-group" :class="{ 'is-fluid': fluid }">
-    <label v-if="label" :for="id" class="rd-field-label">{{ label }}</label>
-    <div class="select-wrapper">
-      <select
-        :id="id"
-        :name="name || id"
-        :value="modelValue"
-        class="rd-select"
-        :class="[`rd-select-${variant}`]"
-        :disabled="disabled"
-        @change="handleChange"
-      >
-        <slot />
-      </select>
-
-      <IconChevronDown class="select-icon" aria-hidden="true" />
-    </div>
-  </div>
-</template>
-
 <script setup>
 /**
  * Standardized form selection component.
@@ -53,6 +32,27 @@ const handleChange = (event) => {
   event.target.blur();
 };
 </script>
+
+<template>
+  <div class="rd-select-group" :class="{ 'is-fluid': fluid }">
+    <label v-if="label" :for="id" class="rd-field-label">{{ label }}</label>
+    <div class="select-wrapper">
+      <select
+        :id="id"
+        :name="name || id"
+        :value="modelValue"
+        class="rd-select"
+        :class="[`rd-select-${variant}`]"
+        :disabled="disabled"
+        @change="handleChange"
+      >
+        <slot />
+      </select>
+
+      <IconChevronDown class="select-icon" aria-hidden="true" />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .rd-select-group {
@@ -95,7 +95,7 @@ const handleChange = (event) => {
   height: 2.75rem !important;
 }
 
-/* Theme: dynamic icon coloring based on the select variant. */
+/* Theme: dynamic icon colouring based on the select variant. */
 .rd-select-primary + .select-icon {
   color: white;
 }

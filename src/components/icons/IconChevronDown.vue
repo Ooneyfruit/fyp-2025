@@ -1,3 +1,10 @@
+<script setup>
+/**
+ * Standardized chevron icon for directional indicators.
+ * Used primarily in dropdowns and select components.
+ */
+</script>
+
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -9,10 +16,3 @@
     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
   </svg>
 </template>
-
-<script setup>
-/**
- * Standardized chevron icon for directional indicators.
- * Used primarily in dropdowns and select components.
- */
-</script>

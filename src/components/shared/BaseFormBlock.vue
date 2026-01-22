@@ -1,3 +1,13 @@
+<script setup>
+/**
+ * Logical sectioning for forms.
+ * Provides consistent spacing and headers for form blocks.
+ */
+defineProps({
+  title: { type: String, default: '' }
+});
+</script>
+
 <template>
   <div class="form-block">
     <div v-if="title" class="block-header">
@@ -8,16 +18,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-/**
- * Logical sectioning for forms.
- * Provides consistent spacing and headers for form blocks.
- */
-defineProps({
-  title: { type: String, default: '' }
-});
-</script>
 
 <style scoped>
 .form-block {

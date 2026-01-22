@@ -1,3 +1,14 @@
+<script setup>
+import IconIdenticon from '../../../components/icons/IconIdenticon.vue';
+
+/**
+ * Displays user identity with dynamic support for synchronized Google icons.
+ */
+defineProps({
+  profile: { type: Object, default: () => ({}) }
+});
+</script>
+
 <template>
   <div class="user-info">
     <div class="avatar-wrapper">
@@ -24,17 +35,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import IconIdenticon from '../../../components/icons/IconIdenticon.vue';
-
-/**
- * Displays user identity with dynamic support for synchronized Google icons.
- */
-defineProps({
-  profile: { type: Object, default: () => ({}) }
-});
-</script>
 
 <style scoped>
 /* Main identity container layout */

@@ -1,3 +1,55 @@
+<script setup>
+/**
+ * Navigation sidebar with enhanced touch interaction.
+ * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
+ */
+import { computed, markRaw } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuth } from '../../composables/useAuth';
+import { useLayout } from '../../composables/useLayout';
+import { useSwipeAway } from '../../composables/useSwipeAway';
+
+// Component icons.
+import IconCalendar from '../icons/IconCalendar.vue'; // Changed from IconHome
+import IconUsers from '../icons/IconUsers.vue';
+
+const MENU_CONFIG = [
+  { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
+  { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true }
+];
+
+const { isSidebarOpen, isMobile, closeSidebar } = useLayout();
+const { user } = useAuth();
+const router = useRouter();
+const route = useRoute();
+
+// Gesture logic is active only when the sidebar is visible on mobile.
+const isSwipeEnabled = computed(() => isMobile.value && isSidebarOpen.value);
+
+// Initialize generalized swipe logic to drive the sidebar animation.
+const { isSwiping, swipeTransform, handleTouchStart, handleTouchMove, handleTouchEnd } =
+  useSwipeAway({
+    threshold: 80,
+    onTrigger: closeSidebar,
+    enabled: isSwipeEnabled
+  });
+
+const filteredMenuItems = computed(() => {
+  return MENU_CONFIG.filter((item) => (item.adminOnly ? user.value?.is_administrator : true));
+});
+
+/**
+ * Handles navigation events and ensures menu closure on mobile.
+ * @param {object} item - Navigation item metadata.
+ */
+const handleNavigation = (item) => {
+  if (isMobile.value) {
+    closeSidebar();
+  }
+  router.push(item.path);
+};
+</script>
+
 <template>
   <div>
     <Transition name="fade">
@@ -41,58 +93,6 @@
     </aside>
   </div>
 </template>
-
-<script setup>
-/**
- * Navigation sidebar with enhanced touch interaction.
- * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
- */
-import { computed, markRaw } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useAuth } from '../../composables/useAuth';
-import { useLayout } from '../../composables/useLayout';
-import { useSwipeAway } from '../../composables/useSwipeAway';
-
-// Component icons.
-import IconCalendar from '../icons/IconCalendar.vue'; // Changed from IconHome
-import IconUsers from '../icons/IconUsers.vue';
-
-const MENU_CONFIG = [
-  { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
-  { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true }
-];
-
-const { isSidebarOpen, isMobile, closeSidebar } = useLayout();
-const { user } = useAuth();
-const router = useRouter();
-const route = useRoute();
-
-// Gesture logic is active only when the sidebar is visible on mobile.
-const isSwipeEnabled = computed(() => isMobile.value && isSidebarOpen.value);
-
-// Initialize generalized swipe logic to drive the sidebar animation.
-const { isSwiping, swipeTransform, handleTouchStart, handleTouchMove, handleTouchEnd } =
-  useSwipeAway({
-    threshold: 80,
-    onTrigger: closeSidebar,
-    enabled: isSwipeEnabled
-  });
-
-const filteredMenuItems = computed(() => {
-  return MENU_CONFIG.filter((item) => (item.adminOnly ? user.value?.is_administrator : true));
-});
-
-/**
- * Handles navigation events and ensures menu closure on mobile.
- * @param {Object} item - Navigation item metadata.
- */
-const handleNavigation = (item) => {
-  if (isMobile.value) {
-    closeSidebar();
-  }
-  router.push(item.path);
-};
-</script>
 
 <style scoped>
 /* Sidebar container with transition logic for state changes */

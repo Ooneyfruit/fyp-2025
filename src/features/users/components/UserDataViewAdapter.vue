@@ -1,3 +1,65 @@
+<script setup>
+/**
+ * UserDataViewAdapter
+ *
+ * Data Adapter for User Management.
+ * Switches between Table and Card views based on available container width.
+ */
+import { ref, onMounted } from 'vue';
+import BaseTable from '../../../components/shared/BaseTable.vue';
+import BaseCardList from '../../../components/shared/BaseCardList.vue';
+import UserIdentity from './UserIdentity.vue';
+import UserStatusPills from './UserStatusPills.vue';
+import UserActionButtons from './UserActionButtons.vue';
+import { useBreakpoints } from '../../../composables/useBreakpoints';
+
+// Define props with explicit types and default values to prevent runtime warnings
+const props = defineProps({
+  users: {
+    type: Array,
+    default: () => []
+  }
+});
+
+defineEmits(['edit']);
+
+onMounted(() =>
+  console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`)
+);
+
+const adapterRoot = ref(null);
+
+// Adjusted threshold to 62rem (approx 992px).
+// Increased to prevent the actions column from clipping before the switch to mobile view occurs.
+const { isMobile } = useBreakpoints(adapterRoot, 62);
+
+/**
+ * Formats a timestamp into a readable date string.
+ * @param {object | number} ts - Firestore timestamp or seconds
+ * @returns {string|null} Formatted date string (e.g. "01 Jan 2023")
+ */
+const formatDate = (ts) => {
+  if (!ts) return null;
+  const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000 || ts);
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+/**
+ * The 'member' column uses minmax() to enforce readability.
+ * Calculation: Icon (2.25rem) + Gap (0.75rem) + Text (4.5rem) + Padding (~2rem) = ~9.5rem.
+ * Has min-width set to 10rem to guarantee the text is at least twice the icon width.
+ */
+const userHeaders = [
+  { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' },
+  { key: 'role', label: 'Role', width: 'min-content' },
+  { key: 'status', label: 'Status', width: 'min-content' },
+  { key: 'contract', label: 'Contract', width: 'min-content' },
+  { key: 'joined', label: 'Joined', width: '8.5rem' },
+  { key: 'endDate', label: 'End Date', width: '8.5rem' },
+  { key: 'actions', label: 'Actions', width: 'min-content', align: 'center' }
+];
+</script>
+
 <template>
   <div ref="adapterRoot" class="adapter-container">
     <div v-if="!users || users.length === 0" class="loading-overlay">
@@ -60,68 +122,6 @@
     </BaseCardList>
   </div>
 </template>
-
-<script setup>
-/**
- * UserDataViewAdapter
- *
- * Data Adapter for User Management.
- * Switches between Table and Card views based on available container width.
- */
-import { ref, onMounted } from 'vue';
-import BaseTable from '../../../components/shared/BaseTable.vue';
-import BaseCardList from '../../../components/shared/BaseCardList.vue';
-import UserIdentity from './UserIdentity.vue';
-import UserStatusPills from './UserStatusPills.vue';
-import UserActionButtons from './UserActionButtons.vue';
-import { useBreakpoints } from '../../../composables/useBreakpoints';
-
-// Define props with explicit types and default values to prevent runtime warnings
-const props = defineProps({
-  users: {
-    type: Array,
-    default: () => []
-  }
-});
-
-defineEmits(['edit']);
-
-onMounted(() =>
-  console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`)
-);
-
-const adapterRoot = ref(null);
-
-// Adjusted threshold to 62rem (approx 992px).
-// Increased to prevent the actions column from clipping before the switch to mobile view occurs.
-const { isMobile } = useBreakpoints(adapterRoot, 62);
-
-/**
- * Formats a timestamp into a readable date string.
- * @param {Object|number} ts - Firestore timestamp or seconds
- * @returns {string|null} Formatted date string (e.g. "01 Jan 2023")
- */
-const formatDate = (ts) => {
-  if (!ts) return null;
-  const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000 || ts);
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-};
-
-/**
- * The 'member' column uses minmax() to enforce readability.
- * Calculation: Icon (2.25rem) + Gap (0.75rem) + Text (4.5rem) + Padding (~2rem) = ~9.5rem.
- * Has min-width set to 10rem to guarantee the text is at least twice the icon width.
- */
-const userHeaders = [
-  { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' },
-  { key: 'role', label: 'Role', width: 'min-content' },
-  { key: 'status', label: 'Status', width: 'min-content' },
-  { key: 'contract', label: 'Contract', width: 'min-content' },
-  { key: 'joined', label: 'Joined', width: '8.5rem' },
-  { key: 'endDate', label: 'End Date', width: '8.5rem' },
-  { key: 'actions', label: 'Actions', width: 'min-content', align: 'center' }
-];
-</script>
 
 <style scoped>
 .adapter-container {

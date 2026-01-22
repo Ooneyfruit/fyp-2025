@@ -1,3 +1,10 @@
+<script setup>
+/**
+ * Primary responsibility: Provides a structural container component that implements the
+ * standard project card styling with optional header and body slots.
+ */
+</script>
+
 <template>
   <div class="base-card rd-card">
     <div v-if="$slots.header" class="card-header rd-card-header">
@@ -9,13 +16,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: Provides a structural container component that implements the
- * standard project card styling with optional header and body slots.
- */
-</script>
 
 <style scoped>
 /* Layout: Component-specific overrides to augment the global .rd-card utility. */

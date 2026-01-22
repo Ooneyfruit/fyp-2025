@@ -1,9 +1,3 @@
-<template>
-  <main class="page-container" :class="{ 'is-fluid': fluid }">
-    <slot />
-  </main>
-</template>
-
 <script setup>
 /**
  * Standard page wrapper to ensure consistent padding and max-width constraints.
@@ -13,6 +7,12 @@ defineProps({
   fluid: { type: Boolean, default: false }
 });
 </script>
+
+<template>
+  <main class="page-container" :class="{ 'is-fluid': fluid }">
+    <slot />
+  </main>
+</template>
 
 <style scoped>
 .page-container {

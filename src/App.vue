@@ -1,25 +1,3 @@
-<template>
-  <div
-    class="app-layout"
-    :class="{
-      'is-sidebar-open': isSidebarOpen,
-      'is-mobile': isMobile,
-      'is-animate-ready': canAnimate
-    }"
-  >
-    <template v-if="user">
-      <NavBar @toggle-sidebar="toggleSidebar" />
-      <AppSideMenu />
-    </template>
-
-    <main :class="user ? 'main-content' : 'full-screen'">
-      <router-view />
-    </main>
-
-    <AppToast />
-  </div>
-</template>
-
 <script setup>
 /**
  * Main application shell.
@@ -40,9 +18,18 @@ const { isSidebarOpen, isMobile, canAnimate, toggleSidebar } = useLayout();
 const { showToast } = useToast();
 
 const { needRefresh, updateServiceWorker } = useRegisterSW({
-  onRegistered() {
-    console.log('[PWA] Service Worker Registered');
+  /**
+   * Callback fired when the service worker is successfully registered.
+   * Confirms that the PWA features are active in the current browser session.
+   * @param {ServiceWorkerRegistration} [r] - The registration object.
+   */
+  onRegistered(r) {
+    console.log('[PWA] Service Worker Registered', r);
   },
+  /**
+   * Callback fired when a new content version is detected by the browser.
+   * Signals that the application should prompt the user to refresh.
+   */
   onNeedRefresh() {
     console.log('[PWA] Version update available.');
   }
@@ -69,6 +56,28 @@ onMounted(() => {
   initLayoutStabilization();
 });
 </script>
+
+<template>
+  <div
+    class="app-layout"
+    :class="{
+      'is-sidebar-open': isSidebarOpen,
+      'is-mobile': isMobile,
+      'is-animate-ready': canAnimate
+    }"
+  >
+    <template v-if="user">
+      <NavBar @toggle-sidebar="toggleSidebar" />
+      <AppSideMenu />
+    </template>
+
+    <main :class="user ? 'main-content' : 'full-screen'">
+      <router-view />
+    </main>
+
+    <AppToast />
+  </div>
+</template>
 
 <style scoped>
 /* Layout: core shell dimensions */

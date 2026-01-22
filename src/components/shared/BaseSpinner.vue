@@ -1,14 +1,6 @@
-<template>
-  <div 
-    class="base-spinner animate-spin" 
-    :style="spinnerStyles"
-    aria-hidden="true"
-  />
-</template>
-
 <script setup>
 /**
- * Primary responsibility: provides a lightweight, customizable css-based loading spinner 
+ * Primary responsibility: provides a lightweight, customizable css-based loading spinner
  * used to indicate asynchronous operations throughout the application.
  */
 import { computed } from 'vue';
@@ -28,6 +20,10 @@ const spinnerStyles = computed(() => ({
   borderTopColor: props.color
 }));
 </script>
+
+<template>
+  <div class="base-spinner animate-spin" :style="spinnerStyles" aria-hidden="true" />
+</template>
 
 <style scoped>
 /* Layout: specific styling for the circular track and its visual consistency. */
