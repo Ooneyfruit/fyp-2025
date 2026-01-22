@@ -1,24 +1,3 @@
-<template>
-  <AppAuthGuard>
-    <AppPageContainer>
-      <AppPageHeaderGroup
-        title="User Management"
-        subtitle="Manage personnel and permissions for your practice."
-      >
-        <BaseButton label="Add User" :icon="IconPlus" @click="userModal.open()" />
-      </AppPageHeaderGroup>
-
-      <AppLoading v-if="isLoading" />
-
-      <div v-else class="main-content-area">
-        <UserDataViewAdapter :users="users" @edit="(user) => userModal.open(user)" />
-      </div>
-
-      <UserModal ref="userModal" />
-    </AppPageContainer>
-  </AppAuthGuard>
-</template>
-
 <script setup>
 /**
  * Administrative view for managing practice personnel.
@@ -46,6 +25,27 @@ const { users, isLoading } = usePracticeUsers();
 // Template reference for the shared user modal instance
 const userModal = ref(null);
 </script>
+
+<template>
+  <AppAuthGuard>
+    <AppPageContainer>
+      <AppPageHeaderGroup
+        title="User Management"
+        subtitle="Manage personnel and permissions for your practice."
+      >
+        <BaseButton label="Add User" :icon="IconPlus" @click="userModal.open()" />
+      </AppPageHeaderGroup>
+
+      <AppLoading v-if="isLoading" />
+
+      <div v-else class="main-content-area">
+        <UserDataViewAdapter :users="users" @edit="(user) => userModal.open(user)" />
+      </div>
+
+      <UserModal ref="userModal" />
+    </AppPageContainer>
+  </AppAuthGuard>
+</template>
 
 <style scoped>
 /* Main Content: container for the user data adapter */

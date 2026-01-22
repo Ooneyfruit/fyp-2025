@@ -1,14 +1,3 @@
-<template>
-  <section class="rd-form-section">
-    <div v-if="title" class="rd-section-header">
-      {{ title }}
-    </div>
-    <div :class="{ 'rd-form-grid': grid }">
-      <slot />
-    </div>
-  </section>
-</template>
-
 <script setup>
 /**
  * Layout component for form segmentation.
@@ -22,3 +11,14 @@ defineProps({
   grid: { type: Boolean, default: false }
 });
 </script>
+
+<template>
+  <section class="rd-form-section">
+    <div v-if="title" class="rd-section-header">
+      {{ title }}
+    </div>
+    <div :class="{ 'rd-form-grid': grid }">
+      <slot />
+    </div>
+  </section>
+</template>

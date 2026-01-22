@@ -1,26 +1,3 @@
-<template>
-  <div style="padding: 2rem; max-width: 600px; margin: 0 auto; font-family: sans-serif">
-    <h1 style="color: #2563eb">Database Structure Repair</h1>
-    <p>
-      This utility will convert all <code>practice_users</code> documents to the required
-      deterministic ID format: <code>{userId}_{practiceId}</code>.
-    </p>
-
-    <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1rem">
-      <h3 style="margin-top: 0">Logs:</h3>
-      <pre style="font-size: 0.8rem; white-space: pre-wrap">{{
-        logs.join('\n') || 'Waiting to start...'
-      }}</pre>
-    </div>
-
-    <BaseButton
-      :label="loading ? 'Processing...' : 'Run Repair Now'"
-      :processing="loading"
-      @click="runRepair"
-    />
-  </div>
-</template>
-
 <script setup>
 import { ref } from 'vue';
 import { db } from '../services/firebase';
@@ -90,3 +67,26 @@ const runRepair = async () => {
   }
 };
 </script>
+
+<template>
+  <div style="padding: 2rem; max-width: 600px; margin: 0 auto; font-family: sans-serif">
+    <h1 style="color: #2563eb">Database Structure Repair</h1>
+    <p>
+      This utility will convert all <code>practice_users</code> documents to the required
+      deterministic ID format: <code>{userId}_{practiceId}</code>.
+    </p>
+
+    <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1rem">
+      <h3 style="margin-top: 0">Logs:</h3>
+      <pre style="font-size: 0.8rem; white-space: pre-wrap">{{
+        logs.join('\n') || 'Waiting to start...'
+      }}</pre>
+    </div>
+
+    <BaseButton
+      :label="loading ? 'Processing...' : 'Run Repair Now'"
+      :processing="loading"
+      @click="runRepair"
+    />
+  </div>
+</template>

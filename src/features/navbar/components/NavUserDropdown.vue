@@ -1,35 +1,3 @@
-<template>
-  <div class="nav-user-dropdown rd-card animate-slide-in">
-    <div class="rd-card-header dropdown-header">
-      <UserIdentity :profile="user" />
-      <span class="rd-pill rd-pill-muted role-badge">{{ user.role }}</span>
-    </div>
-    
-    <div class="rd-card-body dropdown-body">
-      <BaseButton 
-        label="Edit Profile"
-        :icon="IconEdit"
-        variant="secondary"
-        class="full-width-btn"
-        @click="$emit('edit')"
-      />
-
-      <div class="rd-card-divider">
-        <NavPracticeSwitcher label="Switch Practice" />
-      </div>
-
-      <div class="rd-card-footer">
-        <BaseButton 
-          label="Log Out"
-          variant="danger"
-          class="full-width-btn"
-          @click="$emit('logout')"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 /**
  * Mobile user settings card.
@@ -44,6 +12,38 @@ import IconEdit from '../../../components/icons/IconEdit.vue';
 defineEmits(['edit', 'logout']);
 const { user } = useAuth();
 </script>
+
+<template>
+  <div class="nav-user-dropdown rd-card animate-slide-in">
+    <div class="rd-card-header dropdown-header">
+      <UserIdentity :profile="user" />
+      <span class="rd-pill rd-pill-muted role-badge">{{ user.role }}</span>
+    </div>
+
+    <div class="rd-card-body dropdown-body">
+      <BaseButton
+        label="Edit Profile"
+        :icon="IconEdit"
+        variant="secondary"
+        class="full-width-btn"
+        @click="$emit('edit')"
+      />
+
+      <div class="rd-card-divider">
+        <NavPracticeSwitcher label="Switch Practice" />
+      </div>
+
+      <div class="rd-card-footer">
+        <BaseButton
+          label="Log Out"
+          variant="danger"
+          class="full-width-btn"
+          @click="$emit('logout')"
+        />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* Surface: specific constraints for the navigation dropdown card. */

@@ -1,18 +1,3 @@
-<template>
-  <div 
-    class="loading-container" 
-    :class="{ 'full-page': fullScreen }"
-    role="status"
-    aria-live="polite"
-  >
-    <BaseSpinner :size="spinnerSize" />
-    
-    <span class="loading-text">
-      <slot>Syncing practice records...</slot>
-    </span>
-  </div>
-</template>
-
 <script setup>
 /**
  * Primary responsibility: provides a standardized loading interface for both inline content and full-page transitions.
@@ -25,8 +10,23 @@ const props = defineProps({
 });
 
 // Increase spinner dimensions for full-screen states to ensure visual prominence.
-const spinnerSize = computed(() => props.fullScreen ? '2rem' : '1.5rem');
+const spinnerSize = computed(() => (props.fullScreen ? '2rem' : '1.5rem'));
 </script>
+
+<template>
+  <div
+    class="loading-container"
+    :class="{ 'full-page': fullScreen }"
+    role="status"
+    aria-live="polite"
+  >
+    <BaseSpinner :size="spinnerSize" />
+
+    <span class="loading-text">
+      <slot>Syncing practice records...</slot>
+    </span>
+  </div>
+</template>
 
 <style scoped>
 /* Layout: center alignment and spacing for the loading indicator. */

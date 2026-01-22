@@ -7,8 +7,10 @@ import { ref, watch } from 'vue';
 const MOBILE_BREAKPOINT = 768;
 
 // Initial state helpers for immediate application.
-const getInitialMobileState = () => typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false;
-const getInitialPreference = () => typeof window !== 'undefined' ? localStorage.getItem('isSidebarOpen') === 'true' : false;
+const getInitialMobileState = () =>
+  typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false;
+const getInitialPreference = () =>
+  typeof window !== 'undefined' ? localStorage.getItem('isSidebarOpen') === 'true' : false;
 
 // Shared reactive states.
 const isMobile = ref(getInitialMobileState());
@@ -30,7 +32,7 @@ const isSidebarOpen = ref(!isMobile.value ? desktopPreference.value : false);
 function syncRootClasses() {
   if (typeof window === 'undefined') return;
   const root = document.documentElement;
-  
+
   root.classList.toggle('initial-layout-wide', isSidebarOpen.value && !isMobile.value);
   root.classList.toggle('initial-layout-slim', !isSidebarOpen.value && !isMobile.value);
   root.classList.toggle('initial-layout-mobile', isMobile.value);
@@ -48,7 +50,7 @@ export function initLayoutStabilization() {
 
   const verifyStability = () => {
     const wait = window.requestIdleCallback || ((cb) => setTimeout(cb, 50));
-    
+
     wait((deadline) => {
       // If the browser is under heavy load (little time remaining), reset the count.
       if (deadline.timeRemaining() < 10) {
@@ -62,7 +64,7 @@ export function initLayoutStabilization() {
         // Final "cool-down" to allow for hardware-specific display refresh syncing.
         setTimeout(() => {
           canAnimate.value = true;
-          console.log("[App] Sustained stability achieved. Transitions enabled.");
+          console.log('[App] Sustained stability achieved. Transitions enabled.');
         }, 500);
       } else {
         // Recursive check to ensure stability is persistent, not a momentary pause.
@@ -84,7 +86,7 @@ export function initLayoutStabilization() {
  */
 const updateLayoutState = () => {
   if (typeof window === 'undefined') return;
-  
+
   const wasMobile = isMobile.value;
   isMobile.value = window.innerWidth < MOBILE_BREAKPOINT;
 
@@ -107,7 +109,7 @@ if (typeof window !== 'undefined') {
 
 /**
  * Provides access to centralized layout states and control methods.
- * @returns {Object} Reactive layout properties and mutation functions.
+ * @returns {object} Reactive layout properties and mutation functions.
  */
 export function useLayout() {
   const toggleSidebar = () => {

@@ -1,9 +1,3 @@
-<template>
-  <BasePill :variant="pillConfig.variant">
-    {{ pillConfig.label }}
-  </BasePill>
-</template>
-
 <script setup>
 /**
  * Unified status indicator for user attributes.
@@ -23,17 +17,23 @@ const pillConfig = computed(() => {
     case 'role':
       return { label: props.member.role, variant: 'primary' };
     case 'admin':
-      return { 
-        label: props.member.is_administrator ? 'Admin' : 'User', 
-        variant: props.member.is_administrator ? 'admin' : 'muted' 
+      return {
+        label: props.member.is_administrator ? 'Admin' : 'User',
+        variant: props.member.is_administrator ? 'admin' : 'muted'
       };
     case 'contract':
-      return { 
-        label: props.member.is_employee ? 'Employee' : 'Contractor', 
-        variant: props.member.is_employee ? 'success' : 'warning' 
+      return {
+        label: props.member.is_employee ? 'Employee' : 'Contractor',
+        variant: props.member.is_employee ? 'success' : 'warning'
       };
     default:
       return { label: 'Unknown', variant: 'muted' };
   }
 });
 </script>
+
+<template>
+  <BasePill :variant="pillConfig.variant">
+    {{ pillConfig.label }}
+  </BasePill>
+</template>

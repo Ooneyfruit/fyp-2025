@@ -1,16 +1,3 @@
-<template>
-  <div class="login-page">
-    <div class="login-card">
-      <h1 class="brand">RotaDent</h1>
-      <p>Please sign in to access the system.</p>
-      <BaseButton label="Sign in with Google" class="full-width" @click="handleLogin" />
-      <p v-if="errorMsg" class="error">
-        {{ errorMsg }}
-      </p>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
@@ -39,6 +26,19 @@ const handleLogin = async () => {
   }
 };
 </script>
+
+<template>
+  <div class="login-page">
+    <div class="login-card">
+      <h1 class="brand">RotaDent</h1>
+      <p>Please sign in to access the system.</p>
+      <BaseButton label="Sign in with Google" class="full-width" @click="handleLogin" />
+      <p v-if="errorMsg" class="error">
+        {{ errorMsg }}
+      </p>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .login-page {

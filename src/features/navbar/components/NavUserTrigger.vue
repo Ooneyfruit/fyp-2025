@@ -1,12 +1,3 @@
-<template>
-  <button class="profile-trigger">
-    <span class="email-label">{{ email }}</span>
-    <div class="edit-icon-wrapper">
-      <IconEdit class="edit-icon" />
-    </div>
-  </button>
-</template>
-
 <script setup>
 /**
  * Desktop profile trigger ui.
@@ -18,6 +9,15 @@ defineProps({
   email: { type: String, required: true }
 });
 </script>
+
+<template>
+  <button class="profile-trigger">
+    <span class="email-label">{{ email }}</span>
+    <div class="edit-icon-wrapper">
+      <IconEdit class="edit-icon" />
+    </div>
+  </button>
+</template>
 
 <style scoped>
 /* Surface: configuration for the interactive profile button. */

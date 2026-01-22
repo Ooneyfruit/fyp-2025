@@ -1,3 +1,14 @@
+<script setup>
+/**
+ * Primary responsibility: provides a scalable plus icon for adding items or creating new records.
+ */
+
+// Define component properties for visual customization.
+defineProps({
+  strokeWidth: { type: [Number, String], default: 2 }
+});
+</script>
+
 <template>
   <svg
     viewBox="0 0 24 24"
@@ -12,14 +23,3 @@
     <line x1="5" y1="12" x2="19" y2="12" />
   </svg>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides a scalable plus icon for adding items or creating new records.
- */
-
-// Define component properties for visual customization.
-defineProps({
-  strokeWidth: { type: [Number, String], default: 2 }
-});
-</script>

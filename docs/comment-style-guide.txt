@@ -32,7 +32,7 @@ Target: JavaScript, Vue (SFC), CSS, HTML
    - Use standard HTML comments to demarcate major UI sections (e.g., navigation, data tables, modals). Don't number them.
      Example: 
      CSS / SCSS Blocks
-   - Use block comments to group related styles or explain non-obvious layout hacks (e.g., flexbox centering workarounds).
+   - Use block comments to group related styles or explain non-obvious layout hacks (e.g., flex box centring workarounds).
      Example: 
      /* Layout: Sidebar navigation state transitions */
      .sidebar-enter-active { ... }

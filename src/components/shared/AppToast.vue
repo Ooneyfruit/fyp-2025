@@ -1,3 +1,16 @@
+<script setup>
+/**
+ * Primary responsibility: provides a global, interactive notification system.
+ * Animates messages and optional action buttons into the viewport.
+ */
+import { useToast } from '../../composables/useToast';
+import BaseButton from './BaseButton.vue';
+import IconClose from '../icons/IconClose.vue';
+
+// Access the shared reactive state from the toast composition function.
+const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
+</script>
+
 <template>
   <Teleport to="body">
     <Transition name="toast-slide">
@@ -24,19 +37,6 @@
     </Transition>
   </Teleport>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides a global, interactive notification system.
- * Animates messages and optional action buttons into the viewport.
- */
-import { useToast } from '../../composables/useToast';
-import BaseButton from './BaseButton.vue';
-import IconClose from '../icons/IconClose.vue';
-
-// Access the shared reactive state from the toast composition function.
-const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
-</script>
 
 <style scoped>
 /* Layout: fixed overlay anchored to the bottom center of the screen. */
@@ -113,7 +113,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 .toast-slide-enter-from,
 .toast-slide-leave-to {
   opacity: 0;
-  /* Maintain the horizontal centering while sliding vertically and scaling. */
+  /* Maintain the horizontal centring while sliding vertically and scaling. */
   transform: translate(-50%, 1.5rem) scale(0.95);
 }
 

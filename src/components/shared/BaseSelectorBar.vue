@@ -1,9 +1,3 @@
-<template>
-  <div class="rd-selector-bar">
-    <slot />
-  </div>
-</template>
-
 <script setup>
 /**
  * Primary responsibility: provides a flexible, equally-spaced container for navigation items.
@@ -11,8 +5,14 @@
  */
 </script>
 
+<template>
+  <div class="rd-selector-bar">
+    <slot />
+  </div>
+</template>
+
 <style scoped>
-/* Layout: Standardised interactable bar styling */
+/* Layout: Standardised interactive bar styling */
 .rd-selector-bar {
   display: flex;
   align-items: center;

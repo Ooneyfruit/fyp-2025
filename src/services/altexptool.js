@@ -1,7 +1,13 @@
+/**
+ * Alternative Export Tool
+ * Provides a recursive approach to exporting Firestore data.
+ * Useful for deep trees where the standard export might miss nested subcollections.
+ */
 import { initializeApp, credential as _credential, firestore } from 'firebase-admin';
 import { writeFileSync } from 'fs';
 
-// Path to your service account key file
+// Path to your service account key file.
+// Ensure this file exists in the same directory or update the path.
 import serviceAccount from './serviceAccount.json';
 
 initializeApp({
@@ -10,6 +16,12 @@ initializeApp({
 
 const db = firestore();
 
+/**
+ * Recursively exports a collection and its nested subcollections.
+ * traverses the document tree to capture data at any depth.
+ * @param {object} collectionRef - The Firestore collection reference to export.
+ * @returns {Promise<Array<object>>} A promise resolving to an array of document objects.
+ */
 async function exportCollection(collectionRef) {
   const snapshot = await collectionRef.get();
   const data = [];
@@ -19,11 +31,12 @@ async function exportCollection(collectionRef) {
     const subcollections = await doc.ref.listCollections();
     const subs = {};
 
-    // Recursively fetch subcollections (like roles/surgeries inside practices)
+    // Recursively fetch subcollections (like roles/surgeries inside practices).
     for (const sub of subcollections) {
       subs[sub.id] = await exportCollection(sub);
     }
 
+    // Construct the document object, optionally including subcollections.
     data.push({
       id: doc.id,
       ...docData,
@@ -33,6 +46,11 @@ async function exportCollection(collectionRef) {
   return data;
 }
 
+/**
+ * Orchestrates the full database export process.
+ * Fetches all root collections and writes the result to a JSON file.
+ * @returns {Promise<void>} Resolves when the export is complete.
+ */
 async function runExport() {
   console.log('Starting full database export...');
   const exportData = {};

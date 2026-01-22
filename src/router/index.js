@@ -8,10 +8,10 @@ import { watch } from 'vue';
 
 const routes = [
   { path: '/', component: RotaView }, // Updated to point to the new Rota view
-  { 
-    path: '/users', 
-    component: UserView, 
-    meta: { requiresAdmin: true } 
+  {
+    path: '/users',
+    component: UserView,
+    meta: { requiresAdmin: true }
   },
   { path: '/login', component: LoginView },
   { path: '/repair', component: AdminRepairView }
@@ -22,11 +22,11 @@ const router = createRouter({ history: createWebHistory(), routes });
 router.beforeEach(async (to, from, next) => {
   // 1. Wait for Auth and Contextual Permissions to resolve
   if (!isAuthReady.value) {
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       const unwatch = watch(isAuthReady, (ready) => {
-        if (ready) { 
-          unwatch(); 
-          resolve(); 
+        if (ready) {
+          unwatch();
+          resolve();
         }
       });
     });
@@ -42,7 +42,7 @@ router.beforeEach(async (to, from, next) => {
   // 3. Protect Admin Routes
   if (to.meta.requiresAdmin) {
     if (!currentUser || currentUser.is_administrator !== true) {
-      console.error("Router Block: Admin privileges required for", to.path);
+      console.error('Router Block: Admin privileges required for', to.path);
       return next('/');
     }
   }

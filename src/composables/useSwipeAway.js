@@ -6,11 +6,11 @@ import { ref, computed } from 'vue';
 
 /**
  * Manages touch states and calculates displacement.
- * @param {Object} options - Configuration for the swipe behavior.
+ * @param {object} options - Configuration for the swipe behavior.
  * @param {Function} options.onTrigger - Callback executed when swipe exceeds threshold.
  * @param {number} options.threshold - Distance in pixels required to trigger the action.
  * @param {import('vue').Ref<boolean>} options.enabled - Reactive toggle to activate logic.
- * @returns {Object} Touch handlers and reactive displacement states.
+ * @returns {object} Touch handlers and reactive displacement states.
  */
 export function useSwipeAway({ onTrigger, threshold = 80, enabled }) {
   const touchStartX = ref(0);
@@ -58,12 +58,12 @@ export function useSwipeAway({ onTrigger, threshold = 80, enabled }) {
    */
   const handleTouchEnd = () => {
     if (!isSwiping.value) return;
-    
+
     // Trigger dismissal if the move exceeds the defined pixel threshold.
     if (Math.abs(swipeOffset.value) > threshold) {
       onTrigger();
     }
-    
+
     isSwiping.value = false;
     touchStartX.value = 0;
     touchCurrentX.value = 0;

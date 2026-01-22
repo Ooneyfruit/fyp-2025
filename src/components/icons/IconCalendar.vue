@@ -1,3 +1,12 @@
+<script setup>
+/**
+ * Primary responsibility: provides a generic calendar icon for rota/schedule navigation.
+ */
+defineProps({
+  strokeWidth: { type: [Number, String], default: 2 }
+});
+</script>
+
 <template>
   <svg
     viewBox="0 0 24 24"
@@ -14,12 +23,3 @@
     <line x1="3" y1="10" x2="21" y2="10" />
   </svg>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides a generic calendar icon for rota/schedule navigation.
- */
-defineProps({
-  strokeWidth: { type: [Number, String], default: 2 }
-});
-</script>

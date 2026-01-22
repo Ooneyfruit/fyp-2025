@@ -1,29 +1,3 @@
-<template>
-  <nav class="navbar">
-    <div class="nav-left">
-      <BaseButton
-        :icon="IconMenu"
-        variant="secondary"
-        icon-only
-        label="Menu"
-        @click="$emit('toggleSidebar')"
-      />
-
-      <div class="brand-container">
-        <IconLogoInvert class="logo-icon" />
-        <span class="brand-text">RotaDent</span>
-      </div>
-    </div>
-
-    <div v-if="user" class="nav-actions">
-      <NavPracticeSwitcher v-if="!isMobile" class="desktop-switcher" />
-      <NavUserMenu />
-    </div>
-
-    <UserModal ref="userModalRef" />
-  </nav>
-</template>
-
 <script setup>
 /**
  * Application navigation shell.
@@ -53,6 +27,32 @@ const userModalRef = ref(null);
  */
 provide('userModal', userModalRef);
 </script>
+
+<template>
+  <nav class="navbar">
+    <div class="nav-left">
+      <BaseButton
+        :icon="IconMenu"
+        variant="secondary"
+        icon-only
+        label="Menu"
+        @click="$emit('toggleSidebar')"
+      />
+
+      <div class="brand-container">
+        <IconLogoInvert class="logo-icon" />
+        <span class="brand-text">RotaDent</span>
+      </div>
+    </div>
+
+    <div v-if="user" class="nav-actions">
+      <NavPracticeSwitcher v-if="!isMobile" class="desktop-switcher" />
+      <NavUserMenu />
+    </div>
+
+    <UserModal ref="userModalRef" />
+  </nav>
+</template>
 
 <style scoped>
 /* Layout: fixed position shell for the top navigation bar. */

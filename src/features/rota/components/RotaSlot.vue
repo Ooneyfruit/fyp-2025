@@ -1,64 +1,3 @@
-<template>
-  <div 
-    class="rota-slot" 
-    :class="{ 
-      'has-data': hasData,
-      'slot-weekend': isWeekend,
-      'slot-past': isBeforeToday && !isWeekend,
-      'slot-weekday': !isWeekend && !isBeforeToday,
-      'slot-today': isToday,
-      'slot-weekend-past': isWeekend && isBeforeToday
-    }"
-    role="button"
-    tabindex="0"
-    @click="$emit('click')"
-    @keydown.enter="$emit('click')"
-  >
-    <template v-if="hasData">
-      <div 
-        v-for="shift in shifts" 
-        :key="shift.id" 
-        class="shift-pill"
-        :style="pillStyles"
-      >
-        <div class="pill-content">
-          <span
-            class="initials"
-            :style="{ color: colors.accent }"
-          >
-            {{ getInitials(shift.user_name) }}
-          </span>
-          <span
-            class="name"
-            :style="{ color: colors.accent }"
-          >
-            {{ shift.user_name }}
-          </span>
-        </div>
-      </div>
-      
-      <div class="edit-overlay">
-        <div class="edit-icon-wrapper">
-          <IconEdit
-            class="edit-icon"
-            :stroke-width="2"
-          />
-        </div>
-      </div>
-    </template>
-    
-    <div
-      v-else
-      class="empty-placeholder"
-    >
-      <IconPlus
-        class="plus-icon"
-        :stroke-width="2"
-      />
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { computed } from 'vue';
 import IconPlus from '../../../components/icons/IconPlus.vue';
@@ -88,9 +27,55 @@ const pillStyles = computed(() => ({
 
 const getInitials = (name) => {
   if (!name) return '??';
-  return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
 };
 </script>
+
+<template>
+  <div
+    class="rota-slot"
+    :class="{
+      'has-data': hasData,
+      'slot-weekend': isWeekend,
+      'slot-past': isBeforeToday && !isWeekend,
+      'slot-weekday': !isWeekend && !isBeforeToday,
+      'slot-today': isToday,
+      'slot-weekend-past': isWeekend && isBeforeToday
+    }"
+    role="button"
+    tabindex="0"
+    @click="$emit('click')"
+    @keydown.enter="$emit('click')"
+  >
+    <template v-if="hasData">
+      <div v-for="shift in shifts" :key="shift.id" class="shift-pill" :style="pillStyles">
+        <div class="pill-content">
+          <span class="initials" :style="{ color: colors.accent }">
+            {{ getInitials(shift.user_name) }}
+          </span>
+          <span class="name" :style="{ color: colors.accent }">
+            {{ shift.user_name }}
+          </span>
+        </div>
+      </div>
+
+      <div class="edit-overlay">
+        <div class="edit-icon-wrapper">
+          <IconEdit class="edit-icon" :stroke-width="2" />
+        </div>
+      </div>
+    </template>
+
+    <div v-else class="empty-placeholder">
+      <IconPlus class="plus-icon" :stroke-width="2" />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .rota-slot {
@@ -98,34 +83,34 @@ const getInitials = (name) => {
   flex-direction: column;
   justify-content: center;
   gap: 0.25rem;
-  
+
   padding: 0.25rem;
   min-height: 4rem;
   width: 100%;
   height: 100%;
-  
+
   position: relative;
   border-radius: var(--border-radius);
   transition: all 0.2s ease;
-  
+
   /* UPDATED: Ensuring cursor is pointer */
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 /* --- State Styling --- */
 
 .rota-slot.slot-weekday {
   background-color: white;
-  border: 1px solid #e2e8f0; 
+  border: 1px solid #e2e8f0;
 }
 
 .rota-slot.slot-weekend {
-  background-color: #f3f4f6; 
-  border: 1px solid #e2e4e7; 
+  background-color: #f3f4f6;
+  border: 1px solid #e2e4e7;
 }
 .rota-slot.slot-weekend-past {
-  background-color: #f3f4f6; 
-  border: 1px solid transparent; 
+  background-color: #f3f4f6;
+  border: 1px solid transparent;
 }
 
 /* New style for past days (mild grey) */
@@ -135,16 +120,16 @@ const getInitials = (name) => {
 }
 
 .rota-slot.slot-today {
-  background-color: #eff6ff; 
-  border: 1px solid #93c5fd; 
+  background-color: #eff6ff;
+  border: 1px solid #93c5fd;
 }
 
 /* Hover States */
 .rota-slot:hover {
   background-color: white;
-  border-color: #3b82f6 !important; 
+  border-color: #3b82f6 !important;
   box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
-  z-index: 10; 
+  z-index: 10;
 }
 
 .rota-slot:focus-visible {
@@ -153,10 +138,12 @@ const getInitials = (name) => {
 }
 
 /* Data Present State */
-.rota-slot.has-data.slot-weekday { border-color: #e2e8f0; }
-.rota-slot.has-data.slot-weekend { 
+.rota-slot.has-data.slot-weekday {
+  border-color: #e2e8f0;
+}
+.rota-slot.has-data.slot-weekend {
   border-color: transparent;
-  background-color: #f3f4f6; 
+  background-color: #f3f4f6;
 }
 .rota-slot.has-data.slot-past {
   background-color: transparent;
@@ -179,8 +166,8 @@ const getInitials = (name) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  color: #94a3b8; 
+
+  color: #94a3b8;
   opacity: 0;
   transition: all 0.2s ease;
   pointer-events: none; /* Allows hover/click to pass through to .rota-slot */
@@ -193,8 +180,12 @@ const getInitials = (name) => {
   transform: scale(1.1);
 }
 
-.rota-slot.slot-today .empty-placeholder { color: #93c5fd; }
-.rota-slot.slot-today:hover .empty-placeholder { color: #3b82f6; }
+.rota-slot.slot-today .empty-placeholder {
+  color: #93c5fd;
+}
+.rota-slot.slot-today:hover .empty-placeholder {
+  color: #3b82f6;
+}
 
 /* 2. Occupied State Edit Overlay */
 .edit-overlay {
@@ -218,22 +209,28 @@ const getInitials = (name) => {
   background: white;
   border-radius: 50%;
   padding: 6px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   color: #3b82f6;
   display: flex;
 }
 
-.edit-icon { width: 1rem; height: 1rem; }
+.edit-icon {
+  width: 1rem;
+  height: 1rem;
+}
 
 /* UPDATED: Reduced size to be visually consistent with the edit icon */
-.plus-icon { width: 1.15rem; height: 1.15rem; }
+.plus-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+}
 
 /* --- Pill Styling --- */
 .shift-pill {
   border-width: 1px;
   border-style: solid;
   border-radius: 999px;
-  padding: 0.125rem 0.5rem; 
+  padding: 0.125rem 0.5rem;
   max-width: 100%;
 }
 
@@ -252,7 +249,7 @@ const getInitials = (name) => {
 
 .name {
   font-size: 0.75rem;
-  font-weight: 600; 
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

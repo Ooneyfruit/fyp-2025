@@ -1,37 +1,3 @@
-<template>
-  <BaseFormBlock title="Employment & Access">
-    <div class="rd-form-grid">
-      <BaseToggleDescription
-        :model-value="modelValue.is_administrator"
-        title="System admin"
-        subtitle="Full administrative control"
-        :disabled="isAdminToggleDisabled"
-        @update:model-value="handleToggleAdmin"
-      />
-
-      <BaseToggleDescription
-        :model-value="modelValue.is_employee"
-        title="Internal employee"
-        subtitle="Contractor if toggled off"
-        @update:model-value="handleToggleEmployee"
-      />
-    </div>
-
-    <Transition name="fade">
-      <div v-if="showDemotionWarning" class="demotion-warning">
-        <div class="warning-text">
-          <strong>Privilege de-escalation.</strong>
-          <span
-            >You are removing your own admin access. You will lose access to this dashboard after
-            saving.</span
-          >
-        </div>
-        <BaseButton label="Cancel" variant="secondary" @click="abortDemotion" />
-      </div>
-    </Transition>
-  </BaseFormBlock>
-</template>
-
 <script setup>
 /**
  * Manages user permission states and security constraints.
@@ -66,6 +32,7 @@ const isAdminToggleDisabled = computed(() => {
 
 /**
  * Logic: handles administrative toggle changes and demotion warnings.
+ * @param {boolean} val - The new active state of the admin toggle.
  */
 const handleToggleAdmin = (val) => {
   if (props.isSelf && props.modelValue.is_administrator && !val) {
@@ -76,6 +43,7 @@ const handleToggleAdmin = (val) => {
 
 /**
  * Logic: handles employment status changes.
+ * @param {boolean} val - The new active state of the employee toggle.
  */
 const handleToggleEmployee = (val) => {
   emit('update:modelValue', { ...props.modelValue, is_employee: val });
@@ -89,6 +57,40 @@ const abortDemotion = () => {
   emit('update:modelValue', { ...props.modelValue, is_administrator: true });
 };
 </script>
+
+<template>
+  <BaseFormBlock title="Employment & Access">
+    <div class="rd-form-grid">
+      <BaseToggleDescription
+        :model-value="modelValue.is_administrator"
+        title="System admin"
+        subtitle="Full administrative control"
+        :disabled="isAdminToggleDisabled"
+        @update:model-value="handleToggleAdmin"
+      />
+
+      <BaseToggleDescription
+        :model-value="modelValue.is_employee"
+        title="Internal employee"
+        subtitle="Contractor if toggled off"
+        @update:model-value="handleToggleEmployee"
+      />
+    </div>
+
+    <Transition name="fade">
+      <div v-if="showDemotionWarning" class="demotion-warning">
+        <div class="warning-text">
+          <strong>Privilege de-escalation.</strong>
+          <span
+            >You are removing your own admin access. You will lose access to this dashboard after
+            saving.</span
+          >
+        </div>
+        <BaseButton label="Cancel" variant="secondary" @click="abortDemotion" />
+      </div>
+    </Transition>
+  </BaseFormBlock>
+</template>
 
 <style scoped>
 .demotion-warning {

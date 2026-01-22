@@ -2,7 +2,7 @@
   "name": "fyp-2025",
   "version": "1.0.0",
   "description": "Final Year Project 2025",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "npm run dev",
     "test": "vitest",
@@ -14,6 +14,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
+    "spellcheck": "cspell \"**/*\"",
+    "knip": "knip",
+    "docs:build": "jsdoc -c jsdoc.json",
     "prepare": "husky",
     "deploy": "npm run build && firebase deploy",
     "deploy:branch": "npm run build && firebase hosting:channel:deploy $(git branch --show-current) --expires 7d",
@@ -27,6 +30,9 @@
     ],
     "*.{json,css,html,md}": [
       "prettier --write"
+    ],
+    "*": [
+      "cspell --no-must-find-files"
     ]
   },
   "repository": {
@@ -45,8 +51,6 @@
   },
   "dependencies": {
     "firebase": "^12.7.0",
-    "firebase-admin": "^13.6.0",
-    "safe-buffer": "^5.2.1",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
   },
@@ -54,13 +58,17 @@
     "@eslint/js": "^9.39.2",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/test-utils": "^2.4.6",
+    "cspell": "^8.3.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^50.2.2",
     "eslint-plugin-vue": "^10.7.0",
     "firebase-tools": "^15.3.1",
     "globals": "^17.0.0",
     "happy-dom": "^20.3.4",
     "husky": "^9.1.7",
+    "jsdoc": "^4.0.4",
+    "knip": "^5.26.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "vite": "^7.3.0",

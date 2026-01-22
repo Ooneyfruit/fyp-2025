@@ -1,51 +1,3 @@
-<template>
-  <BaseTable 
-    :headers="tableHeaders" 
-    :items="rows"
-    :vertical-lines="true"
-    group-by="role.id"
-    class="rota-table"
-  >
-    <template #cell(header_col)="{ item }">
-      <div class="header-col-inner">
-        <div 
-          v-if="item._isGroupStart" 
-          class="role-title"
-          :style="getRoleBadgeStyle(item.role.id)"
-        >
-          {{ toSentenceCase(item.role.name) }}
-        </div>
-        <div class="surgery-subtitle">
-          {{ item.surgery.name }}
-        </div>
-      </div>
-    </template>
-
-    <template 
-      v-for="day in days" 
-      :key="day.iso" 
-      #[`cell(${day.key})`]="{ item }"
-    >
-      <div class="cell-wrapper">
-        <RotaSlot 
-          :shifts="getShifts(item.role.id, item.surgery.id, day.iso)"
-          :role-id="item.role.id"
-          :is-weekend="day.isWeekend"
-          :is-today="day.isToday"
-          :is-before-today="day.isBeforeToday"
-          @click="$emit('slot-click', { rowItem: item, day })"
-        />
-      </div>
-    </template>
-
-    <template #empty>
-      <div class="empty-state-content">
-        <p>No roles configured. Please add Roles and Surgeries.</p>
-      </div>
-    </template>
-  </BaseTable>
-</template>
-
 <script setup>
 import { computed } from 'vue';
 import BaseTable from '../../../components/shared/BaseTable.vue';
@@ -78,21 +30,21 @@ const toSentenceCase = (str) => {
 
 const tableHeaders = computed(() => {
   return [
-    { 
-      key: 'header_col', 
-      label: 'Role / Surgery', 
+    {
+      key: 'header_col',
+      label: 'Role / Surgery',
       // Using minmax(0, X) is critical here.
       // Unlike fit-content, minmax(0, 14rem) allows the column to shrink below
       // the intrinsic width of its content (min-content), forcing truncation.
-      width: 'minmax(0, 9.2rem)', 
-      align: 'left' 
+      width: 'minmax(0, 9.2rem)',
+      align: 'left'
     },
-    ...props.days.map(d => ({
+    ...props.days.map((d) => ({
       key: d.key,
       label: d.label,
       width: 'minmax(0, 1fr)',
       align: 'left',
-      headerClass: d.isToday ? 'header-today' : '' 
+      headerClass: d.isToday ? 'header-today' : ''
     }))
   ];
 });
@@ -106,13 +58,53 @@ const tableHeaders = computed(() => {
  */
 const getRoleBadgeStyle = (roleId) => {
   const c = getRoleColor(roleId);
-  return { 
+  return {
     backgroundColor: c.bg,
     color: c.accent,
     borderColor: c.accent
   };
 };
 </script>
+
+<template>
+  <BaseTable
+    :headers="tableHeaders"
+    :items="rows"
+    :vertical-lines="true"
+    group-by="role.id"
+    class="rota-table"
+  >
+    <template #cell(header_col)="{ item }">
+      <div class="header-col-inner">
+        <div v-if="item._isGroupStart" class="role-title" :style="getRoleBadgeStyle(item.role.id)">
+          {{ toSentenceCase(item.role.name) }}
+        </div>
+        <div class="surgery-subtitle">
+          {{ item.surgery.name }}
+        </div>
+      </div>
+    </template>
+
+    <template v-for="day in days" :key="day.iso" #[`cell(${day.key})`]="{ item }">
+      <div class="cell-wrapper">
+        <RotaSlot
+          :shifts="getShifts(item.role.id, item.surgery.id, day.iso)"
+          :role-id="item.role.id"
+          :is-weekend="day.isWeekend"
+          :is-today="day.isToday"
+          :is-before-today="day.isBeforeToday"
+          @click="$emit('slot-click', { rowItem: item, day })"
+        />
+      </div>
+    </template>
+
+    <template #empty>
+      <div class="empty-state-content">
+        <p>No roles configured. Please add Roles and Surgeries.</p>
+      </div>
+    </template>
+  </BaseTable>
+</template>
 
 <style scoped>
 /* Header Column Styling */
@@ -121,7 +113,7 @@ const getRoleBadgeStyle = (roleId) => {
   flex-direction: column;
   justify-content: center;
   height: 100%;
-  
+
   /* CRITICAL: These styles ensure the content respects the parent's width cap. */
   /* Without this, the grid item's implicit 'min-width: auto' would force the column open. */
   width: 100%;
@@ -141,7 +133,7 @@ const getRoleBadgeStyle = (roleId) => {
   display: inline-block;
   border: 1px solid transparent;
   align-self: flex-start;
-  
+
   /* Ensure badges also truncate if they exceed the narrow column width */
   max-width: 100%;
   overflow: hidden;
@@ -153,7 +145,7 @@ const getRoleBadgeStyle = (roleId) => {
   color: var(--text-muted);
   font-size: 0.85rem;
   padding-left: 4px;
-  
+
   /* Ensure subtitle truncates */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -168,12 +160,16 @@ const getRoleBadgeStyle = (roleId) => {
 }
 
 /* Header Highlight for Today */
-:deep(th.header-today), 
+:deep(th.header-today),
 :deep(.header-cell.header-today) {
-  color: #2563eb !important; 
-  background-color: #eff6ff !important; 
+  color: #2563eb !important;
+  background-color: #eff6ff !important;
   font-weight: 800 !important;
 }
 
-.empty-state-content { padding: 5rem; text-align: center; color: var(--text-muted); }
+.empty-state-content {
+  padding: 5rem;
+  text-align: center;
+  color: var(--text-muted);
+}
 </style>

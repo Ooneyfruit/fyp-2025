@@ -1,16 +1,3 @@
-<template>
-  <label class="rd-toggle">
-    <input
-      type="checkbox"
-      :checked="modelValue"
-      :disabled="disabled"
-      class="rd-toggle-input"
-      @change="$emit('update:modelValue', $event.target.checked)"
-    />
-    <span class="rd-toggle-slider" />
-  </label>
-</template>
-
 <script setup>
 /**
  * Primitive checkbox switch component.
@@ -23,6 +10,19 @@ defineProps({
 
 defineEmits(['update:modelValue']);
 </script>
+
+<template>
+  <label class="rd-toggle">
+    <input
+      type="checkbox"
+      :checked="modelValue"
+      :disabled="disabled"
+      class="rd-toggle-input"
+      @change="$emit('update:modelValue', $event.target.checked)"
+    />
+    <span class="rd-toggle-slider" />
+  </label>
+</template>
 
 <style scoped>
 /* Logic: functional styles for the toggle are handled centrally in main.css. */

@@ -1,3 +1,216 @@
+<script setup>
+/**
+ * Orchestrates the user management modal workflow.
+ * Logic: handles dual-write operations to both 'users' and 'practice_users' collections.
+ */
+import { ref, computed, onMounted } from 'vue';
+import { db } from '../../../services/firebase';
+import { collection, getDocs, doc, writeBatch, Timestamp, deleteDoc } from 'firebase/firestore';
+import { user as authUser } from '../../../composables/useAuth';
+import { usePracticeUsers } from '../composables/usePracticeUsers';
+import { useToast } from '../../../composables/useToast';
+
+// Modular Imports
+import BaseModal from '../../../components/shared/BaseModal.vue';
+import BaseButton from '../../../components/shared/BaseButton.vue';
+import BaseSelect from '../../../components/shared/BaseSelect.vue';
+import BaseFormBlock from '../../../components/shared/BaseFormBlock.vue';
+import UserModalAccess from './UserModalAccess.vue';
+
+const { users } = usePracticeUsers();
+const { showToast } = useToast();
+
+const isVisible = ref(false);
+const isEdit = ref(false);
+const saving = ref(false);
+const loadingRoles = ref(true);
+const rolesList = ref([]);
+const initialState = ref('');
+
+// State to manage the two-step delete verification.
+const deleteConfirmation = ref(false);
+
+const defaultForm = () => ({
+  name: '',
+  email: '',
+  address: '',
+  role: '',
+  is_administrator: false,
+  is_employee: true,
+  profile_image: '',
+  user_id: ''
+});
+
+const form = ref(defaultForm());
+
+const isSelf = computed(() => form.value.user_id === authUser.value?.uid);
+const isLastAdmin = computed(() => {
+  const admins = users.value.filter((u) => u.is_administrator);
+  return admins.length <= 1 && admins.some((a) => a.user.id === form.value.user_id);
+});
+
+// Logic: triggers the 'Save changes' button activation state.
+const isDirty = computed(() => JSON.stringify(form.value) !== initialState.value);
+
+/**
+ * Helper to safely extract the user ID from various potential data structures.
+ * @param {object} u - The user object.
+ * @returns {string} The resolved user ID.
+ */
+const resolveId = (u) => {
+  if (u.user?.id) return u.user.id;
+  if (u.uid) return u.uid;
+  if (u.user?._path?.segments?.[1]) return u.user._path.segments[1];
+  return '';
+};
+
+/**
+ * Helper to resolve a string field from profile or root object.
+ * @param {object} u - The user object.
+ * @param {string} field - The field name to look up.
+ * @returns {string} The resolved string value.
+ */
+const resolveStr = (u, field) => {
+  return u.profile?.[field] || u[field] || '';
+};
+
+/**
+ * Helper to normalize boolean flags with default values.
+ * @param {any} val - The raw value.
+ * @param {boolean} fallback - The default if val is null/undefined.
+ * @returns {boolean} The normalized boolean.
+ */
+const resolveBool = (val, fallback) => (val !== undefined && val !== null ? val : fallback);
+
+/**
+ * Normalizes complex incoming user data into a flat form structure.
+ * Uses helper functions to keep cyclomatic complexity low.
+ * @param {object} u - The raw user data object.
+ * @returns {object} The normalized form state.
+ */
+const normalizeUserData = (u) => ({
+  name: resolveStr(u, 'name'),
+  email: resolveStr(u, 'email'),
+  address: resolveStr(u, 'address'),
+  role: u.role || '',
+  is_administrator: !!u.is_administrator,
+  is_employee: resolveBool(u.is_employee, true),
+  profile_image: u.profile?.profile_image || u.profile_image || '',
+  user_id: resolveId(u)
+});
+
+/**
+ * Prepares the form state for either user creation or updates.
+ * @param {object|null} [userData] - The user object to edit, or null for new user.
+ */
+const open = (userData = null) => {
+  deleteConfirmation.value = false; // Reset verification state.
+  if (userData) {
+    isEdit.value = true;
+    form.value = normalizeUserData(userData);
+  } else {
+    isEdit.value = false;
+    form.value = defaultForm();
+  }
+  initialState.value = JSON.stringify(form.value);
+  isVisible.value = true;
+};
+
+const close = () => {
+  isVisible.value = false;
+};
+defineExpose({ open, close });
+
+onMounted(async () => {
+  try {
+    const practiceId = authUser.value?.practiceRef?.id;
+    if (practiceId) {
+      const snap = await getDocs(collection(db, 'practices', practiceId, 'roles'));
+      rolesList.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    }
+  } finally {
+    loadingRoles.value = false;
+  }
+});
+
+/**
+ * Logic: permanently removes the membership bridge document.
+ * Implements a two-step verification to avoid browser confirm dialogues.
+ */
+const handleDelete = async () => {
+  if (!deleteConfirmation.value) {
+    deleteConfirmation.value = true;
+    return;
+  }
+
+  saving.value = true;
+  try {
+    const pId = authUser.value.practiceRef.id;
+    await deleteDoc(doc(db, 'practice_users', `${form.value.user_id}_${pId}`));
+    showToast(`User ${form.value.name} access revoked.`);
+    close();
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to revoke access.', { duration: 5000 });
+  } finally {
+    saving.value = false;
+  }
+};
+
+/**
+ * Logic: atomic update of user and practice data.
+ * Fixed: corrected .value access for form properties.
+ */
+const save = async () => {
+  if (saving.value) return;
+  saving.value = true;
+  const batch = writeBatch(db);
+
+  try {
+    const uid = form.value.user_id || doc(collection(db, 'users')).id;
+    const userRef = doc(db, 'users', uid);
+    const pRef = authUser.value.practiceRef;
+
+    // 1. Identity Logic: Update global user record.
+    batch.set(
+      userRef,
+      {
+        name: form.value.name,
+        email: form.value.email,
+        address: form.value.address,
+        profile_image: form.value.profile_image || '',
+        current_practice: pRef
+      },
+      { merge: true }
+    );
+
+    // 2. Membership Logic: Update practice-specific metadata.
+    const memberId = `${uid}_${pRef.id}`;
+    batch.set(
+      doc(db, 'practice_users', memberId),
+      {
+        role: form.value.role,
+        is_administrator: form.value.is_administrator,
+        is_employee: form.value.is_employee,
+        user: userRef,
+        practice: pRef,
+        updated_at: Timestamp.now()
+      },
+      { merge: true }
+    );
+
+    await batch.commit();
+    showToast(isEdit.value ? 'User profile updated.' : 'New user created.');
+    close();
+  } catch (err) {
+    console.error(err);
+    showToast(`Save Failure: ${err.message}`, { duration: 5000 });
+  } finally {
+    saving.value = false;
+  }
+};
+</script>
+
 <template>
   <BaseModal
     :show="isVisible"
@@ -65,10 +278,11 @@
             >
           </div>
           <BaseButton
-            label="Delete"
+            :label="deleteConfirmation ? 'Confirm Removal?' : 'Delete'"
             variant="danger"
             :disabled="isLastAdmin"
             @click="handleDelete"
+            @blur="deleteConfirmation = false"
           />
         </div>
       </BaseFormBlock>
@@ -85,164 +299,6 @@
     </form>
   </BaseModal>
 </template>
-
-<script setup>
-/**
- * Orchestrates the user management modal workflow.
- * Logic: handles dual-write operations to both 'users' and 'practice_users' collections.
- */
-import { ref, computed, onMounted } from 'vue';
-import { db } from '../../../services/firebase';
-import { collection, getDocs, doc, writeBatch, Timestamp, deleteDoc } from 'firebase/firestore';
-import { user as authUser } from '../../../composables/useAuth';
-import { usePracticeUsers } from '../composables/usePracticeUsers';
-
-// Modular Imports
-import BaseModal from '../../../components/shared/BaseModal.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import BaseSelect from '../../../components/shared/BaseSelect.vue';
-import BaseFormBlock from '../../../components/shared/BaseFormBlock.vue';
-import UserModalAccess from './UserModalAccess.vue';
-
-const { users } = usePracticeUsers();
-
-const isVisible = ref(false);
-const isEdit = ref(false);
-const saving = ref(false);
-const loadingRoles = ref(true);
-const rolesList = ref([]);
-const initialState = ref('');
-
-const defaultForm = () => ({
-  name: '',
-  email: '',
-  address: '',
-  role: '',
-  is_administrator: false,
-  is_employee: true,
-  profile_image: '',
-  user_id: ''
-});
-
-const form = ref(defaultForm());
-
-const isSelf = computed(() => form.value.user_id === authUser.value?.uid);
-const isLastAdmin = computed(() => {
-  const admins = users.value.filter((u) => u.is_administrator);
-  return admins.length <= 1 && admins.some((a) => a.user.id === form.value.user_id);
-});
-
-// Logic: triggers the 'Save changes' button activation state.
-const isDirty = computed(() => JSON.stringify(form.value) !== initialState.value);
-
-/**
- * Prepares the form state for either user creation or updates.
- */
-const open = (userData = null) => {
-  if (userData) {
-    isEdit.value = true;
-    form.value = {
-      name: userData.profile?.name || userData.name || '',
-      email: userData.profile?.email || userData.email || '',
-      address: userData.profile?.address || userData.address || '',
-      role: userData.role || '',
-      is_administrator: userData.is_administrator || false,
-      is_employee: userData.is_employee ?? true,
-      profile_image: userData.profile?.profile_image || userData.profile_image || '',
-      user_id: userData.user?.id || userData.uid || userData.user?._path?.segments[1] || ''
-    };
-  } else {
-    isEdit.value = false;
-    form.value = defaultForm();
-  }
-  initialState.value = JSON.stringify(form.value);
-  isVisible.value = true;
-};
-
-const close = () => {
-  isVisible.value = false;
-};
-defineExpose({ open, close });
-
-onMounted(async () => {
-  try {
-    const practiceId = authUser.value?.practiceRef?.id;
-    if (practiceId) {
-      const snap = await getDocs(collection(db, 'practices', practiceId, 'roles'));
-      rolesList.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    }
-  } finally {
-    loadingRoles.value = false;
-  }
-});
-
-/**
- * Logic: permanently removes the membership bridge document.
- */
-const handleDelete = async () => {
-  if (!confirm(`Confirm removal of ${form.value.name}? Access will be revoked immediately.`))
-    return;
-  saving.value = true;
-  try {
-    const pId = authUser.value.practiceRef.id;
-    await deleteDoc(doc(db, 'practice_users', `${form.value.user_id}_${pId}`));
-    close();
-  } finally {
-    saving.value = false;
-  }
-};
-
-/**
- * Logic: atomic update of user and practice data.
- * Fixed: corrected .value access for form properties.
- */
-const save = async () => {
-  if (saving.value) return;
-  saving.value = true;
-  const batch = writeBatch(db);
-
-  try {
-    const uid = form.value.user_id || doc(collection(db, 'users')).id;
-    const userRef = doc(db, 'users', uid);
-    const pRef = authUser.value.practiceRef;
-
-    // 1. Identity Logic: Update global user record.
-    batch.set(
-      userRef,
-      {
-        name: form.value.name,
-        email: form.value.email,
-        address: form.value.address,
-        profile_image: form.value.profile_image || '',
-        current_practice: pRef
-      },
-      { merge: true }
-    );
-
-    // 2. Membership Logic: Update practice-specific metadata.
-    const memberId = `${uid}_${pRef.id}`;
-    batch.set(
-      doc(db, 'practice_users', memberId),
-      {
-        role: form.value.role,
-        is_administrator: form.value.is_administrator,
-        is_employee: form.value.is_employee,
-        user: userRef,
-        practice: pRef,
-        updated_at: Timestamp.now()
-      },
-      { merge: true }
-    );
-
-    await batch.commit();
-    close();
-  } catch (err) {
-    alert(`Save Failure: ${err.message}`);
-  } finally {
-    saving.value = false;
-  }
-};
-</script>
 
 <style scoped>
 .modal-footer {

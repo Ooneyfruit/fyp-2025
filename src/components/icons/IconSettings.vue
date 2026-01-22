@@ -1,3 +1,14 @@
+<script setup>
+/**
+ * Primary responsibility: provides a scalable gear icon for accessing preferences or settings.
+ */
+
+// Define component properties for visual customization.
+defineProps({
+  strokeWidth: { type: [Number, String], default: 2 }
+});
+</script>
+
 <template>
   <svg
     viewBox="0 0 24 24"
@@ -14,14 +25,3 @@
     />
   </svg>
 </template>
-
-<script setup>
-/**
- * Primary responsibility: provides a scalable gear icon for accessing preferences or settings.
- */
-
-// Define component properties for visual customization.
-defineProps({
-  strokeWidth: { type: [Number, String], default: 2 }
-});
-</script>

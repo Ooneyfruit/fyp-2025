@@ -1,15 +1,3 @@
-<template>
-  <span class="rd-pill" :class="[`rd-pill-${variant}`]">
-    <div v-if="$slots.icon" class="rd-pill-icon-frame" aria-hidden="true">
-      <slot name="icon" />
-    </div>
-
-    <span class="rd-pill-label">
-      <slot />
-    </span>
-  </span>
-</template>
-
 <script setup>
 /**
  * Primary responsibility: Provides a standardized, functional wrapper for small status
@@ -28,6 +16,18 @@ defineProps({
   }
 });
 </script>
+
+<template>
+  <span class="rd-pill" :class="[`rd-pill-${variant}`]">
+    <div v-if="$slots.icon" class="rd-pill-icon-frame" aria-hidden="true">
+      <slot name="icon" />
+    </div>
+
+    <span class="rd-pill-label">
+      <slot />
+    </span>
+  </span>
+</template>
 
 <style scoped>
 /* Layout: specific dimensions for icon containers within the pill. */

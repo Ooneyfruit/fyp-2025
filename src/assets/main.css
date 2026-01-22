@@ -3,13 +3,13 @@
 /**
  * Global configuration: design tokens, spacing scales, and semantic variables.
  */
- :root {
+:root {
   /* Layout: configuration for primary container dimensions and animation speeds. */
   --navbar-height: 3.75rem;
   --sidebar-width: 16.25rem;
   --sidebar-slim-width: 4.5rem;
   --anim-speed: 0.3s;
-  
+
   /* Stacking: z-index hierarchy to manage vertical layer distribution. */
   --z-below: -1;
   --z-normal: 1;
@@ -28,20 +28,20 @@
 
   --color-primary: hsl(var(--hue-primary), 83%, 53%);
   --color-primary-hover: hsl(var(--hue-primary), 83%, 45%);
-  
+
   --color-danger: hsl(var(--hue-danger), 72%, 51%);
-  
+
   --color-success: hsl(var(--hue-success), 70%, 25%);
   --color-success-bg: hsl(var(--hue-success), 80%, 96%);
-  
+
   --color-warning: hsl(var(--hue-warning), 80%, 33%);
   --color-warning-bg: hsl(var(--hue-warning), 100%, 96%);
-  
+
   /* Neutral: typography and surface color tokens. */
   --text-main: hsl(221, 39%, 11%);
   --text-muted: hsl(215, 16%, 34%);
   --text-light: hsl(0, 0%, 100%);
-  
+
   --border-color: hsl(214, 32%, 91%);
   --bg-app: hsl(210, 40%, 98%);
 
@@ -55,14 +55,16 @@
   --spacing-sm: 0.75rem;
   --spacing-md: 1.25rem;
   --spacing-lg: 2.5rem;
-  
-  --border-radius: 0.5rem;     
 
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --border-radius: 0.5rem;
+
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Base: reset and box-model stabilization. */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -82,13 +84,20 @@ body {
 }
 
 /* Inheritance: form element font and color synchronization. */
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font: inherit;
   color: inherit;
 }
 
 /* Media: standard reset for visual elements and svg scalability. */
-img, picture, video, canvas, svg {
+img,
+picture,
+video,
+canvas,
+svg {
   display: block;
   max-width: 100%;
 }
@@ -103,12 +112,22 @@ img, picture, video, canvas, svg {
 }
 
 /* States: layout overrides based on initial hydration classes. */
-html.initial-layout-wide .main-content { margin-left: var(--sidebar-width); }
-html.initial-layout-slim .main-content { margin-left: var(--sidebar-slim-width); }
-html.initial-layout-mobile .main-content { margin-left: 0; }
+html.initial-layout-wide .main-content {
+  margin-left: var(--sidebar-width);
+}
+html.initial-layout-slim .main-content {
+  margin-left: var(--sidebar-slim-width);
+}
+html.initial-layout-mobile .main-content {
+  margin-left: 0;
+}
 
-html.initial-layout-wide .sidebar { width: var(--sidebar-width); }
-html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
+html.initial-layout-wide .sidebar {
+  width: var(--sidebar-width);
+}
+html.initial-layout-slim .sidebar {
+  width: var(--sidebar-slim-width);
+}
 
 /* Animation: layout transitions enabled only after hydration is stable. */
 .is-animate-ready .main-content {
@@ -116,7 +135,9 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 }
 
 .is-animate-ready .sidebar {
-  transition: width var(--anim-speed) ease, transform var(--anim-speed) ease;
+  transition:
+    width var(--anim-speed) ease,
+    transform var(--anim-speed) ease;
 }
 
 /* Accessibility: visually hidden utility for screen readers. */
@@ -141,12 +162,20 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 
 /* Global: standard rotation and entrance keyframes. */
 @keyframes rd-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes rd-slide-in {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-spin {
@@ -176,7 +205,9 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  transition: transform var(--anim-speed) ease, box-shadow var(--anim-speed) ease;
+  transition:
+    transform var(--anim-speed) ease,
+    box-shadow var(--anim-speed) ease;
 }
 
 .rd-card-header {
@@ -332,31 +363,31 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   letter-spacing: 0.025em;
 }
 
-.rd-pill-muted { 
+.rd-pill-muted {
   background: var(--bg-app);
-  border-color: var(--border-color); 
-  color: var(--text-muted); 
+  border-color: var(--border-color);
+  color: var(--text-muted);
 }
 
-.rd-pill-primary { 
-  background: hsl(var(--hue-primary), 83%, 96%); 
-  color: var(--color-primary); 
+.rd-pill-primary {
+  background: hsl(var(--hue-primary), 83%, 96%);
+  color: var(--color-primary);
 }
 
-.rd-pill-admin { 
-  background: #eff6ff; 
-  color: #1e40af; 
+.rd-pill-admin {
+  background: #eff6ff;
+  color: #1e40af;
   border-color: #dbeafe;
 }
 
-.rd-pill-success { 
-  background: var(--color-success-bg); 
-  color: var(--color-success); 
+.rd-pill-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
-.rd-pill-warning { 
-  background: var(--color-warning-bg); 
-  color: var(--color-warning); 
+.rd-pill-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
 .rd-pill-danger {
@@ -412,8 +443,16 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
   padding-left: 0.1rem;
 }
 
-.rd-grid-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.25rem; }
-@media (max-width: 40rem) { .rd-grid-layout { grid-template-columns: 1fr; } }
+.rd-grid-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 40rem) {
+  .rd-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* Danger Zone: specialized layout for destructive actions. */
 .rd-danger-zone {
@@ -435,27 +474,70 @@ html.initial-layout-slim .sidebar { width: var(--sidebar-slim-width); }
 }
 
 /* Toggle: slider and card primitives. */
-.rd-toggle-card { 
-  display: flex; justify-content: space-between; align-items: center; 
-  background: var(--table-row-hover); padding: 0.75rem; border-radius: 0.75rem; 
+.rd-toggle-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--table-row-hover);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
 }
-.rd-toggle-info { display: flex; flex-direction: column; gap: 0.1rem; }
-.rd-toggle-title { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
-.rd-toggle-subtitle { font-size: 0.7rem; color: var(--text-muted); }
+.rd-toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.rd-toggle-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.rd-toggle-subtitle {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
 
 /* Toggle: core switch styles for BaseToggle. */
-.rd-toggle { position: relative; display: inline-block; width: 2.2rem; height: 1.2rem; flex-shrink: 0; }
-.rd-toggle-input { opacity: 0; width: 0; height: 0; }
+.rd-toggle {
+  position: relative;
+  display: inline-block;
+  width: 2.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
+}
+.rd-toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 .rd-toggle-slider {
-  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #d1d5db; transition: .2s; border-radius: 1rem;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d1d5db;
+  transition: 0.2s;
+  border-radius: 1rem;
 }
 .rd-toggle-slider:before {
-  position: absolute; content: ""; height: 0.95rem; width: 0.95rem;
-  left: 0.125rem; bottom: 0.125rem; background-color: white; transition: .2s; border-radius: 50%;
+  position: absolute;
+  content: '';
+  height: 0.95rem;
+  width: 0.95rem;
+  left: 0.125rem;
+  bottom: 0.125rem;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
 }
-.rd-toggle-input:checked + .rd-toggle-slider { background-color: var(--color-primary); }
-.rd-toggle-input:checked + .rd-toggle-slider:before { transform: translateX(1rem); }
+.rd-toggle-input:checked + .rd-toggle-slider {
+  background-color: var(--color-primary);
+}
+.rd-toggle-input:checked + .rd-toggle-slider:before {
+  transform: translateX(1rem);
+}
 
 /* Inputs: unified height for single-line elements. */
 .rd-input {

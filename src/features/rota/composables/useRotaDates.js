@@ -3,12 +3,12 @@ import { ref, computed, watch } from 'vue';
 /**
  * Manages date logic for the Rota view with persistence and cross-breakpoint consistency.
  * Ensures a 'universal truth' for the currently viewed date to prevent navigation drift.
- * @param {Object} breakpoints - Breakpoints composable for responsive logic.
- * @returns {Object} Date state and control methods.
+ * @param {object} breakpoints - Breakpoints composable for responsive logic.
+ * @returns {object} Date state and control methods.
  */
 export function useRotaDates(breakpoints) {
   const STORAGE_KEY = 'rotadent_view_date';
-  
+
   // The Anchor Date is the persistent 'point of truth' for the viewer's location in time.
   const anchorDate = ref(new Date());
 
@@ -56,16 +56,14 @@ export function useRotaDates(breakpoints) {
    * Desktop (7-day) always snaps to Monday. Mobile (3-day) uses the exact anchor.
    */
   const currentStartDate = computed(() => {
-    return breakpoints.isMobile.value 
-      ? anchorDate.value 
-      : getStartOfWeek(anchorDate.value);
+    return breakpoints.isMobile.value ? anchorDate.value : getStartOfWeek(anchorDate.value);
   });
 
   const visibleDays = computed(() => {
     const days = [];
     const count = breakpoints.isMobile.value ? 3 : 7;
     const start = new Date(currentStartDate.value);
-    
+
     // Create a date object for 'today' set to midnight for accurate comparison.
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -74,7 +72,7 @@ export function useRotaDates(breakpoints) {
     for (let i = 0; i < count; i++) {
       const d = new Date(start);
       d.setDate(d.getDate() + i);
-      
+
       const iso = d.toISOString().split('T')[0];
       days.push({
         key: iso,
@@ -93,15 +91,16 @@ export function useRotaDates(breakpoints) {
     if (!visibleDays.value.length) return '';
     const start = visibleDays.value[0].dateObj;
     const end = visibleDays.value[visibleDays.value.length - 1].dateObj;
-    const format = (d) => new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
-    
+    const format = (d) =>
+      new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
+
     return format(start) === format(end) ? format(start) : `${format(start)} - ${format(end)}`;
   });
 
   const changePeriod = (direction) => {
     const d = new Date(anchorDate.value);
     const offset = breakpoints.isMobile.value ? 3 : 7;
-    d.setDate(d.getDate() + (direction * offset));
+    d.setDate(d.getDate() + direction * offset);
     anchorDate.value = d;
   };
 
@@ -123,11 +122,11 @@ export function useRotaDates(breakpoints) {
     // Use the 1st of the month to prevent clipping issues with shorter months.
     d.setDate(1);
     d.setMonth(d.getMonth() + months);
-    
+
     // Restore the day, capped by the end of the new month.
     const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
     d.setDate(Math.min(originalDay, lastDay));
-    
+
     anchorDate.value = d;
   };
 
