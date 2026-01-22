@@ -1,4 +1,28 @@
-/* src/features/users/composables/usePracticeUsers.js */
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: features/navbar/composables/useUserPractices.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: features/navbar/composables/useUserPractices.js</h1>
+
+      <section>
+        <article>
+          <pre class="prettyprint source linenums"><code>/**
+ * Manages real-time synchronisation of practice users and efficient profile caching.
+ * Handles membership lists and associated profile data with reference counting.
+ */
 import { ref, watch, onUnmounted, computed } from 'vue';
 import { db } from '../../../services/firebase';
 import { collection, query, where, onSnapshot, doc } from 'firebase/firestore';
@@ -13,7 +37,7 @@ const globalProfileStore = ref({});
 /**
  * Maps user IDs to their active listeners and reference counts.
  * Ensures we only have one active listener per user, regardless of how many components ask for it.
- * @type {Map<string, { unsubscribe: Function, count: number }>}
+ * @type {Map&lt;string, { unsubscribe: Function, count: number }>}
  */
 const profileListeners = new Map();
 
@@ -34,19 +58,19 @@ export function usePracticeUsers() {
 
   /**
    * Increments the reference count and initialises a profile listener if needed.
-   * @param {object} userRef - The Firestore DocumentReference to the user document.
+   * @param {object} userRef - The Firestore reference to the user document.
    */
   const attachProfileListener = (userRef) => {
     const uid = userRef.id;
     const existing = profileListeners.get(uid);
 
+    // Increase the reference count to prevent cleanup while this instance is active.
     if (existing) {
-      // Logic: Increase the reference count to prevent cleanup while this instance is active.
       existing.count++;
       return;
     }
 
-    // Logic: Establish a new real-time listener for the profile data.
+    // Establish a new real-time listener for the profile data.
     const unsubscribe = onSnapshot(
       userRef,
       (pSnap) => {
@@ -58,6 +82,7 @@ export function usePracticeUsers() {
       (err) => console.error(`[usePracticeUsers] Profile Error (${uid}):`, err.message)
     );
 
+    // Track the new listener and initialise its reference count.
     profileListeners.set(uid, { unsubscribe, count: 1 });
   };
 
@@ -71,8 +96,8 @@ export function usePracticeUsers() {
 
     active.count--;
 
-    // Logic: Kill the listener and remove data from memory when reference count reaches zero.
-    if (active.count <= 0) {
+    // Kill the listener and remove data from memory when the reference count reaches zero.
+    if (active.count &lt;= 0) {
       active.unsubscribe();
       profileListeners.delete(uid);
       delete globalProfileStore.value[uid];
@@ -90,7 +115,7 @@ export function usePracticeUsers() {
     const practiceRef = doc(db, 'practices', practiceId);
     const bridgeCol = collection(db, 'practice_users');
 
-    // Logic: Restrict data access based on the current user's administrative status.
+    // Restrict data access based on the current user's administrative status.
     let q;
     if (authUser.value?.is_administrator) {
       q = query(bridgeCol, where('practice', '==', practiceRef));
@@ -99,13 +124,14 @@ export function usePracticeUsers() {
       q = query(bridgeCol, where('practice', '==', practiceRef), where('user', '==', userRef));
     }
 
+    // Listen for changes in the membership bridge collection.
     listListener = onSnapshot(
       q,
       (snapshot) => {
         const newUids = new Set(snapshot.docs.map((d) => d.data().user.id));
         const oldUids = new Set(memberships.value.map((m) => m.user.id));
 
-        // Performance: Attach listeners for new users entering the set.
+        // Attach listeners for new users entering the membership set.
         snapshot.docs.forEach((mDoc) => {
           const userRef = mDoc.data().user;
           if (!oldUids.has(userRef.id)) {
@@ -113,7 +139,7 @@ export function usePracticeUsers() {
           }
         });
 
-        // Performance: Detach listeners for users no longer present in the results.
+        // Detach listeners for users no longer present in the membership results.
         oldUids.forEach((uid) => {
           if (!newUids.has(uid)) {
             detachProfileListener(uid);
@@ -132,7 +158,7 @@ export function usePracticeUsers() {
 
   /**
    * Aggregates membership data with profile information.
-   * Logic: Explicitly includes the document ID in the profile object for avatar detection.
+   * Includes the document ID in the profile object for avatar detection logic.
    */
   const users = computed(() => {
     return memberships.value
@@ -152,7 +178,7 @@ export function usePracticeUsers() {
    */
   const cleanup = () => {
     if (listListener) listListener();
-    // Logic: Ensure all profiles attached by this instance are detached correctly.
+    // Ensure all individual profile listeners attached by this instance are detached correctly.
     memberships.value.forEach((m) => detachProfileListener(m.user.id));
     memberships.value = [];
   };
@@ -174,3 +200,61 @@ export function usePracticeUsers() {
 
   return { users, isLoading };
 }
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#db">db</a></li>
+        <li><a href="global.html#exportCollection">exportCollection</a></li>
+        <li><a href="global.html#exportData">exportData</a></li>
+        <li><a href="global.html#firebaseConfig">firebaseConfig</a></li>
+        <li><a href="global.html#getShiftDateIso">getShiftDateIso</a></li>
+        <li><a href="global.html#globalProfileStore">globalProfileStore</a></li>
+        <li><a href="global.html#importData">importData</a></li>
+        <li><a href="global.html#initLayoutStabilization">initLayoutStabilization</a></li>
+        <li><a href="global.html#isDocumentReference">isDocumentReference</a></li>
+        <li><a href="global.html#isRefMatch">isRefMatch</a></li>
+        <li><a href="global.html#isSidebarOpen">isSidebarOpen</a></li>
+        <li><a href="global.html#isTimestamp">isTimestamp</a></li>
+        <li><a href="global.html#processCollection">processCollection</a></li>
+        <li><a href="global.html#processDocument">processDocument</a></li>
+        <li><a href="global.html#processSubcollection">processSubcollection</a></li>
+        <li><a href="global.html#profileListeners">profileListeners</a></li>
+        <li><a href="global.html#reviveFirestoreTypes">reviveFirestoreTypes</a></li>
+        <li><a href="global.html#runExport">runExport</a></li>
+        <li><a href="global.html#setDocument">setDocument</a></li>
+        <li><a href="global.html#startProfileListener">startProfileListener</a></li>
+        <li><a href="global.html#syncProfileImage">syncProfileImage</a></li>
+        <li><a href="global.html#syncRootClasses">syncRootClasses</a></li>
+        <li><a href="global.html#updateLayoutState">updateLayoutState</a></li>
+        <li><a href="global.html#useAuth">useAuth</a></li>
+        <li><a href="global.html#useBreakpoints">useBreakpoints</a></li>
+        <li><a href="global.html#useClickOutside">useClickOutside</a></li>
+        <li><a href="global.html#useLayout">useLayout</a></li>
+        <li><a href="global.html#usePracticeUsers">usePracticeUsers</a></li>
+        <li><a href="global.html#useRotaColors">useRotaColors</a></li>
+        <li><a href="global.html#useRotaData">useRotaData</a></li>
+        <li><a href="global.html#useRotaDates">useRotaDates</a></li>
+        <li><a href="global.html#useSwipeAway">useSwipeAway</a></li>
+        <li><a href="global.html#useToast">useToast</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jan
+      22 2026 14:12:50 GMT+0000 (Greenwich Mean Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>

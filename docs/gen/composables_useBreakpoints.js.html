@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: composables/useBreakpoints.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: composables/useBreakpoints.js</h1>
+
+      <section>
+        <article>
+          <pre
+            class="prettyprint source linenums"
+          ><code>import { ref, onMounted, onUnmounted } from 'vue';
+
+/**
+ * Monitors the container width to determine layout mode.
+ * Allows components to specify a custom threshold for switching to mobile view.
+ * Updated to use borderBoxSize for more accurate layout measurements.
+ * @param {object} targetRef - The Vue template ref to observe.
+ * @param {number} [threshold] - The width in REMs at which to switch to mobile mode.
+ * @returns {object} An object containing the isMobile reactive boolean.
+ */
+export function useBreakpoints(targetRef, threshold = 50) {
+  const isMobile = ref(false);
+
+  // Calculate the root font size to convert pixels to REMs.
+  const getRemValue = () => parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+
+  // Observe resize events to dynamically update the state.
+  const observer = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      // Prefer borderBoxSize to include padding in the width calculation.
+      // Fallback to contentRect if borderBoxSize is unavailable (legacy support).
+      const widthPx = entry.borderBoxSize?.[0]?.inlineSize ?? entry.contentRect.width;
+      const widthRem = widthPx / getRemValue();
+
+      // Compare the current width against the provided threshold.
+      // This allows the consumer to dictate when the layout breaks.
+      isMobile.value = widthRem &lt; threshold;
+    }
+  });
+
+  onMounted(() => {
+    // Ensure the element exists before observing.
+    if (targetRef.value) {
+      observer.observe(targetRef.value);
+    }
+  });
+
+  onUnmounted(() => observer.disconnect());
+
+  return { isMobile };
+}
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#db">db</a></li>
+        <li><a href="global.html#exportCollection">exportCollection</a></li>
+        <li><a href="global.html#exportData">exportData</a></li>
+        <li><a href="global.html#firebaseConfig">firebaseConfig</a></li>
+        <li><a href="global.html#getShiftDateIso">getShiftDateIso</a></li>
+        <li><a href="global.html#globalProfileStore">globalProfileStore</a></li>
+        <li><a href="global.html#importData">importData</a></li>
+        <li><a href="global.html#initLayoutStabilization">initLayoutStabilization</a></li>
+        <li><a href="global.html#isDocumentReference">isDocumentReference</a></li>
+        <li><a href="global.html#isRefMatch">isRefMatch</a></li>
+        <li><a href="global.html#isSidebarOpen">isSidebarOpen</a></li>
+        <li><a href="global.html#isTimestamp">isTimestamp</a></li>
+        <li><a href="global.html#processCollection">processCollection</a></li>
+        <li><a href="global.html#processDocument">processDocument</a></li>
+        <li><a href="global.html#processSubcollection">processSubcollection</a></li>
+        <li><a href="global.html#profileListeners">profileListeners</a></li>
+        <li><a href="global.html#reviveFirestoreTypes">reviveFirestoreTypes</a></li>
+        <li><a href="global.html#runExport">runExport</a></li>
+        <li><a href="global.html#setDocument">setDocument</a></li>
+        <li><a href="global.html#startProfileListener">startProfileListener</a></li>
+        <li><a href="global.html#syncProfileImage">syncProfileImage</a></li>
+        <li><a href="global.html#syncRootClasses">syncRootClasses</a></li>
+        <li><a href="global.html#updateLayoutState">updateLayoutState</a></li>
+        <li><a href="global.html#useAuth">useAuth</a></li>
+        <li><a href="global.html#useBreakpoints">useBreakpoints</a></li>
+        <li><a href="global.html#useClickOutside">useClickOutside</a></li>
+        <li><a href="global.html#useLayout">useLayout</a></li>
+        <li><a href="global.html#usePracticeUsers">usePracticeUsers</a></li>
+        <li><a href="global.html#useRotaColors">useRotaColors</a></li>
+        <li><a href="global.html#useRotaData">useRotaData</a></li>
+        <li><a href="global.html#useRotaDates">useRotaDates</a></li>
+        <li><a href="global.html#useSwipeAway">useSwipeAway</a></li>
+        <li><a href="global.html#useToast">useToast</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jan
+      22 2026 14:12:50 GMT+0000 (Greenwich Mean Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>

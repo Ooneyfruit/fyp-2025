@@ -13,7 +13,7 @@ import process from 'node:process';
 export default [
   // 1. Global Ignores: Must be the first object and strictly separated.
   {
-    ignores: ['dist/', 'coverage/', '.firebase/', 'public/']
+    ignores: ['dist/', 'coverage/', '.firebase/', 'public/', 'docs/gen/']
   },
 
   // 2. Setup the browser environment for the source files.

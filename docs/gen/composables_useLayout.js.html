@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSDoc: Source: composables/useLayout.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+
+  <body>
+    <div id="main">
+      <h1 class="page-title">Source: composables/useLayout.js</h1>
+
+      <section>
+        <article>
+          <pre class="prettyprint source linenums"><code>/**
+ * Global layout manager and responsive state provider.
+ * Centralizes viewport detection, sidebar state memory, and multi-stage stabilization.
+ */
+import { ref, watch } from 'vue';
+
+const MOBILE_BREAKPOINT = 768;
+
+// Initial state helpers for immediate application.
+const getInitialMobileState = () =>
+  typeof window !== 'undefined' ? window.innerWidth &lt; MOBILE_BREAKPOINT : false;
+const getInitialPreference = () =>
+  typeof window !== 'undefined' ? localStorage.getItem('isSidebarOpen') === 'true' : false;
+
+// Shared reactive states.
+const isMobile = ref(getInitialMobileState());
+const canAnimate = ref(false);
+
+// Memory: tracks the intended desktop state when returning from mobile view.
+const desktopPreference = ref(getInitialPreference());
+
+/**
+ * Initial Sidebar State:
+ * Desktop users receive their saved preference; mobile users start closed.
+ */
+const isSidebarOpen = ref(!isMobile.value ? desktopPreference.value : false);
+
+/**
+ * Syncs layout classes to the document root for CSS variable scoping.
+ * Provides immediate positioning for the side menu and main content.
+ */
+function syncRootClasses() {
+  if (typeof window === 'undefined') return;
+  const root = document.documentElement;
+
+  root.classList.toggle('initial-layout-wide', isSidebarOpen.value &amp;&amp; !isMobile.value);
+  root.classList.toggle('initial-layout-slim', !isSidebarOpen.value &amp;&amp; !isMobile.value);
+  root.classList.toggle('initial-layout-mobile', isMobile.value);
+}
+
+/**
+ * Executes an ultra-conservative stabilization check.
+ * Transitions are only enabled after the browser proves sustained idle behavior.
+ */
+export function initLayoutStabilization() {
+  if (typeof window === 'undefined') return;
+
+  let idleCheckCount = 0;
+  const REQUIRED_STABLE_CHECKS = 6; // Must pass 3 consecutive idle checks.
+
+  const verifyStability = () => {
+    const wait = window.requestIdleCallback || ((cb) => setTimeout(cb, 50));
+
+    wait((deadline) => {
+      // If the browser is under heavy load (little time remaining), reset the count.
+      if (deadline.timeRemaining() &lt; 10) {
+        idleCheckCount = 0;
+        return setTimeout(verifyStability, 200);
+      }
+
+      idleCheckCount++;
+
+      if (idleCheckCount >= REQUIRED_STABLE_CHECKS) {
+        // Final "cool-down" to allow for hardware-specific display refresh syncing.
+        setTimeout(() => {
+          canAnimate.value = true;
+          console.log('[App] Sustained stability achieved. Transitions enabled.');
+        }, 500);
+      } else {
+        // Recursive check to ensure stability is persistent, not a momentary pause.
+        setTimeout(verifyStability, 100);
+      }
+    });
+  };
+
+  // Wait for the full window load event before beginning the idle verification sequence.
+  if (document.readyState === 'complete') {
+    verifyStability();
+  } else {
+    window.addEventListener('load', verifyStability, { once: true });
+  }
+}
+
+/**
+ * Manages layout transitions and state memory during viewport resizes.
+ */
+const updateLayoutState = () => {
+  if (typeof window === 'undefined') return;
+
+  const wasMobile = isMobile.value;
+  isMobile.value = window.innerWidth &lt; MOBILE_BREAKPOINT;
+
+  if (isMobile.value &amp;&amp; !wasMobile) {
+    desktopPreference.value = isSidebarOpen.value;
+    isSidebarOpen.value = false;
+  }
+
+  if (!isMobile.value &amp;&amp; wasMobile) {
+    isSidebarOpen.value = desktopPreference.value;
+  }
+};
+
+// Global reactive synchronization for document-level classes.
+watch([isSidebarOpen, isMobile], () => syncRootClasses(), { immediate: true });
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', updateLayoutState);
+}
+
+/**
+ * Provides access to centralized layout states and control methods.
+ * @returns {object} Reactive layout properties and mutation functions.
+ */
+export function useLayout() {
+  const toggleSidebar = () => {
+    isSidebarOpen.value = !isSidebarOpen.value;
+    desktopPreference.value = isSidebarOpen.value;
+
+    if (!isMobile.value) {
+      localStorage.setItem('isSidebarOpen', isSidebarOpen.value.toString());
+    }
+  };
+
+  const closeSidebar = () => {
+    isSidebarOpen.value = false;
+  };
+
+  return {
+    isMobile,
+    isSidebarOpen,
+    canAnimate,
+    toggleSidebar,
+    closeSidebar
+  };
+}
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <nav>
+      <h2><a href="index.html">Home</a></h2>
+      <h3>Global</h3>
+      <ul>
+        <li><a href="global.html#db">db</a></li>
+        <li><a href="global.html#exportCollection">exportCollection</a></li>
+        <li><a href="global.html#exportData">exportData</a></li>
+        <li><a href="global.html#firebaseConfig">firebaseConfig</a></li>
+        <li><a href="global.html#getShiftDateIso">getShiftDateIso</a></li>
+        <li><a href="global.html#globalProfileStore">globalProfileStore</a></li>
+        <li><a href="global.html#importData">importData</a></li>
+        <li><a href="global.html#initLayoutStabilization">initLayoutStabilization</a></li>
+        <li><a href="global.html#isDocumentReference">isDocumentReference</a></li>
+        <li><a href="global.html#isRefMatch">isRefMatch</a></li>
+        <li><a href="global.html#isSidebarOpen">isSidebarOpen</a></li>
+        <li><a href="global.html#isTimestamp">isTimestamp</a></li>
+        <li><a href="global.html#processCollection">processCollection</a></li>
+        <li><a href="global.html#processDocument">processDocument</a></li>
+        <li><a href="global.html#processSubcollection">processSubcollection</a></li>
+        <li><a href="global.html#profileListeners">profileListeners</a></li>
+        <li><a href="global.html#reviveFirestoreTypes">reviveFirestoreTypes</a></li>
+        <li><a href="global.html#runExport">runExport</a></li>
+        <li><a href="global.html#setDocument">setDocument</a></li>
+        <li><a href="global.html#startProfileListener">startProfileListener</a></li>
+        <li><a href="global.html#syncProfileImage">syncProfileImage</a></li>
+        <li><a href="global.html#syncRootClasses">syncRootClasses</a></li>
+        <li><a href="global.html#updateLayoutState">updateLayoutState</a></li>
+        <li><a href="global.html#useAuth">useAuth</a></li>
+        <li><a href="global.html#useBreakpoints">useBreakpoints</a></li>
+        <li><a href="global.html#useClickOutside">useClickOutside</a></li>
+        <li><a href="global.html#useLayout">useLayout</a></li>
+        <li><a href="global.html#usePracticeUsers">usePracticeUsers</a></li>
+        <li><a href="global.html#useRotaColors">useRotaColors</a></li>
+        <li><a href="global.html#useRotaData">useRotaData</a></li>
+        <li><a href="global.html#useRotaDates">useRotaDates</a></li>
+        <li><a href="global.html#useSwipeAway">useSwipeAway</a></li>
+        <li><a href="global.html#useToast">useToast</a></li>
+      </ul>
+    </nav>
+
+    <br class="clear" />
+
+    <footer>
+      Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jan
+      22 2026 14:12:50 GMT+0000 (Greenwich Mean Time)
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>
