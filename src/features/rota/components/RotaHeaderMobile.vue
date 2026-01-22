@@ -4,25 +4,31 @@
       variant="ghost" 
       class="dense-btn" 
       :icon="IconChevronDoubleLeft" 
-      @click="$emit('navigate-month', -1)" 
-      title="Back Month"
-    >M</BaseButton>
+      title="Back Month" 
+      @click="$emit('navigate-month', -1)"
+    >
+      M
+    </BaseButton>
     
     <BaseButton 
       variant="ghost" 
       class="dense-btn" 
       :icon="IconChevronLeft" 
-      @click="$emit('navigate-period', -1)" 
-      title="Back 3 Days"
-    >3D</BaseButton>
+      title="Back 3 Days" 
+      @click="$emit('navigate-period', -1)"
+    >
+      3D
+    </BaseButton>
     
     <BaseButton 
       variant="outline" 
       class="dense-btn" 
       :icon="IconChevronLeft" 
-      @click="$emit('navigate-day', -1)" 
-      title="Back Day"
-    >D</BaseButton>
+      title="Back Day" 
+      @click="$emit('navigate-day', -1)"
+    >
+      D
+    </BaseButton>
 
     <div class="date-info-mobile">
       <span class="month-mobile">{{ monthLabelShort }}</span>
@@ -42,27 +48,33 @@
       class="dense-btn" 
       :icon="IconChevronRight" 
       icon-position="right" 
-      @click="$emit('navigate-day', 1)" 
-      title="Forward Day"
-    >D</BaseButton>
+      title="Forward Day" 
+      @click="$emit('navigate-day', 1)"
+    >
+      D
+    </BaseButton>
     
     <BaseButton 
       variant="ghost" 
       class="dense-btn" 
       :icon="IconChevronRight" 
       icon-position="right" 
-      @click="$emit('navigate-period', 1)" 
-      title="Forward 3 Days"
-    >3D</BaseButton>
+      title="Forward 3 Days" 
+      @click="$emit('navigate-period', 1)"
+    >
+      3D
+    </BaseButton>
     
     <BaseButton 
       variant="ghost" 
       class="dense-btn" 
       :icon="IconChevronDoubleRight" 
       icon-position="right" 
-      @click="$emit('navigate-month', 1)" 
-      title="Forward Month"
-    >M</BaseButton>
+      title="Forward Month" 
+      @click="$emit('navigate-month', 1)"
+    >
+      M
+    </BaseButton>
   </BaseSelectorBar>
 </template>
 

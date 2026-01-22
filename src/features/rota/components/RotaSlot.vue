@@ -22,10 +22,16 @@
         :style="pillStyles"
       >
         <div class="pill-content">
-          <span class="initials" :style="{ color: colors.accent }">
+          <span
+            class="initials"
+            :style="{ color: colors.accent }"
+          >
             {{ getInitials(shift.user_name) }}
           </span>
-          <span class="name" :style="{ color: colors.accent }">
+          <span
+            class="name"
+            :style="{ color: colors.accent }"
+          >
             {{ shift.user_name }}
           </span>
         </div>
@@ -33,13 +39,22 @@
       
       <div class="edit-overlay">
         <div class="edit-icon-wrapper">
-          <IconEdit class="edit-icon" :stroke-width="2" />
+          <IconEdit
+            class="edit-icon"
+            :stroke-width="2"
+          />
         </div>
       </div>
     </template>
     
-    <div v-else class="empty-placeholder">
-      <IconPlus class="plus-icon" :stroke-width="2" />
+    <div
+      v-else
+      class="empty-placeholder"
+    >
+      <IconPlus
+        class="plus-icon"
+        :stroke-width="2"
+      />
     </div>
   </div>
 </template>

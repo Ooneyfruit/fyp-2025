@@ -1,18 +1,22 @@
 <template>
   <div class="assigned-section">
-    <h4 class="section-heading">Assigned Staff</h4>
+    <h4 class="section-heading">
+      Assigned Staff
+    </h4>
     
-    <div v-if="staff.length > 0" class="staff-grid">
-
+    <div
+      v-if="staff.length > 0"
+      class="staff-grid"
+    >
       <div 
         v-for="shift in staff" 
         :key="shift.id" 
         class="staff-card assigned"
         role="button"
         tabindex="0"
+        title="Click to remove from shift"
         @click="$emit('remove', shift)"
         @keydown.enter="$emit('remove', shift)"
-        title="Click to remove from shift"
       >
         <div class="staff-info">
           <span class="staff-name">{{ shift.user_name }}</span>
@@ -30,7 +34,12 @@
         </div>
       </div>
     </div>
-    <p v-else class="empty-text">No staff currently assigned.</p>
+    <p
+      v-else
+      class="empty-text"
+    >
+      No staff currently assigned.
+    </p>
   </div>
 </template>
 

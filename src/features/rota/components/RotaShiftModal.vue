@@ -6,29 +6,31 @@
     @request-close="handleClose"
   >
     <div class="modal-body-wrapper">
-      
       <RotaAssignedStaff 
         :staff="currentStaffList"
         :target-role-name="role.name"
         @remove="markForRemoval"
       />
 
-      <hr class="divider" />
+      <hr class="divider">
 
       <RotaStaffPicker 
-        v-model:searchQuery="searchQuery"
-        :isLoading="isLoading"
-        :targetRoleName="role.name"
+        v-model:search-query="searchQuery"
+        :is-loading="isLoading"
+        :target-role-name="role.name"
         :recommended="recommendedStaff"
         :others="otherStaff"
         @add="stageAddition"
       />
-
     </div>
 
     <template #footer>
       <div class="footer-actions">
-        <BaseButton label="Cancel" variant="text" @click="handleClose" />
+        <BaseButton
+          label="Cancel"
+          variant="text"
+          @click="handleClose"
+        />
         <BaseButton 
           :label="saveLabel" 
           :disabled="!hasChanges"
