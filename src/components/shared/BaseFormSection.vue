@@ -1,6 +1,8 @@
 <template>
   <section class="rd-form-section">
-    <div v-if="title" class="rd-section-header">{{ title }}</div>
+    <div v-if="title" class="rd-section-header">
+      {{ title }}
+    </div>
     <div :class="{ 'rd-form-grid': grid }">
       <slot />
     </div>

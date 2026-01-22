@@ -1,12 +1,11 @@
 /**
- * file: ooneyfruit/fyp-2025/fyp-2025-ui-testing/src/composables/useToast.js
  * Primary responsibility: manages the global state for the notification system.
  */
 import { ref } from 'vue';
 
 // Global Singleton State
 // These refs are defined outside the function to ensure state persistence across components.
-const message = ref("");
+const message = ref('');
 const isVisible = ref(false);
 const actionLabel = ref(null);
 const actionCallback = ref(null);
@@ -25,7 +24,7 @@ export function useToast() {
     isVisible.value = true;
     actionLabel.value = action?.label || null;
     actionCallback.value = action?.callback || null;
-    
+
     // Only set a timer if duration is greater than zero.
     // This allows for persistent "sticky" toasts.
     if (duration > 0) {
@@ -40,9 +39,9 @@ export function useToast() {
     if (timeout) clearTimeout(timeout);
   };
 
-  return { 
-    message, 
-    isVisible, 
+  return {
+    message,
+    isVisible,
     actionLabel,
     showToast,
     hideToast,

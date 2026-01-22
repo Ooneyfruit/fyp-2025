@@ -1,27 +1,24 @@
 <template>
   <div class="picker-section">
     <h4 class="section-heading">Add Staff</h4>
-    
+
     <div class="filter-bar">
-      <input 
-        :value="searchQuery" 
-        @input="$emit('update:searchQuery', $event.target.value)"
-        type="text" 
-        placeholder="Search employees..." 
+      <input
+        :value="searchQuery"
+        type="text"
+        placeholder="Search employees..."
         class="rd-input"
+        @input="$emit('update:searchQuery', $event.target.value)"
       />
     </div>
 
-    <div v-if="isLoading" class="loading-indicator">
-      Loading practice members...
-    </div>
+    <div v-if="isLoading" class="loading-indicator">Loading practice members...</div>
 
     <div v-else class="available-list">
-      
       <div v-if="recommended.length > 0" class="group">
         <div class="group-label">Recommended ({{ targetRoleName }})</div>
-        <div 
-          v-for="member in recommended" 
+        <div
+          v-for="member in recommended"
           :key="member.uid"
           class="staff-card available"
           @click="$emit('add', member)"
@@ -35,8 +32,8 @@
         <div class="group-label warning">
           {{ recommended.length === 0 ? 'All Staff' : 'Other Roles' }}
         </div>
-        <div 
-          v-for="member in others" 
+        <div
+          v-for="member in others"
           :key="member.uid"
           class="staff-card available warning-card"
           @click="$emit('add', member)"
@@ -64,7 +61,7 @@ defineProps({
   isLoading: Boolean,
   targetRoleName: String,
   recommended: Array, // Staff matching role
-  others: Array       // Staff not matching role
+  others: Array // Staff not matching role
 });
 
 defineEmits(['update:searchQuery', 'add']);

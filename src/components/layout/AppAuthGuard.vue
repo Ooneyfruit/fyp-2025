@@ -1,13 +1,8 @@
 <template>
   <div class="app-auth-guard app-layout">
     <Transition name="fade" mode="out-in">
-      <AppLoading 
-        v-if="!isAuthReady" 
-        full-screen
-      >
-        Checking authentication...
-      </AppLoading>
-      
+      <AppLoading v-if="!isAuthReady" full-screen> Checking authentication... </AppLoading>
+
       <slot v-else />
     </Transition>
   </div>

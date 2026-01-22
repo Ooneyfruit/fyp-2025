@@ -5,20 +5,16 @@
         <div class="toast-body rd-card">
           <div class="toast-content">
             <span class="message">{{ message }}</span>
-            
+
             <div class="actions">
-              <BaseButton 
+              <BaseButton
                 v-if="actionLabel"
-                :label="actionLabel" 
-                variant="primary" 
-                @click="handleAction" 
+                :label="actionLabel"
+                variant="primary"
+                @click="handleAction"
               />
-              
-              <button 
-                class="dismiss-btn" 
-                aria-label="Dismiss notification"
-                @click="hideToast"
-              >
+
+              <button class="dismiss-btn" aria-label="Dismiss notification" @click="hideToast">
                 <IconClose />
               </button>
             </div>
@@ -50,7 +46,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
   left: 50%;
   transform: translateX(-50%);
   /* Ensures the toast remains visible above modals and other high-level layers. */
-  z-index: var(--z-tooltip); 
+  z-index: var(--z-tooltip);
   width: 100%;
   max-width: 32rem;
   padding: 0 var(--spacing-md);

@@ -1,6 +1,9 @@
 {
   "recommendations": [
     "dbaeumer.vscode-eslint",
-    "vue.volar"
+    "esbenp.prettier-vscode",
+    "vue.volar",
+    "usernamehw.errorlens",
+    "streetsidesoftware.code-spell-checker"
   ]
 }

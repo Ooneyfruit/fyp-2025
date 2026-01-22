@@ -1,24 +1,17 @@
 <template>
   <AppAuthGuard>
     <AppPageContainer>
-      <AppPageHeaderGroup 
-        title="User Management" 
+      <AppPageHeaderGroup
+        title="User Management"
         subtitle="Manage personnel and permissions for your practice."
       >
-        <BaseButton 
-          label="Add User" 
-          :icon="IconPlus"
-          @click="userModal.open()"
-        />
+        <BaseButton label="Add User" :icon="IconPlus" @click="userModal.open()" />
       </AppPageHeaderGroup>
 
       <AppLoading v-if="isLoading" />
-      
+
       <div v-else class="main-content-area">
-        <UserDataViewAdapter 
-          :users="users" 
-          @edit="(user) => userModal.open(user)" 
-        />
+        <UserDataViewAdapter :users="users" @edit="(user) => userModal.open(user)" />
       </div>
 
       <UserModal ref="userModal" />

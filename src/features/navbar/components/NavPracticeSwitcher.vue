@@ -1,11 +1,11 @@
 <template>
   <div v-if="practices.length > 1" class="practice-switcher">
-    <BaseSelect 
+    <BaseSelect
       id="practice-context-selector"
       name="practice_id"
-      :modelValue="user.practiceRef?.id" 
+      :model-value="user.practiceRef?.id"
       :label="label"
-      @update:modelValue="handleSwitch"
+      @update:model-value="handleSwitch"
     >
       <option v-for="p in practices" :key="p.id" :value="p.id">
         {{ p.name }}

@@ -20,7 +20,11 @@ defineProps({
 </script>
 
 <style scoped>
-.form-block { display: flex; flex-direction: column; gap: 1rem; }
+.form-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 .block-header {
   font-size: 0.75rem;
   font-weight: 700;
@@ -30,5 +34,9 @@ defineProps({
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
 }
-.block-content { display: flex; flex-direction: column; gap: 1.25rem; }
+.block-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
 </style>

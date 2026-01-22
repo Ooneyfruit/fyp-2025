@@ -1,21 +1,17 @@
 <template>
-  <svg 
-    viewBox="0 0 5 5" 
+  <svg
+    viewBox="0 0 5 5"
     xmlns="http://www.w3.org/2000/svg"
-    width="100%" 
+    width="100%"
     height="100%"
     shape-rendering="crispEdges"
   >
     <rect width="5" height="5" :fill="theme.bg" />
-    
+
     <template v-for="(row, y) in grid" :key="y">
       <template v-for="(cell, x) in row" :key="x">
         <g v-if="cell.type" :transform="cell.transform">
-          <component 
-            :is="cell.type" 
-            v-bind="cell.props" 
-            :fill="theme.fg" 
-          />
+          <component :is="cell.type" v-bind="cell.props" :fill="theme.fg" />
         </g>
       </template>
     </template>
@@ -41,7 +37,7 @@ const props = defineProps({
 const generateHash = (str) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0;
   }
   return Math.abs(hash);
@@ -73,11 +69,11 @@ const grid = computed(() => {
     for (let x = 0; x < 5; x++) {
       // Mirror columns: 0 mirrors 4, 1 mirrors 3
       const sourceX = x > 2 ? 4 - x : x;
-      const cellId = (y * 3) + sourceX;
-      
+      const cellId = y * 3 + sourceX;
+
       // Extract 4 bits of entropy per unique cell
       const val = (h >> cellId) & 15;
-      
+
       // Determine shape type and properties
       let type = null;
       let props = {};

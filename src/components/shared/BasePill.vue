@@ -1,12 +1,9 @@
 <template>
-  <span 
-    class="rd-pill" 
-    :class="[`rd-pill-${variant}`]"
-  >
+  <span class="rd-pill" :class="[`rd-pill-${variant}`]">
     <div v-if="$slots.icon" class="rd-pill-icon-frame" aria-hidden="true">
       <slot name="icon" />
     </div>
-    
+
     <span class="rd-pill-label">
       <slot />
     </span>
@@ -15,26 +12,19 @@
 
 <script setup>
 /**
- * Primary responsibility: Provides a standardized, functional wrapper for small status 
+ * Primary responsibility: Provides a standardized, functional wrapper for small status
  * indicators and categorization tags within the RotaDent design system.
  */
 
 defineProps({
   /**
-   * The visual theme variation of the pill. 
+   * The visual theme variation of the pill.
    * This maps directly to the .rd-pill-{variant} utility classes in the global stylesheet.
    */
   variant: {
     type: String,
     default: 'muted',
-    validator: (v) => [
-      'primary', 
-      'success', 
-      'warning', 
-      'danger', 
-      'admin', 
-      'muted'
-    ].includes(v)
+    validator: (v) => ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes(v)
   }
 });
 </script>

@@ -1,7 +1,7 @@
 <template>
-  <div 
-    class="card-list" 
-    :style="{ 
+  <div
+    class="card-list"
+    :style="{
       '--list-gap': gap,
       '--min-card-width': minCardWidth
     }"
@@ -26,19 +26,19 @@ import BaseCard from './BaseCard.vue';
 // Define the configuration properties for the list data and its visual presentation.
 defineProps({
   // The array of data objects to be transformed into card elements.
-  items: { 
-    type: Array, 
-    required: true 
+  items: {
+    type: Array,
+    required: true
   },
   // The object property name used to provide a unique key for list reconciliation.
-  keyField: { 
-    type: String, 
-    default: 'id' 
+  keyField: {
+    type: String,
+    default: 'id'
   },
   // The gap between list items, defined using standard css units.
-  gap: { 
-    type: String, 
-    default: '1.5rem' 
+  gap: {
+    type: String,
+    default: '1.5rem'
   },
   // The minimum width a card can shrink to before wrapping to a new row.
   minCardWidth: {

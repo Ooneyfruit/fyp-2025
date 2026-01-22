@@ -2,11 +2,13 @@
   <header class="page-header">
     <div class="title-line">
       <h1>{{ title }}</h1>
-      
+
       <slot />
     </div>
-    
-    <p v-if="subtitle" class="subtitle">{{ subtitle }}</p>
+
+    <p v-if="subtitle" class="subtitle">
+      {{ subtitle }}
+    </p>
   </header>
 </template>
 
@@ -18,7 +20,7 @@
 defineProps({
   // The primary text displayed in the H1 tag.
   title: { type: String, required: true },
-  
+
   // Optional secondary text displayed below the title.
   subtitle: { type: String, default: '' }
 });

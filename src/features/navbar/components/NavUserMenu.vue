@@ -1,20 +1,13 @@
 <template>
-  <div class="user-menu-coordinator" ref="menuRef">
+  <div ref="menuRef" class="user-menu-coordinator">
     <div v-if="!isMobile" class="desktop-layout">
-      <NavUserTrigger 
-        :email="user.email" 
-        @click="openAccountModal"
-      />
+      <NavUserTrigger :email="user.email" @click="openAccountModal" />
 
-      <BaseButton 
-        label="Log Out" 
-        variant="secondary" 
-        @click="handleLogout" 
-      />
+      <BaseButton label="Log Out" variant="secondary" @click="handleLogout" />
     </div>
 
     <div v-else class="mobile-layout">
-      <BaseButton 
+      <BaseButton
         :icon="IconSettings"
         variant="secondary"
         icon-only
@@ -22,11 +15,7 @@
         @click="isOpen = !isOpen"
       />
 
-      <NavUserDropdown 
-        v-if="isOpen" 
-        @edit="openAccountModal"
-        @logout="handleLogout"
-      />
+      <NavUserDropdown v-if="isOpen" @edit="openAccountModal" @logout="handleLogout" />
     </div>
   </div>
 </template>
@@ -70,15 +59,15 @@ useClickOutside(menuRef, () => {
   isOpen.value = false;
 });
 
-const openAccountModal = () => { 
-  isOpen.value = false; 
+const openAccountModal = () => {
+  isOpen.value = false;
   userModal.value?.open(normalizedUserData.value);
 };
 
-const handleLogout = async () => { 
-  isOpen.value = false; 
-  await logout(); 
-  window.location.href = "/login"; 
+const handleLogout = async () => {
+  isOpen.value = false;
+  await logout();
+  window.location.href = '/login';
 };
 </script>
 
