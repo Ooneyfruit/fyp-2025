@@ -16,7 +16,7 @@ defineProps({
 
 <template>
   <div class="page-header-group">
-    <AppPageHeader :title="title" :subtitle="subtitle">
+    <AppPageHeader :subtitle="subtitle" :title="title">
       <slot name="extra" />
     </AppPageHeader>
 
@@ -29,23 +29,23 @@ defineProps({
 <style scoped>
 /* Layout: horizontal alignment for identity and actions with wrap support */
 .page-header-group {
-  display: flex;
-  justify-content: flex-start;
   align-items: flex-start;
-  gap: var(--spacing-md);
-  margin-block-end: var(--spacing-md);
+  display: flex;
   flex-wrap: wrap;
+  gap: var(--spacing-md);
+  justify-content: flex-start;
+  margin-block-end: var(--spacing-md);
 }
 
 /* Actions: grouping logic for multiple action buttons */
 .action-stack {
   display: flex;
-  gap: var(--spacing-sm);
   flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
 /* Responsive: switch to vertical orientation on smaller viewports */
-@media (max-width: 50rem) {
+@media (width <= 50rem) {
   .page-header-group {
     flex-direction: column;
     gap: var(--spacing-sm);

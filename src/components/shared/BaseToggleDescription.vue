@@ -22,8 +22,8 @@ defineEmits(['update:modelValue']);
       <small v-if="subtitle" class="rd-toggle-subtitle">{{ subtitle }}</small>
     </div>
     <BaseToggle
-      :model-value="modelValue"
       :disabled="disabled"
+      :model-value="modelValue"
       @update:model-value="$emit('update:modelValue', $event)"
     />
   </div>

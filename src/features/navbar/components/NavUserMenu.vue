@@ -3,15 +3,15 @@
  * User menu coordinator.
  * Orchestrates responsive views and global dismissal behaviors for the settings menu.
  */
-import { ref, inject, computed } from 'vue';
-import { useAuth } from '../../../composables/useAuth';
-import { useLayout } from '../../../composables/useLayout';
-import { useClickOutside } from '../../../composables/useClickOutside';
+import { computed,inject, ref } from 'vue';
 
-import BaseButton from '../../../components/shared/BaseButton.vue';
 import IconSettings from '../../../components/icons/IconSettings.vue';
-import NavUserTrigger from './NavUserTrigger.vue';
+import BaseButton from '../../../components/shared/BaseButton.vue';
+import { useAuth } from '../../../composables/useAuth';
+import { useClickOutside } from '../../../composables/useClickOutside';
+import { useLayout } from '../../../composables/useLayout';
 import NavUserDropdown from './NavUserDropdown.vue';
+import NavUserTrigger from './NavUserTrigger.vue';
 
 const { user, logout } = useAuth();
 const { isMobile } = useLayout();
@@ -45,7 +45,7 @@ const openAccountModal = () => {
 const handleLogout = async () => {
   isOpen.value = false;
   await logout();
-  window.location.href = '/login';
+  globalThis.location.href = '/login';
 };
 </script>
 
@@ -60,9 +60,9 @@ const handleLogout = async () => {
     <div v-else class="mobile-layout">
       <BaseButton
         :icon="IconSettings"
-        variant="secondary"
         icon-only
         label="Settings"
+        variant="secondary"
         @click="isOpen = !isOpen"
       />
 
@@ -78,13 +78,13 @@ const handleLogout = async () => {
 }
 
 .desktop-layout {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--spacing-lg);
 }
 
 .mobile-layout {
-  display: flex;
   align-items: center;
+  display: flex;
 }
 </style>

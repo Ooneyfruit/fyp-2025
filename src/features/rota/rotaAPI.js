@@ -1,5 +1,6 @@
+import { addDoc, collection, deleteDoc, doc, getDocs, Timestamp } from 'firebase/firestore';
+
 import { db } from '../../services/firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 
 // --- Configuration Fetching ---
 
@@ -7,8 +8,8 @@ export const fetchPracticeRoles = async (practiceId) => {
   try {
     const snap = await getDocs(collection(db, `practices/${practiceId}/roles`));
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-  } catch (err) {
-    console.error('[RotaAPI] Failed to fetch roles:', err);
+  } catch (error) {
+    console.error('[RotaAPI] Failed to fetch roles:', error);
     return [];
   }
 };
@@ -17,8 +18,8 @@ export const fetchPracticeSurgeries = async (practiceId) => {
   try {
     const snap = await getDocs(collection(db, `practices/${practiceId}/surgeries`));
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-  } catch (err) {
-    console.error('[RotaAPI] Failed to fetch surgeries:', err);
+  } catch (error) {
+    console.error('[RotaAPI] Failed to fetch surgeries:', error);
     return [];
   }
 };
@@ -32,8 +33,8 @@ export const fetchShifts = async (practiceId) => {
     return snap.docs
       .map((d) => ({ id: d.id, ...d.data() }))
       .filter((s) => s.role_id?.path?.includes(practiceId));
-  } catch (err) {
-    console.error('[RotaAPI] Failed to fetch shifts:', err);
+  } catch (error) {
+    console.error('[RotaAPI] Failed to fetch shifts:', error);
     return [];
   }
 };
@@ -54,17 +55,17 @@ export const createShift = async (shiftData) => {
       roster_status: 'draft'
     };
     await addDoc(collection(db, 'shifts'), payload);
-  } catch (err) {
-    console.error('[RotaAPI] Create failed:', err);
-    throw err;
+  } catch (error) {
+    console.error('[RotaAPI] Create failed:', error);
+    throw error;
   }
 };
 
 export const deleteShift = async (shiftId) => {
   try {
     await deleteDoc(doc(db, 'shifts', shiftId));
-  } catch (err) {
-    console.error('[RotaAPI] Delete failed:', err);
-    throw err;
+  } catch (error) {
+    console.error('[RotaAPI] Delete failed:', error);
+    throw error;
   }
 };

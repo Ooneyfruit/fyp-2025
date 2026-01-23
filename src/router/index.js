@@ -1,10 +1,11 @@
+import { watch } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+
+import { isAuthReady,user } from '../composables/useAuth';
+import AdminRepairView from '../views/AdminRepairView.vue';
+import LoginView from '../views/LoginView.vue';
 import RotaView from '../views/RotaView.vue';
 import UserView from '../views/UserView.vue';
-import LoginView from '../views/LoginView.vue';
-import AdminRepairView from '../views/AdminRepairView.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import { user, isAuthReady } from '../composables/useAuth';
-import { watch } from 'vue';
 
 const routes = [
   { path: '/', component: RotaView }, // Updated to point to the new Rota view
@@ -40,12 +41,10 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 3. Protect Admin Routes
-  if (to.meta.requiresAdmin) {
-    if (!currentUser || currentUser.is_administrator !== true) {
+  if (to.meta.requiresAdmin && (!currentUser || currentUser.is_administrator !== true)) {
       console.error('Router Block: Admin privileges required for', to.path);
       return next('/');
     }
-  }
 
   next();
 });

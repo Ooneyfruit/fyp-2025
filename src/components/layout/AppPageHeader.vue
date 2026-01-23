@@ -29,33 +29,33 @@ defineProps({
 <style scoped>
 /* Layout: standard vertical spacing for the header block */
 .page-header {
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
 }
 
 /* Title Line: horizontal alignment for the heading and optional badges */
 .title-line {
-  display: flex;
   align-items: baseline;
+  display: flex;
   gap: var(--spacing-sm);
 }
 
 /* Typography: primary page title styles */
 h1 {
+  color: var(--text-main);
   font-size: 1.75rem;
   font-weight: 500;
-  margin: 0;
   line-height: 1.1;
-  color: var(--text-main);
+  margin: 0;
 }
 
 /* Typography: subtitle styling for muted context */
 .subtitle {
-  margin-block-start: var(--spacing-xs);
-  font-size: 1rem;
   color: var(--text-muted);
+  font-size: 1rem;
   line-height: 1.4;
+  margin-block-start: var(--spacing-xs);
 }
 </style>

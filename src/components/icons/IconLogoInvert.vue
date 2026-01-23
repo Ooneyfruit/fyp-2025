@@ -11,21 +11,21 @@ defineProps({
 
 <template>
   <svg
-    width="14"
+    class="rd-icon"
+    fill="none"
     height="14"
     viewBox="0 0 14 14"
-    fill="none"
+    width="14"
     xmlns="http://www.w3.org/2000/svg"
-    class="rd-icon"
   >
     <mask
       id="a"
-      style="mask-type: luminance"
+      height="15"
       maskUnits="userSpaceOnUse"
+      style="mask-type: luminance"
+      width="14"
       x="0"
       y="-1"
-      width="14"
-      height="15"
     >
       <path d="M14 0H0v14h14z" fill="#fff" />
       <path
@@ -41,19 +41,19 @@ defineProps({
 
     <mask
       id="b"
-      style="mask-type: luminance"
+      height="14"
       maskUnits="userSpaceOnUse"
+      style="mask-type: luminance"
+      width="14"
       x="0"
       y="0"
-      width="14"
-      height="14"
     >
       <path d="M14 0H0v14h14z" fill="#fff" />
       <path
         d="M7 0v7l5.591 4.213"
         stroke="#000"
-        :stroke-width="strokeWidth"
         stroke-linejoin="round"
+        :stroke-width="strokeWidth"
       />
     </mask>
 
@@ -61,8 +61,8 @@ defineProps({
       <path
         d="m7 7 1.493 1.125"
         stroke="#2463eb"
-        :stroke-width="Number(strokeWidth) + 2"
         stroke-linecap="square"
+        :stroke-width="Number(strokeWidth) + 2"
       />
     </g>
   </svg>

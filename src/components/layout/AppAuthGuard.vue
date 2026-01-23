@@ -11,7 +11,7 @@ const { isAuthReady } = useAuth();
 
 <template>
   <div class="app-auth-guard app-layout">
-    <Transition name="fade" mode="out-in">
+    <Transition mode="out-in" name="fade">
       <AppLoading v-if="!isAuthReady" full-screen> Checking authentication... </AppLoading>
 
       <slot v-else />

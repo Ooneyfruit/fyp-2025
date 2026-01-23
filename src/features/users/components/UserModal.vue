@@ -3,18 +3,18 @@
  * Orchestrates the user management modal workflow.
  * Logic: handles dual-write operations to both 'users' and 'practice_users' collections.
  */
-import { ref, computed, onMounted } from 'vue';
-import { db } from '../../../services/firebase';
-import { collection, getDocs, doc, writeBatch, Timestamp, deleteDoc } from 'firebase/firestore';
-import { user as authUser } from '../../../composables/useAuth';
-import { usePracticeUsers } from '../composables/usePracticeUsers';
-import { useToast } from '../../../composables/useToast';
+import { collection, deleteDoc,doc, getDocs, Timestamp, writeBatch } from 'firebase/firestore';
+import { computed, onMounted,ref } from 'vue';
 
+import BaseButton from '../../../components/shared/BaseButton.vue';
+import BaseFormBlock from '../../../components/shared/BaseFormBlock.vue';
 // Modular Imports
 import BaseModal from '../../../components/shared/BaseModal.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
 import BaseSelect from '../../../components/shared/BaseSelect.vue';
-import BaseFormBlock from '../../../components/shared/BaseFormBlock.vue';
+import { user as authUser } from '../../../composables/useAuth';
+import { useToast } from '../../../composables/useToast';
+import { db } from '../../../services/firebase';
+import { usePracticeUsers } from '../composables/usePracticeUsers';
 import UserModalAccess from './UserModalAccess.vue';
 
 const { users } = usePracticeUsers();
@@ -149,8 +149,8 @@ const handleDelete = async () => {
     await deleteDoc(doc(db, 'practice_users', `${form.value.user_id}_${pId}`));
     showToast(`User ${form.value.name} access revoked.`);
     close();
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     showToast('Failed to revoke access.', { duration: 5000 });
   } finally {
     saving.value = false;
@@ -202,9 +202,9 @@ const save = async () => {
     await batch.commit();
     showToast(isEdit.value ? 'User profile updated.' : 'New user created.');
     close();
-  } catch (err) {
-    console.error(err);
-    showToast(`Save Failure: ${err.message}`, { duration: 5000 });
+  } catch (error) {
+    console.error(error);
+    showToast(`Save Failure: ${error.message}`, { duration: 5000 });
   } finally {
     saving.value = false;
   }
@@ -214,8 +214,8 @@ const save = async () => {
 <template>
   <BaseModal
     :show="isVisible"
-    :title="isEdit ? 'Update user profile' : 'Register new user'"
     size="md"
+    :title="isEdit ? 'Update user profile' : 'Register new user'"
     @request-close="close"
   >
     <div v-if="loadingRoles" class="skeleton-padding">
@@ -228,10 +228,10 @@ const save = async () => {
           <label class="rd-field-label">Full name</label>
           <input
             v-model="form.name"
-            type="text"
             class="rd-input"
             placeholder="e.g. John Smith"
             required
+            type="text"
           />
         </div>
 
@@ -240,15 +240,15 @@ const save = async () => {
             <label class="rd-field-label">Email address</label>
             <input
               v-model="form.email"
-              type="email"
               class="rd-input"
               placeholder="e.g. john.smith@mail.com"
               required
+              type="email"
             />
           </div>
 
-          <BaseSelect v-model="form.role" label="Practice role" fluid required>
-            <option value="" disabled>Select role</option>
+          <BaseSelect v-model="form.role" fluid label="Practice role" required>
+            <option disabled value="">Select role</option>
             <option v-for="r in rolesList" :key="r.id" :value="r.name">
               {{ r.name }}
             </option>
@@ -256,7 +256,7 @@ const save = async () => {
         </div>
       </BaseFormBlock>
 
-      <UserModalAccess v-model="form" :is-self="isSelf" :is-last-admin="isLastAdmin" />
+      <UserModalAccess v-model="form" :is-last-admin="isLastAdmin" :is-self="isSelf" />
 
       <BaseFormBlock title="Contact information">
         <div class="rd-field">
@@ -278,11 +278,11 @@ const save = async () => {
             >
           </div>
           <BaseButton
+            :disabled="isLastAdmin"
             :label="deleteConfirmation ? 'Confirm Removal?' : 'Delete'"
             variant="danger"
-            :disabled="isLastAdmin"
-            @click="handleDelete"
             @blur="deleteConfirmation = false"
+            @click="handleDelete"
           />
         </div>
       </BaseFormBlock>
@@ -290,10 +290,10 @@ const save = async () => {
       <div class="modal-footer">
         <BaseButton label="Cancel" variant="secondary" @click="close" />
         <BaseButton
-          type="submit"
-          :label="saving ? 'Saving...' : isEdit ? 'Save changes' : 'Create account'"
           :disabled="saving || !isDirty"
+          :label="saving ? 'Saving...' : isEdit ? 'Save changes' : 'Create account'"
           :processing="saving"
+          type="submit"
         />
       </div>
     </form>
@@ -302,33 +302,35 @@ const save = async () => {
 
 <style scoped>
 .modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 1.25rem;
   border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
   margin-top: 0.5rem;
+  padding-top: 1.25rem;
 }
 
 .danger-card {
+  align-items: center;
+  background: hsl(var(--hue-danger) 100% 98%);
+  border: 1px solid hsl(var(--hue-danger) 100% 90%);
+  border-radius: var(--border-radius);
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 1rem;
-  background: hsl(var(--hue-danger), 100%, 98%);
-  border: 1px solid hsl(var(--hue-danger), 100%, 90%);
-  border-radius: var(--border-radius);
 }
 
 .danger-meta {
   display: flex;
   flex-direction: column;
 }
+
 .danger-title {
-  font-weight: 700;
   color: var(--color-danger);
   font-size: 0.9rem;
+  font-weight: 700;
 }
+
 .danger-hint {
   color: var(--text-muted);
   font-size: 0.75rem;

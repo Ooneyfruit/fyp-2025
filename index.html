@@ -19,21 +19,22 @@
     <script>
       /**
        * Determines and applies the initial layout state before the main bundle executes.
-       * This prevents layout shifting (CLS) by synchronizing the document state
+       * This prevents layout shifting (CLS) by synchronising the document state
        * with the user's local persistence and viewport dimensions immediately.
        */
       (function () {
         const isMobile = window.innerWidth < 768;
         const preference = localStorage.getItem('isSidebarOpen');
 
-        // Logic: determine if the wide sidebar should be rendered based on persistence or default.
-        const isWide = isMobile ? false : preference === null ? true : preference === 'true';
+        // Calculate the wide state ensuring mobile devices default to slim to save space.
+        // If no preference exists we default to wide, otherwise we respect the stored value.
+        const isWide = !isMobile && (preference === null || preference === 'true');
 
         document.documentElement.classList.add(
           isWide ? 'initial-layout-wide' : 'initial-layout-slim'
         );
 
-        // Logic: apply specific mobile overrides if the viewport is below the defined threshold.
+        // Apply specific mobile overrides if the viewport is below the defined threshold.
         if (isMobile) {
           document.documentElement.classList.add('initial-layout-mobile');
         }

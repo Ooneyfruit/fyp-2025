@@ -18,7 +18,7 @@ const generateHash = (str) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
+    hash = Math.trunc(hash);
   }
   return Math.abs(hash);
 };
@@ -112,13 +112,13 @@ const grid = computed(() => {
 
 <template>
   <svg
-    viewBox="0 0 5 5"
-    xmlns="http://www.w3.org/2000/svg"
-    width="100%"
     height="100%"
     shape-rendering="crispEdges"
+    viewBox="0 0 5 5"
+    width="100%"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    <rect width="5" height="5" :fill="theme.bg" />
+    <rect :fill="theme.bg" height="5" width="5" />
 
     <template v-for="(row, y) in grid" :key="y">
       <template v-for="(cell, x) in row" :key="x">

@@ -4,6 +4,7 @@
  * Maps member data and type to specific BasePill variants.
  */
 import { computed } from 'vue';
+
 import BasePill from '../../../components/shared/BasePill.vue';
 
 const props = defineProps({
@@ -14,20 +15,24 @@ const props = defineProps({
 const pillConfig = computed(() => {
   // Logic: determine label and visual variant based on prop type.
   switch (props.type) {
-    case 'role':
+    case 'role': {
       return { label: props.member.role, variant: 'primary' };
-    case 'admin':
+    }
+    case 'admin': {
       return {
         label: props.member.is_administrator ? 'Admin' : 'User',
         variant: props.member.is_administrator ? 'admin' : 'muted'
       };
-    case 'contract':
+    }
+    case 'contract': {
       return {
         label: props.member.is_employee ? 'Employee' : 'Contractor',
         variant: props.member.is_employee ? 'success' : 'warning'
       };
-    default:
+    }
+    default: {
       return { label: 'Unknown', variant: 'muted' };
+    }
   }
 });
 </script>

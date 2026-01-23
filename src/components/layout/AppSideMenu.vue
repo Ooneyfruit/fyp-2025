@@ -4,11 +4,11 @@
  * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
  */
 import { computed, markRaw } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
+
 import { useAuth } from '../../composables/useAuth';
 import { useLayout } from '../../composables/useLayout';
 import { useSwipeAway } from '../../composables/useSwipeAway';
-
 // Component icons.
 import IconCalendar from '../icons/IconCalendar.vue'; // Changed from IconHome
 import IconUsers from '../icons/IconUsers.vue';
@@ -57,9 +57,9 @@ const handleNavigation = (item) => {
         v-if="isSidebarOpen && isMobile"
         class="mobile-overlay"
         @click="closeSidebar"
-        @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
         @touchend="handleTouchEnd"
+        @touchmove="handleTouchMove"
+        @touchstart="handleTouchStart"
       />
     </Transition>
 
@@ -67,17 +67,17 @@ const handleNavigation = (item) => {
       class="sidebar"
       :class="{ open: isSidebarOpen, 'is-swiping': isSwiping }"
       :style="swipeTransform"
-      @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
+      @touchmove="handleTouchMove"
+      @touchstart="handleTouchStart"
     >
       <nav class="sidebar-nav">
         <a
           v-for="item in filteredMenuItems"
           :key="item.name"
-          href="#"
           class="nav-item"
           :class="{ active: route.path === item.path }"
+          href="#"
           :title="!isSidebarOpen && !isMobile ? item.name : ''"
           @click.prevent="handleNavigation(item)"
         >
@@ -97,19 +97,19 @@ const handleNavigation = (item) => {
 <style scoped>
 /* Sidebar container with transition logic for state changes */
 .sidebar {
-  top: var(--navbar-height);
-  bottom: 0;
-  position: fixed;
-  left: 0;
   background: white;
   border-right: 0.0625rem solid var(--border-color);
-  z-index: var(--z-sidebar);
+  bottom: 0;
+  left: 0;
   overflow-x: hidden;
-  white-space: nowrap;
-  width: var(--sidebar-slim-width);
+  position: fixed;
+  top: var(--navbar-height);
   transition:
     width 0.3s ease,
     transform 0.3s ease;
+  white-space: nowrap;
+  width: var(--sidebar-slim-width);
+  z-index: var(--z-sidebar);
 }
 
 /* Prevent transition conflicts during active manual swiping */
@@ -126,16 +126,16 @@ const handleNavigation = (item) => {
 }
 
 .nav-item {
-  display: flex;
   align-items: center;
-  padding-left: 1.5rem;
-  text-decoration: none;
-  color: var(--text-muted);
-  font-weight: 500;
   border-left: 0.25rem solid transparent;
+  color: var(--text-muted);
+  display: flex;
   font-size: 1rem;
+  font-weight: 500;
   height: 3rem;
   line-height: 1;
+  padding-left: 1.5rem;
+  text-decoration: none;
 }
 
 .nav-item:hover {
@@ -144,17 +144,17 @@ const handleNavigation = (item) => {
 
 .nav-item.active {
   background-color: #e8f0fe;
-  color: #1967d2;
   border-left-color: #1967d2;
+  color: #1967d2;
 }
 
 .icon {
-  display: flex;
   align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  height: 1.5rem;
   justify-content: center;
   width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
 }
 
 .label {
@@ -170,11 +170,12 @@ const handleNavigation = (item) => {
 }
 
 /* Mobile positioning logic */
-@media (max-width: 48rem) {
+@media (width <= 48rem) {
   .sidebar {
-    width: var(--sidebar-width);
     transform: translateX(-100%);
+    width: var(--sidebar-width);
   }
+
   .sidebar.open {
     transform: translateX(0);
   }
@@ -182,14 +183,14 @@ const handleNavigation = (item) => {
 
 /* Overlay serves as the touch proxy for viewport-wide gestures */
 .mobile-overlay {
+  backdrop-filter: blur(2px);
+  background: rgb(31 41 55 / 30%);
+  height: 100%;
+  left: 0;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(31, 41, 55, 0.3);
-  backdrop-filter: blur(2px);
-  z-index: var(--z-overlay);
   touch-action: none;
+  width: 100%;
+  z-index: var(--z-overlay);
 }
 </style>

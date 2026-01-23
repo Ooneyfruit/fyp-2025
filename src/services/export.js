@@ -3,8 +3,9 @@
  * Handles the extraction of data from Firestore into a local JSON format.
  * Intended for creating backups or snapshots of the current database state.
  */
-import { initializeApp, credential as _credential, firestore } from 'firebase-admin';
-import { writeFileSync } from 'fs';
+import { writeFileSync } from 'node:fs';
+
+import { credential as _credential, firestore,initializeApp } from 'firebase-admin';
 
 initializeApp({
   credential: _credential.applicationDefault(),
@@ -44,10 +45,10 @@ async function exportData() {
           data[collectionId][doc.id]._subcollections[subcollectionId] = {};
 
           const subdocuments = await subcollection.get();
-          subdocuments.forEach((subdocument) => {
+          for (const subdocument of subdocuments) {
             data[collectionId][doc.id]._subcollections[subcollectionId][subdocument.id] =
               subdocument.data();
-          });
+          }
         }
       }
     }

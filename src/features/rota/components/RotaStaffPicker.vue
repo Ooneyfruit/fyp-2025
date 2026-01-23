@@ -40,10 +40,10 @@ defineEmits(['update:searchQuery', 'add']);
 
     <div class="filter-bar">
       <input
-        :value="searchQuery"
-        type="text"
-        placeholder="Search employees..."
         class="rd-input"
+        placeholder="Search employees..."
+        type="text"
+        :value="searchQuery"
         @input="$emit('update:searchQuery', $event.target.value)"
       />
     </div>
@@ -93,18 +93,18 @@ defineEmits(['update:searchQuery', 'add']);
 /* Layout: Container for the picker sidebar */
 .picker-section {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
   overflow: hidden; /* Contains scroll within this section */
 }
 
 .section-heading {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: var(--text-muted);
-  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
 }
 
 .filter-bar {
@@ -112,39 +112,39 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .rd-input {
-  width: 100%;
-  padding: 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   font-size: 0.95rem;
+  padding: 0.6rem;
+  width: 100%;
 }
 
 /* Scrollable area for staff list */
 .available-list {
-  overflow-y: auto;
-  padding-right: 4px;
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .staff-card {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.75rem;
   background: white;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s;
 }
 
 .staff-card:hover {
-  border-color: #3b82f6;
   background: #f8fafc;
+  border-color: #3b82f6;
 }
 
 /* Visual cue for staff not matching the primary role */
@@ -153,9 +153,9 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .staff-name {
+  color: var(--text-main);
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text-main);
 }
 
 .staff-info {
@@ -164,14 +164,14 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .staff-role-badge {
-  font-size: 0.7rem;
   color: var(--text-muted);
+  font-size: 0.7rem;
 }
 
 .add-icon {
   color: var(--text-light);
-  width: 1.25rem;
   height: 1.25rem;
+  width: 1.25rem;
 }
 
 .staff-card:hover .add-icon {
@@ -179,31 +179,31 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .group-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-weight: 600;
   border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
   margin-bottom: 0.5rem;
   padding-bottom: 4px;
 }
 
 .group-label.warning {
-  color: #d97706;
   border-color: #fcd34d;
+  color: #d97706;
 }
 
 .loading-indicator {
-  text-align: center;
-  padding: 2rem;
   color: var(--text-muted);
   font-style: italic;
+  padding: 2rem;
+  text-align: center;
 }
 
 .empty-text {
-  text-align: center;
   color: var(--text-light);
-  font-style: italic;
   font-size: 0.9rem;
+  font-style: italic;
   padding: 1rem;
+  text-align: center;
 }
 </style>

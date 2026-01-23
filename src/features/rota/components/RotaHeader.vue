@@ -29,10 +29,10 @@ defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today'])
         :date-range-label="dateRangeLabel"
         :month-label="monthLabel"
         :show-today-button="showTodayButton"
+        @jump-today="$emit('jump-today')"
+        @navigate-day="$emit('navigate-day', $event)"
         @navigate-month="$emit('navigate-month', $event)"
         @navigate-period="$emit('navigate-period', $event)"
-        @navigate-day="$emit('navigate-day', $event)"
-        @jump-today="$emit('jump-today')"
       />
 
       <RotaHeaderDesktop
@@ -40,9 +40,9 @@ defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today'])
         :date-range-label="dateRangeLabel"
         :month-label="monthLabel"
         :show-today-button="showTodayButton"
+        @jump-today="$emit('jump-today')"
         @navigate-month="$emit('navigate-month', $event)"
         @navigate-period="$emit('navigate-period', $event)"
-        @jump-today="$emit('jump-today')"
       />
     </div>
   </div>
@@ -58,7 +58,7 @@ defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today'])
   padding-inline: var(--spacing-md);
 }
 
-@media (min-width: 80rem) {
+@media (width >= 80rem) {
   .rota-nav-wrapper {
     padding-inline: 0;
   }

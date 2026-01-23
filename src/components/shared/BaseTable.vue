@@ -54,8 +54,8 @@ const getRowClasses = (item) => {
     <div
       class="base-table"
       :class="{ 'has-vertical-lines': verticalLines }"
-      :style="{ gridTemplateColumns: gridTemplate }"
       role="table"
+      :style="{ gridTemplateColumns: gridTemplate }"
     >
       <div class="table-header-group" role="rowgroup">
         <div
@@ -92,7 +92,7 @@ const getRowClasses = (item) => {
               :class="[`align-${col.align || 'left'}`]"
               role="cell"
             >
-              <slot :name="`cell(${col.key})`" :item="item">
+              <slot :item="item" :name="`cell(${col.key})`">
                 {{ item[col.key] }}
               </slot>
             </div>
@@ -109,23 +109,23 @@ const getRowClasses = (item) => {
 
 <style scoped>
 .base-table-wrapper {
-  overflow-x: auto;
   background: transparent; /* Wrapper shouldn't have bg, allows spacing to show */
   border: none; /* Override standard card border */
   box-shadow: none;
+  overflow-x: auto;
 }
 
 .base-table {
   display: grid;
-  width: 100%;
   min-width: 600px;
+  width: 100%;
 }
 
 /* Base Cell Styling */
 .cell {
-  padding: var(--spacing-sm) var(--spacing-md);
-  display: flex;
   align-items: center;
+  display: flex;
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 /* --- Header Styling --- */
@@ -135,14 +135,14 @@ const getRowClasses = (item) => {
 
 .header-cell {
   background: white;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  font-weight: 700;
   border-bottom: 2px solid var(--border-color);
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
   height: 3.5rem;
+  letter-spacing: 0.05em;
   position: sticky;
+  text-transform: uppercase;
   top: 0;
   z-index: 20; /* Ensure headers stay above content */
 }
@@ -151,14 +151,15 @@ const getRowClasses = (item) => {
 .table-body-group {
   display: contents;
 }
+
 .table-row {
   display: contents;
 }
 
 .body-cell {
   background: white;
-  font-size: 0.9375rem;
   color: var(--text-main);
+  font-size: 0.9375rem;
   min-height: 5.5rem;
   position: relative; /* Context for children */
   z-index: 1;
@@ -174,14 +175,15 @@ const getRowClasses = (item) => {
 
 /* 1. The Gap: Apply margin-top to the cells of the first row in a group */
 .table-row.group-start .body-cell {
-  margin-top: 1rem; /* The visual gap between groups */
   border-top: 1px solid var(--border-color);
+  margin-top: 1rem; /* The visual gap between groups */
 }
 
 /* 2. Top Rounded Corners for the group */
 .table-row.group-start .body-cell:first-child {
   border-top-left-radius: 8px;
 }
+
 .table-row.group-start .body-cell:last-child {
   border-top-right-radius: 8px;
 }
@@ -190,9 +192,11 @@ const getRowClasses = (item) => {
 .table-row.group-end .body-cell {
   border-bottom: 1px solid var(--border-color);
 }
+
 .table-row.group-end .body-cell:first-child {
   border-bottom-left-radius: 8px;
 }
+
 .table-row.group-end .body-cell:last-child {
   border-bottom-right-radius: 8px;
 }
@@ -208,22 +212,24 @@ const getRowClasses = (item) => {
   justify-content: flex-start;
   text-align: left;
 }
+
 .align-center {
   justify-content: center;
   text-align: center;
 }
+
 .align-right {
   justify-content: flex-end;
   text-align: right;
 }
 
 .empty-state {
-  grid-column: 1 / -1;
-  padding: 3rem;
-  text-align: center;
-  color: var(--text-muted);
   background: white;
   border-radius: 8px;
+  color: var(--text-muted);
+  grid-column: 1 / -1;
   margin-top: 1rem;
+  padding: 3rem;
+  text-align: center;
 }
 </style>

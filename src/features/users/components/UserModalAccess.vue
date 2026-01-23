@@ -3,11 +3,12 @@
  * Manages user permission states and security constraints.
  * Logic: prevents self-promotion for non-admins and triggers warnings for demotion.
  */
-import { ref, computed } from 'vue';
-import { user as authUser } from '../../../composables/useAuth';
+import { computed,ref } from 'vue';
+
+import BaseButton from '../../../components/shared/BaseButton.vue';
 import BaseFormBlock from '../../../components/shared/BaseFormBlock.vue';
 import BaseToggleDescription from '../../../components/shared/BaseToggleDescription.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
+import { user as authUser } from '../../../composables/useAuth';
 
 const props = defineProps({
   modelValue: { type: Object, required: true },
@@ -62,17 +63,17 @@ const abortDemotion = () => {
   <BaseFormBlock title="Employment & Access">
     <div class="rd-form-grid">
       <BaseToggleDescription
-        :model-value="modelValue.is_administrator"
-        title="System admin"
-        subtitle="Full administrative control"
         :disabled="isAdminToggleDisabled"
+        :model-value="modelValue.is_administrator"
+        subtitle="Full administrative control"
+        title="System admin"
         @update:model-value="handleToggleAdmin"
       />
 
       <BaseToggleDescription
         :model-value="modelValue.is_employee"
-        title="Internal employee"
         subtitle="Contractor if toggled off"
+        title="Internal employee"
         @update:model-value="handleToggleEmployee"
       />
     </div>
@@ -94,22 +95,24 @@ const abortDemotion = () => {
 
 <style scoped>
 .demotion-warning {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: hsl(var(--hue-warning), 100%, 96%);
+  background: hsl(var(--hue-warning) 100% 96%);
   border: 1px solid var(--color-warning);
-  padding: 1rem;
   border-radius: var(--border-radius);
+  display: flex;
   gap: 1.5rem;
+  justify-content: space-between;
   margin-top: 0.5rem;
+  padding: 1rem;
 }
+
 .warning-text {
+  color: var(--color-warning);
   display: flex;
   flex-direction: column;
   font-size: 0.85rem;
-  color: var(--color-warning);
 }
+
 .warning-text strong {
   font-weight: 700;
 }

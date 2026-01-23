@@ -11,13 +11,13 @@ defineProps({
 
 <template>
   <svg
-    viewBox="0 0 24 24"
+    class="rd-icon"
     fill="none"
     stroke="currentColor"
-    :stroke-width="strokeWidth"
     stroke-linecap="round"
     stroke-linejoin="round"
-    class="rd-icon"
+    :stroke-width="strokeWidth"
+    viewBox="0 0 24 24"
   >
     <circle cx="12" cy="12" r="3" />
     <path

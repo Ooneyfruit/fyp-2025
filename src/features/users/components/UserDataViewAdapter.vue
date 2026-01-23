@@ -5,13 +5,14 @@
  * Data Adapter for User Management.
  * Switches between Table and Card views based on available container width.
  */
-import { ref, onMounted } from 'vue';
-import BaseTable from '../../../components/shared/BaseTable.vue';
+import { onMounted,ref } from 'vue';
+
 import BaseCardList from '../../../components/shared/BaseCardList.vue';
+import BaseTable from '../../../components/shared/BaseTable.vue';
+import { useBreakpoints } from '../../../composables/useBreakpoints';
+import UserActionButtons from './UserActionButtons.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';
-import UserActionButtons from './UserActionButtons.vue';
-import { useBreakpoints } from '../../../composables/useBreakpoints';
 
 // Define props with explicit types and default values to prevent runtime warnings
 const props = defineProps({
@@ -125,48 +126,48 @@ const userHeaders = [
 
 <style scoped>
 .adapter-container {
-  width: 100%;
-  transition: width var(--anim-speed) ease;
-  position: relative;
   min-height: 200px;
+  position: relative;
+  transition: width var(--anim-speed) ease;
+  width: 100%;
 }
 
 .loading-overlay {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  height: 200px;
   color: var(--text-muted);
+  display: flex;
   font-style: italic;
+  height: 200px;
+  justify-content: center;
 }
 
 .date-text {
-  font-size: 0.85rem;
   color: var(--text-main);
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 
 /* Layout: Flex container for the card header */
 .card-identity-wrapper {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  display: flex;
   gap: 0.75rem;
+  justify-content: space-between;
   width: 100%; /* Ensure the wrapper fills the card header width so space-between works */
 }
 
 .detail-row {
-  display: grid;
-  grid-template-columns: 6.25rem 1fr;
   align-items: center;
+  display: grid;
   gap: var(--spacing-sm);
+  grid-template-columns: 6.25rem 1fr;
   margin-bottom: var(--spacing-xs);
 }
 
 .detail-row .label {
   color: var(--text-muted);
-  font-weight: 600;
   font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
 }
 </style>

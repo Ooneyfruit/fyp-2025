@@ -49,34 +49,33 @@ const isException = (shift) => {
 
 <style scoped>
 .section-heading {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: var(--text-muted);
-  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
 }
 
 .staff-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Slightly wider for role text */
   gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Slightly wider for role text */
 }
 
 .staff-card {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.75rem;
 
   /* Default State: Info Style */
   background: #f0f9ff;
   border: 1px solid #bae6fd;
   border-radius: var(--border-radius);
-
-  user-select: none;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
   transition: all 0.2s ease;
+  user-select: none;
 }
 
 /* Hover State: "Removal" Style */
@@ -89,10 +88,12 @@ const isException = (shift) => {
 .staff-card:hover .staff-name {
   color: #b91c1c; /* Red-700 */
 }
+
 .staff-card:hover .exception-role {
   color: #b91c1c;
   opacity: 0.8;
 }
+
 .staff-card:hover .remove-indicator {
   color: #b91c1c;
 }
@@ -104,39 +105,39 @@ const isException = (shift) => {
 }
 
 .staff-name {
+  color: var(--text-main);
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-main);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .exception-role {
+  color: var(--text-muted);
   font-size: 0.7rem;
   font-weight: 500;
-  color: var(--text-muted);
-  text-transform: uppercase;
   letter-spacing: 0.02em;
   margin-top: 1px;
+  text-transform: uppercase;
 }
 
 .remove-indicator {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-left: 0.5rem;
   color: #bae6fd; /* Subtle when not hovered */
-  transition: color 0.2s ease;
+  display: flex;
   flex-shrink: 0;
+  height: 1.25rem;
+  justify-content: center;
+  margin-left: 0.5rem;
+  transition: color 0.2s ease;
+  width: 1.25rem;
 }
 
 .empty-text {
-  font-style: italic;
   color: var(--text-muted);
   font-size: 0.9rem;
+  font-style: italic;
   padding: 0.5rem 0;
 }
 </style>

@@ -40,10 +40,10 @@ defineProps({
   >
     <BaseCard v-for="(item, index) in items" :key="item[keyField] || index">
       <template v-if="$slots['card-header']" #header>
-        <slot name="card-header" :item="item" />
+        <slot :item="item" name="card-header" />
       </template>
 
-      <slot name="card-body" :item="item" />
+      <slot :item="item" name="card-body" />
     </BaseCard>
   </div>
 </template>
@@ -55,8 +55,8 @@ defineProps({
  */
 .card-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--min-card-width), 1fr));
   gap: var(--list-gap);
+  grid-template-columns: repeat(auto-fit, minmax(var(--min-card-width), 1fr));
   width: 100%;
 }
 </style>

@@ -3,10 +3,11 @@
  * Logic: handles user sessions and ensures Google profile images are synced to Firestore.
  */
 
+import { GoogleAuthProvider,onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { ref } from 'vue';
+
 import { auth, db } from '../services/firebase';
-import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { doc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
 
 export const user = ref(null);
 export const isAuthReady = ref(false);
@@ -31,8 +32,8 @@ const syncProfileImage = async (uid, googleUrl, currentUrl) => {
         profile_image: googleUrl,
         last_sync: new Date().toISOString()
       });
-    } catch (e) {
-      console.warn('[useAuth] Failed to update profile image:', e.message);
+    } catch (error) {
+      console.warn('[useAuth] Failed to update profile image:', error.message);
     }
   }
 };
@@ -84,8 +85,8 @@ const startProfileListener = (firebaseUser) => {
           practiceRef: practiceRef,
           activePracticeName: practiceName
         };
-      } catch (e) {
-        console.error('[useAuth] Context Update Failed:', e.message);
+      } catch (error) {
+        console.error('[useAuth] Context Update Failed:', error.message);
         user.value = {
           uid: firebaseUser.uid,
           ...userData,

@@ -14,10 +14,10 @@ defineEmits(['update:modelValue']);
 <template>
   <label class="rd-toggle">
     <input
-      type="checkbox"
       :checked="modelValue"
-      :disabled="disabled"
       class="rd-toggle-input"
+      :disabled="disabled"
+      type="checkbox"
       @change="$emit('update:modelValue', $event.target.checked)"
     />
     <span class="rd-toggle-slider" />
