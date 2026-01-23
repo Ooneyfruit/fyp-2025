@@ -2,12 +2,11 @@
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
-import { user as authUser } from '../../../composables/useAuth';
-import { db } from '../../../services/firebase';
+import { user as authUser } from '@/composables/useAuth';
+import { db } from '@/services/firebase';
 
 /**
  * @typedef {import('firebase/firestore').Unsubscribe} Unsubscribe
- * @typedef {import('firebase/firestore').DocumentSnapshot} DocumentSnapshot
  * @typedef {import('firebase/firestore').DocumentReference} DocumentReference
  * @typedef {import('firebase/firestore').Query} Query
  * @typedef {import('firebase/firestore').QuerySnapshot} QuerySnapshot
@@ -18,7 +17,6 @@ import { db } from '../../../services/firebase';
  * @property {string} id - The unique identifier for the user.
  * @property {string} [name] - The user's full name.
  * @property {string} [email] - The user's email address.
- * @property {string} [role] - The user's role within the practice.
  */
 
 /**
@@ -26,33 +24,38 @@ import { db } from '../../../services/firebase';
  * @property {string} id - The unique identifier for the membership record.
  * @property {DocumentReference} user - Reference to the user document.
  * @property {DocumentReference} practice - Reference to the practice document.
+ * @property {string} role - The assigned practice role.
+ * @property {boolean} is_administrator - Administrative status flag.
+ * @property {boolean} is_employee - Internal employment status flag.
+ * @property {any} start_date - Initial joining date.
+ * @property {any} [end_date] - Optional contract end date.
  */
 
 /**
  * @typedef {object} PracticeUser
  * @property {string} id - The membership ID.
- * @property {DocumentReference} user - Reference to the user document.
- * @property {DocumentReference} practice - Reference to the practice document.
  * @property {UserProfile} profile - The resolved user profile data.
+ * @property {string} role - The assigned practice role.
+ * @property {boolean} is_administrator - Admin status flag.
+ * @property {boolean} is_employee - Internal status.
+ * @property {any} start_date - Joining date.
  */
 
 /**
  * Global cache management for user profiles.
- * Moving these outside the function body ensures data persists across practice switches.
  * @type {import('vue').Ref<Record<string, UserProfile>>}
  */
 const globalProfileStore = ref({});
 
 /**
  * Maps user IDs to their active listeners and reference counts.
- * Ensures we only have one active listener per user, regardless of how many components ask for it.
  * @type {Map<string, { unsubscribe: Unsubscribe, count: number }>}
  */
 const profileListeners = new Map();
 
 /**
  * Increments the reference count and initialises a profile listener if needed.
- * @param {DocumentReference} userRef - The Firestore DocumentReference to the user document.
+ * @param {DocumentReference} userRef - The DocumentReference to the user record.
  */
 const attachProfileListener = (userRef) => {
   const uid = userRef.id;
@@ -70,11 +73,10 @@ const attachProfileListener = (userRef) => {
         const data = pSnap.data();
         globalProfileStore.value[uid] = {
           ...data,
-          id: uid // Ensure the ID is always included in the profile data.
+          id: uid
         };
       }
     },
-    // Error handling silenced for linting compliance.
     () => {}
   );
 
@@ -101,7 +103,7 @@ const detachProfileListener = (uid) => {
 /**
  * Process the membership list snapshot and update listeners.
  * @param {QuerySnapshot} snapshot - The Firestore snapshot.
- * @param {import('vue').Ref<MembershipData[]>} memberships - The memberships ref to update.
+ * @param {import('vue').Ref<MembershipData[]>} memberships - The memberships ref.
  * @param {import('vue').Ref<boolean>} isLoading - The loading state ref.
  */
 const handleSyncSnapshot = (snapshot, memberships, isLoading) => {
@@ -121,13 +123,13 @@ const handleSyncSnapshot = (snapshot, memberships, isLoading) => {
     }
   }
 
-  memberships.value = snapshot.docs.map((d) => ({
-    id: d.id,
-    /** @type {DocumentReference} */
-    user: d.data().user,
-    /** @type {DocumentReference} */
-    practice: d.data().practice
-  }));
+  // Explicit casting ensures the spread data satisfies the MembershipData interface.
+  memberships.value = /** @type {MembershipData[]} */ (
+    snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data()
+    }))
+  );
   isLoading.value = false;
 };
 
@@ -160,11 +162,10 @@ const useSortedUsers = (memberships) =>
       .map((m) => ({
         ...m,
         profile: {
-          // Spread profile data first to allow the explicit ID to override if necessary.
           ...(globalProfileStore.value[m.user.id] || {
             name: 'Loading...'
           }),
-          id: m.user.id // Explicit ID assignment resolves the redundancy error.
+          id: m.user.id
         }
       }))
       .sort((a, b) => (a.profile?.name || '').localeCompare(b.profile?.name || ''));
@@ -172,8 +173,7 @@ const useSortedUsers = (memberships) =>
 
 /**
  * Composable for managing practice user memberships and profiles.
- * Handles real-time synchronisation of practice users and efficient profile caching.
- * @returns {{ users: import('vue').ComputedRef<PracticeUser[]>, isLoading: import('vue').Ref<boolean> }} The users list and loading state.
+ * @returns {{ users: import('vue').ComputedRef<PracticeUser[]>, isLoading: import('vue').Ref<boolean> }} The personnel list and loading state.
  */
 export function usePracticeUsers() {
   /** @type {import('vue').Ref<MembershipData[]>} */

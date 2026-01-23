@@ -1,23 +1,35 @@
 <script setup>
 /**
  * Mobile user settings card.
- * Composes identity displays and functional action groups.
+ * Composes identity displays and functional action groups for the navigation overlay.
  */
-import IconEdit from '../../../components/icons/IconEdit.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import { useAuth } from '../../../composables/useAuth';
-import { UserIdentity } from '../../users/usersApi';
+import IconEdit from '@/components/icons/IconEdit.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import { useAuth } from '@/composables/useAuth';
+// Switched to alias and standard lowercase 'Api' to resolve resolution conflicts.
+import { UserIdentity } from '@/features/users/usersApi';
+
 import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
 
+/**
+ * @typedef {object} AuthInterface
+ * @property {import('vue').Ref<any>} user - The current authenticated user state.
+ * @property {import('vue').Ref<boolean>} isAuthReady - Initialisation state.
+ * @property {Function} login - Sign-in method.
+ * @property {Function} logout - Sign-out method.
+ */
+
 defineEmits(['edit', 'logout']);
-const { user } = useAuth();
+
+// Extract user state using explicit type casting to resolve property inference.
+const { user } = /** @type {AuthInterface} */ (useAuth());
 </script>
 
 <template>
   <div class="nav-user-dropdown rd-card animate-slide-in">
     <div class="rd-card-header dropdown-header">
       <UserIdentity :profile="user" />
-      <span class="rd-pill rd-pill-muted role-badge">{{ user.role }}</span>
+      <span class="rd-pill rd-pill-muted role-badge">{{ user?.role || 'Guest' }}</span>
     </div>
 
     <div class="rd-card-body dropdown-body">
