@@ -1,0 +1,6 @@
+npx lint-staged || exit 1
+npm run test:run || exit 1
+npm run docs:build || exit 1
+npm run knip || exit 1
+npm audit --audit-level=high || exit 1
+git add docs/gen
