@@ -1,27 +1,48 @@
 <script setup>
+/**
+ * @file LoginView.vue
+ * @description Public-facing login page.
+ * Handles authentication via the useAuth composable and redirects authenticated users.
+ */
 import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuth } from '../composables/useAuth';
-import BaseButton from '../components/shared/BaseButton.vue';
 
+// Components
+import BaseButton from '../components/shared/BaseButton.vue';
+import { useAuth } from '../composables/useAuth';
+
+// --- Type Definitions ---
+
+/**
+ * @typedef {object} AuthInterface
+ * @property {import('vue').Ref<any>} user - The current authenticated user object (or null).
+ * @property {() => Promise<void>} login - Function to initiate the login process.
+ */
+
+// --- Logic & State ---
+
+/** @type {AuthInterface} */
 const { user, login } = useAuth();
+
 const router = useRouter();
 const errorMsg = ref('');
 
 // FORCED REDIRECT: If a user is already detected, kick them to the dashboard immediately
 watchEffect(() => {
   if (user.value) {
-    console.log('[LoginView] Active session detected. Redirecting to home.');
     router.push('/');
   }
 });
 
+/**
+ * Triggers the login flow.
+ * Catches errors and displays a user-friendly message.
+ */
 const handleLogin = async () => {
   try {
     await login();
     // Successful login will be caught by the watchEffect above
-  } catch (err) {
-    console.error(err);
+  } catch {
     errorMsg.value = 'Login failed. Please try again.';
   }
 };
@@ -32,7 +53,7 @@ const handleLogin = async () => {
     <div class="login-card">
       <h1 class="brand">RotaDent</h1>
       <p>Please sign in to access the system.</p>
-      <BaseButton label="Sign in with Google" class="full-width" @click="handleLogin" />
+      <BaseButton class="full-width" label="Sign in with Google" @click="handleLogin" />
       <p v-if="errorMsg" class="error">
         {{ errorMsg }}
       </p>
@@ -42,22 +63,22 @@ const handleLogin = async () => {
 
 <style scoped>
 .login-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
   align-items: center;
   background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
   padding: var(--spacing-md);
 }
 
 .login-card {
   background: white;
-  padding: 2.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 10%);
+  max-width: 25rem;
+  padding: 2.5rem;
   text-align: center;
   width: 100%;
-  max-width: 25rem;
 }
 
 .brand {

@@ -2,10 +2,11 @@
  * Manages real-time synchronisation of practice users and efficient profile caching.
  * Handles membership lists and associated profile data with reference counting.
  */
-import { ref, watch, onUnmounted, computed } from 'vue';
-import { db } from '../../../services/firebase';
-import { collection, query, where, onSnapshot, doc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { computed, onUnmounted, ref, watch } from 'vue';
+
 import { user as authUser } from '../../../composables/useAuth';
+import { db } from '../../../services/firebase';
 
 /**
  * Global cache management for user profiles.
@@ -111,19 +112,19 @@ export function usePracticeUsers() {
         const oldUids = new Set(memberships.value.map((m) => m.user.id));
 
         // Attach listeners for new users entering the membership set.
-        snapshot.docs.forEach((mDoc) => {
+        for (const mDoc of snapshot.docs) {
           const userRef = mDoc.data().user;
           if (!oldUids.has(userRef.id)) {
             attachProfileListener(userRef);
           }
-        });
+        }
 
         // Detach listeners for users no longer present in the membership results.
-        oldUids.forEach((uid) => {
+        for (const uid of oldUids) {
           if (!newUids.has(uid)) {
             detachProfileListener(uid);
           }
-        });
+        }
 
         memberships.value = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
         isLoading.value = false;
@@ -158,7 +159,7 @@ export function usePracticeUsers() {
   const cleanup = () => {
     if (listListener) listListener();
     // Ensure all individual profile listeners attached by this instance are detached correctly.
-    memberships.value.forEach((m) => detachProfileListener(m.user.id));
+    for (const m of memberships.value) detachProfileListener(m.user.id);
     memberships.value = [];
   };
 

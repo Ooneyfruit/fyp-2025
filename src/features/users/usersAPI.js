@@ -4,8 +4,8 @@
  */
 
 // Primary UI Components
-export { default as UserModal } from './components/UserModal.vue';
 export { default as UserIdentity } from './components/UserIdentity.vue';
+export { default as UserModal } from './components/UserModal.vue';
 export { default as UserStatusPills } from './components/UserStatusPills.vue';
 
 // Data Adapters and Layout Helpers

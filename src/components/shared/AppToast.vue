@@ -4,8 +4,8 @@
  * Animates messages and optional action buttons into the viewport.
  */
 import { useToast } from '../../composables/useToast';
-import BaseButton from './BaseButton.vue';
 import IconClose from '../icons/IconClose.vue';
+import BaseButton from './BaseButton.vue';
 
 // Access the shared reactive state from the toast composition function.
 const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
@@ -14,7 +14,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 <template>
   <Teleport to="body">
     <Transition name="toast-slide">
-      <div v-show="isVisible" class="toast-overlay" role="status" aria-live="polite">
+      <div v-show="isVisible" aria-live="polite" class="toast-overlay" role="status">
         <div class="toast-body rd-card">
           <div class="toast-content">
             <span class="message">{{ message }}</span>
@@ -27,7 +27,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
                 @click="handleAction"
               />
 
-              <button class="dismiss-btn" aria-label="Dismiss notification" @click="hideToast">
+              <button aria-label="Dismiss notification" class="dismiss-btn" @click="hideToast">
                 <IconClose />
               </button>
             </div>
@@ -41,37 +41,38 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 <style scoped>
 /* Layout: fixed overlay anchored to the bottom center of the screen. */
 .toast-overlay {
-  position: fixed;
   bottom: 2rem;
   left: 50%;
-  transform: translateX(-50%);
-  /* Ensures the toast remains visible above modals and other high-level layers. */
-  z-index: var(--z-tooltip);
-  width: 100%;
   max-width: 32rem;
   padding: 0 var(--spacing-md);
   pointer-events: none;
+  position: fixed;
+  transform: translateX(-50%);
+  width: 100%;
+
+  /* Ensures the toast remains visible above modals and other high-level layers. */
+  z-index: var(--z-tooltip);
 }
 
 /* Theme: Card styling with a brand accent and flex alignment for actions. */
 .toast-body {
+  border-left: 0.375rem solid var(--color-primary);
   padding: 0.75rem 1rem;
   pointer-events: auto;
-  border-left: 0.375rem solid var(--color-primary);
 }
 
 .toast-content {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
+  display: flex;
   gap: var(--spacing-md);
+  justify-content: space-between;
 }
 
 .actions {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
+  display: flex;
   flex-shrink: 0;
+  gap: 0.5rem;
 }
 
 .message {
@@ -84,14 +85,14 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 
 /* Interaction: Styling for the optional dismissal icon button. */
 .dismiss-btn {
+  align-items: center;
   background: none;
   border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
   border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 0.5rem;
   transition: background 0.2s;
 }
 
@@ -100,8 +101,8 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 }
 
 .dismiss-btn :deep(svg) {
-  width: 1.25rem;
   height: 1.25rem;
+  width: 1.25rem;
 }
 
 /* Animation: Spring-like cubic bezier for responsive entry and exit. */
@@ -113,29 +114,32 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 .toast-slide-enter-from,
 .toast-slide-leave-to {
   opacity: 0;
+
   /* Maintain the horizontal centring while sliding vertically and scaling. */
   transform: translate(-50%, 1.5rem) scale(0.95);
 }
 
 /* Responsive: Optimize layout for mobile viewports using a dynamic wrapping strategy. */
-@media (max-width: 40rem) {
+@media (width <= 40rem) {
   .toast-overlay {
     bottom: 1rem;
     max-width: 100%;
   }
 
   .toast-content {
+    align-items: center;
+
     /* Logic: utilize wrapping instead of a forced column to prevent unnecessary vertical expansion. */
     flex-wrap: wrap;
-    align-items: center;
     gap: 0.5rem var(--spacing-sm);
   }
 
   .actions {
-    /* Logic: push actions to the end to maintain horizontal hierarchy where space allows. */
-    margin-left: auto;
     flex-shrink: 0;
     justify-content: flex-end;
+
+    /* Logic: push actions to the end to maintain horizontal hierarchy where space allows. */
+    margin-left: auto;
   }
 }
 </style>

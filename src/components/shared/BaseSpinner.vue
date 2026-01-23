@@ -22,16 +22,16 @@ const spinnerStyles = computed(() => ({
 </script>
 
 <template>
-  <div class="base-spinner animate-spin" :style="spinnerStyles" aria-hidden="true" />
+  <div aria-hidden="true" class="base-spinner animate-spin" :style="spinnerStyles" />
 </template>
 
 <style scoped>
 /* Layout: specific styling for the circular track and its visual consistency. */
 .base-spinner {
-  border-style: solid;
   /* Apply a muted color to the non-active segments of the circular track. */
   border-color: #e2e8f0;
   border-radius: 50%;
+  border-style: solid;
   flex-shrink: 0;
 }
 </style>

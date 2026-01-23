@@ -37,19 +37,19 @@ defineEmits(['click']);
 <template>
   <component
     :is="to ? 'router-link' : 'button'"
-    :to="to"
+    :aria-busy="processing"
+    :aria-label="iconOnly ? label : null"
     class="rd-button"
     :class="[`rd-button-${variant}`, { 'is-processing': processing, 'is-icon-only': iconOnly }]"
     :disabled="disabled || processing"
-    :aria-busy="processing"
-    :aria-label="iconOnly ? label : null"
     :title="iconOnly ? label : null"
+    :to="to"
     @click="!to && $emit('click')"
   >
     <div
       v-if="(icon || $slots.icon) && iconPosition === 'left'"
-      class="icon-frame"
       aria-hidden="true"
+      class="icon-frame"
     >
       <slot name="icon">
         <component :is="icon" />
@@ -65,8 +65,8 @@ defineEmits(['click']);
 
     <div
       v-if="(icon || $slots.icon) && iconPosition === 'right'"
-      class="icon-frame"
       aria-hidden="true"
+      class="icon-frame"
     >
       <slot name="icon">
         <component :is="icon" />
@@ -77,24 +77,23 @@ defineEmits(['click']);
 
 <style scoped>
 .rd-button {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-
-  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius, 6px);
+  cursor: pointer;
+  display: inline-flex;
   font-size: 0.875rem;
   font-weight: 500;
-  border-radius: var(--border-radius, 6px);
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.5rem 1rem;
   transition: all 0.2s ease;
-  border: 1px solid transparent;
-  cursor: pointer;
   white-space: nowrap;
 }
 
 .rd-button:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* --- Variants --- */
@@ -104,16 +103,18 @@ defineEmits(['click']);
   background-color: var(--primary-color, #2563eb);
   color: white;
 }
+
 .rd-button-primary:not(:disabled):hover {
   background-color: var(--primary-color-dark, #1d4ed8);
 }
 
 /* Secondary: Grey Background */
 .rd-button-secondary {
+  background-color: #fff;
   border: 1px solid #e2e8f0;
-  background-color: #ffffff;
   color: #1e293b;
 }
+
 .rd-button-secondary:not(:disabled):hover {
   background-color: #e9e9e9;
 }
@@ -123,6 +124,7 @@ defineEmits(['click']);
   background-color: #ef4444;
   color: white;
 }
+
 .rd-button-danger:not(:disabled):hover {
   background-color: #dc2626;
 }
@@ -133,9 +135,10 @@ defineEmits(['click']);
   border-color: #cbd5e1;
   color: #475569;
 }
+
 .rd-button-outline:not(:disabled):hover {
-  border-color: #94a3b8;
   background-color: #f8fafc;
+  border-color: #94a3b8;
   color: #1e293b;
 }
 
@@ -144,6 +147,7 @@ defineEmits(['click']);
   background-color: transparent;
   color: #64748b;
 }
+
 .rd-button-ghost:not(:disabled):hover {
   background-color: #f1f5f9;
   color: #1e293b;
@@ -151,26 +155,26 @@ defineEmits(['click']);
 
 /* Layout: specific dimensions for icon-only button states. */
 .rd-button.is-icon-only {
+  aspect-ratio: 1 / 1;
+  height: 2.5rem;
   padding: 0.5rem;
   width: 2.5rem;
-  height: 2.5rem;
-  aspect-ratio: 1 / 1;
 }
 
 /* Layout: centring and optical alignment for icons. */
 .icon-frame {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 1.15rem;
-  height: 1.15rem;
+  display: flex;
   flex-shrink: 0;
+  height: 1.15rem;
+  justify-content: center;
   transform: translateY(-0.0625rem);
+  width: 1.15rem;
 }
 
 .icon-frame :deep(svg) {
-  width: 100%;
   height: 100%;
+  width: 100%;
 }
 
 .button-label {

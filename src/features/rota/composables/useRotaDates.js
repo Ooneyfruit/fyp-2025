@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 /**
  * Manages date logic for the Rota view with persistence and cross-breakpoint consistency.
@@ -88,9 +88,9 @@ export function useRotaDates(breakpoints) {
   });
 
   const monthLabel = computed(() => {
-    if (!visibleDays.value.length) return '';
+    if (visibleDays.value.length === 0) return '';
     const start = visibleDays.value[0].dateObj;
-    const end = visibleDays.value[visibleDays.value.length - 1].dateObj;
+    const end = visibleDays.value.at(-1).dateObj;
     const format = (d) =>
       new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
 

@@ -25,15 +25,17 @@ defineProps({
   flex-direction: column;
   gap: 1rem;
 }
+
 .block-header {
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
+  text-transform: uppercase;
 }
+
 .block-content {
   display: flex;
   flex-direction: column;

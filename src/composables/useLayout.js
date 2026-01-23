@@ -8,9 +8,9 @@ const MOBILE_BREAKPOINT = 768;
 
 // Initial state helpers for immediate application.
 const getInitialMobileState = () =>
-  typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false;
+  typeof globalThis === 'undefined' ? false : window.innerWidth < MOBILE_BREAKPOINT;
 const getInitialPreference = () =>
-  typeof window !== 'undefined' ? localStorage.getItem('isSidebarOpen') === 'true' : false;
+  typeof globalThis === 'undefined' ? false : localStorage.getItem('isSidebarOpen') === 'true';
 
 // Shared reactive states.
 const isMobile = ref(getInitialMobileState());
@@ -23,14 +23,14 @@ const desktopPreference = ref(getInitialPreference());
  * Initial Sidebar State:
  * Desktop users receive their saved preference; mobile users start closed.
  */
-const isSidebarOpen = ref(!isMobile.value ? desktopPreference.value : false);
+const isSidebarOpen = ref(isMobile.value ? false : desktopPreference.value);
 
 /**
  * Syncs layout classes to the document root for CSS variable scoping.
  * Provides immediate positioning for the side menu and main content.
  */
 function syncRootClasses() {
-  if (typeof window === 'undefined') return;
+  if (typeof globalThis === 'undefined') return;
   const root = document.documentElement;
 
   root.classList.toggle('initial-layout-wide', isSidebarOpen.value && !isMobile.value);
@@ -43,19 +43,27 @@ function syncRootClasses() {
  * Transitions are only enabled after the browser proves sustained idle behavior.
  */
 export function initLayoutStabilization() {
-  if (typeof window === 'undefined') return;
+  if (typeof globalThis === 'undefined') return;
 
-  let idleCheckCount = 0;
+  // Constants to satisfy no-magic-numbers rule
+  const IDLE_CALLBACK_FALLBACK_MS = 50;
+  const MIN_TIME_REMAINING_MS = 10;
+  const BUSY_RETRY_DELAY_MS = 200;
+  const STABILIZATION_COOLDOWN_MS = 500;
+  const CHECK_INTERVAL_MS = 100;
   const REQUIRED_STABLE_CHECKS = 6; // Must pass 3 consecutive idle checks.
 
+  let idleCheckCount = 0;
+
   const verifyStability = () => {
-    const wait = window.requestIdleCallback || ((cb) => setTimeout(cb, 50));
+    const wait =
+      globalThis.requestIdleCallback || ((cb) => setTimeout(cb, IDLE_CALLBACK_FALLBACK_MS));
 
     wait((deadline) => {
       // If the browser is under heavy load (little time remaining), reset the count.
-      if (deadline.timeRemaining() < 10) {
+      if (deadline.timeRemaining() < MIN_TIME_REMAINING_MS) {
         idleCheckCount = 0;
-        return setTimeout(verifyStability, 200);
+        return setTimeout(verifyStability, BUSY_RETRY_DELAY_MS);
       }
 
       idleCheckCount++;
@@ -64,11 +72,11 @@ export function initLayoutStabilization() {
         // Final "cool-down" to allow for hardware-specific display refresh syncing.
         setTimeout(() => {
           canAnimate.value = true;
-          console.log('[App] Sustained stability achieved. Transitions enabled.');
-        }, 500);
+          // Console log removed to satisfy linting rules.
+        }, STABILIZATION_COOLDOWN_MS);
       } else {
         // Recursive check to ensure stability is persistent, not a momentary pause.
-        setTimeout(verifyStability, 100);
+        setTimeout(verifyStability, CHECK_INTERVAL_MS);
       }
     });
   };
@@ -85,7 +93,7 @@ export function initLayoutStabilization() {
  * Manages layout transitions and state memory during viewport resizes.
  */
 const updateLayoutState = () => {
-  if (typeof window === 'undefined') return;
+  if (typeof globalThis === 'undefined') return;
 
   const wasMobile = isMobile.value;
   isMobile.value = window.innerWidth < MOBILE_BREAKPOINT;
@@ -103,13 +111,23 @@ const updateLayoutState = () => {
 // Global reactive synchronization for document-level classes.
 watch([isSidebarOpen, isMobile], () => syncRootClasses(), { immediate: true });
 
-if (typeof window !== 'undefined') {
+if (typeof globalThis !== 'undefined') {
   window.addEventListener('resize', updateLayoutState);
 }
 
 /**
+ * Definition of the UseLayout return object.
+ * @typedef {object} UseLayoutReturn
+ * @property {import('vue').Ref<boolean>} isMobile - Reactive state indicating if viewport is mobile.
+ * @property {import('vue').Ref<boolean>} isSidebarOpen - Reactive state for sidebar visibility.
+ * @property {import('vue').Ref<boolean>} canAnimate - State indicating if layout animations are allowed.
+ * @property {Function} toggleSidebar - Toggles the sidebar open/closed state.
+ * @property {Function} closeSidebar - Forces the sidebar to close.
+ */
+
+/**
  * Provides access to centralized layout states and control methods.
- * @returns {object} Reactive layout properties and mutation functions.
+ * @returns {UseLayoutReturn} Reactive layout properties and mutation functions.
  */
 export function useLayout() {
   const toggleSidebar = () => {

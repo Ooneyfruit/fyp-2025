@@ -14,10 +14,10 @@ defineProps({
     <div class="avatar-wrapper">
       <img
         v-if="profile?.profile_image"
-        :src="profile.profile_image"
-        class="avatar"
         alt="User profile"
+        class="avatar"
         referrerpolicy="no-referrer"
+        :src="profile.profile_image"
       />
 
       <div v-else class="avatar identicon">
@@ -39,62 +39,64 @@ defineProps({
 <style scoped>
 /* Main identity container layout */
 .user-info {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: 0.75rem;
-  width: 100%;
   min-width: 6rem;
+  width: 100%;
 }
 
 /* Wrapper to maintain consistent avatar dimensions */
 .avatar-wrapper {
   flex-shrink: 0;
-  width: 2.25rem;
   height: 2.25rem;
+  width: 2.25rem;
 }
 
 /* Ensures avatars and icons are circular and cropped correctly */
 .avatar {
-  width: 100%;
-  height: 100%;
   border-radius: 50%;
+  height: 100%;
   object-fit: cover;
   overflow: hidden;
+  width: 100%;
 }
 
 /* Styling for the fallback identicon background */
 .identicon {
+  align-items: center;
   background: var(--bg-app);
   border: 1px solid var(--border-color);
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
 /* Text container for profile metadata */
 .meta {
   display: flex;
+  flex: 1;
   flex-direction: column;
   line-height: 1.3;
   min-width: 0;
-  flex: 1;
 }
 
 /* Typography and ellipsis behavior for long text strings */
 .name,
 .email {
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   width: 100%;
 }
+
 .name {
-  font-weight: 600;
-  font-size: 0.85rem;
   color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
+
 .email {
-  font-size: 0.7rem;
   color: var(--text-muted);
+  font-size: 0.7rem;
 }
 </style>

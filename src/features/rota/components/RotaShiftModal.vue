@@ -1,8 +1,9 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { usePracticeUsers } from '../../users/composables/usePracticeUsers';
-import BaseModal from '../../../components/shared/BaseModal.vue';
+import { computed, ref, watch } from 'vue';
+
 import BaseButton from '../../../components/shared/BaseButton.vue';
+import BaseModal from '../../../components/shared/BaseModal.vue';
+import { usePracticeUsers } from '../../users/composables/usePracticeUsers';
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
 import RotaStaffPicker from './RotaStaffPicker.vue';
 
@@ -89,16 +90,16 @@ const currentStaffList = computed(() => {
 
 const availableStaffList = computed(() => {
   // Combine IDs from both sources to exclude them from the picker
-  const currentIds = currentStaffList.value.map((s) => {
+  const currentIds = new Set(currentStaffList.value.map((s) => {
     // For existing shifts, user_id is the reference/ID
     // For temps, originalMember.uid is the ID
     return s.user_id?.id || s.user_id || s.originalMember?.uid;
-  });
+  }));
 
   const query = searchQuery.value.toLowerCase();
 
   return mappedMembers.value.filter((m) => {
-    if (currentIds.includes(m.uid)) return false;
+    if (currentIds.has(m.uid)) return false;
     return m.name.toLowerCase().includes(query);
   });
 });
@@ -145,7 +146,7 @@ const isLoading = computed(() => usersLoading.value);
 </script>
 
 <template>
-  <BaseModal :show="show" :title="modalTitle" size="md" @request-close="handleClose">
+  <BaseModal :show="show" size="md" :title="modalTitle" @request-close="handleClose">
     <div class="modal-body-wrapper">
       <RotaAssignedStaff
         :staff="currentStaffList"
@@ -158,9 +159,9 @@ const isLoading = computed(() => usersLoading.value);
       <RotaStaffPicker
         v-model:search-query="searchQuery"
         :is-loading="isLoading"
-        :target-role-name="role.name"
-        :recommended="recommendedStaff"
         :others="otherStaff"
+        :recommended="recommendedStaff"
+        :target-role-name="role.name"
         @add="stageAddition"
       />
     </div>
@@ -168,7 +169,7 @@ const isLoading = computed(() => usersLoading.value);
     <template #footer>
       <div class="footer-actions">
         <BaseButton label="Cancel" variant="text" @click="handleClose" />
-        <BaseButton :label="saveLabel" :disabled="!hasChanges" @click="saveChanges" />
+        <BaseButton :disabled="!hasChanges" :label="saveLabel" @click="saveChanges" />
       </div>
     </template>
   </BaseModal>
@@ -179,8 +180,8 @@ const isLoading = computed(() => usersLoading.value);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  min-height: 500px;
   max-height: 70vh;
+  min-height: 500px;
   overflow: hidden;
 }
 
@@ -192,8 +193,8 @@ const isLoading = computed(() => usersLoading.value);
 
 .footer-actions {
   display: flex;
-  justify-content: flex-end;
   gap: var(--spacing-md);
+  justify-content: flex-end;
   width: 100%;
 }
 </style>

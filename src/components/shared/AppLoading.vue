@@ -3,6 +3,7 @@
  * Primary responsibility: provides a standardized loading interface for both inline content and full-page transitions.
  */
 import { computed } from 'vue';
+
 import BaseSpinner from './BaseSpinner.vue';
 
 const props = defineProps({
@@ -15,10 +16,10 @@ const spinnerSize = computed(() => (props.fullScreen ? '2rem' : '1.5rem'));
 
 <template>
   <div
+    aria-live="polite"
     class="loading-container"
     :class="{ 'full-page': fullScreen }"
     role="status"
-    aria-live="polite"
   >
     <BaseSpinner :size="spinnerSize" />
 
@@ -31,25 +32,26 @@ const spinnerSize = computed(() => (props.fullScreen ? '2rem' : '1.5rem'));
 <style scoped>
 /* Layout: center alignment and spacing for the loading indicator. */
 .loading-container {
+  align-items: center;
+  color: var(--text-muted);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: var(--spacing-md);
-  color: var(--text-muted);
+  justify-content: center;
   padding: var(--spacing-lg) var(--spacing-md);
 }
 
 /* State: viewport expansion used during initial app boots or route transitions. */
 .loading-container.full-page {
+  background-color: var(--bg-app);
   height: 100vh;
   padding: 0;
-  background-color: var(--bg-app);
 }
 
 .loading-text {
   font-size: 0.9375rem;
   font-weight: 500;
+
   /* Optical nudge to align text with the visual center of the circular spinner. */
   transform: translateY(0.0625rem);
 }

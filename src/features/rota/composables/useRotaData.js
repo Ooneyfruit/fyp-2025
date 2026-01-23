@@ -2,7 +2,8 @@
  * Orchestrates the loading and filtering of rota-related data for the grid view.
  * Centrally manages the state for practice roles, surgeries, and shifts.
  */
-import { ref, computed } from 'vue';
+import { computed,ref } from 'vue';
+
 import { fetchPracticeRoles, fetchPracticeSurgeries, fetchShifts } from '../rotaAPI';
 
 /**
@@ -67,9 +68,9 @@ export function useRotaData(userRef) {
       practiceRoles.value = roles;
       practiceSurgeries.value = surgeries;
       rawShifts.value = shifts;
-    } catch (err) {
+    } catch (error) {
       // Log errors with context to assist in debugging data fetch failures.
-      console.error('[useRotaData] Error loading data:', err);
+      console.error('[useRotaData] Error loading data:', error);
     } finally {
       isLoading.value = false;
     }
@@ -83,15 +84,15 @@ export function useRotaData(userRef) {
     const rows = [];
 
     // Combine roles and surgeries into unique row identifiers for the rota grid.
-    practiceRoles.value.forEach((role) => {
-      practiceSurgeries.value.forEach((surgery) => {
+    for (const role of practiceRoles.value) {
+      for (const surgery of practiceSurgeries.value) {
         rows.push({
           id: `${role.id}_${surgery.id}`,
           role,
           surgery
         });
-      });
-    });
+      }
+    }
 
     return rows;
   });

@@ -1,28 +1,58 @@
 <script setup>
 /**
- * Main dashboard landing page.
+ * @file HomeView.vue
+ * @description Main dashboard landing page.
  * Provides quick access to user profile settings and UI component demonstrations.
  */
 import { ref } from 'vue';
-import { useAuth } from '../composables/useAuth';
-import { useToast } from '../composables/useToast';
 
-// Layout & UI Components
-import AppPageHeaderGroup from '../components/layout/AppPageHeaderGroup.vue';
-import AppPageContainer from '../components/layout/AppPageContainer.vue';
-import BaseButton from '../components/shared/BaseButton.vue';
-import BaseModal from '../components/shared/BaseModal.vue';
-import UserModal from '../features/users/components/UserModal.vue';
-
-// Icons
+// Components
 import IconClock from '../components/icons/IconClock.vue';
 import IconEdit from '../components/icons/IconEdit.vue';
 import IconPlus from '../components/icons/IconPlus.vue';
+import AppPageContainer from '../components/layout/AppPageContainer.vue';
+import AppPageHeaderGroup from '../components/layout/AppPageHeaderGroup.vue';
+import BaseButton from '../components/shared/BaseButton.vue';
+import BaseModal from '../components/shared/BaseModal.vue';
+import { useAuth } from '../composables/useAuth';
+import { useToast } from '../composables/useToast';
+// Feature API (Architecture Fix)
+import { UserModal } from '../features/users/usersAPI';
 
+// --- Type Definitions ---
+
+/**
+ * @typedef {object} User
+ * @property {string} [name] - The user's display name.
+ */
+
+/**
+ * @typedef {object} AuthInterface
+ * @property {import('vue').Ref<User | null>} user - The current authenticated user.
+ */
+
+/**
+ * @typedef {object} ToastInterface
+ * @property {(message: string) => void} showToast - Displays a generic toast notification.
+ */
+
+/**
+ * @typedef {object} UserModalInstance
+ * @property {(user?: User | null) => void} open - Opens the modal, optionally pre-filled with user data.
+ */
+
+// --- Logic & State ---
+
+/** @type {AuthInterface} */
 const { user } = useAuth();
+
+/** @type {ToastInterface} */
 const { showToast } = useToast();
 
-// State management for the user profile modal
+/**
+ * State management for the user profile modal.
+ * @type {import('vue').Ref<UserModalInstance | null>}
+ */
 const userModal = ref(null);
 
 // Visibility state for the demonstration modal
@@ -39,14 +69,14 @@ const handleTestToast = () => {
 <template>
   <AppPageContainer>
     <AppPageHeaderGroup
+      :subtitle="'Welcome to the RotaDent management dashboard.'"
       :title="`Hello, ${user?.name || 'User'}!`"
-      subtitle="Welcome to the RotaDent management dashboard."
     >
-      <BaseButton label="Edit My Profile" :icon="IconEdit" @click="userModal.open(user)" />
+      <BaseButton :icon="IconEdit" label="Edit My Profile" @click="userModal?.open(user)" />
 
-      <BaseButton label="Open Test Modal" :icon="IconPlus" @click="showTestModal = true" />
+      <BaseButton :icon="IconPlus" label="Open Test Modal" @click="showTestModal = true" />
 
-      <BaseButton label="Trigger Test Toast" :icon="IconClock" @click="handleTestToast" />
+      <BaseButton :icon="IconClock" label="Trigger Test Toast" @click="handleTestToast" />
     </AppPageHeaderGroup>
 
     <UserModal ref="userModal" />
@@ -69,15 +99,5 @@ const handleTestToast = () => {
 .test-content {
   color: var(--text-muted);
   line-height: 1.6;
-}
-
-@media (max-width: 50rem) {
-  .header-layout-group {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-  .action-stack {
-    width: 100%;
-  }
 }
 </style>

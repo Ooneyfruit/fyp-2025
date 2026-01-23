@@ -1,6 +1,6 @@
 <script setup>
-import BaseButton from '../../../components/shared/BaseButton.vue';
 import IconEdit from '../../../components/icons/IconEdit.vue';
+import BaseButton from '../../../components/shared/BaseButton.vue';
 
 defineEmits(['edit']);
 </script>
@@ -8,10 +8,10 @@ defineEmits(['edit']);
 <template>
   <div class="user-actions">
     <BaseButton
-      label="Edit User"
       :icon="IconEdit"
-      variant="secondary"
       icon-only
+      label="Edit User"
+      variant="secondary"
       @click="$emit('edit')"
     />
   </div>

@@ -1,14 +1,81 @@
+import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
 import { ref } from 'vue';
+
 import { db } from './firebase';
-import { collection, getDocs, doc, writeBatch } from 'firebase/firestore';
 
-const logs = ref([]);
-const loading = ref(false);
+/**
+ * Reactive list of log messages.
+ * Shared state that can be imported by components.
+ * @type {import('vue').Ref<string[]>}
+ */
+export const logs = ref([]);
 
+/**
+ * Reactive loading state.
+ * @type {import('vue').Ref<boolean>}
+ */
+export const loading = ref(false);
+
+/**
+ * Appends a message to the logs with a timestamp.
+ * @param {string} msg - The message to record.
+ */
 const addLog = (msg) => {
   logs.value.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
 };
 
+/**
+ * Processes a single document for migration.
+ * Determines if the document needs to be moved to a deterministic ID.
+ * @param {import('firebase/firestore').QueryDocumentSnapshot} d - The document snapshot.
+ * @param {import('firebase/firestore').WriteBatch} batch - The Firestore write batch.
+ * @returns {boolean} - True if the document was migrated (added to batch), false otherwise.
+ */
+const processDocument = (d, batch) => {
+  const data = d.data();
+
+  // Safely access IDs with optional chaining
+  const userId = data.user?.id;
+  const practiceId = data.practice?.id;
+
+  if (!userId || !practiceId) {
+    addLog(`SKIPPING: Document ${d.id} missing user or practice ID.`);
+    return false;
+  }
+
+  const correctId = `${userId}_${practiceId}`;
+
+  if (d.id === correctId) {
+    addLog(`Document ${d.id} is already correct.`);
+    return false;
+  }
+
+  addLog(`Fixing: ${d.id} -> ${correctId}`);
+
+  // 1. Create the new document with the deterministic ID
+  const newRef = doc(db, 'practice_users', correctId);
+
+  // Use batch.set to create or overwrite the new document
+  batch.set(
+    newRef,
+    {
+      ...data,
+      updated_at: new Date()
+    },
+    { merge: true }
+  );
+
+  // 2. Delete the old document with the random ID
+  batch.delete(d.ref);
+
+  return true;
+};
+
+/**
+ * Executes the database repair migration.
+ * Converts practice_users documents to deterministic IDs.
+ * @returns {Promise<void>} Promise that resolves when repair is complete.
+ */
 export const runRepair = async () => {
   loading.value = true;
   logs.value = [];
@@ -18,47 +85,24 @@ export const runRepair = async () => {
     const snap = await getDocs(collection(db, 'practice_users'));
     const batch = writeBatch(db);
     let migratedCount = 0;
-    //let deletedCount = 0;
 
-    snap.forEach((d) => {
-      const data = d.data();
-      // Correctly access IDs from the DocumentReference objects
-      const userId = data.user.id;
-      const practiceId = data.practice.id;
-      const correctId = `${userId}_${practiceId}`;
-
-      if (d.id !== correctId) {
-        addLog(`Fixing: ${d.id} -> ${correctId}`);
-
-        // 1. Create the new document with the deterministic ID
-        const newRef = doc(db, 'practice_users', correctId);
-        batch.set(
-          newRef,
-          {
-            ...data,
-            updated_at: new Date()
-          },
-          { merge: true }
-        );
-
-        // 2. Delete the old document with the random ID
-        batch.delete(d.ref);
-
+    // Iterate through the document snapshots array
+    for (const d of snap.docs) {
+      if (processDocument(d, batch)) {
         migratedCount++;
-      } else {
-        addLog(`Document ${d.id} is already correct.`);
       }
-    });
+    }
 
     if (migratedCount > 0) {
+      // Commit all changes atomically
       await batch.commit();
       addLog(`SUCCESS: Repaired ${migratedCount} records.`);
     } else {
       addLog('All records were already in the correct format.');
     }
-  } catch (err) {
-    addLog(`ERROR: ${err.message}`);
-    console.error(err);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    addLog(`ERROR: ${message}`);
   } finally {
     loading.value = false;
   }

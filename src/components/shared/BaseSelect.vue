@@ -35,21 +35,21 @@ const handleChange = (event) => {
 
 <template>
   <div class="rd-select-group" :class="{ 'is-fluid': fluid }">
-    <label v-if="label" :for="id" class="rd-field-label">{{ label }}</label>
+    <label v-if="label" class="rd-field-label" :for="id">{{ label }}</label>
     <div class="select-wrapper">
       <select
         :id="id"
-        :name="name || id"
-        :value="modelValue"
         class="rd-select"
         :class="[`rd-select-${variant}`]"
         :disabled="disabled"
+        :name="name || id"
+        :value="modelValue"
         @change="handleChange"
       >
         <slot />
       </select>
 
-      <IconChevronDown class="select-icon" aria-hidden="true" />
+      <IconChevronDown aria-hidden="true" class="select-icon" />
     </div>
   </div>
 </template>
@@ -67,22 +67,22 @@ const handleChange = (event) => {
 }
 
 .select-wrapper {
-  position: relative;
-  display: flex;
   align-items: center;
+  display: flex;
+  position: relative;
   width: 100%;
 }
 
 /* Surface: positioning and animation logic for the overlay icon. */
 .select-icon {
-  position: absolute;
-  right: 0.75rem;
-  width: 1rem;
   height: 1rem;
   pointer-events: none; /* Logic: allow click events to pass through to the select element. */
+  position: absolute;
+  right: 0.75rem;
   transition:
     transform var(--anim-speed) ease,
     color var(--anim-speed) ease;
+  width: 1rem;
 }
 
 /* State: rotate the icon 180 degrees when the select is active or focused. */
@@ -99,9 +99,11 @@ const handleChange = (event) => {
 .rd-select-primary + .select-icon {
   color: white;
 }
+
 .rd-select-secondary + .select-icon {
   color: var(--text-muted);
 }
+
 .rd-select-danger + .select-icon {
   color: var(--color-danger);
 }

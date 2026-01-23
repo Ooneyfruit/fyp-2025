@@ -19,7 +19,7 @@ defineProps({
 
 <template>
   <span class="rd-pill" :class="[`rd-pill-${variant}`]">
-    <div v-if="$slots.icon" class="rd-pill-icon-frame" aria-hidden="true">
+    <div v-if="$slots.icon" aria-hidden="true" class="rd-pill-icon-frame">
       <slot name="icon" />
     </div>
 
@@ -32,18 +32,18 @@ defineProps({
 <style scoped>
 /* Layout: specific dimensions for icon containers within the pill. */
 .rd-pill-icon-frame {
-  display: flex;
   align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  height: 0.85rem;
   justify-content: center;
   width: 0.85rem;
-  height: 0.85rem;
-  flex-shrink: 0;
 }
 
 /* Internal: ensures any svg passed into the icon slot scales correctly to fit the container. */
 .rd-pill-icon-frame :deep(svg) {
-  width: 100%;
   height: 100%;
+  width: 100%;
 }
 
 /* Alignment: applies a minor vertical nudge to balance the visual baseline of uppercase labels. */

@@ -1,8 +1,9 @@
 <script setup>
 import { computed } from 'vue';
+
 import BaseTable from '../../../components/shared/BaseTable.vue';
-import RotaSlot from './RotaSlot.vue';
 import { useRotaColors } from '../composables/useRotaColors';
+import RotaSlot from './RotaSlot.vue';
 
 const props = defineProps({
   days: { type: Array, required: true },
@@ -68,11 +69,11 @@ const getRoleBadgeStyle = (roleId) => {
 
 <template>
   <BaseTable
+    class="rota-table"
+    group-by="role.id"
     :headers="tableHeaders"
     :items="rows"
     :vertical-lines="true"
-    group-by="role.id"
-    class="rota-table"
   >
     <template #cell(header_col)="{ item }">
       <div class="header-col-inner">
@@ -88,11 +89,11 @@ const getRoleBadgeStyle = (roleId) => {
     <template v-for="day in days" :key="day.iso" #[`cell(${day.key})`]="{ item }">
       <div class="cell-wrapper">
         <RotaSlot
-          :shifts="getShifts(item.role.id, item.surgery.id, day.iso)"
-          :role-id="item.role.id"
-          :is-weekend="day.isWeekend"
-          :is-today="day.isToday"
           :is-before-today="day.isBeforeToday"
+          :is-today="day.isToday"
+          :is-weekend="day.isWeekend"
+          :role-id="item.role.id"
+          :shifts="getShifts(item.role.id, item.surgery.id, day.iso)"
           @click="$emit('slot-click', { rowItem: item, day })"
         />
       </div>
@@ -111,32 +112,34 @@ const getRoleBadgeStyle = (roleId) => {
 .header-col-inner {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   height: 100%;
+  justify-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   /* CRITICAL: These styles ensure the content respects the parent's width cap. */
+
   /* Without this, the grid item's implicit 'min-width: auto' would force the column open. */
   width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .role-title {
-  font-weight: 700;
+  align-self: flex-start;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  display: inline-block;
   font-size: 0.75rem;
+  font-weight: 700;
+
   /* Removed text-transform: uppercase so sentence case helper works */
   letter-spacing: 0.05em;
   margin-bottom: 0.25rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-  border: 1px solid transparent;
-  align-self: flex-start;
 
   /* Ensure badges also truncate if they exceed the narrow column width */
   max-width: 100%;
   overflow: hidden;
+  padding: 2px 6px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -144,32 +147,32 @@ const getRoleBadgeStyle = (roleId) => {
 .surgery-subtitle {
   color: var(--text-muted);
   font-size: 0.85rem;
-  padding-left: 4px;
 
   /* Ensure subtitle truncates */
   overflow: hidden;
+  padding-left: 4px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 /* Cell Layout */
 .cell-wrapper {
-  width: 100%;
-  height: 100%;
   display: flex;
+  height: 100%;
+  width: 100%;
 }
 
 /* Header Highlight for Today */
 :deep(th.header-today),
 :deep(.header-cell.header-today) {
-  color: #2563eb !important;
   background-color: #eff6ff !important;
+  color: #2563eb !important;
   font-weight: 800 !important;
 }
 
 .empty-state-content {
+  color: var(--text-muted);
   padding: 5rem;
   text-align: center;
-  color: var(--text-muted);
 }
 </style>

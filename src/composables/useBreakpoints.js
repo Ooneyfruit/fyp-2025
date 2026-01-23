@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted,ref } from 'vue';
 
 /**
  * Monitors the container width to determine layout mode.
@@ -12,7 +12,7 @@ export function useBreakpoints(targetRef, threshold = 50) {
   const isMobile = ref(false);
 
   // Calculate the root font size to convert pixels to REMs.
-  const getRemValue = () => parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const getRemValue = () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
 
   // Observe resize events to dynamically update the state.
   const observer = new ResizeObserver((entries) => {

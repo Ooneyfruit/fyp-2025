@@ -2,7 +2,7 @@
  * Provides reusable logic for horizontal swipe gestures with visual tracking.
  * Typically used for 'swipe-to-dismiss' patterns in mobile interfaces.
  */
-import { ref, computed } from 'vue';
+import { computed,ref } from 'vue';
 
 /**
  * Manages touch states and calculates horizontal displacement.

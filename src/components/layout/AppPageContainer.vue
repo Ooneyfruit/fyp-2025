@@ -16,11 +16,11 @@ defineProps({
 
 <style scoped>
 .page-container {
-  padding: var(--spacing-md);
   margin: 0 auto;
-  width: 100%;
   max-width: var(--container-width, 70rem); /* Default constrained width */
+  padding: var(--spacing-md);
   transition: max-width 0.3s ease;
+  width: 100%;
 }
 
 /* * Fluid mode removes the strict max-width to use available screen real estate.
@@ -31,10 +31,11 @@ defineProps({
   padding: var(--spacing-md) var(--spacing-lg);
 }
 
-@media (max-width: 48rem) {
+@media (width <= 48rem) {
   .page-container {
     padding: var(--spacing-sm);
   }
+
   .page-container.is-fluid {
     padding: var(--spacing-sm);
   }

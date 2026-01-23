@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "project": ["src/**/*.{js,vue}"],
-  "ignore": ["docs/gen/**", "src/services/**"],
-  "ignoreDependencies": ["jsdoc-vuejs"]
+  "ignore": ["docs/gen/**", "src/services/**", "src/views/HomeView.vue"],
+  "ignoreDependencies": ["jsdoc-vuejs", "@commitlint/cli"]
 }

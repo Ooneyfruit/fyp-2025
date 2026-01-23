@@ -3,8 +3,9 @@
  * Provides a recursive approach to exporting Firestore data.
  * Useful for deep trees where the standard export might miss nested subcollections.
  */
-import { initializeApp, credential as _credential, firestore } from 'firebase-admin';
-import { writeFileSync } from 'fs';
+import { writeFileSync } from 'node:fs';
+
+import { credential as _credential, firestore,initializeApp } from 'firebase-admin';
 
 // Path to your service account key file.
 // Ensure this file exists in the same directory or update the path.

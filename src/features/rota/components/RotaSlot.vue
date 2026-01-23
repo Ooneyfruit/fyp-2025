@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue';
-import IconPlus from '../../../components/icons/IconPlus.vue';
+
 import IconEdit from '../../../components/icons/IconEdit.vue';
+import IconPlus from '../../../components/icons/IconPlus.vue';
 import { useRotaColors } from '../composables/useRotaColors';
 
 const props = defineProps({
@@ -31,7 +32,7 @@ const getInitials = (name) => {
     .split(' ')
     .map((n) => n[0])
     .join('')
-    .substring(0, 2)
+    .slice(0, 2)
     .toUpperCase();
 };
 </script>
@@ -79,22 +80,20 @@ const getInitials = (name) => {
 
 <style scoped>
 .rota-slot {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.25rem;
-
-  padding: 0.25rem;
-  min-height: 4rem;
-  width: 100%;
-  height: 100%;
-
-  position: relative;
   border-radius: var(--border-radius);
-  transition: all 0.2s ease;
 
   /* UPDATED: Ensuring cursor is pointer */
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 100%;
+  justify-content: center;
+  min-height: 4rem;
+  padding: 0.25rem;
+  position: relative;
+  transition: all 0.2s ease;
+  width: 100%;
 }
 
 /* --- State Styling --- */
@@ -108,6 +107,7 @@ const getInitials = (name) => {
   background-color: #f3f4f6;
   border: 1px solid #e2e4e7;
 }
+
 .rota-slot.slot-weekend-past {
   background-color: #f3f4f6;
   border: 1px solid transparent;
@@ -116,7 +116,7 @@ const getInitials = (name) => {
 /* New style for past days (mild grey) */
 .rota-slot.slot-past {
   background-color: transparent;
-  border: 0px solid #e2e8f0;
+  border: 0 solid #e2e8f0;
 }
 
 .rota-slot.slot-today {
@@ -128,7 +128,7 @@ const getInitials = (name) => {
 .rota-slot:hover {
   background-color: white;
   border-color: #3b82f6 !important;
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 4px 6px -1px rgb(59 130 246 / 10%);
   z-index: 10;
 }
 
@@ -141,64 +141,68 @@ const getInitials = (name) => {
 .rota-slot.has-data.slot-weekday {
   border-color: #e2e8f0;
 }
+
 .rota-slot.has-data.slot-weekend {
-  border-color: transparent;
   background-color: #f3f4f6;
+  border-color: transparent;
 }
+
 .rota-slot.has-data.slot-past {
   background-color: transparent;
 }
+
 .rota-slot.has-data.slot-today {
-  border-color: #93c5fd;
   background-color: #eff6ff;
+  border-color: #93c5fd;
 }
+
 .rota-slot.has-data:hover {
-  border-color: #3b82f6;
   background-color: white;
+  border-color: #3b82f6;
 }
 
 /* --- Placeholders & Overlays --- */
 
 /* 1. Empty State Plus Icon */
 .empty-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
   align-items: center;
-  justify-content: center;
-
   color: #94a3b8;
+  display: flex;
+  inset: 0;
+  justify-content: center;
   opacity: 0;
-  transition: all 0.2s ease;
   pointer-events: none; /* Allows hover/click to pass through to .rota-slot */
+  position: absolute;
+  transition: all 0.2s ease;
 }
 
 /* Modified: Only show placeholder on hover for all slots, including Today */
 .rota-slot:hover .empty-placeholder {
-  opacity: 1;
   color: #3b82f6;
+  opacity: 1;
   transform: scale(1.1);
 }
 
 .rota-slot.slot-today .empty-placeholder {
   color: #93c5fd;
 }
+
 .rota-slot.slot-today:hover .empty-placeholder {
   color: #3b82f6;
 }
 
 /* 2. Occupied State Edit Overlay */
 .edit-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.6);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
+  background-color: rgb(255 255 255 / 60%);
   border-radius: var(--border-radius);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 0.2s ease;
 }
 
 .rota-slot:hover .edit-overlay {
@@ -208,50 +212,50 @@ const getInitials = (name) => {
 .edit-icon-wrapper {
   background: white;
   border-radius: 50%;
-  padding: 6px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
   color: #3b82f6;
   display: flex;
+  padding: 6px;
 }
 
 .edit-icon {
-  width: 1rem;
   height: 1rem;
+  width: 1rem;
 }
 
 /* UPDATED: Reduced size to be visually consistent with the edit icon */
 .plus-icon {
-  width: 1.15rem;
   height: 1.15rem;
+  width: 1.15rem;
 }
 
 /* --- Pill Styling --- */
 .shift-pill {
-  border-width: 1px;
-  border-style: solid;
   border-radius: 999px;
-  padding: 0.125rem 0.5rem;
+  border-style: solid;
+  border-width: 1px;
   max-width: 100%;
+  padding: 0.125rem 0.5rem;
 }
 
 .pill-content {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: 0.35rem;
   overflow: hidden;
 }
 
 .initials {
+  flex-shrink: 0;
   font-size: 0.7rem;
   font-weight: 800;
-  flex-shrink: 0;
 }
 
 .name {
   font-size: 0.75rem;
   font-weight: 600;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
