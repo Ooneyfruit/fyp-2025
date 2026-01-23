@@ -1,7 +1,10 @@
+import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import pluginImport from 'eslint-plugin-import';
 import pluginJsdoc from 'eslint-plugin-jsdoc';
 import pluginPromise from 'eslint-plugin-promise';
 import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -9,6 +12,10 @@ import pluginSonar from 'eslint-plugin-sonarjs';
 import pluginUnicorn from 'eslint-plugin-unicorn';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
+
+// Logic: construct __dirname in an ESM environment to ensure absolute path resolution for config files.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import the custom local rule to discourage nested templates.
 import noNestedTemplate from './tools/eslint/rules/noNestedTemplate.js';
@@ -54,7 +61,19 @@ export default [
   {
     files: ['**/*.{js,mjs,cjs,vue}'],
     plugins: {
+      import: pluginImport,
       'simple-import-sort': pluginSimpleImportSort
+    },
+    settings: {
+      'import/resolver': {
+        // Essential: re-enable node resolver to handle third-party packages in node_modules.
+        node: true,
+        // Vite resolver facilitates @ path alias resolution and case-sensitivity checks.
+        vite: {
+          // Use absolute path to prevent 'viteConfig' object errors.
+          configPath: path.resolve(__dirname, 'vite.config.js')
+        }
+      }
     },
     rules: {
       // --- Console & debugging ---
@@ -65,6 +84,10 @@ export default [
       // --- Architectural strictness ---
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
+      // Mandatory Casing Check: prevents resolution errors on case-sensitive file systems.
+      'import/no-unresolved': ['error', { caseSensitive: true }],
+      // Prevent redundant imports from the same file.
+      'import/no-duplicates': 'error',
       'no-magic-numbers': [
         'warn',
         {
@@ -112,7 +135,6 @@ export default [
   },
 
   // 5. Project-specific RotaDent constraints.
-  // We separate Vue-specific rules into their own block to improve parser efficiency.
   {
     files: ['**/*.vue'],
     plugins: {
