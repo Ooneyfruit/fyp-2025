@@ -1,6 +1,4 @@
-import path from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
@@ -12,10 +10,6 @@ import pluginSonar from 'eslint-plugin-sonarjs';
 import pluginUnicorn from 'eslint-plugin-unicorn';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
-
-// Logic: construct __dirname in an ESM environment to ensure absolute path resolution for config files.
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Import the custom local rule to discourage nested templates.
 import noNestedTemplate from './tools/eslint/rules/noNestedTemplate.js';
@@ -39,12 +33,23 @@ export default [
     ignores: ['dist/', 'coverage/', '.firebase/', 'public/', 'docs/gen/']
   },
 
-  // 2. Setup environment.
+  // 2. Setup environment and shared settings.
   {
     files: ['**/*.{js,mjs,cjs,vue}'],
     languageOptions: {
       globals: {
         ...globals.browser
+      }
+    },
+    plugins: {
+      import: pluginImport
+    },
+    settings: {
+      // Use the TypeScript resolver to handle path aliases via jsconfig.json.
+      'import/resolver': {
+        typescript: {
+          project: './jsconfig.json'
+        }
       }
     }
   },
@@ -61,19 +66,7 @@ export default [
   {
     files: ['**/*.{js,mjs,cjs,vue}'],
     plugins: {
-      import: pluginImport,
       'simple-import-sort': pluginSimpleImportSort
-    },
-    settings: {
-      'import/resolver': {
-        // Essential: re-enable node resolver to handle third-party packages in node_modules.
-        node: true,
-        // Vite resolver facilitates @ path alias resolution and case-sensitivity checks.
-        vite: {
-          // Use absolute path to prevent 'viteConfig' object errors.
-          configPath: path.resolve(__dirname, 'vite.config.js')
-        }
-      }
     },
     rules: {
       // --- Console & debugging ---
@@ -84,10 +77,6 @@ export default [
       // --- Architectural strictness ---
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-      // Mandatory Casing Check: prevents resolution errors on case-sensitive file systems.
-      'import/no-unresolved': ['error', { caseSensitive: true }],
-      // Prevent redundant imports from the same file.
-      'import/no-duplicates': 'error',
       'no-magic-numbers': [
         'warn',
         {
@@ -96,6 +85,10 @@ export default [
         }
       ],
       eqeqeq: ['error', 'always'],
+
+      // --- Import resolution ---
+      'import/no-unresolved': 'error',
+      'import/no-duplicates': 'error',
 
       // --- Code complexity ---
       complexity: ['error', { max: CYCLOMATIC_COMPLEXITY_LIMIT }],
