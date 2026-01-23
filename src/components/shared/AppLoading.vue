@@ -15,18 +15,13 @@ const spinnerSize = computed(() => (props.fullScreen ? '2rem' : '1.5rem'));
 </script>
 
 <template>
-  <div
-    aria-live="polite"
-    class="loading-container"
-    :class="{ 'full-page': fullScreen }"
-    role="status"
-  >
+  <output class="loading-container" :class="{ 'full-page': fullScreen }">
     <BaseSpinner :size="spinnerSize" />
 
     <span class="loading-text">
       <slot>Syncing practice records...</slot>
     </span>
-  </div>
+  </output>
 </template>
 
 <style scoped>

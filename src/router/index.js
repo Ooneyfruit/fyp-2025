@@ -59,7 +59,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // Restrict access to administrative views based on the user profile flag.
-  if (to.meta.requiresAdmin && (!currentUser || currentUser.is_administrator !== true)) {
+  if (to.meta.requiresAdmin && currentUser?.is_administrator !== true) {
     // Notify the user of the permission failure to improve the feedback loop.
     notifyError('Access denied: administrator privileges required.');
     return next('/');

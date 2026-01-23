@@ -10,13 +10,38 @@ import { ref } from 'vue';
 import { auth, db } from '@/services/firebase';
 
 /**
+ * Define a generic Ref type for JSDoc.
+ * @template T
+ * @typedef {import('vue').Ref<T>} Ref
+ */
+
+/**
+ * @typedef {object} UserProfile
+ * @property {string} uid - Unique identifier for the user.
+ * @property {string} email - Primary email address from the identity provider.
+ * @property {string} profile_image - URL to the user's avatar.
+ * @property {string} activePracticeName - The display name of the current practice context.
+ * @property {boolean} is_administrator - Flag indicating elevated privilege levels.
+ * @property {any} practiceRef - Firestore document reference for the active practice.
+ */
+
+/**
+ * @typedef {object} AuthInterface
+ * @property {Ref<UserProfile | null>} user - Reactive reference to the current user profile.
+ * @property {Ref<boolean>} isAuthReady - Tracks if the initial session check has been completed.
+ * @property {function(): Promise<import('firebase/auth').UserCredential>} login - Triggers the Google OAuth flow.
+ * @property {function(): Promise<void>} logout - Terminates the session and cleans up listeners.
+ */
+
+/**
  * The global user state ref.
- * @type {import('vue').Ref<any>}
+ * @type {Ref<UserProfile | null>}
  */
 export const user = ref(null);
 
 /**
  * Indicates if the initial authentication check has completed.
+ * @type {Ref<boolean>}
  */
 export const isAuthReady = ref(false);
 
@@ -99,21 +124,23 @@ const startProfileListener = (firebaseUser) => {
         const mData = mSnap.exists() ? mSnap.data() : { is_administrator: false, role: 'Guest' };
         const practiceName = pSnap.exists() ? pSnap.data().name : 'Unknown Practice';
 
-        user.value = {
+        // Explicit cast: assert that the spread Firestore data fulfils the UserProfile contract.
+        user.value = /** @type {UserProfile} */ ({
           uid: firebaseUser.uid,
           ...userData,
           ...mData,
           practiceRef: practiceRef,
           activePracticeName: practiceName
-        };
+        });
       } catch {
         // Fallback to basic profile if membership or practice data is inaccessible.
-        user.value = {
+        // Explicit cast used here to satisfy strict type requirements during error states.
+        user.value = /** @type {UserProfile} */ ({
           uid: firebaseUser.uid,
           ...userData,
           is_administrator: false,
           activePracticeName: 'Error'
-        };
+        });
       } finally {
         isAuthReady.value = true;
       }
@@ -143,7 +170,7 @@ onAuthStateChanged(auth, (firebaseUser) => {
 
 /**
  * Exported authentication interface.
- * @returns {object} The reactive auth state and session management methods.
+ * @returns {AuthInterface} The reactive auth state and session management methods.
  */
 export function useAuth() {
   return {

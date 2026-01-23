@@ -170,6 +170,16 @@ onMounted(async () => {
 });
 
 /**
+ * Helper to handle errors during save/delete operations.
+ * @param {unknown} error - The caught error object.
+ * @param {string} fallbackMsg - Default message if error is not an instance of Error.
+ */
+const handleError = (error, fallbackMsg = 'Unknown error') => {
+  const msg = error instanceof Error ? error.message : fallbackMsg;
+  showToast(`Save Failure: ${msg}`, { duration: 5000 });
+};
+
+/**
  * Logic: permanently removes the membership bridge document.
  */
 const handleDelete = async () => {
@@ -180,15 +190,61 @@ const handleDelete = async () => {
 
   saving.value = true;
   try {
-    const pId = authUser.value.practiceRef.id;
+    const currentUser = authUser.value;
+
+    if (!currentUser?.practiceRef?.id) {
+      throw new Error('Action requires active practice context.');
+    }
+
+    const pId = currentUser.practiceRef.id;
     await deleteDoc(doc(db, 'practice_users', `${form.value.user_id}_${pId}`));
     showToast(`User ${form.value.name} access revoked.`);
     close();
-  } catch {
-    showToast('Failed to revoke access.', { duration: 5000 });
+  } catch (error) {
+    handleError(error, 'Failed to revoke access.');
   } finally {
     saving.value = false;
   }
+};
+
+/**
+ * Constructs and commits the batch update for user data.
+ * @param {import('firebase/firestore').DocumentReference} pRef - Reference to the current practice.
+ */
+const executeBatchSave = async (pRef) => {
+  const batch = writeBatch(db);
+  const uid = form.value.user_id || doc(collection(db, 'users')).id;
+  const userRef = doc(db, 'users', uid);
+
+  // Identity Logic: synchronise global user profile record.
+  batch.set(
+    userRef,
+    {
+      name: form.value.name,
+      email: form.value.email,
+      address: form.value.address,
+      profile_image: form.value.profile_image || '',
+      current_practice: pRef
+    },
+    { merge: true }
+  );
+
+  // Membership Logic: update practice-specific metadata.
+  const memberId = `${uid}_${pRef.id}`;
+  batch.set(
+    doc(db, 'practice_users', memberId),
+    {
+      role: form.value.role,
+      is_administrator: form.value.is_administrator,
+      is_employee: form.value.is_employee,
+      user: userRef,
+      practice: pRef,
+      updated_at: Timestamp.now()
+    },
+    { merge: true }
+  );
+
+  await batch.commit();
 };
 
 /**
@@ -196,48 +252,22 @@ const handleDelete = async () => {
  */
 const save = async () => {
   if (saving.value) return;
+
+  const currentUser = authUser.value;
+  // Validation: Ensure context exists before attempting writes.
+  if (!currentUser?.practiceRef) {
+    showToast('Action requires active practice context.', { duration: 5000 });
+    return;
+  }
+
   saving.value = true;
-  const batch = writeBatch(db);
 
   try {
-    const uid = form.value.user_id || doc(collection(db, 'users')).id;
-    const userRef = doc(db, 'users', uid);
-    const pRef = authUser.value.practiceRef;
-
-    // Identity Logic: synchronise global user profile record.
-    batch.set(
-      userRef,
-      {
-        name: form.value.name,
-        email: form.value.email,
-        address: form.value.address,
-        profile_image: form.value.profile_image || '',
-        current_practice: pRef
-      },
-      { merge: true }
-    );
-
-    // Membership Logic: update practice-specific metadata.
-    const memberId = `${uid}_${pRef.id}`;
-    batch.set(
-      doc(db, 'practice_users', memberId),
-      {
-        role: form.value.role,
-        is_administrator: form.value.is_administrator,
-        is_employee: form.value.is_employee,
-        user: userRef,
-        practice: pRef,
-        updated_at: Timestamp.now()
-      },
-      { merge: true }
-    );
-
-    await batch.commit();
+    await executeBatchSave(currentUser.practiceRef);
     showToast(isEdit.value ? 'User profile updated.' : 'New user created.');
     close();
   } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Unknown error';
-    showToast(`Save Failure: ${msg}`, { duration: 5000 });
+    handleError(error);
   } finally {
     saving.value = false;
   }

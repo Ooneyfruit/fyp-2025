@@ -50,7 +50,11 @@ const performSwitch = async (practiceId) => {
 
 /**
  * Composable for fetching user's practices and handling context switching.
- * @returns {object} The practices list and switch handler.
+ * @returns {{
+ * practices: import('vue').Ref<any[]>,
+ * handleSwitch: (practiceId: string) => Promise<void>,
+ * isLoading: import('vue').Ref<boolean>
+ * }} The practices list and switch handler.
  */
 export function useUserPractices() {
   /** @type {import('vue').Ref<any[]>} */

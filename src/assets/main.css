@@ -20,7 +20,7 @@
   --z-modal: 1000;
   --z-tooltip: 1100;
 
-  /* Color: HSL system for dynamic shading and brand consistency. */
+  /* Colour: HSL system for dynamic shading and brand consistency. */
   --hue-primary: 221;
   --hue-danger: 0;
   --hue-success: 142;
@@ -33,7 +33,7 @@
   --color-warning: hsl(var(--hue-warning) 80% 33%);
   --color-warning-bg: hsl(var(--hue-warning) 100% 96%);
 
-  /* Neutral: typography and surface color tokens. */
+  /* Neutral: typography and surface colour tokens. */
   --text-main: hsl(221deg 39% 11%);
   --text-muted: hsl(215deg 16% 34%);
   --text-light: hsl(0deg 0% 100%);
@@ -54,7 +54,7 @@
   --font-family: 'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
 }
 
-/* Base: reset and box-model stabilization. */
+/* Base: reset and box-model stabilisation. */
 *,
 *::before,
 *::after {
@@ -62,7 +62,6 @@
 }
 
 html {
-  text-size-adjust: none;
   text-size-adjust: none;
 }
 
@@ -76,7 +75,7 @@ body {
   margin: 0;
 }
 
-/* Inheritance: form element font and color synchronization. */
+/* Inheritance: form element font and colour synchronisation. */
 input,
 button,
 textarea,
@@ -104,6 +103,17 @@ svg {
   z-index: var(--z-normal);
 }
 
+/* Animation: layout transitions enabled only after hydration is stable. */
+.is-animate-ready .main-content {
+  transition: margin-left var(--anim-speed) ease;
+}
+
+.is-animate-ready .sidebar {
+  transition:
+    width var(--anim-speed) ease,
+    transform var(--anim-speed) ease;
+}
+
 /* States: layout overrides based on initial hydration classes. */
 html.initial-layout-wide .main-content {
   margin-left: var(--sidebar-width);
@@ -125,21 +135,10 @@ html.initial-layout-slim .sidebar {
   width: var(--sidebar-slim-width);
 }
 
-/* Animation: layout transitions enabled only after hydration is stable. */
-.is-animate-ready .main-content {
-  transition: margin-left var(--anim-speed) ease;
-}
-
-.is-animate-ready .sidebar {
-  transition:
-    width var(--anim-speed) ease,
-    transform var(--anim-speed) ease;
-}
-
 /* Accessibility: visually hidden utility for screen readers. */
 .sr-only {
   border-width: 0;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   height: 1px;
   margin: -1px;
   overflow: hidden;
@@ -183,7 +182,7 @@ html.initial-layout-slim .sidebar {
   animation: rd-slide-in 0.2s ease-out;
 }
 
-/* Transitions: standardized utility for entrance and exit opacity. */
+/* Transitions: standardised utility for entrance and exit opacity. */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity var(--anim-speed) ease;
@@ -261,7 +260,7 @@ html.initial-layout-slim .sidebar {
   outline: none;
 }
 
-/* Variants: specific color mappings for select types. */
+/* Variants: specific colour mappings for select types. */
 .rd-select-primary {
   background-color: var(--color-primary);
   color: var(--text-light);
@@ -309,7 +308,7 @@ html.initial-layout-slim .sidebar {
   opacity: 0.5;
 }
 
-/* Variants: specific color mappings for button types. */
+/* Variants: specific colour mappings for button types. */
 .rd-button-primary {
   background-color: var(--color-primary);
   color: var(--text-light);
@@ -346,7 +345,7 @@ html.initial-layout-slim .sidebar {
   color: white;
 }
 
-/* Utility: status and categorization pills with brand color logic. */
+/* Utility: status and categorisation pills with brand colour logic. */
 .rd-pill {
   align-items: center;
   border: 1px solid transparent;
@@ -395,7 +394,7 @@ html.initial-layout-slim .sidebar {
   color: var(--color-danger);
 }
 
-/* Forms: standardized section headers and layout structures. */
+/* Forms: standardised section headers and layout structures. */
 .rd-form-section {
   display: flex;
   flex-direction: column;
@@ -429,7 +428,7 @@ html.initial-layout-slim .sidebar {
   text-transform: uppercase;
 }
 
-/* Fields: labeling and height synchronization. */
+/* Fields: labelling and height synchronisation. */
 .rd-field {
   display: flex;
   flex-direction: column;
@@ -455,7 +454,7 @@ html.initial-layout-slim .sidebar {
   }
 }
 
-/* Danger Zone: specialized layout for destructive actions. */
+/* Danger Zone: specialised layout for destructive actions. */
 .rd-danger-zone {
   border-top: 2px dashed var(--border-color);
   display: flex;
@@ -519,8 +518,8 @@ html.initial-layout-slim .sidebar {
 .rd-toggle-slider {
   background-color: #d1d5db;
   border-radius: 1rem;
-  inset: 0;
   cursor: pointer;
+  inset: 0;
   position: absolute;
   transition: 0.2s;
 }

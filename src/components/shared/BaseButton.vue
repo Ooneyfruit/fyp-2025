@@ -1,7 +1,8 @@
 <script setup>
 /**
- * Primary responsibility: provides a flexible button component that supports navigation,
+ * Primary responsibility: Provides a flexible button component that supports navigation,
  * various visual states, and semantic variations.
+ * @file BaseButton.vue
  */
 
 defineProps({
@@ -16,7 +17,10 @@ defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (v) => ['primary', 'secondary', 'danger', 'outline', 'ghost'].includes(v)
+    // Validator inlined for 'vue/valid-define-props'.
+    // Includes type check to satisfy TS 'unknown' argument error.
+    validator: (v) =>
+      typeof v === 'string' && ['primary', 'secondary', 'danger', 'outline', 'ghost'].includes(v)
   },
   icon: { type: [Object, Function], default: null },
   iconOnly: { type: Boolean, default: false },
@@ -27,7 +31,9 @@ defineProps({
   iconPosition: {
     type: String,
     default: 'left',
-    validator: (v) => ['left', 'right'].includes(v)
+    // Validator inlined for 'vue/valid-define-props'.
+    // Includes type check to satisfy TS 'unknown' argument error.
+    validator: (v) => typeof v === 'string' && ['left', 'right'].includes(v)
   }
 });
 
@@ -57,10 +63,8 @@ defineEmits(['click']);
     </div>
 
     <span v-if="!iconOnly" class="button-label">
-      <template v-if="processing">Processing...</template>
-      <template v-else>
-        <slot>{{ label }}</slot>
-      </template>
+      <span v-if="processing">Processing...</span>
+      <slot v-else>{{ label }}</slot>
     </span>
 
     <div
@@ -76,6 +80,7 @@ defineEmits(['click']);
 </template>
 
 <style scoped>
+/* Base structural styles for the button component. */
 .rd-button {
   align-items: center;
   border: 1px solid transparent;
@@ -91,6 +96,7 @@ defineEmits(['click']);
   white-space: nowrap;
 }
 
+/* Dim opacity to indicate disabled state visually. */
 .rd-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -121,7 +127,7 @@ defineEmits(['click']);
 
 /* Danger: Red */
 .rd-button-danger {
-  background-color: #ef4444;
+  background-color: var(--color-danger);
   color: white;
 }
 
@@ -131,9 +137,12 @@ defineEmits(['click']);
 
 /* Outline: Border only */
 .rd-button-outline {
-  background-color: transparent;
+  /* Changed from transparent to white to satisfy accessibility contrast checkers. */
+  background-color: #fff;
   border-color: #cbd5e1;
-  color: #475569;
+
+  /* Darkened to #1e293b (Slate-800) for strict AAA accessibility contrast. */
+  color: #1e293b;
 }
 
 .rd-button-outline:not(:disabled):hover {
@@ -172,11 +181,13 @@ defineEmits(['click']);
   width: 1.15rem;
 }
 
+/* Ensure SVG icons fill their frame completely. */
 .icon-frame :deep(svg) {
   height: 100%;
   width: 100%;
 }
 
+/* Optically align text label to match icon baseline. */
 .button-label {
   transform: translateY(0.0625rem);
 }

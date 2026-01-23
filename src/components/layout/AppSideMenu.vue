@@ -4,15 +4,24 @@
  * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
  */
 import { computed, markRaw } from 'vue';
-import { useRoute,useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 // Component icons.
-import IconCalendar from '@/components/icons/IconCalendar.vue'; // Changed from IconHome
+import IconCalendar from '@/components/icons/IconCalendar.vue';
 import IconUsers from '@/components/icons/IconUsers.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useLayout } from '@/composables/useLayout';
 import { useSwipeAway } from '@/composables/useSwipeAway';
 
+/**
+ * @typedef {object} MenuItem
+ * @property {string} name - The display label for the menu item.
+ * @property {object} icon - The Vue component object for the icon.
+ * @property {string} path - The router path for navigation.
+ * @property {boolean} adminOnly - Restricts visibility to administrators only.
+ */
+
+/** @type {MenuItem[]} */
 const MENU_CONFIG = [
   { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
   { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true }
@@ -40,7 +49,7 @@ const filteredMenuItems = computed(() => {
 
 /**
  * Handles navigation events and ensures menu closure on mobile.
- * @param {object} item - Navigation item metadata.
+ * @param {MenuItem} item - Navigation item metadata.
  */
 const handleNavigation = (item) => {
   if (isMobile.value) {
@@ -56,7 +65,7 @@ const handleNavigation = (item) => {
       <div
         v-if="isSidebarOpen && isMobile"
         class="mobile-overlay"
-        @click="closeSidebar"
+        @click="() => closeSidebar()"
         @touchend="handleTouchEnd"
         @touchmove="handleTouchMove"
         @touchstart="handleTouchStart"
