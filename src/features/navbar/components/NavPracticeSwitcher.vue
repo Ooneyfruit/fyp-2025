@@ -20,7 +20,7 @@ const { practices, handleSwitch } = useUserPractices();
     <BaseSelect
       id="practice-context-selector"
       :label="label"
-      :model-value="user.practiceRef?.id"
+      :model-value="user?.practiceRef?.id"
       name="practice_id"
       @update:model-value="handleSwitch"
     >

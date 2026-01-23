@@ -1,6 +1,22 @@
 <script setup>
 import { computed } from 'vue';
 
+const HASH_SHIFT = 5;
+const HUE_RANGE = 360;
+const HUE_OFFSET = 160;
+const GRID_SIZE = 5;
+const PIVOT_INDEX = 2; // Center column index for mirroring.
+const UNIQUE_COLS = 3; // Number of unique columns before mirroring.
+const ENTROPY_MASK = 15;
+
+// Shape generation constants.
+const SHAPE_MIN_VAL = 6;
+const SHAPE_RECT_LIMIT = 8;
+const SHAPE_CIRCLE_LIMIT = 10;
+const SHAPE_TRI_LIMIT = 14;
+const TRIANGLE_ROTATION_BASE = 11;
+const TRIANGLE_ROTATION_STEP = 90;
+
 /**
  * Renders a unique, symmetrical insignia based on a seed string.
  * This component generates complex shapes using a mirrored grid and geometric primitives.
@@ -17,7 +33,8 @@ const props = defineProps({
 const generateHash = (str) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
+    const code = str.codePointAt(i) || 0;
+    hash = (hash << HASH_SHIFT) - hash + code;
     hash = Math.trunc(hash);
   }
   return Math.abs(hash);
@@ -29,34 +46,53 @@ const generateHash = (str) => {
  */
 const theme = computed(() => {
   const h = generateHash(props.seed);
-  const hue = h % 360;
+  const hue = h % HUE_RANGE;
+  const fgHue = (hue + HUE_OFFSET) % HUE_RANGE;
+
   return {
     bg: `hsl(${hue}, 25%, 94%)`,
-    fg: `hsl(${(hue + 160) % 360}, 55%, 40%)`
+    fg: `hsl(${fgHue}, 55%, 40%)`
   };
 });
+
+/**
+ * Shape configuration object.
+ * @typedef {object} ShapeConfig
+ * @property {string} type - The SVG element type (rect, circle, path).
+ * @property {object} props - The attributes for the SVG element.
+ * @property {number} [rotation] - Optional rotation degrees.
+ */
+
+/**
+ * Grid cell configuration object.
+ * @typedef {object} GridCell
+ * @property {string} id - Unique identifier for the cell.
+ * @property {string} type - The SVG element type.
+ * @property {object} props - The attributes for the SVG element.
+ * @property {string} transform - SVG transform string.
+ */
 
 /**
  * Resolves the shape configuration for a specific entropy value.
  * Extracting this logic reduces the complexity of the main grid loop.
  * @param {number} val - The 4-bit integer representing the cell entropy.
- * @returns {object|null} The shape properties or null if the cell is empty.
+ * @returns {ShapeConfig|null} The shape properties or null if the cell is empty.
  */
 const getShapeConfig = (val) => {
   // Logic: 0-5 are empty to ensure whitespace/clarity in the insignia.
-  if (val < 6) return null;
+  if (val < SHAPE_MIN_VAL) return null;
 
-  if (val <= 8) {
+  if (val <= SHAPE_RECT_LIMIT) {
     return { type: 'rect', props: { x: 0, y: 0, width: 1, height: 1 } };
   }
 
-  if (val <= 10) {
+  if (val <= SHAPE_CIRCLE_LIMIT) {
     return { type: 'circle', props: { cx: 0.5, cy: 0.5, r: 0.5 } };
   }
 
-  if (val <= 14) {
+  if (val <= SHAPE_TRI_LIMIT) {
     // Logic: create 4 distinct triangle rotations based on the value.
-    const rotation = (val - 11) * 90;
+    const rotation = (val - TRIANGLE_ROTATION_BASE) * TRIANGLE_ROTATION_STEP;
     return {
       type: 'path',
       props: { d: 'M 0 0 L 1 0 L 0 1 Z' },
@@ -69,44 +105,56 @@ const getShapeConfig = (val) => {
 };
 
 /**
- * Generates the 5x5 mirrored grid data.
- * Logic: generates 3 unique columns and mirrors them to create symmetry.
+ * Generates the render data for a specific grid cell.
+ * @param {number} x - The x-coordinate on the grid.
+ * @param {number} y - The y-coordinate on the grid.
+ * @param {number} hash - The pre-calculated hash.
+ * @returns {GridCell|null} The cell render object or null if empty.
  */
-const grid = computed(() => {
+const generateCell = (x, y, hash) => {
+  // Logic: mirror columns (0 mirrors 4, 1 mirrors 3).
+  const sourceX = x > PIVOT_INDEX ? GRID_SIZE - 1 - x : x;
+  const cellId = y * UNIQUE_COLS + sourceX;
+
+  // Extract 4 bits of entropy per unique cell.
+  const val = (hash >> cellId) & ENTROPY_MASK;
+  const shape = getShapeConfig(val);
+
+  if (!shape) return null;
+
+  let transform = `translate(${x} ${y})`;
+
+  // Logic: apply rotation if the shape configuration specifies it (e.g., triangles).
+  if (shape.rotation !== undefined) {
+    transform += ` rotate(${shape.rotation} 0.5 0.5)`;
+  }
+
+  return {
+    id: `${x}-${y}`,
+    type: shape.type,
+    props: shape.props,
+    transform
+  };
+};
+
+/**
+ * Generates the flattened list of cells for the 5x5 grid.
+ * Logic: returns a flat array to avoid nested templates and reduce loop depth.
+ */
+const cells = computed(() => {
   const h = generateHash(props.seed);
-  const rows = [];
+  /** @type {GridCell[]} */
+  const list = [];
 
-  for (let y = 0; y < 5; y++) {
-    const row = [];
-    for (let x = 0; x < 5; x++) {
-      // Logic: mirror columns (0 mirrors 4, 1 mirrors 3).
-      const sourceX = x > 2 ? 4 - x : x;
-      const cellId = y * 3 + sourceX;
-
-      // Extract 4 bits of entropy per unique cell.
-      const val = (h >> cellId) & 15;
-      const shape = getShapeConfig(val);
-
-      if (shape) {
-        let transform = `translate(${x} ${y})`;
-
-        // Logic: apply rotation if the shape configuration specifies it (e.g., triangles).
-        if (shape.rotation !== undefined) {
-          transform += ` rotate(${shape.rotation} 0.5 0.5)`;
-        }
-
-        row.push({
-          type: shape.type,
-          props: shape.props,
-          transform
-        });
-      } else {
-        row.push({ type: null });
+  for (let y = 0; y < GRID_SIZE; y++) {
+    for (let x = 0; x < GRID_SIZE; x++) {
+      const cell = generateCell(x, y, h);
+      if (cell) {
+        list.push(cell);
       }
     }
-    rows.push(row);
   }
-  return rows;
+  return list;
 });
 </script>
 
@@ -120,12 +168,8 @@ const grid = computed(() => {
   >
     <rect :fill="theme.bg" height="5" width="5" />
 
-    <template v-for="(row, y) in grid" :key="y">
-      <template v-for="(cell, x) in row" :key="x">
-        <g v-if="cell.type" :transform="cell.transform">
-          <component :is="cell.type" v-bind="cell.props" :fill="theme.fg" />
-        </g>
-      </template>
-    </template>
+    <g v-for="cell in cells" :key="cell.id" :transform="cell.transform">
+      <component :is="cell.type" v-bind="cell.props" :fill="theme.fg" />
+    </g>
   </svg>
 </template>

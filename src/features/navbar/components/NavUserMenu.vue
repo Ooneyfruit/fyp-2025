@@ -1,9 +1,9 @@
 <script setup>
 /**
  * User menu coordinator.
- * Orchestrates responsive views and global dismissal behaviors for the settings menu.
+ * Orchestrates responsive views and global dismissal behaviours for the settings menu.
  */
-import { computed,inject, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 
 import IconSettings from '@/components/icons/IconSettings.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
@@ -14,15 +14,24 @@ import { useLayout } from '@/composables/useLayout';
 import NavUserDropdown from './NavUserDropdown.vue';
 import NavUserTrigger from './NavUserTrigger.vue';
 
+// Destructure reactive authentication state and the logout method.
 const { user, logout } = useAuth();
+
+// Determine device layout for responsive conditional rendering.
 const { isMobile } = useLayout();
 
+// Manage the visibility state of the mobile dropdown menu.
 const isOpen = ref(false);
+
+// Reference the root element for external click detection logic.
 const menuRef = ref(null);
+
+// Inject the global modal handler for user account management.
 const userModal = inject('userModal');
 
 /**
  * Prepares profile data for the global account management modal.
+ * Logic: normalises the flat user state into the nested structure expected by UserModal.
  */
 const normalizedUserData = computed(() => {
   if (!user.value) return null;
@@ -33,16 +42,26 @@ const normalizedUserData = computed(() => {
   };
 });
 
+/**
+ * Derives the user's email address for display.
+ * Logic: provides a fallback empty string to satisfy strict prop typing during transitional null states.
+ */
+const userEmail = computed(() => {
+  return user.value?.email ?? '';
+});
+
 // Logic: bind generic dismissal detection for the menu container.
 useClickOutside(menuRef, () => {
   isOpen.value = false;
 });
 
+// Closes the menu context and triggers the account editing modal.
 const openAccountModal = () => {
   isOpen.value = false;
   userModal.value?.open(normalizedUserData.value);
 };
 
+// Logic: terminates the user session and performs a hard redirect to clear state.
 const handleLogout = async () => {
   isOpen.value = false;
   await logout();
@@ -53,7 +72,7 @@ const handleLogout = async () => {
 <template>
   <div ref="menuRef" class="user-menu-coordinator">
     <div v-if="!isMobile" class="desktop-layout">
-      <NavUserTrigger :email="user.email" @click="openAccountModal" />
+      <NavUserTrigger :email="userEmail" @click="openAccountModal" />
 
       <BaseButton label="Log Out" variant="secondary" @click="handleLogout" />
     </div>

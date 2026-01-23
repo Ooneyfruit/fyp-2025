@@ -47,7 +47,6 @@ const getNestedValue = (obj, path) => {
 
   for (const part of parts) {
     if (current === null || current === undefined) return;
-    // @ts-ignore - Valid dynamic access in JS
     current = current[part];
   }
   return current;

@@ -16,7 +16,7 @@ import { useAuth } from '@/composables/useAuth';
 /**
  * @typedef {object} AuthInterface
  * @property {import('vue').Ref<any>} user - The current authenticated user object (or null).
- * @property {() => Promise<void>} login - Function to initiate the login process.
+ * @property {() => Promise<any>} login - Function to initiate the login process.
  */
 
 // --- Logic & State ---

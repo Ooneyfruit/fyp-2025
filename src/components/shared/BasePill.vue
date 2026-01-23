@@ -12,7 +12,10 @@ defineProps({
   variant: {
     type: String,
     default: 'muted',
-    validator: (v) => ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes(v)
+    validator: (v) =>
+      ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes(
+        /** @type {string} */ (v)
+      )
   }
 });
 </script>
@@ -30,7 +33,7 @@ defineProps({
 </template>
 
 <style scoped>
-/* Layout: specific dimensions for icon containers within the pill. */
+/* Layout: Specific dimensions for icon containers within the pill. */
 .rd-pill-icon-frame {
   align-items: center;
   display: flex;
@@ -40,13 +43,13 @@ defineProps({
   width: 0.85rem;
 }
 
-/* Internal: ensures any svg passed into the icon slot scales correctly to fit the container. */
+/* Internal: Ensures any SVG passed into the icon slot scales correctly to fit the container. */
 .rd-pill-icon-frame :deep(svg) {
   height: 100%;
   width: 100%;
 }
 
-/* Alignment: applies a minor vertical nudge to balance the visual baseline of uppercase labels. */
+/* Alignment: Applies a minor vertical nudge to balance the visual baseline of uppercase labels. */
 .rd-pill-label {
   transform: translateY(0.035rem);
 }

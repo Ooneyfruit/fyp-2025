@@ -15,7 +15,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 <template>
   <Teleport to="body">
     <Transition name="toast-slide">
-      <div v-show="isVisible" aria-live="polite" class="toast-overlay" role="status">
+      <output v-show="isVisible" class="toast-overlay">
         <div class="toast-body rd-card">
           <div class="toast-content">
             <span class="message">{{ message }}</span>
@@ -25,16 +25,20 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
                 v-if="actionLabel"
                 :label="actionLabel"
                 variant="primary"
-                @click="handleAction"
+                @click="() => handleAction()"
               />
 
-              <button aria-label="Dismiss notification" class="dismiss-btn" @click="hideToast">
+              <button
+                aria-label="Dismiss notification"
+                class="dismiss-btn"
+                @click="() => hideToast()"
+              >
                 <IconClose />
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </output>
     </Transition>
   </Teleport>
 </template>
