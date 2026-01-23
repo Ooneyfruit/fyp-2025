@@ -2,8 +2,8 @@
 /**
  * Component logic for monitoring global authentication readiness.
  */
-import { useAuth } from '../../composables/useAuth';
-import AppLoading from '../shared/AppLoading.vue';
+import AppLoading from '@/components/shared/AppLoading.vue';
+import { useAuth } from '@/composables/useAuth';
 
 // Access the reactive readiness state from the auth composable
 const { isAuthReady } = useAuth();

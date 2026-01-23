@@ -3,9 +3,9 @@
  * Atomic practice context switcher.
  * Utilizes the id prefix method to reliably capture all user clinic associations.
  */
-import BaseSelect from '../../../components/shared/BaseSelect.vue';
-import { useAuth } from '../../../composables/useAuth';
-import { useUserPractices } from '../composables/useUserPractices';
+import BaseSelect from '@/components/shared/BaseSelect.vue';
+import { useAuth } from '@/composables/useAuth';
+import { useUserPractices } from '@/features/navbar/composables/useUserPractices';
 
 defineProps({
   label: { type: String, default: '' }

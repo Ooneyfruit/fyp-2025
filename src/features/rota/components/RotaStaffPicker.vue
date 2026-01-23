@@ -5,7 +5,7 @@
  * Displays a searchable list of staff members categorized by their suitability
  * for a specific role. Allows selection of a staff member.
  */
-import IconPlus from '../../../components/icons/IconPlus.vue';
+import IconPlus from '@/components/icons/IconPlus.vue';
 
 // Define props with explicit types and default values to prevent runtime warnings
 defineProps({

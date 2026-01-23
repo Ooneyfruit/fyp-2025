@@ -1,6 +1,6 @@
 /**
  * Global layout manager and responsive state provider.
- * Centralizes viewport detection, sidebar state memory, and multi-stage stabilization.
+ * Centralises viewport detection, sidebar state memory, and multi-stage stabilisation.
  */
 import { ref, watch } from 'vue';
 
@@ -18,6 +18,14 @@ const canAnimate = ref(false);
 
 // Memory: tracks the intended desktop state when returning from mobile view.
 const desktopPreference = ref(getInitialPreference());
+
+// Constants to satisfy the no-magic-numbers rule.
+const IDLE_CALLBACK_FALLBACK_MS = 50;
+const MIN_TIME_REMAINING_MS = 10;
+const BUSY_RETRY_DELAY_MS = 200;
+const STABILISATION_COOLDOWN_MS = 500;
+const CHECK_INTERVAL_MS = 100;
+const REQUIRED_STABLE_CHECKS = 6;
 
 /**
  * Initial Sidebar State:
@@ -39,19 +47,11 @@ function syncRootClasses() {
 }
 
 /**
- * Executes an ultra-conservative stabilization check.
- * Transitions are only enabled after the browser proves sustained idle behavior.
+ * Executes an ultra-conservative stabilisation check.
+ * Transitions are only enabled after the browser proves sustained idle behaviour.
  */
-export function initLayoutStabilization() {
+export function initLayoutStabilisation() {
   if (typeof globalThis === 'undefined') return;
-
-  // Constants to satisfy no-magic-numbers rule
-  const IDLE_CALLBACK_FALLBACK_MS = 50;
-  const MIN_TIME_REMAINING_MS = 10;
-  const BUSY_RETRY_DELAY_MS = 200;
-  const STABILIZATION_COOLDOWN_MS = 500;
-  const CHECK_INTERVAL_MS = 100;
-  const REQUIRED_STABLE_CHECKS = 6; // Must pass 3 consecutive idle checks.
 
   let idleCheckCount = 0;
 
@@ -72,8 +72,7 @@ export function initLayoutStabilization() {
         // Final "cool-down" to allow for hardware-specific display refresh syncing.
         setTimeout(() => {
           canAnimate.value = true;
-          // Console log removed to satisfy linting rules.
-        }, STABILIZATION_COOLDOWN_MS);
+        }, STABILISATION_COOLDOWN_MS);
       } else {
         // Recursive check to ensure stability is persistent, not a momentary pause.
         setTimeout(verifyStability, CHECK_INTERVAL_MS);
@@ -108,7 +107,7 @@ const updateLayoutState = () => {
   }
 };
 
-// Global reactive synchronization for document-level classes.
+// Global reactive synchronisation for document-level classes.
 watch([isSidebarOpen, isMobile], () => syncRootClasses(), { immediate: true });
 
 if (typeof globalThis !== 'undefined') {
@@ -126,7 +125,7 @@ if (typeof globalThis !== 'undefined') {
  */
 
 /**
- * Provides access to centralized layout states and control methods.
+ * Provides access to centralised layout states and control methods.
  * @returns {UseLayoutReturn} Reactive layout properties and mutation functions.
  */
 export function useLayout() {

@@ -5,9 +5,10 @@
  */
 import { ref } from 'vue';
 
-import BaseCardList from '../../../components/shared/BaseCardList.vue';
-import BaseTable from '../../../components/shared/BaseTable.vue';
-import { useBreakpoints } from '../../../composables/useBreakpoints';
+import BaseCardList from '@/components/shared/BaseCardList.vue';
+import BaseTable from '@/components/shared/BaseTable.vue';
+import { useBreakpoints } from '@/composables/useBreakpoints';
+
 import UserActionButtons from './UserActionButtons.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';

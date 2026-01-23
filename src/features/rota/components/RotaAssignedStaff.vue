@@ -1,5 +1,5 @@
 <script setup>
-import IconClose from '../../../components/icons/IconClose.vue';
+import IconClose from '@/components/icons/IconClose.vue';
 //
 const props = defineProps({
   staff: { type: Array, default: () => [] },

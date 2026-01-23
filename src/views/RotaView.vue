@@ -8,17 +8,17 @@ import { doc } from 'firebase/firestore';
 import { computed, ref, watch } from 'vue';
 
 // Components
-import AppPageContainer from '../components/layout/AppPageContainer.vue';
-import { useAuth } from '../composables/useAuth';
-import { useBreakpoints } from '../composables/useBreakpoints';
-import { useToast } from '../composables/useToast';
-import RotaGrid from '../features/rota/components/RotaGrid.vue';
-import RotaHeader from '../features/rota/components/RotaHeader.vue';
-import RotaShiftModal from '../features/rota/components/RotaShiftModal.vue';
-import { useRotaData } from '../features/rota/composables/useRotaData';
-import { useRotaDates } from '../features/rota/composables/useRotaDates';
-import { createShift, deleteShift } from '../features/rota/rotaAPI';
-import { db } from '../services/firebase';
+import AppPageContainer from '@/components/layout/AppPageContainer.vue';
+import { useAuth } from '@/composables/useAuth';
+import { useBreakpoints } from '@/composables/useBreakpoints';
+import { useToast } from '@/composables/useToast';
+import RotaGrid from '@/features/rota/components/RotaGrid.vue';
+import RotaHeader from '@/features/rota/components/RotaHeader.vue';
+import RotaShiftModal from '@/features/rota/components/RotaShiftModal.vue';
+import { useRotaData } from '@/features/rota/composables/useRotaData';
+import { useRotaDates } from '@/features/rota/composables/useRotaDates';
+import { createShift, deleteShift } from '@/features/rota/rotaAPI';
+import { db } from '@/services/firebase';
 
 // --- Type Definitions ---
 

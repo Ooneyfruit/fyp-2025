@@ -1,6 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, Timestamp } from 'firebase/firestore';
 
-import { db } from '../../services/firebase';
+import { db } from '@/services/firebase';
 
 // --- Configuration Fetching ---
 

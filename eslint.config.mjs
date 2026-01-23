@@ -13,6 +13,8 @@ import globals from 'globals';
 
 // Import the custom local rule to discourage nested templates.
 import noNestedTemplate from './tools/eslint/rules/noNestedTemplate.js';
+// Import the custom local rule to enforce alias usage.
+import preferAlias from './tools/eslint/rules/preferAlias.js';
 
 /**
  * Configuration constants for quality gates.
@@ -50,7 +52,9 @@ export default [
         typescript: {
           project: './jsconfig.json'
         }
-      }
+      },
+      // Register virtual modules to prevent unresolvable path errors for Vite plugins.
+      'import/core-modules': ['virtual:pwa-register/vue']
     }
   },
 
@@ -129,16 +133,18 @@ export default [
 
   // 5. Project-specific RotaDent constraints.
   {
-    files: ['**/*.vue'],
+    files: ['**/*.{js,vue}'],
     plugins: {
       rotadent: {
         rules: {
-          'no-nested-template': noNestedTemplate
+          'no-nested-template': noNestedTemplate,
+          'prefer-alias': preferAlias
         }
       }
     },
     rules: {
-      'rotadent/no-nested-template': 'warn'
+      'rotadent/no-nested-template': 'warn',
+      'rotadent/prefer-alias': 'error'
     }
   },
 

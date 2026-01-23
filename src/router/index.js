@@ -6,12 +6,12 @@
 import { watch } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { isAuthReady, user } from '../composables/useAuth';
-import { useToast } from '../composables/useToast';
-import AdminRepairView from '../views/AdminRepairView.vue';
-import LoginView from '../views/LoginView.vue';
-import RotaView from '../views/RotaView.vue';
-import UserView from '../views/UserView.vue';
+import { isAuthReady, user } from '@/composables/useAuth';
+import { useToast } from '@/composables/useToast';
+import AdminRepairView from '@/views/AdminRepairView.vue';
+import LoginView from '@/views/LoginView.vue';
+import RotaView from '@/views/RotaView.vue';
+import UserView from '@/views/UserView.vue';
 
 /**
  * @typedef {object} RouterUser

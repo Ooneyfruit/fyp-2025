@@ -1,5 +1,5 @@
 <script setup>
-import IconIdenticon from '../../../components/icons/IconIdenticon.vue';
+import IconIdenticon from '@/components/icons/IconIdenticon.vue';
 
 /**
  * Displays user identity with dynamic support for synchronized Google icons.

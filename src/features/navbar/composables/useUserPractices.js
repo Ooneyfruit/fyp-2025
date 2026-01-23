@@ -5,8 +5,8 @@
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
-import { user as authUser } from '../../../composables/useAuth';
-import { db } from '../../../services/firebase';
+import { user as authUser } from '@/composables/useAuth';
+import { db } from '@/services/firebase';
 
 /**
  * Global cache management for user profiles.

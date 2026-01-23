@@ -3,7 +3,7 @@
  * Desktop profile trigger ui.
  * Provides a simplified interface for accessing account settings.
  */
-import IconEdit from '../../../components/icons/IconEdit.vue';
+import IconEdit from '@/components/icons/IconEdit.vue';
 
 defineProps({
   email: { type: String, required: true }

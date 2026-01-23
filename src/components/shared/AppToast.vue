@@ -3,8 +3,9 @@
  * Primary responsibility: provides a global, interactive notification system.
  * Animates messages and optional action buttons into the viewport.
  */
-import { useToast } from '../../composables/useToast';
-import IconClose from '../icons/IconClose.vue';
+import IconClose from '@/components/icons/IconClose.vue';
+import { useToast } from '@/composables/useToast';
+
 import BaseButton from './BaseButton.vue';
 
 // Access the shared reactive state from the toast composition function.

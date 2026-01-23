@@ -1,9 +1,10 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import BaseModal from '../../../components/shared/BaseModal.vue';
-import { usePracticeUsers } from '../../users/composables/usePracticeUsers';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import BaseModal from '@/components/shared/BaseModal.vue';
+import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
+
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
 import RotaStaffPicker from './RotaStaffPicker.vue';
 
