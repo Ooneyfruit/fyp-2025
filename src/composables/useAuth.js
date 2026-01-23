@@ -1,25 +1,39 @@
 /**
- * Authentication and Profile Synchronization Composable.
- * Logic: handles user sessions and ensures Google profile images are synced to Firestore.
+ * Authentication and profile synchronisation composable.
+ * Logic: manages user sessions and ensures Google profile data is persisted to Firestore.
  */
 
-import { GoogleAuthProvider,onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { ref } from 'vue';
 
 import { auth, db } from '../services/firebase';
 
+/**
+ * The global user state ref.
+ * @type {import('vue').Ref<any>}
+ */
 export const user = ref(null);
+
+/**
+ * Indicates if the initial authentication check has completed.
+ */
 export const isAuthReady = ref(false);
+
 const provider = new GoogleAuthProvider();
 
+/**
+ * Internal listener for Firestore profile updates.
+ * Typed explicitly to resolve 'any' inference errors during unsubscription.
+ * @type {import('firebase/firestore').Unsubscribe | null}
+ */
 let profileListener = null;
 
 /**
- * Synchronizes and overwrites the database profile image with the Google OAuth icon.
+ * Synchronises and overwrites the database profile image with the Google OAuth icon.
  * Logic: triggers only if the Google URL is new, facilitating a slow migration to real icons.
  * @param {string} uid - User ID.
- * @param {string} googleUrl - The photo URL from the Google provider.
+ * @param {string | null} googleUrl - The photo URL from the Google provider.
  * @param {string} currentUrl - The existing URL in Firestore.
  * @returns {Promise<void>} Resolves when the update is complete or skipped.
  */
@@ -27,24 +41,29 @@ const syncProfileImage = async (uid, googleUrl, currentUrl) => {
   if (googleUrl && googleUrl !== currentUrl) {
     const userRef = doc(db, 'users', uid);
     try {
-      // Overwrite the field to capture the high-quality Google icon
+      // Overwrite the field to capture the high-quality Google icon.
       await updateDoc(userRef, {
         profile_image: googleUrl,
         last_sync: new Date().toISOString()
       });
-    } catch (error) {
-      console.warn('[useAuth] Failed to update profile image:', error.message);
+    } catch {
+      // Silent failure for background synchronisation to prevent UI disruption.
+      return;
     }
   }
 };
 
 /**
  * Starts a real-time listener for the user profile and practice context.
- * @param {object} firebaseUser - The authenticated Firebase user.
+ * Logic: maps Firestore document data and membership state to the global user ref.
+ * @param {import('firebase/auth').User} firebaseUser - The authenticated Firebase user.
  * @returns {void}
  */
 const startProfileListener = (firebaseUser) => {
-  if (profileListener) profileListener();
+  // Clean up any existing listeners before establishing a new connection.
+  if (profileListener) {
+    profileListener();
+  }
 
   const userRef = doc(db, 'users', firebaseUser.uid);
 
@@ -59,17 +78,19 @@ const startProfileListener = (firebaseUser) => {
 
       const userData = userSnap.data();
 
-      // Attempt to sync the profile image from the auth provider
+      // Update the profile image if the Google provider version has changed.
       syncProfileImage(firebaseUser.uid, firebaseUser.photoURL, userData.profile_image);
 
       const practiceRef = userData.current_practice;
 
       try {
-        if (!practiceRef) throw new Error('No practice context assigned.');
+        if (!practiceRef) {
+          throw new Error('No practice context assigned.');
+        }
 
         const membershipId = `${firebaseUser.uid}_${practiceRef.id}`;
 
-        // Concurrent fetch for membership and practice details
+        // Concurrent fetch for membership roles and practice details.
         const [mSnap, pSnap] = await Promise.all([
           getDoc(doc(db, 'practice_users', membershipId)),
           getDoc(practiceRef)
@@ -85,8 +106,8 @@ const startProfileListener = (firebaseUser) => {
           practiceRef: practiceRef,
           activePracticeName: practiceName
         };
-      } catch (error) {
-        console.error('[useAuth] Context Update Failed:', error.message);
+      } catch {
+        // Fallback to basic profile if membership or practice data is inaccessible.
         user.value = {
           uid: firebaseUser.uid,
           ...userData,
@@ -97,8 +118,8 @@ const startProfileListener = (firebaseUser) => {
         isAuthReady.value = true;
       }
     },
-    (error) => {
-      console.error('[useAuth] Listener Error:', error.message);
+    () => {
+      // Handle snapshot errors by marking auth as ready to unblock the UI.
       isAuthReady.value = true;
     }
   );
@@ -106,28 +127,35 @@ const startProfileListener = (firebaseUser) => {
 
 /**
  * Global authentication observer.
+ * Logic: triggers the profile listener on login and performs clean-up on logout.
  */
 onAuthStateChanged(auth, (firebaseUser) => {
   if (firebaseUser) {
     startProfileListener(firebaseUser);
   } else {
-    if (profileListener) profileListener();
+    if (profileListener) {
+      profileListener();
+    }
     user.value = null;
     isAuthReady.value = true;
   }
 });
 
 /**
- * Exported auth interface.
- * @returns {object} The auth state refs and login/logout methods.
+ * Exported authentication interface.
+ * @returns {object} The reactive auth state and session management methods.
  */
 export function useAuth() {
   return {
     user,
     isAuthReady,
+    // Triggers the Google OAuth popup flow.
     login: () => signInWithPopup(auth, provider),
+    // Terminates the session and cleans up active listeners.
     logout: async () => {
-      if (profileListener) profileListener();
+      if (profileListener) {
+        profileListener();
+      }
       await signOut(auth);
     }
   };
