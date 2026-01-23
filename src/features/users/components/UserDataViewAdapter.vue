@@ -2,6 +2,7 @@
 /**
  * User data adapter for management interfaces.
  * Logic: dynamically switches between table and card visualisations based on container width.
+ * Refactored to include explicit type annotations to satisfy strict TypeScript checks.
  */
 import { ref } from 'vue';
 
@@ -11,6 +12,7 @@ import { useBreakpoints } from '@/composables/useBreakpoints';
 
 import UserActionButtons from './UserActionButtons.vue';
 import UserIdentity from './UserIdentity.vue';
+import UserListCard from './UserListCard.vue';
 import UserStatusPills from './UserStatusPills.vue';
 
 // Constants to eliminate magic numbers and improve maintainability.
@@ -33,7 +35,6 @@ const MILLISECONDS_IN_SECOND = 1000;
  * @property {any} [end_date] - Optional contract end date.
  */
 
-// Define props without variable assignment as the props are not used within the script block.
 defineProps({
   users: {
     // Type cast applied to the constructor to satisfy TypeScript property checks.
@@ -42,7 +43,7 @@ defineProps({
   }
 });
 
-defineEmits(['edit']);
+const emit = defineEmits(['edit']);
 
 const adapterRoot = ref(null);
 
@@ -78,16 +79,66 @@ const formatDate = (ts) => {
 };
 
 /**
- * Configuration for the data table headers.
+ * Configuration for the data table headers using component injection.
+ * Logic: explicitly types 'item' parameters as UserMember to prevent implicit any errors.
  */
 const userHeaders = [
-  { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' },
-  { key: 'role', label: 'Role', width: 'min-content' },
-  { key: 'status', label: 'Status', width: 'min-content' },
-  { key: 'contract', label: 'Contract', width: 'min-content' },
-  { key: 'joined', label: 'Joined', width: '8.5rem' },
-  { key: 'endDate', label: 'End Date', width: '8.5rem' },
-  { key: 'actions', label: 'Actions', width: 'min-content', align: 'center' }
+  {
+    key: 'member',
+    label: 'Member',
+    width: 'minmax(10rem, 1fr)',
+    component: UserIdentity,
+    // Explicitly casting the parameter to UserMember to satisfy TypeScript.
+    props: (/** @type {UserMember} */ item) => ({ profile: item.profile })
+  },
+  {
+    key: 'role',
+    label: 'Role',
+    width: 'min-content',
+    component: UserStatusPills,
+    props: (/** @type {UserMember} */ item) => ({ member: item, type: 'role' })
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    width: 'min-content',
+    component: UserStatusPills,
+    props: (/** @type {UserMember} */ item) => ({ member: item, type: 'admin' })
+  },
+  {
+    key: 'contract',
+    label: 'Contract',
+    width: 'min-content',
+    component: UserStatusPills,
+    props: (/** @type {UserMember} */ item) => ({ member: item, type: 'contract' })
+  },
+  {
+    key: 'joined',
+    label: 'Joined',
+    width: '8.5rem',
+    // 'val' is the specific cell value, while 'item' represents the full row data.
+    formatter: (/** @type {any} */ val, /** @type {UserMember} */ item) =>
+      formatDate(item.start_date),
+    cellClass: 'date-text'
+  },
+  {
+    key: 'endDate',
+    label: 'End Date',
+    width: '8.5rem',
+    formatter: (/** @type {any} */ val, /** @type {UserMember} */ item) =>
+      item.end_date ? formatDate(item.end_date) : '—',
+    cellClass: 'date-text'
+  },
+  {
+    key: 'actions',
+    label: 'Actions',
+    width: 'min-content',
+    align: 'center',
+    component: UserActionButtons,
+    listeners: (/** @type {UserMember} */ item) => ({
+      edit: () => emit('edit', item)
+    })
+  }
 ];
 </script>
 
@@ -97,78 +148,15 @@ const userHeaders = [
       <p>Synchronising Practice Identities...</p>
     </div>
 
-    <BaseTable v-else-if="!isMobile" :headers="userHeaders" :items="users">
-      <template #cell(member)="{ item }">
-        <UserIdentity :profile="/** @type {any} */ (item).profile" />
-      </template>
+    <BaseTable v-else-if="!isMobile" :headers="userHeaders" :items="users" />
 
-      <template #cell(role)="{ item }">
-        <UserStatusPills :member="/** @type {any} */ (item)" type="role" />
-      </template>
-
-      <template #cell(status)="{ item }">
-        <UserStatusPills :member="/** @type {any} */ (item)" type="admin" />
-      </template>
-
-      <template #cell(contract)="{ item }">
-        <UserStatusPills :member="/** @type {any} */ (item)" type="contract" />
-      </template>
-
-      <template #cell(joined)="{ item }">
-        <span class="date-text">
-          {{ formatDate(/** @type {any} */ (item).start_date) }}
-        </span>
-      </template>
-
-      <template #cell(endDate)="{ item }">
-        <span class="date-text">
-          {{
-            /** @type {any} */ (item).end_date
-              ? formatDate(/** @type {any} */ (item).end_date)
-              : '—'
-          }}
-        </span>
-      </template>
-
-      <template #cell(actions)="{ item }">
-        <UserActionButtons @edit="$emit('edit', item)" />
-      </template>
-    </BaseTable>
-
-    <BaseCardList v-else :items="users" min-card-width="18rem">
-      <template #card-header="{ item }">
-        <div class="card-identity-wrapper">
-          <UserIdentity :profile="/** @type {any} */ (item).profile" />
-          <UserActionButtons class="card-edit-btn" @edit="$emit('edit', item)" />
-        </div>
-      </template>
-      <template #card-body="{ item }">
-        <div class="detail-row">
-          <span class="label">Role</span>
-          <UserStatusPills :member="/** @type {any} */ (item)" type="role" />
-        </div>
-        <div class="detail-row">
-          <span class="label">Status</span>
-          <UserStatusPills :member="/** @type {any} */ (item)" type="admin" />
-        </div>
-        <div class="detail-row">
-          <span class="label">Joined</span>
-          <span class="date-text">
-            {{ formatDate(/** @type {any} */ (item).start_date) }}
-          </span>
-        </div>
-        <div class="detail-row">
-          <span class="label">Ends</span>
-          <span class="date-text">
-            {{
-              /** @type {any} */ (item).end_date
-                ? formatDate(/** @type {any} */ (item).end_date)
-                : '—'
-            }}
-          </span>
-        </div>
-      </template>
-    </BaseCardList>
+    <BaseCardList
+      v-else
+      :card-component="UserListCard"
+      :items="users"
+      min-card-width="18rem"
+      @edit="(/** @type {UserMember} */ item) => $emit('edit', item)"
+    />
   </div>
 </template>
 
@@ -189,32 +177,10 @@ const userHeaders = [
   justify-content: center;
 }
 
-.date-text {
+/* Logic: standardises date appearance across table and card layouts. */
+:deep(.date-text) {
   color: var(--text-main);
   font-size: 0.85rem;
   white-space: nowrap;
-}
-
-.card-identity-wrapper {
-  align-items: flex-start;
-  display: flex;
-  gap: 0.75rem;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.detail-row {
-  align-items: center;
-  display: grid;
-  gap: var(--spacing-sm);
-  grid-template-columns: 6.25rem 1fr;
-  margin-bottom: var(--spacing-xs);
-}
-
-.detail-row .label {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
 }
 </style>

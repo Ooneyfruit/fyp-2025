@@ -2,6 +2,11 @@
  * @file usersApi.js
  * @description Centralises access to user-related components and logic.
  * Serves as the public API for the users feature module to ensure consistent imports.
+ * Updated to explicitly export shared types for cross-feature compatibility.
+ */
+
+/**
+ * @typedef {import('./composables/usePracticeUsers').PracticeUser} UserMember
  */
 
 // Primary user interface components for identity and management.

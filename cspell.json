@@ -13,6 +13,7 @@
     "ntvs",
     "rotadent",
     "sonarjs",
+    "sonarlint",
     "subcollection",
     "subcollections",
     "subdocument",
@@ -31,5 +32,9 @@
     ".vscode/extensions.json",
     "docs/gen"
   ],
-  "ignoreRegExpList": ["Urls", "Email", "/\\b[A-Za-z0-9-_]{20,}\\b/g"]
+  "ignoreRegExpList": [
+    "Urls",
+    "Email",
+    "/\\b[A-Za-z0-9-_]{20,}\\b/g"
+  ]
 }

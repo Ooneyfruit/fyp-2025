@@ -1,16 +1,32 @@
 /**
- * Manages color logic for the Rota view.
- * - Generates consistent, accessible colors for Job Roles based on their ID.
- * - Uses a global registry to prevent color collisions between distinct roles.
+ * Manages colour logic for the Rota view.
+ * Primary responsibility: generates consistent, accessible colours for Job Roles based on their ID
+ * to ensure visual distinction across the interface.
+ * Refactored to resolve strict TypeScript index checks and function scoping requirements.
+ */
+
+/**
+ * @typedef {object} ColourPalette
+ * @property {string} bg - Hex code for the background colour.
+ * @property {string} accent - Hex code for the accent/text colour.
  */
 
 // Global state acts as the source of truth, ensuring consistent colouring
 // across the application regardless of where useRotaColors is called.
+/** @type {Map<string, number>} */
 const globalRoleRegistry = new Map();
+
+/** @type {number} */
 let nextAvailableIndex = 0;
 
-// A palette of accessible tones.
-// Duplicates have been removed to ensure maximum visual distinction.
+// Constants to eliminate magic numbers and improve maintainability.
+const DEFAULT_PALETTE_INDEX = 7;
+
+/**
+ * A palette of accessible tones.
+ * Logic: tones are selected to ensure high contrast and maximum visual distinction.
+ * @type {ColourPalette[]}
+ */
 const ROLE_PALETTE = [
   { bg: '#e0f2fe', accent: '#0369a1' }, // Sky Blue
   { bg: '#f3e8ff', accent: '#7e22ce' }, // Purple
@@ -23,34 +39,40 @@ const ROLE_PALETTE = [
 ];
 
 /**
- * Composable providing color assignment logic.
- * @returns {object} The color utility methods.
+ * Deterministically assigns a colour palette to a Role ID.
+ * Logic: checks the global registry first; if the ID is new, assigns the next
+ * available colour in the sequence to minimise collisions.
+ * @param {string} [roleId] - The unique identifier for the job role.
+ * @returns {ColourPalette} The colour object containing background and accent hex codes.
+ */
+const getRoleColor = (roleId) => {
+  // Use the default slate palette if no role identifier is provided.
+  if (!roleId) {
+    return ROLE_PALETTE[DEFAULT_PALETTE_INDEX];
+  }
+
+  // Retrieve existing assignment from the registry to maintain consistency.
+  if (globalRoleRegistry.has(roleId)) {
+    // Logic: the nullish coalescing operator ensures the index is treated as a number
+    // even if the Map lookup technically returns undefined, satisfying TypeScript checks.
+    const index = globalRoleRegistry.get(roleId) ?? DEFAULT_PALETTE_INDEX;
+    return ROLE_PALETTE[index];
+  }
+
+  // Register the new role and assign it the current available index.
+  const index = nextAvailableIndex;
+  globalRoleRegistry.set(roleId, index);
+
+  // Increment the index and wrap around to the start of the palette if the limit is reached.
+  nextAvailableIndex = (nextAvailableIndex + 1) % ROLE_PALETTE.length;
+
+  return ROLE_PALETTE[index];
+};
+
+/**
+ * Composable providing colour assignment logic.
+ * @returns {object} The colour utility methods.
  */
 export function useRotaColors() {
-  /**
-   * Deterministically assigns a color palette to a Role ID.
-   * Checks the global registry first; if the ID is new, assigns the next
-   * available color in the sequence to minimize collisions.
-   * @param {string} roleId - The unique identifier for the job role.
-   * @returns {object} The color object containing background and accent hex codes.
-   */
-  const getRoleColor = (roleId) => {
-    if (!roleId) return ROLE_PALETTE[7]; // Default Slate
-
-    if (globalRoleRegistry.has(roleId)) {
-      const index = globalRoleRegistry.get(roleId);
-      return ROLE_PALETTE[index];
-    }
-
-    // Assign new color
-    const index = nextAvailableIndex;
-    globalRoleRegistry.set(roleId, index);
-
-    // Cycle to the next color for the next unique role
-    nextAvailableIndex = (nextAvailableIndex + 1) % ROLE_PALETTE.length;
-
-    return ROLE_PALETTE[index];
-  };
-
   return { getRoleColor };
 }
