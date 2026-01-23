@@ -1,142 +1,177 @@
 import { computed, ref, watch } from 'vue';
 
+// Constants to eliminate magic numbers and comply with project linting standards.
+const STORAGE_KEY = 'rotadent_view_date';
+const MOBILE_DAY_COUNT = 3;
+const DESKTOP_DAY_COUNT = 7;
+const MONDAY_START_OFFSET = 1;
+const SUNDAY_INDEX = 0;
+const SATURDAY_INDEX = 6;
+const MONDAY_ADJUSTMENT = -6;
+const MIDNIGHT_HOUR = 0;
+
+/**
+ * @typedef {object} RotaDay
+ * @property {string} key - Unique key for list rendering.
+ * @property {string} iso - ISO date string.
+ * @property {string} label - Formatted weekday and day.
+ * @property {Date} dateObj - Native date object.
+ * @property {boolean} isWeekend - Weekend flag.
+ * @property {boolean} isToday - Current date flag.
+ * @property {boolean} isBeforeToday - Past date flag.
+ */
+
+/**
+ * @typedef {object} Breakpoints
+ * @property {import('vue').Ref<boolean>} isMobile - Reactive mobile state.
+ */
+
+/**
+ * Adjusts a date object to the start of its week (Monday).
+ * @param {Date} date - The date to adjust.
+ * @returns {Date} The Monday of the containing week.
+ */
+const getStartOfWeek = (date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === SUNDAY_INDEX ? MONDAY_ADJUSTMENT : MONDAY_START_OFFSET);
+  d.setDate(diff);
+  d.setHours(MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR);
+  return d;
+};
+
+/**
+ * Retrieves the initial anchor date from local storage or defaults to today.
+ * @returns {Date} The initialised anchor date.
+ */
+const getInitialAnchorDate = () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const now = new Date();
+  now.setHours(MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR);
+
+  if (saved) {
+    const d = new Date(saved);
+    // Logic: use Number.isNaN as required by unicorn and sonarlint rules.
+    if (!Number.isNaN(d.getTime())) {
+      return d;
+    }
+  }
+  return now;
+};
+
+/**
+ * Standardises a date into a long-form month and year string.
+ * @param {Date} d - The date to format.
+ * @returns {string} Formatted month and year (e.g. "January 2025").
+ */
+const formatMonthYear = (d) =>
+  new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
+
+/**
+ * Formats a date range into a readable month label for the header.
+ * Logic: uses optional chaining and null checks to resolve "possibly undefined" errors.
+ * @param {RotaDay[]} days - The visible days in the current view.
+ * @returns {string} Formatted month/year range string.
+ */
+const formatMonthLabel = (days) => {
+  const start = days[SUNDAY_INDEX]?.dateObj;
+  const end = days.at(-1)?.dateObj;
+
+  // Verify both boundary dates exist before attempting to format the range label.
+  if (!start || !end) {
+    return '';
+  }
+
+  const startLabel = formatMonthYear(start);
+  const endLabel = formatMonthYear(end);
+
+  return startLabel === endLabel ? startLabel : `${startLabel} - ${endLabel}`;
+};
+
+/**
+ * Generates an array of day objects for the rota grid view.
+ * @param {Date} startDate - The beginning of the view range.
+ * @param {number} count - Number of days to generate.
+ * @returns {RotaDay[]} Collection of day descriptors.
+ */
+const generateDaysArray = (startDate, count) => {
+  const days = [];
+  const today = new Date();
+  today.setHours(MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR);
+  const todayStr = today.toISOString().split('T')[0];
+
+  for (let i = 0; i < count; i++) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    const iso = d.toISOString().split('T')[0];
+    days.push({
+      key: iso,
+      iso,
+      label: new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric' }).format(d),
+      dateObj: d,
+      isWeekend: d.getDay() === SUNDAY_INDEX || d.getDay() === SATURDAY_INDEX,
+      isToday: iso === todayStr,
+      isBeforeToday: d < today
+    });
+  }
+  return days;
+};
+
 /**
  * Manages date logic for the Rota view with persistence and cross-breakpoint consistency.
- * Ensures a 'universal truth' for the currently viewed date to prevent navigation drift.
- * @param {object} breakpoints - Breakpoints composable for responsive logic.
+ * Logic: ensures a 'universal truth' for the currently viewed date to prevent navigation drift.
+ * @param {Breakpoints} breakpoints - Breakpoints composable for responsive logic.
  * @returns {object} Date state and control methods.
  */
 export function useRotaDates(breakpoints) {
-  const STORAGE_KEY = 'rotadent_view_date';
-
-  // The Anchor Date is the persistent 'point of truth' for the viewer's location in time.
-  const anchorDate = ref(new Date());
-
-  /**
-   * Adjusts a date object to the start of its week (Monday).
-   * @param {Date} date - The date to adjust.
-   * @returns {Date} The Monday of the containing week.
-   */
-  const getStartOfWeek = (date) => {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    d.setDate(diff);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-
-  /**
-   * Initialises the view from storage or defaults to today.
-   */
-  const init = () => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    if (saved) {
-      const d = new Date(saved);
-      if (!isNaN(d.getTime())) {
-        anchorDate.value = d;
-        return;
-      }
-    }
-    anchorDate.value = now;
-  };
-
-  init();
+  const anchorDate = ref(getInitialAnchorDate());
 
   // Watch for changes to the anchor and persist to local storage.
-  watch(anchorDate, (val) => {
-    localStorage.setItem(STORAGE_KEY, val.toISOString());
-  });
+  watch(anchorDate, (val) => localStorage.setItem(STORAGE_KEY, val.toISOString()));
 
-  /**
-   * Calculates the start date for the current view.
-   * Desktop (7-day) always snaps to Monday. Mobile (3-day) uses the exact anchor.
-   */
-  const currentStartDate = computed(() => {
-    return breakpoints.isMobile.value ? anchorDate.value : getStartOfWeek(anchorDate.value);
-  });
+  const currentStartDate = computed(() =>
+    breakpoints.isMobile.value ? anchorDate.value : getStartOfWeek(anchorDate.value)
+  );
 
-  const visibleDays = computed(() => {
-    const days = [];
-    const count = breakpoints.isMobile.value ? 3 : 7;
-    const start = new Date(currentStartDate.value);
+  const visibleDays = computed(() =>
+    generateDaysArray(
+      currentStartDate.value,
+      breakpoints.isMobile.value ? MOBILE_DAY_COUNT : DESKTOP_DAY_COUNT
+    )
+  );
 
-    // Create a date object for 'today' set to midnight for accurate comparison.
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().split('T')[0];
-
-    for (let i = 0; i < count; i++) {
-      const d = new Date(start);
-      d.setDate(d.getDate() + i);
-
-      const iso = d.toISOString().split('T')[0];
-      days.push({
-        key: iso,
-        iso,
-        label: new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric' }).format(d),
-        dateObj: d,
-        isWeekend: d.getDay() === 0 || d.getDay() === 6,
-        isToday: iso === todayStr,
-        isBeforeToday: d < today
-      });
-    }
-    return days;
-  });
-
-  const monthLabel = computed(() => {
-    if (visibleDays.value.length === 0) return '';
-    const start = visibleDays.value[0].dateObj;
-    const end = visibleDays.value.at(-1).dateObj;
-    const format = (d) =>
-      new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
-
-    return format(start) === format(end) ? format(start) : `${format(start)} - ${format(end)}`;
-  });
-
-  const changePeriod = (direction) => {
+  const changePeriod = (/** @type {number} */ direction) => {
     const d = new Date(anchorDate.value);
-    const offset = breakpoints.isMobile.value ? 3 : 7;
+    const offset = breakpoints.isMobile.value ? MOBILE_DAY_COUNT : DESKTOP_DAY_COUNT;
     d.setDate(d.getDate() + direction * offset);
     anchorDate.value = d;
   };
 
-  const changeDay = (direction) => {
-    const d = new Date(anchorDate.value);
-    d.setDate(d.getDate() + direction);
-    anchorDate.value = d;
-  };
-
-  const goToToday = () => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    anchorDate.value = now;
-  };
-
-  const jumpMonth = (months) => {
+  const jumpMonth = (/** @type {number} */ months) => {
     const d = new Date(anchorDate.value);
     const originalDay = d.getDate();
-    // Use the 1st of the month to prevent clipping issues with shorter months.
     d.setDate(1);
     d.setMonth(d.getMonth() + months);
-
-    // Restore the day, capped by the end of the new month.
-    const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, SUNDAY_INDEX).getDate();
     d.setDate(Math.min(originalDay, lastDay));
-
     anchorDate.value = d;
   };
 
   return {
     currentStartDate,
     visibleDays,
-    monthLabel,
+    monthLabel: computed(() => formatMonthLabel(visibleDays.value)),
     changePeriod,
-    changeDay,
-    goToToday,
+    changeDay: (/** @type {number} */ direction) => {
+      const d = new Date(anchorDate.value);
+      d.setDate(d.getDate() + direction);
+      anchorDate.value = d;
+    },
+    goToToday: () => {
+      const now = new Date();
+      now.setHours(MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR);
+      anchorDate.value = now;
+    },
     jumpMonth
   };
 }

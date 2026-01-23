@@ -1,13 +1,19 @@
 <script setup>
 /**
- * RotaStaffPicker
- *
- * Displays a searchable list of staff members categorized by their suitability
- * for a specific role. Allows selection of a staff member.
+ * RotaStaffPicker.
+ * Primary responsibility: provides a searchable interface for selecting staff members
+ * to add to the rota, with specific highlighting for recommended matches.
  */
 import IconPlus from '@/components/icons/IconPlus.vue';
 
-// Define props with explicit types and default values to prevent runtime warnings
+/**
+ * @typedef {object} StaffMember
+ * @property {string} uid - Unique identifier for the staff member.
+ * @property {string} name - Display name of the staff member.
+ * @property {string} [roleName] - Optional display name of the assigned role.
+ */
+
+// Logic: use JSDoc annotations for PropType as this is a JavaScript file.
 defineProps({
   searchQuery: {
     type: String,
@@ -22,16 +28,29 @@ defineProps({
     default: ''
   },
   recommended: {
-    type: Array,
+    type: /** @type {import('vue').PropType<StaffMember[]>} */ (Array),
     default: () => []
   },
   others: {
-    type: Array,
+    type: /** @type {import('vue').PropType<StaffMember[]>} */ (Array),
     default: () => []
   }
 });
 
-defineEmits(['update:searchQuery', 'add']);
+const emit = defineEmits(['update:searchQuery', 'add']);
+
+/**
+ * Handles the search input event and emits the updated query string.
+ * Logic: casts the event target to an HTMLInputElement to satisfy strict type checks.
+ * @param {Event} event - The native input event.
+ */
+const handleSearchInput = (event) => {
+  const target = /** @type {HTMLInputElement} */ (event.target);
+
+  if (target) {
+    emit('update:searchQuery', target.value);
+  }
+};
 </script>
 
 <template>
@@ -44,11 +63,11 @@ defineEmits(['update:searchQuery', 'add']);
         placeholder="Search employees..."
         type="text"
         :value="searchQuery"
-        @input="$emit('update:searchQuery', $event.target.value)"
+        @input="handleSearchInput"
       />
     </div>
 
-    <div v-if="isLoading" class="loading-indicator">Loading practice members...</div>
+    <div v-if="isLoading" class="loading-indicator">Synchronising practice members...</div>
 
     <div v-else class="available-list">
       <div v-if="recommended.length > 0" class="group">
@@ -76,7 +95,9 @@ defineEmits(['update:searchQuery', 'add']);
         >
           <div class="staff-info">
             <span class="staff-name">{{ member.name }}</span>
-            <span class="staff-role-badge">{{ member.roleName || 'No Role' }}</span>
+            <span class="staff-role-badge">
+              {{ member.roleName || 'No Role' }}
+            </span>
           </div>
           <IconPlus class="add-icon" />
         </div>
@@ -90,12 +111,12 @@ defineEmits(['update:searchQuery', 'add']);
 </template>
 
 <style scoped>
-/* Layout: Container for the picker sidebar */
+/* Layout: Picker sidebar container providing internal scrolling */
 .picker-section {
   display: flex;
   flex: 1;
   flex-direction: column;
-  overflow: hidden; /* Contains scroll within this section */
+  overflow: hidden;
 }
 
 .section-heading {
@@ -119,7 +140,7 @@ defineEmits(['update:searchQuery', 'add']);
   width: 100%;
 }
 
-/* Scrollable area for staff list */
+/* Scrollable container for the dynamic staff list */
 .available-list {
   display: flex;
   flex: 1;
@@ -147,7 +168,7 @@ defineEmits(['update:searchQuery', 'add']);
   border-color: #3b82f6;
 }
 
-/* Visual cue for staff not matching the primary role */
+/* Logic: visual indicator for staff members outside the primary role category */
 .staff-card.warning-card {
   border-left: 3px solid #f59e0b;
 }

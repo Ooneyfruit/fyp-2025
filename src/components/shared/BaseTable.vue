@@ -2,6 +2,7 @@
 /**
  * Primary responsibility: provides a flexible, grid-based data table component.
  * Supports visual grouping of rows via the 'groupBy' prop.
+ * Now supports dynamic component rendering in cells to avoid nested templates.
  */
 import { computed } from 'vue';
 
@@ -47,6 +48,32 @@ const getRowClasses = (item) => {
   const classes = props.rowClass(item);
   return Array.isArray(classes) ? classes : [classes];
 };
+
+/**
+ * Resolves the props object for a dynamic component cell.
+ * @param {object} col - Header configuration object.
+ * @param {object} item - Row data item.
+ * @returns {object} Props object.
+ */
+const resolveProps = (col, item) => {
+  if (typeof col.props === 'function') {
+    return col.props(item);
+  }
+  return col.props || {};
+};
+
+/**
+ * Resolves the event listeners for a dynamic component cell.
+ * @param {object} col - Header configuration object.
+ * @param {object} item - Row data item.
+ * @returns {object} Listeners object.
+ */
+const resolveListeners = (col, item) => {
+  if (typeof col.listeners === 'function') {
+    return col.listeners(item);
+  }
+  return col.listeners || {};
+};
 </script>
 
 <template>
@@ -89,11 +116,18 @@ const getRowClasses = (item) => {
               v-for="col in headers"
               :key="col.key"
               class="cell body-cell"
-              :class="[`align-${col.align || 'left'}`]"
+              :class="[`align-${col.align || 'left'}`, col.cellClass]"
               role="cell"
             >
-              <slot :item="item" :name="`cell(${col.key})`">
-                {{ item[col.key] }}
+              <component
+                :is="col.component"
+                v-if="col.component"
+                v-bind="resolveProps(col, item)"
+                v-on="resolveListeners(col, item)"
+              />
+
+              <slot v-else :item="item" :name="`cell(${col.key})`">
+                {{ col.formatter ? col.formatter(item[col.key], item) : item[col.key] }}
               </slot>
             </div>
           </div>
