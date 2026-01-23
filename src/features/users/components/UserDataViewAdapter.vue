@@ -1,11 +1,9 @@
 <script setup>
 /**
- * UserDataViewAdapter
- *
- * Data Adapter for User Management.
- * Switches between Table and Card views based on available container width.
+ * User data adapter for management interfaces.
+ * Logic: dynamically switches between table and card visualisations based on container width.
  */
-import { onMounted,ref } from 'vue';
+import { ref } from 'vue';
 
 import BaseCardList from '../../../components/shared/BaseCardList.vue';
 import BaseTable from '../../../components/shared/BaseTable.vue';
@@ -14,41 +12,72 @@ import UserActionButtons from './UserActionButtons.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';
 
-// Define props with explicit types and default values to prevent runtime warnings
-const props = defineProps({
+// Constants to eliminate magic numbers and improve maintainability.
+const MOBILE_LAYOUT_THRESHOLD = 62;
+const MILLISECONDS_IN_SECOND = 1000;
+
+/**
+ * @typedef {object} MemberProfile
+ * @property {string} [name] - Display name.
+ * @property {string} [email] - Contact email.
+ */
+
+/**
+ * @typedef {object} UserMember
+ * @property {MemberProfile} profile - User profile information.
+ * @property {string} role - Assigned practice role.
+ * @property {boolean} is_administrator - Administrative status flag.
+ * @property {boolean} is_employee - Employment status flag.
+ * @property {any} start_date - Initial joining date.
+ * @property {any} [end_date] - Optional contract end date.
+ */
+
+// Define props without variable assignment as the props are not used within the script block.
+defineProps({
   users: {
-    type: Array,
+    // Type cast applied to the constructor to satisfy TypeScript property checks.
+    type: /** @type {import('vue').PropType<UserMember[]>} */ (Array),
     default: () => []
   }
 });
 
 defineEmits(['edit']);
 
-onMounted(() =>
-  console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`)
-);
-
 const adapterRoot = ref(null);
 
-// Adjusted threshold to 62rem (approx 992px).
-// Increased to prevent the actions column from clipping before the switch to mobile view occurs.
-const { isMobile } = useBreakpoints(adapterRoot, 62);
+// Observe the root container width to trigger responsive layout shifts.
+const { isMobile } = useBreakpoints(adapterRoot, MOBILE_LAYOUT_THRESHOLD);
 
 /**
- * Formats a timestamp into a readable date string.
- * @param {object | number} ts - Firestore timestamp or seconds
- * @returns {string|null} Formatted date string (e.g. "01 Jan 2023")
+ * Formats a raw timestamp or numeric value into a readable UK date string.
+ * Logic: supports Firestore timestamps, objects with second offsets, or raw millisecond numbers.
+ * @param {any} ts - The raw timestamp data to format.
+ * @returns {string|null} Formatted date (e.g. "01 Jan 2023") or null if invalid.
  */
 const formatDate = (ts) => {
-  if (!ts) return null;
-  const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000 || ts);
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  if (!ts) {
+    return null;
+  }
+
+  /** @type {Date} */
+  let dateObj;
+
+  // Handle Firestore Timestamp objects with native toDate methods.
+  if (typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function') {
+    dateObj = ts.toDate();
+  } else if (typeof ts === 'object' && 'seconds' in ts) {
+    // Handle plain objects containing second-based offsets.
+    dateObj = new Date(Number(ts.seconds) * MILLISECONDS_IN_SECOND);
+  } else {
+    // Fallback to direct numeric conversion for milliseconds.
+    dateObj = new Date(Number(ts));
+  }
+
+  return dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
 /**
- * The 'member' column uses minmax() to enforce readability.
- * Calculation: Icon (2.25rem) + Gap (0.75rem) + Text (4.5rem) + Padding (~2rem) = ~9.5rem.
- * Has min-width set to 10rem to guarantee the text is at least twice the icon width.
+ * Configuration for the data table headers.
  */
 const userHeaders = [
   { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' },
@@ -64,32 +93,40 @@ const userHeaders = [
 <template>
   <div ref="adapterRoot" class="adapter-container">
     <div v-if="!users || users.length === 0" class="loading-overlay">
-      <p>Synchronizing Practice Identities...</p>
+      <p>Synchronising Practice Identities...</p>
     </div>
 
     <BaseTable v-else-if="!isMobile" :headers="userHeaders" :items="users">
       <template #cell(member)="{ item }">
-        <UserIdentity :profile="item.profile" />
+        <UserIdentity :profile="/** @type {any} */ (item).profile" />
       </template>
 
       <template #cell(role)="{ item }">
-        <UserStatusPills :member="item" type="role" />
+        <UserStatusPills :member="/** @type {any} */ (item)" type="role" />
       </template>
 
       <template #cell(status)="{ item }">
-        <UserStatusPills :member="item" type="admin" />
+        <UserStatusPills :member="/** @type {any} */ (item)" type="admin" />
       </template>
 
       <template #cell(contract)="{ item }">
-        <UserStatusPills :member="item" type="contract" />
+        <UserStatusPills :member="/** @type {any} */ (item)" type="contract" />
       </template>
 
       <template #cell(joined)="{ item }">
-        <span class="date-text">{{ formatDate(item.start_date) }}</span>
+        <span class="date-text">
+          {{ formatDate(/** @type {any} */ (item).start_date) }}
+        </span>
       </template>
 
       <template #cell(endDate)="{ item }">
-        <span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span>
+        <span class="date-text">
+          {{
+            /** @type {any} */ (item).end_date
+              ? formatDate(/** @type {any} */ (item).end_date)
+              : '—'
+          }}
+        </span>
       </template>
 
       <template #cell(actions)="{ item }">
@@ -100,24 +137,34 @@ const userHeaders = [
     <BaseCardList v-else :items="users" min-card-width="18rem">
       <template #card-header="{ item }">
         <div class="card-identity-wrapper">
-          <UserIdentity :profile="item.profile" />
+          <UserIdentity :profile="/** @type {any} */ (item).profile" />
           <UserActionButtons class="card-edit-btn" @edit="$emit('edit', item)" />
         </div>
       </template>
       <template #card-body="{ item }">
         <div class="detail-row">
-          <span class="label">Role</span><UserStatusPills :member="item" type="role" />
+          <span class="label">Role</span>
+          <UserStatusPills :member="/** @type {any} */ (item)" type="role" />
         </div>
         <div class="detail-row">
-          <span class="label">Status</span><UserStatusPills :member="item" type="admin" />
+          <span class="label">Status</span>
+          <UserStatusPills :member="/** @type {any} */ (item)" type="admin" />
         </div>
         <div class="detail-row">
-          <span class="label">Joined</span
-          ><span class="date-text">{{ formatDate(item.start_date) }}</span>
+          <span class="label">Joined</span>
+          <span class="date-text">
+            {{ formatDate(/** @type {any} */ (item).start_date) }}
+          </span>
         </div>
         <div class="detail-row">
-          <span class="label">Ends</span
-          ><span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span>
+          <span class="label">Ends</span>
+          <span class="date-text">
+            {{
+              /** @type {any} */ (item).end_date
+                ? formatDate(/** @type {any} */ (item).end_date)
+                : '—'
+            }}
+          </span>
         </div>
       </template>
     </BaseCardList>
@@ -147,13 +194,12 @@ const userHeaders = [
   white-space: nowrap;
 }
 
-/* Layout: Flex container for the card header */
 .card-identity-wrapper {
   align-items: flex-start;
   display: flex;
   gap: 0.75rem;
   justify-content: space-between;
-  width: 100%; /* Ensure the wrapper fills the card header width so space-between works */
+  width: 100%;
 }
 
 .detail-row {
