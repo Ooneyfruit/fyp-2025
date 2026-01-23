@@ -1,9 +1,9 @@
 <script setup>
 import { computed } from 'vue';
 
-import IconEdit from '../../../components/icons/IconEdit.vue';
-import IconPlus from '../../../components/icons/IconPlus.vue';
-import { useRotaColors } from '../composables/useRotaColors';
+import IconEdit from '@/components/icons/IconEdit.vue';
+import IconPlus from '@/components/icons/IconPlus.vue';
+import { useRotaColors } from '@/features/rota/composables/useRotaColors';
 
 const props = defineProps({
   shifts: { type: Array, default: () => [] },

@@ -5,11 +5,12 @@
  */
 import { computed,inject, ref } from 'vue';
 
-import IconSettings from '../../../components/icons/IconSettings.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import { useAuth } from '../../../composables/useAuth';
-import { useClickOutside } from '../../../composables/useClickOutside';
-import { useLayout } from '../../../composables/useLayout';
+import IconSettings from '@/components/icons/IconSettings.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import { useAuth } from '@/composables/useAuth';
+import { useClickOutside } from '@/composables/useClickOutside';
+import { useLayout } from '@/composables/useLayout';
+
 import NavUserDropdown from './NavUserDropdown.vue';
 import NavUserTrigger from './NavUserTrigger.vue';
 

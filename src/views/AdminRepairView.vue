@@ -6,8 +6,8 @@
 import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
 import { ref } from 'vue';
 
-import BaseButton from '../components/shared/BaseButton.vue';
-import { db } from '../services/firebase';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import { db } from '@/services/firebase';
 
 /** @type {import('vue').Ref<string[]>} */
 const logs = ref([]);

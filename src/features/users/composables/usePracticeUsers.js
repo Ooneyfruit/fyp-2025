@@ -2,8 +2,8 @@
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
-import { user as authUser } from '../../../composables/useAuth';
-import { db } from '../../../services/firebase';
+import { user as authUser } from '@/composables/useAuth';
+import { db } from '@/services/firebase';
 
 /**
  * @typedef {import('firebase/firestore').Unsubscribe} Unsubscribe
@@ -25,11 +25,11 @@ import { db } from '../../../services/firebase';
  * @property {string} id - The unique identifier for the membership record.
  * @property {DocumentReference} user - Reference to the user document.
  * @property {DocumentReference} practice - Reference to the practice document.
- * @property {string} [role] - The practice-specific role.
- * @property {any} [start_date] - Employment start date.
- * @property {any} [end_date] - Employment end date.
- * @property {boolean} [is_administrator] - Admin flag.
- * @property {boolean} [is_employee] - Employee flag.
+ * @property {string} role - The practice-specific role.
+ * @property {any} start_date - Employment start date.
+ * @property {any} [end_date] - Optional employment end date.
+ * @property {boolean} is_administrator - Administrative status flag.
+ * @property {boolean} is_employee - Employment status flag.
  */
 
 /**
@@ -38,8 +38,11 @@ import { db } from '../../../services/firebase';
  * @property {DocumentReference} user - Reference to the user document.
  * @property {DocumentReference} practice - Reference to the practice document.
  * @property {UserProfile} profile - The resolved user profile data.
- * @property {string} [role] - The practice-specific role.
- * @property {any} [start_date] - Employment start date.
+ * @property {string} role - The practice-specific role.
+ * @property {any} start_date - Employment start date.
+ * @property {any} [end_date] - Optional employment end date.
+ * @property {boolean} is_administrator - Administrative status flag.
+ * @property {boolean} is_employee - Employment status flag.
  */
 
 /**
@@ -105,7 +108,7 @@ const detachProfileListener = (uid) => {
 };
 
 /**
- * Process the membership list snapshot and update listeners.
+ * Processes the membership list snapshot and updates listeners.
  * @param {QuerySnapshot} snapshot - The Firestore snapshot.
  * @param {import('vue').Ref<MembershipData[]>} memberships - The memberships ref to update.
  * @param {import('vue').Ref<boolean>} isLoading - The loading state ref.
@@ -129,14 +132,18 @@ const handleSyncSnapshot = (snapshot, memberships, isLoading) => {
 
   memberships.value = snapshot.docs.map((d) => {
     const data = d.data();
-    return {
+    /** @type {MembershipData} */
+    const membership = {
       id: d.id,
-      ...data, // Spread all fields (role, start_date, etc.) from the membership document.
-      /** @type {DocumentReference} */
+      ...data, // Spread all fields from the membership document.
       user: data.user,
-      /** @type {DocumentReference} */
-      practice: data.practice
+      practice: data.practice,
+      role: data.role,
+      start_date: data.start_date,
+      is_administrator: !!data.is_administrator,
+      is_employee: !!data.is_employee
     };
+    return membership;
   });
   isLoading.value = false;
 };
@@ -168,13 +175,13 @@ const useSortedUsers = (memberships) =>
   computed(() => {
     return memberships.value
       .map((m) => ({
-        ...m, // Include role, permissions, etc.
+        ...m, // Include role, permissions, and status flags.
         profile: {
           // Spread profile data first to allow the explicit ID to override if necessary.
           ...(globalProfileStore.value[m.user.id] || {
             name: 'Loading...'
           }),
-          id: m.user.id // Explicit ID assignment resolves the redundancy error.
+          id: m.user.id // Explicit ID assignment resolves redundancy errors.
         }
       }))
       .sort((a, b) => (a.profile?.name || '').localeCompare(b.profile?.name || ''));
@@ -210,6 +217,9 @@ export function usePracticeUsers() {
     );
   };
 
+  /**
+   * Performs cleanup of listeners and reactive state on unmount.
+   */
   const cleanup = () => {
     if (listListener) listListener();
     for (const m of memberships.value) detachProfileListener(m.user.id);
@@ -218,6 +228,7 @@ export function usePracticeUsers() {
 
   onUnmounted(cleanup);
 
+  // Monitor for changes in active practice or administrative status to refresh data streams.
   watch(
     () => {
       const user = /** @type {any} */ (authUser.value);

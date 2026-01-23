@@ -5,12 +5,13 @@
  */
 import { provide,ref } from 'vue';
 
-import IconLogoInvert from '../../../components/icons/IconLogoInvert.vue';
-import IconMenu from '../../../components/icons/IconMenu.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import { useAuth } from '../../../composables/useAuth';
-import { useLayout } from '../../../composables/useLayout';
-import UserModal from '../../users/components/UserModal.vue';
+import IconLogoInvert from '@/components/icons/IconLogoInvert.vue';
+import IconMenu from '@/components/icons/IconMenu.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import { useAuth } from '@/composables/useAuth';
+import { useLayout } from '@/composables/useLayout';
+import UserModal from '@/features/users/components/UserModal.vue';
+
 import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
 import NavUserMenu from './NavUserMenu.vue';
 

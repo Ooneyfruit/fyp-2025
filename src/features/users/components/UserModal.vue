@@ -6,14 +6,15 @@
 import { collection, deleteDoc, doc, getDocs, Timestamp, writeBatch } from 'firebase/firestore';
 import { computed, onMounted, ref } from 'vue';
 
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import BaseFormBlock from '../../../components/shared/BaseFormBlock.vue';
-import BaseModal from '../../../components/shared/BaseModal.vue';
-import BaseSelect from '../../../components/shared/BaseSelect.vue';
-import { user as authUser } from '../../../composables/useAuth';
-import { useToast } from '../../../composables/useToast';
-import { db } from '../../../services/firebase';
-import { usePracticeUsers } from '../composables/usePracticeUsers';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import BaseFormBlock from '@/components/shared/BaseFormBlock.vue';
+import BaseModal from '@/components/shared/BaseModal.vue';
+import BaseSelect from '@/components/shared/BaseSelect.vue';
+import { user as authUser } from '@/composables/useAuth';
+import { useToast } from '@/composables/useToast';
+import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
+import { db } from '@/services/firebase';
+
 import UserModalAccess from './UserModalAccess.vue';
 
 /**

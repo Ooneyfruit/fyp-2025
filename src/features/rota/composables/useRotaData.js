@@ -2,9 +2,9 @@
  * Orchestrates the loading and filtering of rota-related data for the grid view.
  * Centrally manages the state for practice roles, surgeries, and shifts.
  */
-import { computed,ref } from 'vue';
+import { computed, ref } from 'vue';
 
-import { fetchPracticeRoles, fetchPracticeSurgeries, fetchShifts } from '../rotaAPI';
+import { fetchPracticeRoles, fetchPracticeSurgeries, fetchShifts } from '@/features/rota/rotaAPI';
 
 /**
  * Helper to safely extract the ISO date string from a shift object.

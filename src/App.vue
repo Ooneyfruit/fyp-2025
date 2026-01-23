@@ -7,13 +7,13 @@
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { onMounted, watch } from 'vue';
 
-import AppSideMenu from './components/layout/AppSideMenu.vue';
-import AppToast from './components/shared/AppToast.vue';
-import { user } from './composables/useAuth';
-import { initLayoutStabilization, useLayout } from './composables/useLayout';
-import { useToast } from './composables/useToast';
+import AppSideMenu from '@/components/layout/AppSideMenu.vue';
+import AppToast from '@/components/shared/AppToast.vue';
+import { user } from '@/composables/useAuth';
+import { initLayoutStabilisation, useLayout } from '@/composables/useLayout';
+import { useToast } from '@/composables/useToast';
 // Shared layout and UI components.
-import { NavBar } from './features/navbar/navbarAPI';
+import { NavBar } from '@/features/navbar/navbarAPI';
 
 const { isSidebarOpen, isMobile, canAnimate, toggleSidebar } = useLayout();
 const { showToast } = useToast();
@@ -50,10 +50,10 @@ watch(needRefresh, (available) => {
 
 onMounted(() => {
   /**
-   * Triggers the conservative stabilization window.
+   * Triggers the conservative stabilisation window.
    * Only allows animations once the browser has proven sustained main-thread availability.
    */
-  initLayoutStabilization();
+  initLayoutStabilisation();
 });
 </script>
 
@@ -66,10 +66,8 @@ onMounted(() => {
       'is-animate-ready': canAnimate
     }"
   >
-    <template v-if="user">
-      <NavBar @toggle-sidebar="() => toggleSidebar()" />
-      <AppSideMenu />
-    </template>
+    <NavBar v-if="user" @toggle-sidebar="() => toggleSidebar()" />
+    <AppSideMenu v-if="user" />
 
     <main :class="user ? 'main-content' : 'full-screen'">
       <router-view />
@@ -80,7 +78,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Layout: core shell dimensions */
+/* Layout: core shell dimensions. */
 .app-layout {
   min-height: 100vh;
 }
@@ -99,7 +97,7 @@ onMounted(() => {
   margin-left: var(--sidebar-width);
 }
 
-/* Responsive: override content margins for small screens */
+/* Responsive: override content margins for small screens. */
 @media (width <= 48rem) {
   .main-content {
     margin-left: 0;

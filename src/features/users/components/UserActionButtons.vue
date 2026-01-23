@@ -1,6 +1,6 @@
 <script setup>
-import IconEdit from '../../../components/icons/IconEdit.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
+import IconEdit from '@/components/icons/IconEdit.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
 
 defineEmits(['edit']);
 </script>

@@ -8,8 +8,8 @@ import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 
 // Components
-import BaseButton from '../components/shared/BaseButton.vue';
-import { useAuth } from '../composables/useAuth';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import { useAuth } from '@/composables/useAuth';
 
 // --- Type Definitions ---
 

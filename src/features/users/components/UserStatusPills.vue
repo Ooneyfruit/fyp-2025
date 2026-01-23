@@ -5,7 +5,7 @@
  */
 import { computed } from 'vue';
 
-import BasePill from '../../../components/shared/BasePill.vue';
+import BasePill from '@/components/shared/BasePill.vue';
 
 const props = defineProps({
   member: { type: Object, required: true },

@@ -3,7 +3,7 @@
  * Standardized form selection component.
  * Logic: provides a visual wrapper for native selects with an animated chevron.
  */
-import IconChevronDown from '../icons/IconChevronDown.vue';
+import IconChevronDown from '@/components/icons/IconChevronDown.vue';
 
 defineProps({
   modelValue: { type: [String, Number], default: '' },

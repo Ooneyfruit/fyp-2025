@@ -5,10 +5,10 @@
  */
 import { computed, ref } from 'vue';
 
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import BaseFormBlock from '../../../components/shared/BaseFormBlock.vue';
-import BaseToggleDescription from '../../../components/shared/BaseToggleDescription.vue';
-import { user as authUser } from '../../../composables/useAuth';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import BaseFormBlock from '@/components/shared/BaseFormBlock.vue';
+import BaseToggleDescription from '@/components/shared/BaseToggleDescription.vue';
+import { user as authUser } from '@/composables/useAuth';
 
 const props = defineProps({
   // The member object containing permission flags.

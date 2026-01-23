@@ -5,7 +5,7 @@
  */
 import { onUnmounted,watch } from 'vue';
 
-import IconClose from '../icons/IconClose.vue';
+import IconClose from '@/components/icons/IconClose.vue';
 
 // Define configuration for appearance and visibility state.
 const props = defineProps({

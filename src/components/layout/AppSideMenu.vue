@@ -6,12 +6,12 @@
 import { computed, markRaw } from 'vue';
 import { useRoute,useRouter } from 'vue-router';
 
-import { useAuth } from '../../composables/useAuth';
-import { useLayout } from '../../composables/useLayout';
-import { useSwipeAway } from '../../composables/useSwipeAway';
 // Component icons.
-import IconCalendar from '../icons/IconCalendar.vue'; // Changed from IconHome
-import IconUsers from '../icons/IconUsers.vue';
+import IconCalendar from '@/components/icons/IconCalendar.vue'; // Changed from IconHome
+import IconUsers from '@/components/icons/IconUsers.vue';
+import { useAuth } from '@/composables/useAuth';
+import { useLayout } from '@/composables/useLayout';
+import { useSwipeAway } from '@/composables/useSwipeAway';
 
 const MENU_CONFIG = [
   { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },

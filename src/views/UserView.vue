@@ -6,15 +6,15 @@
  */
 import { ref } from 'vue';
 
-// Icons
+// Icons.
 import IconPlus from '@/components/icons/IconPlus.vue';
-// Layout & Core Components
+// Layout and core components.
 import AppAuthGuard from '@/components/layout/AppAuthGuard.vue';
 import AppPageContainer from '@/components/layout/AppPageContainer.vue';
 import AppPageHeaderGroup from '@/components/layout/AppPageHeaderGroup.vue';
 import AppLoading from '@/components/shared/AppLoading.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
-// Feature API
+// Feature API.
 import { usePracticeUsers, UserDataViewAdapter, UserModal } from '@/features/users/usersApi';
 
 // --- Type Definitions ---
@@ -24,13 +24,17 @@ import { usePracticeUsers, UserDataViewAdapter, UserModal } from '@/features/use
  * @property {string} id - The unique identifier for the user profile.
  * @property {string} [name] - The full name of the user.
  * @property {string} [email] - The email address of the user.
- * @property {string} [role] - The role assigned to the user.
  */
 
 /**
  * @typedef {object} User
  * @property {string} id - The unique membership identifier.
  * @property {UserProfile} profile - The detailed profile information for the user.
+ * @property {string} role - The assigned practice role.
+ * @property {boolean} is_administrator - Administrative status flag.
+ * @property {boolean} is_employee - Employment status flag.
+ * @property {any} start_date - Initial joining date.
+ * @property {any} [end_date] - Optional contract end date.
  */
 
 /**
@@ -46,7 +50,7 @@ import { usePracticeUsers, UserDataViewAdapter, UserModal } from '@/features/use
  * @property {import('vue').Ref<boolean>} isLoading - Indicates if the user data is currently being fetched.
  */
 
-// --- Logic & State ---
+// --- Logic and state ---
 
 /** @type {UserViewLogic} */
 const { users, isLoading } = usePracticeUsers();
@@ -80,7 +84,7 @@ const userModal = ref(null);
 </template>
 
 <style scoped>
-/* Main Content: container for the user data adapter */
+/* Main Content: container for the user data adapter. */
 .main-content-area {
   display: flex;
   flex-direction: column;

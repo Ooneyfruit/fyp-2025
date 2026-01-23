@@ -1,8 +1,9 @@
 <script setup>
 import { computed } from 'vue';
 
-import BaseTable from '../../../components/shared/BaseTable.vue';
-import { useRotaColors } from '../composables/useRotaColors';
+import BaseTable from '@/components/shared/BaseTable.vue';
+import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+
 import RotaSlot from './RotaSlot.vue';
 
 const props = defineProps({

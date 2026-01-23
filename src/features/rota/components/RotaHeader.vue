@@ -1,5 +1,6 @@
 <script setup>
-import AppPageHeaderGroup from '../../../components/layout/AppPageHeaderGroup.vue';
+import AppPageHeaderGroup from '@/components/layout/AppPageHeaderGroup.vue';
+
 import RotaHeaderDesktop from './RotaHeaderDesktop.vue';
 import RotaHeaderMobile from './RotaHeaderMobile.vue';
 

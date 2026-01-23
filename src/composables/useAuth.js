@@ -7,7 +7,7 @@ import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from
 import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { ref } from 'vue';
 
-import { auth, db } from '../services/firebase';
+import { auth, db } from '@/services/firebase';
 
 /**
  * The global user state ref.

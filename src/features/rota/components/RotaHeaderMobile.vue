@@ -1,12 +1,12 @@
 <script setup>
 import { computed } from 'vue';
 
-import IconChevronDoubleLeft from '../../../components/icons/IconChevronDoubleLeft.vue';
-import IconChevronDoubleRight from '../../../components/icons/IconChevronDoubleRight.vue';
-import IconChevronLeft from '../../../components/icons/IconChevronLeft.vue';
-import IconChevronRight from '../../../components/icons/IconChevronRight.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import BaseSelectorBar from '../../../components/shared/BaseSelectorBar.vue';
+import IconChevronDoubleLeft from '@/components/icons/IconChevronDoubleLeft.vue';
+import IconChevronDoubleRight from '@/components/icons/IconChevronDoubleRight.vue';
+import IconChevronLeft from '@/components/icons/IconChevronLeft.vue';
+import IconChevronRight from '@/components/icons/IconChevronRight.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import BaseSelectorBar from '@/components/shared/BaseSelectorBar.vue';
 
 const props = defineProps({
   dateRangeLabel: { type: String, required: true },
