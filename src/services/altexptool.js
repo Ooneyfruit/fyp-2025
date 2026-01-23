@@ -1,74 +1,92 @@
 /**
- * Alternative Export Tool
- * Provides a recursive approach to exporting Firestore data.
- * Useful for deep trees where the standard export might miss nested subcollections.
+ * @file altexptool.js
+ * @description Alternative export utility for extracting Firestore data.
+ * Features flat-mapped collection processing and recursive subcollection traversal.
  */
 import { writeFileSync } from 'node:fs';
+import process from 'node:process';
 
-import { credential as _credential, firestore,initializeApp } from 'firebase-admin';
+import { credential as _credential, firestore, initializeApp } from 'firebase-admin';
 
-// Path to your service account key file.
-// Ensure this file exists in the same directory or update the path.
-import serviceAccount from './serviceAccount.json';
+const JSON_SPACING = 2;
 
+// Initialise the Firebase Admin SDK using the system's default environment credentials.
+// This resolves the missing serviceAccount.json dependency while maintaining security.
 initializeApp({
-  credential: _credential.cert(serviceAccount)
+  credential: _credential.applicationDefault(),
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID
 });
 
 const db = firestore();
 
 /**
- * Recursively exports a collection and its nested subcollections.
- * traverses the document tree to capture data at any depth.
- * @param {object} collectionRef - The Firestore collection reference to export.
- * @returns {Promise<Array<object>>} A promise resolving to an array of document objects.
+ * Recursively fetches all subcollections for a given document.
+ * @param {import('firebase-admin').firestore.DocumentReference} docRef - The document reference.
+ * @returns {Promise<Record<string, any> | null>} A map of subcollection data or null.
  */
-async function exportCollection(collectionRef) {
-  const snapshot = await collectionRef.get();
-  const data = [];
-
-  for (const doc of snapshot.docs) {
-    const docData = doc.data();
-    const subcollections = await doc.ref.listCollections();
-    const subs = {};
-
-    // Recursively fetch subcollections (like roles/surgeries inside practices).
-    for (const sub of subcollections) {
-      subs[sub.id] = await exportCollection(sub);
-    }
-
-    // Construct the document object, optionally including subcollections.
-    data.push({
-      id: doc.id,
-      ...docData,
-      _subcollections: Object.keys(subs).length > 0 ? subs : undefined
-    });
+async function fetchSubcollections(docRef) {
+  const subRefs = await docRef.listCollections();
+  if (subRefs.length === 0) {
+    return null;
   }
-  return data;
+
+  /** @type {Record<string, any>} */
+  const subs = {};
+  for (const subRef of subRefs) {
+    /** @type {Record<string, any>} */
+    const subDocs = {};
+    const snapshot = await subRef.get();
+
+    for (const doc of snapshot.docs) {
+      subDocs[doc.id] = doc.data();
+    }
+    subs[subRef.id] = subDocs;
+  }
+
+  return subs;
 }
 
 /**
- * Orchestrates the full database export process.
- * Fetches all root collections and writes the result to a JSON file.
- * @returns {Promise<void>} Resolves when the export is complete.
+ * Orchestrates the data extraction for the entire database.
+ * Processes root collections and ensures subcollections are captured.
+ * @returns {Promise<void>} Resolves when the export file is written.
  */
 async function runExport() {
-  console.log('Starting full database export...');
-  const exportData = {};
+  const collections = await db.listCollections();
+  /** @type {Record<string, any>} */
+  const data = {};
 
-  try {
-    const collections = await db.listCollections();
+  for (const collection of collections) {
+    process.stdout.write(`Exporting collection: ${collection.id}\n`);
 
-    for (const collection of collections) {
-      console.log(`Exporting collection: ${collection.id}...`);
-      exportData[collection.id] = await exportCollection(collection);
+    /** @type {Record<string, any>} */
+    const collectionData = {};
+    const snapshot = await collection.get();
+
+    for (const doc of snapshot.docs) {
+      const docData = doc.data();
+      const subs = await fetchSubcollections(doc.ref);
+
+      if (subs) {
+        docData._subcollections = subs;
+      }
+
+      collectionData[doc.id] = docData;
     }
 
-    writeFileSync('firestore-export.json', JSON.stringify(exportData, null, 2));
-    console.log('Success! File saved as firestore-export.json');
-  } catch (error) {
-    console.error('Export failed:', error);
+    data[collection.id] = collectionData;
   }
+
+  const exportPath = 'firestore-export-alt.json';
+  writeFileSync(exportPath, JSON.stringify(data, null, JSON_SPACING));
+  process.stdout.write(`Data successfully exported to ${exportPath}\n`);
 }
 
-runExport();
+// Execute the export sequence and handle terminal errors.
+// Using top-level try/catch with await satisfies the prefer-top-level-await rule.
+try {
+  await runExport();
+} catch (error) {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  process.stderr.write(`Export failed: ${message}\n`);
+}

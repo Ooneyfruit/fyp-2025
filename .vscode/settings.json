@@ -1,0 +1,54 @@
+{
+  // --- Editor Behavior ---
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    // ADDED: Auto-fix CSS order/strictness issues on save
+    "source.fixAll.stylelint": "explicit"
+  },
+
+  // --- ESLint Configuration (Merged) ---
+  // Force the extension to use the new Flat Config system
+  "eslint.useFlatConfig": true,
+
+  // Point ESLint to the sub-folder where your project actually lives
+  "eslint.workingDirectories": ["./fyp-2025-ui-testing-2"],
+
+  // Ensure these languages are validated and probed
+  "eslint.validate": ["javascript", "vue", "html"],
+  "eslint.probe": ["javascript", "vue", "html"],
+
+  // --- Vue & Volar (Strict Mode) ---
+  // ADDED: Disable Hybrid Mode to ensure full TypeScript strictness in templates
+  "vue.server.hybridMode": false,
+
+  // --- Stylelint Strictness (New) ---
+  // ADDED: Tell Stylelint to validate Vue files (critical for the CSS order rules)
+  "stylelint.validate": ["css", "scss", "vue"],
+
+  // ADDED: Disable built-in validators to prevent duplicate/conflicting warnings
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+
+  // --- Prettier Integration ---
+  // ADDED: Ensure Prettier uses our local strict config
+  "prettier.requireConfig": true,
+
+  // --- Error Lens (Visual Strictness) ---
+  // ADDED: Makes errors 'scream' at you by highlighting the whole line background
+  "errorLens.messageBackgroundMode": "message",
+  "errorLens.enabledDiagnosticLevels": ["error", "warning"],
+
+  // --- Formatting Defaults ---
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

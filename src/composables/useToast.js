@@ -1,12 +1,11 @@
 /**
- * Primary responsibility: manages the global state for the notification system.
+ * @file useToast.js
+ * @description Manages the global state for the notification system.
+ * Provides a centralised way to trigger alerts across the application.
  */
 import { ref } from 'vue';
 
 const DEFAULT_DURATION = 4000;
-
-// Global Singleton State
-// These refs are defined outside the function to ensure state persistence across components.
 
 /** @type {import('vue').Ref<string>} */
 const message = ref('');
@@ -24,7 +23,7 @@ const actionCallback = ref(null);
 let timeout = null;
 
 /**
- * Helper to clear the active timeout if one exists.
+ * Clears the active timeout if one exists to prevent overlaps.
  */
 const clearActiveTimeout = () => {
   if (timeout) {
@@ -34,9 +33,9 @@ const clearActiveTimeout = () => {
 };
 
 /**
- * Helper to update the reactive state variables.
+ * Updates the reactive state variables for the toast UI.
  * @param {string} msg - The message to display.
- * @param {ToastAction|null} action - The action configuration.
+ * @param {ToastAction|null} action - The optional action configuration.
  */
 const updateState = (msg, action) => {
   message.value = msg;
@@ -52,7 +51,6 @@ const updateState = (msg, action) => {
 
 /**
  * Dismisses the current toast notification immediately.
- * Clears any active timeout to prevent race conditions.
  */
 const hideToast = () => {
   isVisible.value = false;
@@ -60,7 +58,7 @@ const hideToast = () => {
 };
 
 /**
- * Triggers a global toast notification.
+ * Triggers a global toast notification with customisable duration.
  * @param {string} msg - The message to display.
  * @param {ToastOptions} [options] - Configuration for duration and actions.
  */
@@ -68,8 +66,7 @@ const showToast = (msg, { duration = DEFAULT_DURATION, action = null } = {}) => 
   clearActiveTimeout();
   updateState(msg, action);
 
-  // Only set a timer if duration is greater than zero.
-  // This allows for persistent "sticky" toasts.
+  // A duration of 0 allows the toast to remain visible until manually dismissed.
   if (duration > 0) {
     timeout = setTimeout(() => {
       isVisible.value = false;
@@ -89,33 +86,32 @@ const handleAction = () => {
 };
 
 /**
- * Definition of the action button structure.
  * @typedef {object} ToastAction
  * @property {string} label - The text to display on the action button.
  * @property {() => void} callback - The function to execute when clicked.
  */
 
 /**
- * Definition of the toast configuration options.
  * @typedef {object} ToastOptions
- * @property {number} [duration=4000] - Time in ms before auto-close. Set to 0 for persistent.
+ * @property {number} [duration=4000] - Time in ms before auto-close.
  * @property {ToastAction|null} [action] - Optional action button configuration.
  */
 
 /**
- * Definition of the UseToast return object.
  * @typedef {object} UseToastReturn
  * @property {import('vue').Ref<string>} message - The current toast message.
  * @property {import('vue').Ref<boolean>} isVisible - Whether the toast is currently visible.
- * @property {import('vue').Ref<string|null>} actionLabel - Label for the action button, if any.
- * @property {Function} showToast - Method to trigger a new toast.
+ * @property {import('vue').Ref<string|null>} actionLabel - Label for the action button.
+ * @property {Function} showToast - Generic method to trigger a toast.
+ * @property {(msg: string) => void} success - Helper for success notifications.
+ * @property {(msg: string) => void} error - Helper for error notifications.
  * @property {Function} hideToast - Method to dismiss the toast.
- * @property {Function} handleAction - Executes the action callback and closes the toast.
+ * @property {Function} handleAction - Executes the action and closes the toast.
  */
 
 /**
  * Composable for interacting with the global toast notification system.
- * Provides methods to show and hide toast messages, and access current state.
+ * Returns methods to trigger styled alerts and manage state.
  * @returns {UseToastReturn} The toast state and control methods.
  */
 export function useToast() {
@@ -124,6 +120,8 @@ export function useToast() {
     isVisible,
     actionLabel,
     showToast,
+    success: (msg) => showToast(msg, { duration: 3000 }),
+    error: (msg) => showToast(msg, { duration: 5000 }),
     hideToast,
     handleAction
   };

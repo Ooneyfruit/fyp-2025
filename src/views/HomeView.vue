@@ -16,8 +16,7 @@ import BaseButton from '../components/shared/BaseButton.vue';
 import BaseModal from '../components/shared/BaseModal.vue';
 import { useAuth } from '../composables/useAuth';
 import { useToast } from '../composables/useToast';
-// Feature API (Architecture Fix)
-import { UserModal } from '../features/users/usersAPI';
+import { UserModal } from '../features/users/usersApi';
 
 // --- Type Definitions ---
 
@@ -33,7 +32,7 @@ import { UserModal } from '../features/users/usersAPI';
 
 /**
  * @typedef {object} ToastInterface
- * @property {(message: string) => void} showToast - Displays a generic toast notification.
+ * @property {Function} showToast - Displays a generic toast notification.
  */
 
 /**
@@ -43,11 +42,11 @@ import { UserModal } from '../features/users/usersAPI';
 
 // --- Logic & State ---
 
-/** @type {AuthInterface} */
-const { user } = useAuth();
+// Explicit casting ensures the compiler recognises the destructured properties from the auth composable.
+const { user } = /** @type {AuthInterface} */ (useAuth());
 
-/** @type {ToastInterface} */
-const { showToast } = useToast();
+// The toast interface uses the Function type to match the composable's return signature.
+const { showToast } = /** @type {ToastInterface} */ (useToast());
 
 /**
  * State management for the user profile modal.
@@ -55,7 +54,7 @@ const { showToast } = useToast();
  */
 const userModal = ref(null);
 
-// Visibility state for the demonstration modal
+// Visibility state for the demonstration modal.
 const showTestModal = ref(false);
 
 /**
@@ -88,14 +87,14 @@ const handleTestToast = () => {
     >
       <div class="test-content">
         <p>This is a blank BaseModal.vue instance being used directly in HomeView.vue.</p>
-        <p>The close icon is now correctly utilizing /src/components/icons/IconClose.vue.</p>
+        <p>The close icon is now correctly utilising /src/components/icons/IconClose.vue.</p>
       </div>
     </BaseModal>
   </AppPageContainer>
 </template>
 
 <style scoped>
-/* Content: typography and spacing for test elements */
+/* Content: typography and spacing for test elements. */
 .test-content {
   color: var(--text-muted);
   line-height: 1.6;
