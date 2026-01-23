@@ -1,6 +1,7 @@
 {
   "name": "fyp-2025",
   "version": "1.0.0",
+  "type": "module",
   "description": "Final Year Project 2025",
   "main": "src/main.js",
   "scripts": {

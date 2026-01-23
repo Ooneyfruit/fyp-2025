@@ -1,47 +1,47 @@
 {
-  // --- Editor Behavior ---
+  // --- Editor behaviour ---
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
-    // ADDED: Auto-fix CSS order/strictness issues on save
     "source.fixAll.stylelint": "explicit"
   },
 
-  // --- ESLint Configuration (Merged) ---
-  // Force the extension to use the new Flat Config system
+  // --- ESLint configuration ---
+  // Ensure the extension uses the flat config system for the RotaDent project.
   "eslint.useFlatConfig": true,
 
-  // Point ESLint to the sub-folder where your project actually lives
-  "eslint.workingDirectories": ["./fyp-2025-ui-testing-2"],
+  // Use auto mode to correctly resolve local plugins and rules regardless of folder nesting.
+  // This fixes path mismatches between the workspace root and the configuration file.
+  "eslint.workingDirectories": [{ "mode": "auto" }],
 
-  // Ensure these languages are validated and probed
+  // Ensure these languages are validated and probed.
   "eslint.validate": ["javascript", "vue", "html"],
   "eslint.probe": ["javascript", "vue", "html"],
 
-  // --- Vue & Volar (Strict Mode) ---
-  // ADDED: Disable Hybrid Mode to ensure full TypeScript strictness in templates
+  // --- Vue and Volar strictness ---
+  // Disable hybrid mode to ensure full TypeScript strictness within templates.
   "vue.server.hybridMode": false,
 
-  // --- Stylelint Strictness (New) ---
-  // ADDED: Tell Stylelint to validate Vue files (critical for the CSS order rules)
+  // --- Stylelint strictness ---
+  // Tell Stylelint to validate Vue files to enforce CSS order and syntax.
   "stylelint.validate": ["css", "scss", "vue"],
 
-  // ADDED: Disable built-in validators to prevent duplicate/conflicting warnings
+  // Disable built-in validators to prevent duplicate or conflicting warnings.
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
 
-  // --- Prettier Integration ---
-  // ADDED: Ensure Prettier uses our local strict config
+  // --- Prettier integration ---
+  // Ensure Prettier respects the local project configuration.
   "prettier.requireConfig": true,
 
-  // --- Error Lens (Visual Strictness) ---
-  // ADDED: Makes errors 'scream' at you by highlighting the whole line background
+  // --- Visual feedback ---
+  // Error lens makes errors highly visible by highlighting the line background.
   "errorLens.messageBackgroundMode": "message",
   "errorLens.enabledDiagnosticLevels": ["error", "warning"],
 
-  // --- Formatting Defaults ---
+  // --- Formatting defaults ---
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
