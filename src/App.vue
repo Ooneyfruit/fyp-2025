@@ -13,7 +13,7 @@ import { user } from '@/composables/useAuth';
 import { initLayoutStabilisation, useLayout } from '@/composables/useLayout';
 import { useToast } from '@/composables/useToast';
 // Shared layout and UI components.
-import { NavBar } from '@/features/navbar/navbarAPI';
+import { NavBar } from '@/features/navbar/navbarApi';
 
 const { isSidebarOpen, isMobile, canAnimate, toggleSidebar } = useLayout();
 const { showToast } = useToast();

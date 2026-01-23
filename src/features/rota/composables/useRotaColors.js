@@ -11,15 +11,12 @@
  * @property {string} accent - Hex code for the accent/text colour.
  */
 
-// Global state acts as the source of truth, ensuring consistent colouring
-// across the application regardless of where useRotaColors is called.
 /** @type {Map<string, number>} */
 const globalRoleRegistry = new Map();
 
 /** @type {number} */
 let nextAvailableIndex = 0;
 
-// Constants to eliminate magic numbers and improve maintainability.
 const DEFAULT_PALETTE_INDEX = 7;
 
 /**
@@ -46,24 +43,18 @@ const ROLE_PALETTE = [
  * @returns {ColourPalette} The colour object containing background and accent hex codes.
  */
 const getRoleColor = (roleId) => {
-  // Use the default slate palette if no role identifier is provided.
   if (!roleId) {
     return ROLE_PALETTE[DEFAULT_PALETTE_INDEX];
   }
 
-  // Retrieve existing assignment from the registry to maintain consistency.
   if (globalRoleRegistry.has(roleId)) {
-    // Logic: the nullish coalescing operator ensures the index is treated as a number
-    // even if the Map lookup technically returns undefined, satisfying TypeScript checks.
     const index = globalRoleRegistry.get(roleId) ?? DEFAULT_PALETTE_INDEX;
     return ROLE_PALETTE[index];
   }
 
-  // Register the new role and assign it the current available index.
   const index = nextAvailableIndex;
   globalRoleRegistry.set(roleId, index);
 
-  // Increment the index and wrap around to the start of the palette if the limit is reached.
   nextAvailableIndex = (nextAvailableIndex + 1) % ROLE_PALETTE.length;
 
   return ROLE_PALETTE[index];
@@ -71,7 +62,7 @@ const getRoleColor = (roleId) => {
 
 /**
  * Composable providing colour assignment logic.
- * @returns {object} The colour utility methods.
+ * @returns {{ getRoleColor: (roleId?: string) => ColourPalette }} The colour utility methods.
  */
 export function useRotaColors() {
   return { getRoleColor };
