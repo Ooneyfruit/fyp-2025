@@ -10,7 +10,12 @@ import pluginUnicorn from 'eslint-plugin-unicorn';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
 
-// Configuration constants for quality gates.
+// Import the custom local rule to discourage nested templates.
+import noNestedTemplate from './tools/eslint/rules/noNestedTemplate.js';
+
+/**
+ * Configuration constants for quality gates.
+ */
 const COGNITIVE_COMPLEXITY_LIMIT = 8;
 const CYCLOMATIC_COMPLEXITY_LIMIT = 8;
 const MAX_DEPTH_LIMIT = 3;
@@ -103,6 +108,22 @@ export default [
       'jsdoc/require-param-type': 'error',
       'jsdoc/require-returns-type': 'error',
       'jsdoc/check-types': 'error'
+    }
+  },
+
+  // 5. Project-specific RotaDent constraints.
+  // We separate Vue-specific rules into their own block to improve parser efficiency.
+  {
+    files: ['**/*.vue'],
+    plugins: {
+      rotadent: {
+        rules: {
+          'no-nested-template': noNestedTemplate
+        }
+      }
+    },
+    rules: {
+      'rotadent/no-nested-template': 'warn'
     }
   },
 
