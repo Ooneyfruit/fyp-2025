@@ -21,13 +21,13 @@ import { useAuth } from '../composables/useAuth';
 
 // --- Logic & State ---
 
-/** @type {AuthInterface} */
-const { user, login } = useAuth();
+// Explicit casting ensures the compiler recognises the destructured properties from the auth composable.
+const { user, login } = /** @type {AuthInterface} */ (useAuth());
 
 const router = useRouter();
 const errorMsg = ref('');
 
-// FORCED REDIRECT: If a user is already detected, kick them to the dashboard immediately
+// Automatic redirect: if a user session is detected, navigate to the dashboard immediately.
 watchEffect(() => {
   if (user.value) {
     router.push('/');
@@ -35,13 +35,14 @@ watchEffect(() => {
 });
 
 /**
- * Triggers the login flow.
- * Catches errors and displays a user-friendly message.
+ * Triggers the login flow and handles potential errors.
+ * Displays a user-friendly message if the authentication sequence fails.
+ * @returns {Promise<void>}
  */
 const handleLogin = async () => {
   try {
     await login();
-    // Successful login will be caught by the watchEffect above
+    // Successful login will be caught by the watchEffect above.
   } catch {
     errorMsg.value = 'Login failed. Please try again.';
   }

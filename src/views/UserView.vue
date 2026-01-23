@@ -15,7 +15,7 @@ import AppPageHeaderGroup from '../components/layout/AppPageHeaderGroup.vue';
 import AppLoading from '../components/shared/AppLoading.vue';
 import BaseButton from '../components/shared/BaseButton.vue';
 // Feature API
-import { usePracticeUsers, UserDataViewAdapter, UserModal } from '../features/users/usersAPI';
+import { usePracticeUsers, UserDataViewAdapter, UserModal } from '../features/users/usersApi';
 
 // --- Type Definitions ---
 

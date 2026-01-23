@@ -6,7 +6,7 @@
 import IconEdit from '../../../components/icons/IconEdit.vue';
 import BaseButton from '../../../components/shared/BaseButton.vue';
 import { useAuth } from '../../../composables/useAuth';
-import { UserIdentity } from '../../users/usersAPI';
+import { UserIdentity } from '../../users/usersApi';
 import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
 
 defineEmits(['edit', 'logout']);
