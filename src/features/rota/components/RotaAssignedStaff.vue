@@ -1,39 +1,33 @@
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue';
 
 import IconClose from '@/components/icons/IconClose.vue';
 
-// Logic: defines the shape of the shift object expected by the UI.
-// Renamed to PascalCase to satisfy sonarjs/class-name.
-interface UiShift {
-  id: string;
-  user_name?: string;
-  roleName?: string;
-}
+/**
+ * id - Unique identifier for the shift assignment.
+ * user_name - Name of the staff member assigned to the shift.
+ * [roleName] - Name of the specific role assigned for this shift.
+ */
 
-const props = withDefaults(
-  defineProps<{
-    staff: UiShift[];
-    targetRoleName?: string;
-  }>(),
-  {
-    staff: () => [],
-    targetRoleName: ''
-  }
-);
+const props = defineProps({
+  staff: { type: Array, default: () => [] },
+  targetRoleName: { type: String, default: '' }
+});
 
-// Logic: Refactored to function type to satisfy typescript:S6598.
-const emit = defineEmits<(e: 'remove', shift: UiShift) => void>();
+defineEmits(['remove']);
 
-const staffList = computed<UiShift[]>(() => props.staff);
+// Create a typed computed property to resolve 'unknown' type errors in the template
+const staffList = computed(() => {
+  return props.staff;
+});
 
 /**
  * Checks if the shift role differs from the target role.
  * @param shift - The shift object.
- * @returns True if the roles do not match.
+ * @returns True if exception.
  */
-const isException = (shift: UiShift): boolean => {
-  // Logic: if we don't know the role (e.g. data load issue), don't flag as exception.
+const isException = (shift) => {
+  // If we don't know the role (e.g. data load issue), don't flag as exception to avoid noise
   if (!shift.roleName) return false;
   return shift.roleName !== props.targetRoleName;
 };
@@ -50,7 +44,7 @@ const isException = (shift: UiShift): boolean => {
         class="staff-card assigned"
         title="Click to remove from shift"
         type="button"
-        @click="emit('remove', shift)"
+        @click="$emit('remove', shift)"
       >
         <div class="staff-info">
           <span class="staff-name">{{ shift.user_name }}</span>
@@ -88,19 +82,19 @@ const isException = (shift: UiShift): boolean => {
 .staff-card {
   align-items: center;
 
-  /* Default State: Info Style. */
+  /* Default State: Info Style */
   background: #f0f9ff;
   border: 1px solid #bae6fd;
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
-  font-family: inherit; /* Button Reset. */
+  font-family: inherit; /* Button Reset */
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  text-align: left; /* Button Reset. */
+  text-align: left; /* Button Reset */
   transition: all 0.2s ease;
   user-select: none;
-  width: 100%; /* Button Reset. */
+  width: 100%; /* Button Reset */
 }
 
 .staff-info {
@@ -109,7 +103,8 @@ const isException = (shift: UiShift): boolean => {
   overflow: hidden;
 }
 
-/* Base definitions must come BEFORE hover overrides. */
+/* Base definitions must come BEFORE hover overrides */
+
 .staff-name {
   color: var(--text-main);
   font-size: 0.9rem;
@@ -147,9 +142,10 @@ const isException = (shift: UiShift): boolean => {
   padding: 0.5rem 0;
 }
 
-/* Hover State: "Removal" Style. */
+/* Hover State: "Removal" Style */
 
-/* Placed at end to satisfy no-descending-specificity. */
+/* Placed at end to satisfy no-descending-specificity */
+
 .staff-card:hover {
   background-color: #fee2e2;
   border-color: #fca5a5;

@@ -2,39 +2,54 @@
  * Rota data access layer.
  * Primary responsibility: provides an abstraction for Firestore operations related to
  * practices, surgeries, and staff shifts.
+ * Standardised to camelCase naming to resolve filesystem casing conflicts.
  */
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  type DocumentData,
-  getDocs,
-  type QuerySnapshot,
-  Timestamp
-} from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, Timestamp } from 'firebase/firestore';
 
 import { db } from '@/services/firebase';
 
-import {
-  type PracticeRole,
-  type PracticeSurgery,
-  type Shift,
-  type ShiftInput,
-  ShiftSchema
-} from './rotaTypes';
+/**
+ * id - The unique identifier for the role.
+ * name - Display name of the professional role.
+ */
+
+/**
+ * id - The unique identifier for the surgery room.
+ * name - Display name or number of the surgery.
+ */
+
+/**
+ * id - The unique identifier for the shift.
+ * [role_id] - Reference to the associated role.
+ * [surgery_id] - Reference to the surgery room.
+ * [user_id] - Identifier of the assigned staff member.
+ * [user_name] - Name of the assigned staff member.
+ * [role_name] - Name of the assigned professional role.
+ * [surgery_name] - Name of the surgery room.
+ * [date] - The scheduled date for the shift (Timestamp or ISO string).
+ */
+
+/**
+ * [date] - The raw date input for the shift.
+ * [role_id] - Reference to the role.
+ * [surgery_id] - Reference to the surgery room.
+ * [user_id] - Identifier for the assigned staff member.
+ * [user_name] - Name of the assigned staff member.
+ * [role_name] - Display name of the role.
+ * [surgery_name] - Display name of the surgery room.
+ */
 
 // --- Configuration Fetching ---
 
 /**
  * Fetches all professional roles configured for a specific practice.
  * @param practiceId - The unique identifier of the dental practice.
- * @returns A promise resolving to a collection of practice roles.
+ * @returns A collection of practice roles.
  */
-export const fetchPracticeRoles = async (practiceId: string): Promise<PracticeRole[]> => {
+export const fetchPracticeRoles = async (practiceId) => {
   try {
     const snap = await getDocs(collection(db, `practices/${practiceId}/roles`));
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as PracticeRole);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   } catch {
     return [];
   }
@@ -43,12 +58,12 @@ export const fetchPracticeRoles = async (practiceId: string): Promise<PracticeRo
 /**
  * Fetches all available surgeries within a specific practice.
  * @param practiceId - The unique identifier of the dental practice.
- * @returns A promise resolving to a collection of surgery room data.
+ * @returns A collection of surgery room data.
  */
-export const fetchPracticeSurgeries = async (practiceId: string): Promise<PracticeSurgery[]> => {
+export const fetchPracticeSurgeries = async (practiceId) => {
   try {
     const snap = await getDocs(collection(db, `practices/${practiceId}/surgeries`));
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as PracticeSurgery);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   } catch {
     return [];
   }
@@ -57,36 +72,16 @@ export const fetchPracticeSurgeries = async (practiceId: string): Promise<Practi
 // --- Data Fetching ---
 
 /**
- * Helper to safely parse a Firestore snapshot into typed Shift objects.
- * Silently ignores documents that fail Zod validation to prevent app crashes.
- * @param snap - The Firestore query snapshot containing shift documents.
- * @returns An array of validated Shift objects.
- */
-const mapShiftSnapshot = (snap: QuerySnapshot<DocumentData, DocumentData>): Shift[] => {
-  return snap.docs
-    .map((d) => {
-      const data = { id: d.id, ...d.data() };
-      const result = ShiftSchema.safeParse(data);
-      if (!result.success) {
-        return null;
-      }
-      return result.data;
-    })
-    .filter((s): s is Shift => s !== null);
-};
-
-/**
  * Retrieves all shifts and applies client-side filtering based on the practice identifier.
  * @param practiceId - The unique identifier of the dental practice.
  * @returns A filtered list of shifts belonging to the practice.
  */
-export const fetchShifts = async (practiceId: string): Promise<Shift[]> => {
+export const fetchShifts = async (practiceId) => {
   try {
     const snap = await getDocs(collection(db, 'shifts'));
-    const allShifts = mapShiftSnapshot(snap);
-
-    // Client-side filtering: check if the shift's role reference path contains the practice ID.
-    return allShifts.filter((s) => s.role_id?.path?.includes(practiceId));
+    return snap.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .filter((s) => s.role_id?.path?.includes(practiceId));
   } catch {
     return [];
   }
@@ -98,9 +93,9 @@ export const fetchShifts = async (practiceId: string): Promise<Shift[]> => {
  * Persists a new shift record to the database with initial draft status.
  * Logic: standardises the date to a Firestore Timestamp.
  * @param shiftData - The raw data representing the new shift.
- * @returns A promise that resolves when the shift is created.
+ * @returns
  */
-export const createShift = async (shiftData: ShiftInput): Promise<void> => {
+export const createShift = async (shiftData) => {
   const payload = {
     ...shiftData,
     date:
@@ -110,15 +105,14 @@ export const createShift = async (shiftData: ShiftInput): Promise<void> => {
     is_resolved: false,
     roster_status: 'draft'
   };
-
   await addDoc(collection(db, 'shifts'), payload);
 };
 
 /**
  * Removes a specific shift record from the global shifts collection.
  * @param shiftId - The unique identifier of the shift to be deleted.
- * @returns A promise that resolves when the shift is deleted.
+ * @returns
  */
-export const deleteShift = async (shiftId: string): Promise<void> => {
+export const deleteShift = async (shiftId) => {
   await deleteDoc(doc(db, 'shifts', shiftId));
 };

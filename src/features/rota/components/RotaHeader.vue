@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import AppPageHeaderGroup from '@/components/layout/AppPageHeaderGroup.vue';
 
 import RotaHeaderDesktop from './RotaHeaderDesktop.vue';
@@ -9,29 +9,15 @@ import RotaHeaderMobile from './RotaHeaderMobile.vue';
  * Delegates all control rendering to the responsive child components.
  */
 
-withDefaults(
-  defineProps<{
-    title?: string;
-    monthLabel?: string;
-    dateRangeLabel?: string;
-    showTodayButton?: boolean;
-    isMobile?: boolean;
-  }>(),
-  {
-    title: 'Practice Rota',
-    monthLabel: '',
-    dateRangeLabel: '',
-    showTodayButton: false,
-    isMobile: false
-  }
-);
+defineProps({
+  title: { type: String, default: 'Practice Rota' },
+  monthLabel: { type: String, default: '' },
+  dateRangeLabel: { type: String, default: '' },
+  showTodayButton: { type: Boolean, default: false },
+  isMobile: { type: Boolean, default: false }
+});
 
-const emit = defineEmits<{
-  (e: 'navigate-month', direction: number): void;
-  (e: 'navigate-period', direction: number): void;
-  (e: 'navigate-day', direction: number): void;
-  (e: 'jump-today'): void;
-}>();
+defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today']);
 </script>
 
 <template>
@@ -44,10 +30,10 @@ const emit = defineEmits<{
         :date-range-label="dateRangeLabel"
         :month-label="monthLabel"
         :show-today-button="showTodayButton"
-        @jump-today="emit('jump-today')"
-        @navigate-day="emit('navigate-day', $event)"
-        @navigate-month="emit('navigate-month', $event)"
-        @navigate-period="emit('navigate-period', $event)"
+        @jump-today="$emit('jump-today')"
+        @navigate-day="$emit('navigate-day', $event)"
+        @navigate-month="$emit('navigate-month', $event)"
+        @navigate-period="$emit('navigate-period', $event)"
       />
 
       <RotaHeaderDesktop
@@ -55,9 +41,9 @@ const emit = defineEmits<{
         :date-range-label="dateRangeLabel"
         :month-label="monthLabel"
         :show-today-button="showTodayButton"
-        @jump-today="emit('jump-today')"
-        @navigate-month="emit('navigate-month', $event)"
-        @navigate-period="emit('navigate-period', $event)"
+        @jump-today="$emit('jump-today')"
+        @navigate-month="$emit('navigate-month', $event)"
+        @navigate-period="$emit('navigate-period', $event)"
       />
     </div>
   </div>

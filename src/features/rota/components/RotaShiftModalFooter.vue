@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 /**
  * RotaShiftModalFooter.
  * Primary responsibility: provides the action buttons for the shift modal footer.
@@ -6,15 +6,12 @@
  */
 import BaseButton from '@/components/shared/BaseButton.vue';
 
-defineProps<{
-  saveLabel: string;
-  hasChanges: boolean;
-}>();
+defineProps({
+  saveLabel: { type: String, required: true },
+  hasChanges: { type: Boolean, required: true }
+});
 
-defineEmits<{
-  (e: 'close'): void;
-  (e: 'save'): void;
-}>();
+defineEmits(['close', 'save']);
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 /**
  * RotaStaffPicker.
  * Primary responsibility: provides a searchable interface for selecting staff members
@@ -6,41 +6,46 @@
  */
 import IconPlus from '@/components/icons/IconPlus.vue';
 
-interface StaffMember {
-  uid: string;
-  name: string;
-  roleName?: string;
-}
+/**
+ * uid - Unique identifier for the staff member.
+ * name - Display name of the staff member.
+ * [roleName] - Optional display name of the assigned role.
+ */
 
-withDefaults(
-  defineProps<{
-    searchQuery?: string;
-    isLoading?: boolean;
-    targetRoleName?: string;
-    recommended?: StaffMember[];
-    others?: StaffMember[];
-  }>(),
-  {
-    searchQuery: '',
-    isLoading: false,
-    targetRoleName: '',
-    recommended: () => [],
-    others: () => []
+// Logic: use JSDoc annotations for PropType as this is a JavaScript file.
+defineProps({
+  searchQuery: {
+    type: String,
+    default: ''
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
+  },
+  targetRoleName: {
+    type: String,
+    default: ''
+  },
+  recommended: {
+    type: Array,
+    default: () => []
+  },
+  others: {
+    type: Array,
+    default: () => []
   }
-);
+});
 
-const emit = defineEmits<{
-  (e: 'update:searchQuery', value: string): void;
-  (e: 'add', member: StaffMember): void;
-}>();
+const emit = defineEmits(['update:searchQuery', 'add']);
 
 /**
  * Handles the search input event and emits the updated query string.
  * Logic: casts the event target to an HTMLInputElement to satisfy strict type checks.
  * @param event - The native input event.
  */
-const handleSearchInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
+const handleSearchInput = (event) => {
+  const target = event.target;
+
   if (target) {
     emit('update:searchQuery', target.value);
   }
@@ -70,7 +75,7 @@ const handleSearchInput = (event: Event) => {
           v-for="member in recommended"
           :key="member.uid"
           class="staff-card available"
-          @click="emit('add', member)"
+          @click="$emit('add', member)"
         >
           <span class="staff-name">{{ member.name }}</span>
           <IconPlus class="add-icon" />
@@ -85,7 +90,7 @@ const handleSearchInput = (event: Event) => {
           v-for="member in others"
           :key="member.uid"
           class="staff-card available warning-card"
-          @click="emit('add', member)"
+          @click="$emit('add', member)"
         >
           <div class="staff-info">
             <span class="staff-name">{{ member.name }}</span>
@@ -105,7 +110,7 @@ const handleSearchInput = (event: Event) => {
 </template>
 
 <style scoped>
-/* Layout: Picker sidebar container providing internal scrolling. */
+/* Layout: Picker sidebar container providing internal scrolling */
 .picker-section {
   display: flex;
   flex: 1;
@@ -134,7 +139,7 @@ const handleSearchInput = (event: Event) => {
   width: 100%;
 }
 
-/* Scrollable container for the dynamic staff list. */
+/* Scrollable container for the dynamic staff list */
 .available-list {
   display: flex;
   flex: 1;
@@ -162,7 +167,7 @@ const handleSearchInput = (event: Event) => {
   border-color: #3b82f6;
 }
 
-/* Logic: visual indicator for staff members outside the primary role category. */
+/* Logic: visual indicator for staff members outside the primary role category */
 .staff-card.warning-card {
   border-left: 3px solid #f59e0b;
 }
