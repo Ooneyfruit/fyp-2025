@@ -1,105 +1,134 @@
-<script setup>
+<script setup lang="ts">
 /**
+ * BaseTable.
  * Primary responsibility: provides a flexible, semantic data table component.
  * Supports visual grouping of rows via the 'groupBy' prop and dynamic component rendering.
- * Refactored to use native table elements for accessibility and flatter template structure.
+ * Refactored to eliminate 'any' types and satisfy strict TypeScript standards.
  */
-import { computed } from 'vue';
+import { type Component, computed } from 'vue';
+
+import { type Dict } from '@/types/generic';
 
 /**
- * @typedef {object} HeaderConfig
- * @property {string} key - Unique identifier for the column.
- * @property {string} label - Display text for the header.
- * @property {string} [width] - CSS grid column width.
- * @property {string} [align] - Text alignment.
- * @property {string} [headerClass] - Custom class for header cells.
- * @property {string} [cellClass] - Custom class for body cells.
- * @property {object} [component] - Dynamic component to render in cells.
- * @property {Function} [props] - Function returning props for the dynamic component.
- * @property {Function} [listeners] - Function returning event listeners for the dynamic component.
- * @property {Function} [formatter] - Function to format raw values.
+ * Configuration for a single table column.
  */
+interface HeaderConfig {
+  key: string;
+  label: string;
+  width?: string;
+  align?: 'left' | 'centre' | 'right';
+  headerClass?: string;
+  cellClass?: string;
+  component?: Component;
+  props?: Dict | ((item: TableItem) => Dict);
+  listeners?: Dict | ((item: TableItem) => Dict);
+  formatter?: (value: unknown, item: TableItem) => unknown;
+}
 
 /**
- * @typedef {Record<string, any>} TableItem
+ * Represents a raw data row in the table.
  */
-
-const props = defineProps({
-  headers: { type: Array, required: true },
-  items: { type: Array, required: true },
-  rowClass: { type: Function, default: () => [] },
-  verticalLines: { type: Boolean, default: false },
-  groupBy: { type: String, default: null },
-  emptyComponent: { type: Object, default: null },
-  emptyProps: { type: Object, default: () => ({}) }
-});
+interface TableItem extends Record<string, unknown> {
+  id?: string | number;
+}
 
 /**
- * Helper to access nested properties safely without using reduce.
- * @param {any} obj - The source object.
- * @param {string} path - Dot-notation path string.
- * @returns {any} The resolved value or undefined.
+ * Internal interface for items with added grouping metadata.
  */
-const getNestedValue = (obj, path) => {
-  if (!obj || !path) return;
-  let current = obj;
+interface EnrichedTableItem extends TableItem {
+  _isGroupStart?: boolean;
+  _isGroupEnd?: boolean;
+  _isGroupMiddle?: boolean;
+}
+
+const props = withDefaults(
+  defineProps<{
+    headers: HeaderConfig[];
+    items: TableItem[];
+    rowClass?: (item: TableItem) => string | string[];
+    verticalLines?: boolean;
+    groupBy?: string | null;
+    emptyComponent?: Component | null;
+    emptyProps?: Dict;
+  }>(),
+  {
+    rowClass: () => [],
+    verticalLines: false,
+    groupBy: null,
+    emptyComponent: null,
+    emptyProps: () => ({})
+  }
+);
+
+/**
+ * Helper to access nested properties safely using a string path.
+ * @param obj - The source object to traverse.
+ * @param path - Dot-notation path string (e.g. "user.profile.name").
+ * @returns The resolved value or undefined if the path is invalid.
+ */
+const getNestedValue = (obj: TableItem, path: string | null): unknown => {
+  if (!obj || !path) {
+    return;
+  }
+
+  let current: unknown = obj;
   const parts = path.split('.');
 
   for (const part of parts) {
-    if (current === null || current === undefined) return;
-    current = current[part];
+    if (current === null || typeof current !== 'object') {
+      return;
+    }
+    current = (current as Dict)[part];
   }
+
   return current;
 };
 
-// Computed property to strictly type headers for the template loop
-const typedHeaders = computed(() => {
-  return /** @type {HeaderConfig[]} */ (props.headers);
-});
+// Logic: maps the raw items to include grouping metadata if required by the view.
+const enrichedItems = computed<EnrichedTableItem[]>(() => {
+  if (!props.groupBy) {
+    return props.items as EnrichedTableItem[];
+  }
 
-const enrichedItems = computed(() => {
-  if (!props.groupBy) return /** @type {TableItem[]} */ (props.items);
-
-  const mapped = props.items.map((item, index, arr) => {
+  return props.items.map((item, index, arr) => {
     const currentGroup = getNestedValue(item, props.groupBy);
     const prevGroup = index > 0 ? getNestedValue(arr[index - 1], props.groupBy) : null;
     const nextGroup = index < arr.length - 1 ? getNestedValue(arr[index + 1], props.groupBy) : null;
 
-    // Cast item to object to satisfy spread operator requirements in TS
-    const rawItem = /** @type {object} */ (item);
-
     return {
-      ...rawItem,
+      ...item,
       _isGroupStart: currentGroup !== prevGroup,
       _isGroupEnd: currentGroup !== nextGroup,
       _isGroupMiddle: currentGroup === prevGroup && currentGroup === nextGroup
     };
   });
-
-  return /** @type {TableItem[]} */ (mapped);
 });
 
+// Logic: calculates the grid template columns based on header width configurations.
 const gridTemplate = computed(() => {
-  return typedHeaders.value.map((h) => h.width || '1fr').join(' ');
+  return props.headers.map((h) => h.width || '1fr').join(' ');
 });
 
 /**
- * Resolves classes for a specific row.
- * @param {object} item - Row data item.
- * @returns {string[]} List of classes.
+ * Resolves classes for a specific row based on the rowClass prop function.
+ * @param item - The specific row data item.
+ * @returns An array of CSS classes.
  */
-const getRowClasses = (item) => {
+const getRowClasses = (item: EnrichedTableItem): string[] => {
+  if (!props.rowClass) {
+    return [];
+  }
   const classes = props.rowClass(item);
   return Array.isArray(classes) ? classes : [classes];
 };
 
 /**
  * Resolves the props object for a dynamic component cell.
- * @param {HeaderConfig} col - Header configuration object.
- * @param {object} item - Row data item.
- * @returns {object} Props object.
+ * @param col - The header configuration for the current column.
+ * @param item - The current row data item.
+ * @returns A dictionary of props for the component.
  */
-const resolveProps = (col, item) => {
+const resolveProps = (col: HeaderConfig, item: EnrichedTableItem): Dict => {
   if (typeof col.props === 'function') {
     return col.props(item);
   }
@@ -108,11 +137,11 @@ const resolveProps = (col, item) => {
 
 /**
  * Resolves the event listeners for a dynamic component cell.
- * @param {HeaderConfig} col - Header configuration object.
- * @param {object} item - Row data item.
- * @returns {object} Listeners object.
+ * @param col - The header configuration for the current column.
+ * @param item - The current row data item.
+ * @returns A dictionary of event listeners.
  */
-const resolveListeners = (col, item) => {
+const resolveListeners = (col: HeaderConfig, item: EnrichedTableItem): Dict => {
   if (typeof col.listeners === 'function') {
     return col.listeners(item);
   }
@@ -130,7 +159,7 @@ const resolveListeners = (col, item) => {
       <thead>
         <tr class="table-header-row">
           <th
-            v-for="col in typedHeaders"
+            v-for="col in headers"
             :key="col.key"
             class="cell header-cell"
             :class="[`align-${col.align || 'left'}`, col.headerClass]"
@@ -155,7 +184,7 @@ const resolveListeners = (col, item) => {
           ]"
         >
           <td
-            v-for="col in typedHeaders"
+            v-for="col in headers"
             :key="col.key"
             class="cell body-cell"
             :class="[`align-${col.align || 'left'}`, col.cellClass]"
@@ -168,7 +197,11 @@ const resolveListeners = (col, item) => {
             />
 
             <slot v-else :item="item" :name="`cell(${col.key})`">
-              {{ col.formatter ? col.formatter(item[col.key], item) : item[col.key] }}
+              {{
+                col.formatter
+                  ? col.formatter(item[col.key], item)
+                  : (item[col.key] as string | number)
+              }}
             </slot>
           </td>
         </tr>
@@ -240,7 +273,7 @@ tr {
 
 /* --- Grouping & Spacing Logic (Base Selectors) --- */
 
-/* These must appear BEFORE any pseudo-class overrides to satisfy Stylelint */
+/* These must appear BEFORE any pseudo-class overrides to satisfy Stylelint. */
 
 .table-row.group-start .body-cell {
   border-bottom: 1px solid #f8fafc;
@@ -262,7 +295,7 @@ tr {
   text-align: left;
 }
 
-.align-center {
+.align-centre {
   justify-content: center;
   text-align: center;
 }
@@ -284,9 +317,9 @@ tr {
 
 /* --- Specificity Overrides & Pseudo-Classes --- */
 
-/* Placed at the end to ensure they override base styles and respect descending specificity rules */
+/* Placed at the end to ensure they override base styles and respect descending specificity rules. */
 
-/* Pseudo-classes (Highest Specificity in this context) */
+/* Pseudo-classes (Highest Specificity in this context). */
 .table-row.group-start .body-cell:first-child {
   border-top-left-radius: 8px;
 }
@@ -303,7 +336,7 @@ tr {
   border-bottom-right-radius: 8px;
 }
 
-/* Vertical lines logic must be last to override border settings */
+/* Vertical lines logic must be last to override border settings. */
 .base-table.has-vertical-lines .header-cell:not(:last-child),
 .base-table.has-vertical-lines .body-cell:not(:last-child) {
   border-right: 1px solid #f1f5f9;

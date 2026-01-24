@@ -1,219 +1,302 @@
-<script setup>
+<script setup lang="ts">
 /**
  * RotaShiftModal.
- * Primary responsibility: provides an interface for assigning staff to rota slots.
- * Refactored to fix path resolution, prop definition, and reactive type safety.
+ * Interface for modifying the staff assigned to a specific role/surgery/date slot.
  */
 import { computed, ref, watch } from 'vue';
 
+import IconMinus from '@/components/icons/IconMinus.vue';
+import IconPlus from '@/components/icons/IconPlus.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
-import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
+import BaseSelect from '@/components/shared/BaseSelect.vue';
+import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
+import { usePracticeUsers } from '@/features/users/usersApi';
 
-import RotaAssignedStaff from './RotaAssignedStaff.vue';
-import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
-import RotaStaffPicker from './RotaStaffPicker.vue';
+// --- Type Definitions ---
+
+interface RotaDay {
+  iso: string;
+  label: string;
+}
+
+interface SavePayload {
+  additions: Array<{ userRef: string; name: string }>;
+  removals: string[];
+}
+
+// --- Props & Emits ---
+
+const props = defineProps<{
+  show: boolean;
+  role: PracticeRole;
+  surgery: PracticeSurgery;
+  date: RotaDay;
+  shifts: Shift[];
+}>();
+
+// Fix: Use arrow function syntax for defineEmits
+const emit = defineEmits<{
+  (e: 'request-close'): void;
+  (e: 'save', payload: SavePayload): void;
+}>();
+
+// --- Logic ---
+
+const { users } = usePracticeUsers();
+
+// Local state for the dropdown selection
+const selectedUserId = ref('');
+
+// Track pending changes
+const pendingAdditions = ref<Array<{ userRef: string; name: string }>>([]);
+const pendingRemovals = ref<string[]>([]); // Array of Shift IDs to remove
 
 /**
- * @typedef {import('../../users/usersApi').UserMember} UserMember
- * @typedef {object} MappedStaff
- * @property {string} uid - Profile identifier.
- * @property {string} membershipId - Practice membership identifier.
- * @property {import('firebase/firestore').DocumentReference} userRef - Firestore reference.
- * @property {string} name - Display name.
- * @property {string} [email] - Contact email.
- * @property {string} [roleName] - Job role name.
+ * Reset local state when the modal opens or the target slot changes.
  */
-
-/**
- * @typedef {object} Shift
- * @property {string} id - Unique identifier.
- * @property {string | { id: string }} [user_id] - User reference or ID.
- * @property {string} [user_name] - Name of the user.
- * @property {string} [roleName] - Name of the role.
- * @property {boolean} [isTemp] - Flag for temporary state.
- * @property {MappedStaff} [originalMember] - Link back to source data.
- */
-
-const props = defineProps({
-  show: { type: Boolean, default: false },
-  role: { type: Object, default: () => ({ name: 'Unknown' }) },
-  surgery: { type: Object, default: () => ({ name: 'Unknown' }) },
-  date: { type: Object, default: () => ({ label: '' }) },
-  // Logic: explicitly type the array to prevent 'never' iteration errors.
-  shifts: { type: /** @type {import('vue').PropType<Shift[]>} */ (Array), default: () => [] }
-});
-
-const emit = defineEmits(['request-close', 'save']);
-
-// --- Shared State ---
-const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
-
-// --- Local Reactive State ---
-const searchQuery = ref('');
-// Logic: initializing with type casts prevents 'Property does not exist on type never' errors.
-const pendingAdds = ref(/** @type {MappedStaff[]} */ ([]));
-const pendingRemoves = ref(/** @type {string[]} */ ([]));
-
-// Logic: reset internal staging area when the modal visibility toggles.
 watch(
   () => props.show,
-  (/** @type {boolean} */ isOpen) => {
+  (isOpen) => {
     if (isOpen) {
-      pendingAdds.value = [];
-      pendingRemoves.value = [];
-      searchQuery.value = '';
+      selectedUserId.value = '';
+      pendingAdditions.value = [];
+      pendingRemovals.value = [];
     }
   }
 );
 
-const modalTitle = computed(
-  () => `${props.role?.name} - ${props.surgery?.name} (${props.date?.label})`
-);
+/**
+ * Adds a user to the pending list.
+ */
+const addUser = () => {
+  if (!selectedUserId.value) return;
 
-// --- Data Mapping ---
-const mappedMembers = computed(() => {
-  return practiceUsers.value.map((/** @type {UserMember} */ member) => ({
-    uid: member.profile.id,
-    membershipId: member.id,
-    userRef: member.user,
-    name: member.profile.name || 'Unknown Staff',
-    email: member.profile.email,
-    roleName: member.role
-  }));
-});
+  const user = users.value.find((u) => u.uid === selectedUserId.value);
+  if (!user) return;
 
-// --- Computed Lists ---
+  // Prevent duplicates
+  const alreadyInShifts = props.shifts.some((s) => s.user_id === user.uid);
+  const alreadyInPending = pendingAdditions.value.some((p) => p.userRef === user.uid);
 
-const currentStaffList = computed(() => {
-  // Logic: filter out shifts staged for removal and enrich with current role information.
-  const existing = props.shifts
-    .filter((s) => !pendingRemoves.value.includes(s.id))
-    .map((s) => {
-      // Robust ID check: handles both string and DocumentReference formats safely.
-      const sUserId = typeof s.user_id === 'object' ? s.user_id?.id : s.user_id;
-      const match = mappedMembers.value.find((m) => m.uid === sUserId);
-
-      return {
-        ...s,
-        roleName: match?.roleName
-      };
+  if (!alreadyInShifts && !alreadyInPending) {
+    pendingAdditions.value.push({
+      userRef: user.uid,
+      name: user.name || 'Unknown'
     });
+  }
 
-  const newOnes = pendingAdds.value.map((m) => ({
-    id: `temp_${m.uid}`,
-    user_name: m.name,
-    isTemp: true,
-    originalMember: m,
-    roleName: m.roleName,
-    // Ensure user_id matches the structure expected by consumers.
-    user_id: m.uid
-  }));
-
-  return [...existing, ...newOnes];
-});
-
-const availableStaffList = computed(() => {
-  // Logic: Create a Set of existing IDs to efficiently filter the picker list.
-  const currentIds = new Set(
-    currentStaffList.value.map((s) => {
-      // Explicitly handle the union type for user_id to avoid 'id does not exist on type string' errors.
-      if (typeof s.user_id === 'object' && s.user_id !== null && 'id' in s.user_id) {
-        return s.user_id.id;
-      }
-      return s.user_id || s.originalMember?.uid;
-    })
-  );
-
-  const query = searchQuery.value.toLowerCase();
-
-  return mappedMembers.value.filter((m) => {
-    if (currentIds.has(m.uid)) return false;
-    return m.name.toLowerCase().includes(query);
-  });
-});
-
-const recommendedStaff = computed(() =>
-  availableStaffList.value.filter((m) => m.roleName === props.role?.name)
-);
-
-const otherStaff = computed(() =>
-  availableStaffList.value.filter((m) => m.roleName !== props.role?.name)
-);
-
-const hasChanges = computed(() => pendingAdds.value.length > 0 || pendingRemoves.value.length > 0);
-
-const saveLabel = computed(() => (hasChanges.value ? 'Save Changes' : 'No Changes'));
-
-// --- Action Handlers ---
-
-const stageAddition = (/** @type {MappedStaff} */ member) => {
-  pendingAdds.value.push(member);
+  selectedUserId.value = '';
 };
 
-const markForRemoval = (/** @type {any} */ shift) => {
-  if (shift.isTemp) {
-    pendingAdds.value = pendingAdds.value.filter((m) => m.uid !== shift.originalMember.uid);
-  } else {
-    pendingRemoves.value.push(shift.id);
+/**
+ * Marks a shift for removal.
+ * @param shiftId - The ID of the existing shift.
+ */
+const removeExistingShift = (shiftId: string) => {
+  if (!pendingRemovals.value.includes(shiftId)) {
+    pendingRemovals.value.push(shiftId);
   }
 };
 
-const saveChanges = () => {
-  emit('save', {
-    additions: pendingAdds.value,
-    removals: pendingRemoves.value
-  });
+/**
+ * Cancels a pending addition.
+ * @param index - Index in the pending additions array.
+ */
+const removePendingAddition = (index: number) => {
+  pendingAdditions.value.splice(index, 1);
 };
 
-const handleClose = () => emit('request-close');
+// Filter users available for selection (exclude those already assigned or pending)
+const availableUsers = computed(() => {
+  const assignedIds = new Set([
+    ...props.shifts.map((s) => s.user_id),
+    ...pendingAdditions.value.map((p) => p.userRef)
+  ]);
 
-const isLoading = computed(() => usersLoading.value);
+  return users.value.filter((u) => !assignedIds.has(u.uid));
+});
+
+// Calculate the final list of shifts to display (Existing - Removals + Additions)
+const displayShifts = computed(() => {
+  const existing = props.shifts
+    .filter((s) => !pendingRemovals.value.includes(s.id))
+    .map((s) => ({
+      id: s.id,
+      name: s.user_name,
+      isPending: false,
+      isRemoved: false
+    }));
+
+  const pending = pendingAdditions.value.map((p) => ({
+    id: `pending-${p.userRef}`,
+    name: p.name,
+    isPending: true,
+    isRemoved: false
+  }));
+
+  return [...existing, ...pending];
+});
+
+const handleSave = () => {
+  emit('save', {
+    additions: pendingAdditions.value,
+    removals: pendingRemovals.value
+  });
+};
 </script>
 
 <template>
   <BaseModal
-    :footer-component="RotaShiftModalFooter"
-    :footer-listeners="{ close: handleClose, save: saveChanges }"
-    :footer-props="{ saveLabel, hasChanges }"
     :show="show"
-    size="md"
-    :title="modalTitle"
-    @request-close="handleClose"
+    size="sm"
+    :title="`Manage Shifts: ${date.label}`"
+    @request-close="emit('request-close')"
   >
-    <div class="modal-body-wrapper">
-      <RotaAssignedStaff
-        :staff="currentStaffList"
-        :target-role-name="role.name"
-        @remove="markForRemoval"
-      />
+    <div class="modal-context">
+      <span class="context-pill">{{ role.name }}</span>
+      <span class="context-separator">@</span>
+      <span class="context-pill">{{ surgery.name }}</span>
+    </div>
 
-      <hr class="divider" />
+    <div class="modal-body">
+      <div class="add-section">
+        <div class="select-wrapper">
+          <BaseSelect id="shift-user-select" v-model="selectedUserId" fluid label="Assign Staff">
+            <option disabled value="">Select user...</option>
+            <option v-for="u in availableUsers" :key="u.uid" :value="u.uid">
+              {{ u.name }}
+            </option>
+          </BaseSelect>
+        </div>
+        <BaseButton
+          class="add-btn"
+          :disabled="!selectedUserId"
+          :icon="IconPlus"
+          icon-only
+          variant="primary"
+          @click="addUser"
+        />
+      </div>
 
-      <RotaStaffPicker
-        v-model:search-query="searchQuery"
-        :is-loading="isLoading"
-        :others="otherStaff"
-        :recommended="recommendedStaff"
-        :target-role-name="role.name"
-        @add="stageAddition"
-      />
+      <div class="shifts-list">
+        <div v-if="displayShifts.length === 0" class="empty-state">No staff assigned</div>
+
+        <div
+          v-for="shift in displayShifts"
+          :key="shift.id"
+          class="shift-row"
+          :class="{ 'is-pending': shift.isPending }"
+        >
+          <span class="user-name">{{ shift.name }}</span>
+          <BaseButton
+            class="remove-btn"
+            :icon="IconMinus"
+            icon-only
+            size="sm"
+            variant="ghost"
+            @click="
+              shift.isPending
+                ? removePendingAddition(pendingAdditions.findIndex((p) => p.name === shift.name))
+                : removeExistingShift(shift.id)
+            "
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <BaseButton label="Cancel" variant="secondary" @click="emit('request-close')" />
+      <BaseButton label="Save Changes" variant="primary" @click="handleSave" />
     </div>
   </BaseModal>
 </template>
 
 <style scoped>
-.modal-body-wrapper {
+/* Context Header */
+.modal-context {
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-height: 70vh;
-  min-height: 500px;
-  overflow: hidden;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
 }
 
-.divider {
-  border: 0;
+.context-pill {
+  background: var(--bg-app);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+}
+
+.context-separator {
+  color: var(--text-muted);
+}
+
+/* Add Section */
+.add-section {
+  align-items: flex-end;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.select-wrapper {
+  flex: 1;
+}
+
+.add-btn {
+  height: 2.5rem;
+  margin-bottom: 1px; /* Align with input border */
+  width: 2.5rem;
+}
+
+/* List Section */
+.shifts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 100px;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
+}
+
+.shift-row {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+}
+
+.shift-row.is-pending {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Footer */
+.modal-footer {
   border-top: 1px solid var(--border-color);
-  margin: 0;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
 }
 </style>
