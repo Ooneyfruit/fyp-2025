@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * RotaShiftModal.
  * Primary responsibility: provides an interface for assigning staff to rota slots.

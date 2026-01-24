@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 
 import IconChevronDoubleLeft from '@/components/icons/IconChevronDoubleLeft.vue';

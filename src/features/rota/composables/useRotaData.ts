@@ -3,26 +3,44 @@
  * Logic: centrally manages state for roles, surgeries, and shifts.
  * Decomposed to satisfy line-count limits and improve type safety.
  */
-import { computed, ref } from 'vue';
+import { type DocumentReference, Timestamp } from 'firebase/firestore';
+import { computed, type Ref, ref } from 'vue';
 
 import { fetchPracticeRoles, fetchPracticeSurgeries, fetchShifts } from '@/features/rota/rotaApi';
+import type { PracticeRole, PracticeSurgery, Shift, ShiftInput } from '@/features/rota/rotaTypes';
+import type { UserProfile } from '@/features/users/userTypes';
 
 /**
+ * Interface representing a flattened row in the rota grid.
+ * Combines a role and a surgery for iteration.
  */
+export interface RotaRow {
+  id: string;
+  role: PracticeRole;
+  surgery: PracticeSurgery;
+}
 
 /**
  * Helper to safely extract the ISO date string from a shift object.
- * @param shift - The shift object.
+ * @param shift - The shift object or input DTO.
  * @returns The ISO date string (YYYY-MM-DD) or null.
  */
-const getShiftDateIso = (shift) => {
+const getShiftDateIso = (shift: Shift | ShiftInput): string | null => {
   if (!shift.date) {
     return null;
   }
-  // Convert Firestore Timestamps to standard JS Dates before extracting the string.
-  if (typeof shift.date.toDate === 'function') {
+
+  // Check if the date is a Firestore Timestamp (has a toDate method)
+  if (shift.date instanceof Timestamp) {
     return shift.date.toDate().toISOString().split('T')[0];
   }
+
+  // Handle standard JS Date objects
+  if (shift.date instanceof Date) {
+    return shift.date.toISOString().split('T')[0];
+  }
+
+  // Fallback for string dates
   return new Date(shift.date).toISOString().split('T')[0];
 };
 
@@ -32,7 +50,7 @@ const getShiftDateIso = (shift) => {
  * @param targetId - The ID to match against.
  * @returns True if matched.
  */
-const isRefMatch = (refObj, targetId) => {
+const isRefMatch = (refObj: DocumentReference | null | undefined, targetId: string): boolean => {
   return refObj?.id === targetId || refObj?.path?.endsWith(targetId) || false;
 };
 
@@ -44,7 +62,7 @@ const isRefMatch = (refObj, targetId) => {
  * @param dIso - Target date (YYYY-MM-DD).
  * @returns Matching shifts.
  */
-const filterShifts = (shifts, rId, sId, dIso) => {
+const filterShifts = (shifts: Shift[], rId: string, sId: string, dIso: string): Shift[] => {
   return shifts.filter((s) => {
     const shiftDate = getShiftDateIso(s);
     if (shiftDate !== dIso) return false;
@@ -61,10 +79,10 @@ const filterShifts = (shifts, rId, sId, dIso) => {
  * @param userRef - Reactive Ref containing the current user profile.
  * @returns The rota data state and helper methods.
  */
-export function useRotaData(userRef) {
-  const practiceRoles = ref([]);
-  const practiceSurgeries = ref([]);
-  const rawShifts = ref([]);
+export function useRotaData(userRef: Ref<UserProfile | null>) {
+  const practiceRoles = ref<PracticeRole[]>([]);
+  const practiceSurgeries = ref<PracticeSurgery[]>([]);
+  const rawShifts = ref<Shift[]>([]);
   const isLoading = ref(false);
 
   /**
@@ -92,8 +110,8 @@ export function useRotaData(userRef) {
   };
 
   return {
-    flattenedRows: computed(() => {
-      const rows = [];
+    flattenedRows: computed<RotaRow[]>(() => {
+      const rows: RotaRow[] = [];
       for (const role of practiceRoles.value) {
         for (const surgery of practiceSurgeries.value) {
           rows.push({ id: `${role.id}_${surgery.id}`, role, surgery });
@@ -102,6 +120,6 @@ export function useRotaData(userRef) {
       return rows;
     }),
     loadData,
-    getShiftsForSlot: (r, s, d) => filterShifts(rawShifts.value, r, s, d)
+    getShiftsForSlot: (r: string, s: string, d: string) => filterShifts(rawShifts.value, r, s, d)
   };
 }

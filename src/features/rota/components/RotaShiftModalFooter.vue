@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * RotaShiftModalFooter.
  * Primary responsibility: provides the action buttons for the shift modal footer.

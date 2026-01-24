@@ -5,12 +5,12 @@
  * Refactored to resolve strict TypeScript index checks and function scoping requirements.
  */
 
-/**
- * bg - Hex code for the background colour.
- * accent - Hex code for the accent/text colour.
- */
+interface RoleColor {
+  bg: string;
+  accent: string;
+}
 
-const globalRoleRegistry = new Map();
+const globalRoleRegistry = new Map<string, number>();
 
 let nextAvailableIndex = 0;
 
@@ -20,7 +20,7 @@ const DEFAULT_PALETTE_INDEX = 7;
  * A palette of accessible tones.
  * Logic: tones are selected to ensure high contrast and maximum visual distinction.
  */
-const ROLE_PALETTE = [
+const ROLE_PALETTE: RoleColor[] = [
   { bg: '#e0f2fe', accent: '#0369a1' }, // Sky Blue
   { bg: '#f3e8ff', accent: '#7e22ce' }, // Purple
   { bg: '#dcfce7', accent: '#15803d' }, // Green
@@ -35,10 +35,10 @@ const ROLE_PALETTE = [
  * Deterministically assigns a colour palette to a Role ID.
  * Logic: checks the global registry first; if the ID is new, assigns the next
  * available colour in the sequence to minimise collisions.
- * @param [roleId] - The unique identifier for the job role.
+ * @param roleId - The unique identifier for the job role.
  * @returns The colour object containing background and accent hex codes.
  */
-const getRoleColor = (roleId) => {
+const getRoleColor = (roleId?: string): RoleColor => {
   if (!roleId) {
     return ROLE_PALETTE[DEFAULT_PALETTE_INDEX];
   }
