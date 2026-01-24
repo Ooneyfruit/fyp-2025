@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "project": ["src/**/*.{js,vue}"],
   "ignore": ["docs/gen/**", "src/services/**", "src/components/icons/**", "src/views/HomeView.vue"],
-  "ignoreDependencies": ["jsdoc-vuejs", "@commitlint/cli", "firebase-admin"],
+  "ignoreDependencies": ["@commitlint/cli", "firebase-admin"],
   "paths": {
     "@/*": ["src/*"]
   }

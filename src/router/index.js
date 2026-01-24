@@ -8,10 +8,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import { isAuthReady, user } from '@/composables/useAuth';
 import { useToast } from '@/composables/useToast';
-import AdminRepairView from '@/views/AdminRepairView.vue';
-import LoginView from '@/views/LoginView.vue';
-import RotaView from '@/views/RotaView.vue';
-import UserView from '@/views/UserView.vue';
 
 /**
  * @typedef {object} RouterUser
@@ -19,20 +15,43 @@ import UserView from '@/views/UserView.vue';
  * @property {string} uid - Unique identifier for the authenticated user.
  */
 
+/**
+ * Define the application routes.
+ * Views are imported dynamically to facilitate code-splitting and reduce the initial bundle size.
+ */
 const routes = [
-  { path: '/', component: RotaView }, // Updated to point to the new Rota view
+  {
+    path: '/',
+    // Dynamic import for the primary landing view.
+    component: () => import('@/views/RotaView.vue')
+  },
   {
     path: '/users',
-    component: UserView,
+    // Component only loads when the /users path is accessed.
+    component: () => import('@/views/UserView.vue'),
     meta: { requiresAdmin: true }
   },
-  { path: '/login', component: LoginView },
-  { path: '/repair', component: AdminRepairView }
+  {
+    path: '/login',
+    component: () => import('@/views/LoginView.vue')
+  },
+  {
+    path: '/repair',
+    component: () => import('@/views/AdminRepairView.vue')
+  }
 ];
 
-const router = createRouter({ history: createWebHistory(), routes });
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+});
 
-// Navigation guard to enforce authentication and role-based access.
+/**
+ * Navigation guard to enforce authentication and role-based access.
+ * @param {import('vue-router').RouteLocationNormalized} to - Target route.
+ * @param {import('vue-router').RouteLocationNormalized} from - Source route.
+ * @param {Function} next - Navigation control function.
+ */
 router.beforeEach(async (to, from, next) => {
   const { error: notifyError } = useToast();
 

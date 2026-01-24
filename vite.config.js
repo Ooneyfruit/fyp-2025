@@ -54,11 +54,64 @@ const pwaOptions = {
 };
 
 /**
- * Primary vite configuration.
+ * Generates a mock PWA registration module for the test environment.
+ * This prevents the build from failing when vite-plugin-pwa virtual modules are missing.
+ * @returns {import('vite').Plugin} A vite plugin object.
+ */
+const getPwaMockPlugin = () => ({
+  name: 'virtual-pwa-mock',
+  resolveId(id) {
+    // Intercept the virtual import used in App.vue.
+    if (id === 'virtual:pwa-register/vue') {
+      return 'virtual:pwa-register/vue';
+    }
+  },
+  load(id) {
+    // Return a dummy implementation so imports do not crash the build.
+    if (id === 'virtual:pwa-register/vue') {
+      return `
+        import { ref } from 'vue';
+        export const useRegisterSW = () => ({
+          needRefresh: ref(false),
+          updateServiceWorker: () => {}
+        });
+      `;
+    }
+  }
+});
+
+/**
+ * Strategy for segregating vendor libraries into dedicated chunks.
+ * Isolates heavier dependencies (Firestore) to prevent bundle bloat warnings.
+ * @param {string} id - The absolute path of the module being processed.
+ * @returns {string|void} The name of the chunk or undefined.
+ */
+const getManualChunks = (id) => {
+  // Only process third-party dependencies located in node_modules.
+  if (id.includes('node_modules')) {
+    // Separate Firestore as it is the largest component of the Firebase SDK.
+    if (id.includes('firestore')) {
+      return 'vendor-firebase-firestore';
+    }
+
+    // Group remaining Firebase modules (Auth, App, etc.) together.
+    if (id.includes('firebase')) {
+      return 'vendor-firebase-core';
+    }
+
+    // Group Vue ecosystem libraries to keep the main bundle light.
+    if (id.includes('vue')) {
+      return 'vendor-vue';
+    }
+  }
+};
+
+/**
+ * Primary Vite configuration.
  * Orchestrates build tooling, plugin integrations, and development server behaviour.
  * @param {object} configEnv - The environment configuration object.
- * @param {string} configEnv.mode - The current execution mode (e.g., 'development', 'production', 'test').
- * @returns {object} The resolved Vite configuration.
+ * @param {string} configEnv.mode - The current execution mode.
+ * @returns {import('vite').UserConfig} The resolved Vite configuration.
  */
 export default defineConfig(({ mode }) => {
   const plugins = [vue()];
@@ -69,27 +122,7 @@ export default defineConfig(({ mode }) => {
    * - Test: Uses a custom mock plugin to resolve the virtual module.
    */
   if (mode === 'test') {
-    plugins.push({
-      name: 'virtual-pwa-mock',
-      resolveId(id) {
-        // Intercept the virtual import used in App.vue
-        if (id === 'virtual:pwa-register/vue') {
-          return 'virtual:pwa-register/vue';
-        }
-      },
-      load(id) {
-        // Return a dummy implementation so imports don't crash the build
-        if (id === 'virtual:pwa-register/vue') {
-          return `
-            import { ref } from 'vue';
-            export const useRegisterSW = () => ({
-              needRefresh: ref(false),
-              updateServiceWorker: () => {}
-            });
-          `;
-        }
-      }
-    });
+    plugins.push(getPwaMockPlugin());
   } else {
     plugins.push(...VitePWA(pwaOptions));
   }
@@ -99,8 +132,22 @@ export default defineConfig(({ mode }) => {
 
     resolve: {
       alias: {
-        // Path aliasing: maps the '@' symbol to the physical 'src' directory for absolute-style imports.
+        // Path aliasing: maps the '@' symbol to the physical 'src' directory.
         '@': fileURLToPath(new URL('src', import.meta.url))
+      }
+    },
+
+    /**
+     * Build optimisation configuration.
+     * Implements manual chunking and adjusts warning limits for large dependencies.
+     */
+    build: {
+      // Increase the warning limit to 1MB to accommodate the Firestore SDK size.
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: getManualChunks
+        }
       }
     },
 
