@@ -1,11 +1,16 @@
-<script setup>
+<script setup lang="ts">
+/**
+ * IconIdenticon.
+ * Primary responsibility: renders a unique, symmetrical insignia based on a seed string.
+ * Refactored to use explicit SVG elements for better maintainability and type safety.
+ */
 import { computed } from 'vue';
 
 const HASH_SHIFT = 5;
 const HUE_RANGE = 360;
 const HUE_OFFSET = 160;
 const GRID_SIZE = 5;
-const PIVOT_INDEX = 2; // Center column index for mirroring.
+const PIVOT_INDEX = 2; // Centre column index for mirroring.
 const UNIQUE_COLS = 3; // Number of unique columns before mirroring.
 const ENTROPY_MASK = 15;
 
@@ -17,20 +22,16 @@ const SHAPE_TRI_LIMIT = 14;
 const TRIANGLE_ROTATION_BASE = 11;
 const TRIANGLE_ROTATION_STEP = 90;
 
-/**
- * Renders a unique, symmetrical insignia based on a seed string.
- * This component generates complex shapes using a mirrored grid and geometric primitives.
- */
-const props = defineProps({
-  seed: { type: String, required: true }
-});
+const props = defineProps<{
+  seed: string;
+}>();
 
 /**
  * Generates a deterministic hash from the seed.
- * @param {string} str - The input identifier.
- * @returns {number} A 32-bit positive integer.
+ * @param str - The input identifier.
+ * @returns A 32-bit positive integer.
  */
-const generateHash = (str) => {
+const generateHash = (str: string): number => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const code = str.codePointAt(i) || 0;
@@ -41,7 +42,7 @@ const generateHash = (str) => {
 };
 
 /**
- * Determines the color scheme for the identicon.
+ * Determines the colour scheme for the identicon.
  * Logic: uses the hash to pick a primary hue and generates a high-contrast pairing.
  */
 const theme = computed(() => {
@@ -55,32 +56,30 @@ const theme = computed(() => {
   };
 });
 
-/**
- * Shape configuration object.
- * @typedef {object} ShapeConfig
- * @property {string} type - The SVG element type (rect, circle, path).
- * @property {object} props - The attributes for the SVG element.
- * @property {number} [rotation] - Optional rotation degrees.
- */
+interface ShapeConfig {
+  type: 'rect' | 'circle' | 'path';
+  props: Record<string, string | number>;
+  rotation?: number;
+}
 
-/**
- * Grid cell configuration object.
- * @typedef {object} GridCell
- * @property {string} id - Unique identifier for the cell.
- * @property {string} type - The SVG element type.
- * @property {object} props - The attributes for the SVG element.
- * @property {string} transform - SVG transform string.
- */
+interface GridCell {
+  id: string;
+  type: 'rect' | 'circle' | 'path';
+  props: Record<string, string | number>;
+  transform: string;
+}
 
 /**
  * Resolves the shape configuration for a specific entropy value.
  * Extracting this logic reduces the complexity of the main grid loop.
- * @param {number} val - The 4-bit integer representing the cell entropy.
- * @returns {ShapeConfig|null} The shape properties or null if the cell is empty.
+ * @param val - The 4-bit integer representing the cell entropy.
+ * @returns The shape properties or null if the cell is empty.
  */
-const getShapeConfig = (val) => {
+const getShapeConfig = (val: number): ShapeConfig | null => {
   // Logic: 0-5 are empty to ensure whitespace/clarity in the insignia.
-  if (val < SHAPE_MIN_VAL) return null;
+  if (val < SHAPE_MIN_VAL) {
+    return null;
+  }
 
   if (val <= SHAPE_RECT_LIMIT) {
     return { type: 'rect', props: { x: 0, y: 0, width: 1, height: 1 } };
@@ -106,12 +105,12 @@ const getShapeConfig = (val) => {
 
 /**
  * Generates the render data for a specific grid cell.
- * @param {number} x - The x-coordinate on the grid.
- * @param {number} y - The y-coordinate on the grid.
- * @param {number} hash - The pre-calculated hash.
- * @returns {GridCell|null} The cell render object or null if empty.
+ * @param x - The x-coordinate on the grid.
+ * @param y - The y-coordinate on the grid.
+ * @param hash - The pre-calculated hash.
+ * @returns The cell render object or null if empty.
  */
-const generateCell = (x, y, hash) => {
+const generateCell = (x: number, y: number, hash: number): GridCell | null => {
   // Logic: mirror columns (0 mirrors 4, 1 mirrors 3).
   const sourceX = x > PIVOT_INDEX ? GRID_SIZE - 1 - x : x;
   const cellId = y * UNIQUE_COLS + sourceX;
@@ -120,7 +119,9 @@ const generateCell = (x, y, hash) => {
   const val = (hash >> cellId) & ENTROPY_MASK;
   const shape = getShapeConfig(val);
 
-  if (!shape) return null;
+  if (!shape) {
+    return null;
+  }
 
   let transform = `translate(${x} ${y})`;
 
@@ -141,10 +142,9 @@ const generateCell = (x, y, hash) => {
  * Generates the flattened list of cells for the 5x5 grid.
  * Logic: returns a flat array to avoid nested templates and reduce loop depth.
  */
-const cells = computed(() => {
+const cells = computed<GridCell[]>(() => {
   const h = generateHash(props.seed);
-  /** @type {GridCell[]} */
-  const list = [];
+  const list: GridCell[] = [];
 
   for (let y = 0; y < GRID_SIZE; y++) {
     for (let x = 0; x < GRID_SIZE; x++) {
@@ -169,7 +169,9 @@ const cells = computed(() => {
     <rect :fill="theme.bg" height="5" width="5" />
 
     <g v-for="cell in cells" :key="cell.id" :transform="cell.transform">
-      <component :is="cell.type" v-bind="cell.props" :fill="theme.fg" />
+      <rect v-if="cell.type === 'rect'" :fill="theme.fg" v-bind="cell.props" />
+      <circle v-else-if="cell.type === 'circle'" :fill="theme.fg" v-bind="cell.props" />
+      <path v-else-if="cell.type === 'path'" :fill="theme.fg" v-bind="cell.props" />
     </g>
   </svg>
 </template>

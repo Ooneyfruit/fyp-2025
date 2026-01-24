@@ -1,51 +1,47 @@
-<script setup>
+<script setup lang="ts">
 /**
  * RotaStaffPicker.
  * Primary responsibility: provides a searchable interface for selecting staff members
  * to add to the rota, with specific highlighting for recommended matches.
+ * Refactored to satisfy strict accessibility and TypeScript standards.
  */
 import IconPlus from '@/components/icons/IconPlus.vue';
 
-/**
- * @typedef {object} StaffMember
- * @property {string} uid - Unique identifier for the staff member.
- * @property {string} name - Display name of the staff member.
- * @property {string} [roleName] - Optional display name of the assigned role.
- */
+interface StaffMember {
+  uid: string;
+  name: string;
+  roleName?: string;
+}
 
-// Logic: use JSDoc annotations for PropType as this is a JavaScript file.
-defineProps({
-  searchQuery: {
-    type: String,
-    default: ''
-  },
-  isLoading: {
-    type: Boolean,
-    default: false
-  },
-  targetRoleName: {
-    type: String,
-    default: ''
-  },
-  recommended: {
-    type: /** @type {import('vue').PropType<StaffMember[]>} */ (Array),
-    default: () => []
-  },
-  others: {
-    type: /** @type {import('vue').PropType<StaffMember[]>} */ (Array),
-    default: () => []
+const props = withDefaults(
+  defineProps<{
+    searchQuery?: string;
+    isLoading?: boolean;
+    targetRoleName?: string;
+    recommended?: StaffMember[];
+    others?: StaffMember[];
+  }>(),
+  {
+    searchQuery: '',
+    isLoading: false,
+    targetRoleName: '',
+    recommended: () => [],
+    others: () => []
   }
-});
+);
 
-const emit = defineEmits(['update:searchQuery', 'add']);
+const emit = defineEmits<{
+  (e: 'update:searchQuery', value: string): void;
+  (e: 'add', member: StaffMember): void;
+}>();
 
 /**
  * Handles the search input event and emits the updated query string.
  * Logic: casts the event target to an HTMLInputElement to satisfy strict type checks.
- * @param {Event} event - The native input event.
+ * @param event - The native input event.
  */
-const handleSearchInput = (event) => {
-  const target = /** @type {HTMLInputElement} */ (event.target);
+const handleSearchInput = (event: Event): void => {
+  const target = event.target as HTMLInputElement;
 
   if (target) {
     emit('update:searchQuery', target.value);
@@ -111,7 +107,7 @@ const handleSearchInput = (event) => {
 </template>
 
 <style scoped>
-/* Layout: Picker sidebar container providing internal scrolling */
+/* Layout: Picker sidebar container providing internal scrolling. */
 .picker-section {
   display: flex;
   flex: 1;
@@ -140,7 +136,7 @@ const handleSearchInput = (event) => {
   width: 100%;
 }
 
-/* Scrollable container for the dynamic staff list */
+/* Scrollable container for the dynamic staff list. */
 .available-list {
   display: flex;
   flex: 1;
@@ -168,7 +164,7 @@ const handleSearchInput = (event) => {
   border-color: #3b82f6;
 }
 
-/* Logic: visual indicator for staff members outside the primary role category */
+/* Logic: visual indicator for staff members outside the primary role category. */
 .staff-card.warning-card {
   border-left: 3px solid #f59e0b;
 }

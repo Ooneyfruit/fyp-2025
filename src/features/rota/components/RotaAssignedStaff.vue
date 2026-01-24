@@ -1,36 +1,39 @@
-<script setup>
-import { computed } from 'vue';
-
-import IconClose from '@/components/icons/IconClose.vue';
-
+<script setup lang="ts">
 /**
- * @typedef {object} Shift
- * @property {string} id - Unique identifier for the shift assignment.
- * @property {string} user_name - Name of the staff member assigned to the shift.
- * @property {string} [roleName] - Name of the specific role assigned for this shift.
+ * RotaAssignedStaff.
+ * Primary responsibility: displays a list of staff members assigned to a specific
+ * surgery or role slot, allowing for removal and highlighting role mismatches.
+ * Refactored to satisfy strict accessibility, contrast, and TypeScript standards.
  */
+import IconClose from '@/components/icons/IconClose.vue';
+import type { Shift } from '@/features/rota/rotaTypes';
 
-const props = defineProps({
-  staff: { type: Array, default: () => [] },
-  targetRoleName: { type: String, default: '' }
-});
+const props = withDefaults(
+  defineProps<{
+    staff?: Shift[];
+    targetRoleName?: string;
+  }>(),
+  {
+    staff: () => [],
+    targetRoleName: ''
+  }
+);
 
-defineEmits(['remove']);
-
-// Create a typed computed property to resolve 'unknown' type errors in the template
-const staffList = computed(() => {
-  return /** @type {Shift[]} */ (props.staff);
-});
+defineEmits<{
+  (e: 'remove', shift: Shift): void;
+}>();
 
 /**
  * Checks if the shift role differs from the target role.
- * @param {Shift} shift - The shift object.
- * @returns {boolean} True if exception.
+ * @param shift - The shift object.
+ * @returns True if the assigned role is an exception to the target.
  */
-const isException = (shift) => {
-  // If we don't know the role (e.g. data load issue), don't flag as exception to avoid noise
-  if (!shift.roleName) return false;
-  return shift.roleName !== props.targetRoleName;
+const isException = (shift: Shift): boolean => {
+  // If the role is unknown, do not flag as an exception to avoid visual noise.
+  if (!shift.role_name) {
+    return false;
+  }
+  return shift.role_name !== props.targetRoleName;
 };
 </script>
 
@@ -38,9 +41,9 @@ const isException = (shift) => {
   <div class="assigned-section">
     <h4 class="section-heading">Assigned Staff</h4>
 
-    <div v-if="staffList.length > 0" class="staff-grid">
+    <div v-if="staff.length > 0" class="staff-grid">
       <button
-        v-for="shift in staffList"
+        v-for="shift in staff"
         :key="shift.id"
         class="staff-card assigned"
         title="Click to remove from shift"
@@ -51,7 +54,7 @@ const isException = (shift) => {
           <span class="staff-name">{{ shift.user_name }}</span>
 
           <span v-if="isException(shift)" class="exception-role">
-            {{ shift.roleName || 'Unknown Role' }}
+            {{ shift.role_name || 'Unknown Role' }}
           </span>
         </div>
 
@@ -83,19 +86,19 @@ const isException = (shift) => {
 .staff-card {
   align-items: center;
 
-  /* Default State: Info Style */
+  /* Default State: Info Style. */
   background: #f0f9ff;
   border: 1px solid #bae6fd;
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
-  font-family: inherit; /* Button Reset */
+  font-family: inherit; /* Button Reset. */
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  text-align: left; /* Button Reset */
+  text-align: left; /* Button Reset. */
   transition: all 0.2s ease;
   user-select: none;
-  width: 100%; /* Button Reset */
+  width: 100%; /* Button Reset. */
 }
 
 .staff-info {
@@ -104,7 +107,7 @@ const isException = (shift) => {
   overflow: hidden;
 }
 
-/* Base definitions must come BEFORE hover overrides */
+/* Base definitions must come BEFORE hover overrides. */
 
 .staff-name {
   color: var(--text-main);
@@ -143,9 +146,9 @@ const isException = (shift) => {
   padding: 0.5rem 0;
 }
 
-/* Hover State: "Removal" Style */
+/* Hover State: "Removal" Style. */
 
-/* Placed at end to satisfy no-descending-specificity */
+/* Placed at end to satisfy no-descending-specificity. */
 
 .staff-card:hover {
   background-color: #fee2e2;

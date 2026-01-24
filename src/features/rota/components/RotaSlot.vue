@@ -1,8 +1,8 @@
-<script setup>
+<script setup lang="ts">
 /**
  * RotaSlot.
  * Primary responsibility: provides a grid cell for the rota, displaying assigned staff
- * or an empty placeholder. Supports dynamic colouring based on the associated Role.
+ * or an empty placeholder. Supports dynamic colouring based on the associated role.
  * Refactored to satisfy strict accessibility, contrast, and TypeScript standards.
  */
 import { computed } from 'vue';
@@ -10,28 +10,39 @@ import { computed } from 'vue';
 import IconEdit from '@/components/icons/IconEdit.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
 import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+import type { Shift } from '@/features/rota/rotaTypes';
 
-/**
- * @typedef {import('../rotaApi').Shift} Shift
- * @typedef {import('../composables/useRotaColors').ColourPalette} ColourPalette
- */
+// Definition of the colour palette structure to ensure type safety.
+interface ColourPalette {
+  bg: string;
+  accent: string;
+}
 
-const props = defineProps({
-  shifts: {
-    type: /** @type {import('vue').PropType<Shift[]>} */ (Array),
-    default: () => []
-  },
-  roleId: { type: String, default: null },
-  isWeekend: { type: Boolean, default: false },
-  isToday: { type: Boolean, default: false },
-  isBeforeToday: { type: Boolean, default: false }
-});
+const props = withDefaults(
+  defineProps<{
+    shifts?: Shift[];
+    roleId?: string | null;
+    isWeekend?: boolean;
+    isToday?: boolean;
+    isBeforeToday?: boolean;
+  }>(),
+  {
+    shifts: () => [],
+    roleId: null,
+    isWeekend: false,
+    isToday: false,
+    isBeforeToday: false
+  }
+);
 
-defineEmits(['click']);
+defineEmits<{
+  (e: 'click'): void;
+}>();
 
-// Logic: cast the return value to resolve the TS2339 'missing property' error.
-/** @type {{ getRoleColor: (id?: string) => ColourPalette }} */
-const { getRoleColor } = /** @type {any} */ (useRotaColors());
+// Logic: useRotaColors provides the palette based on the role identifier.
+const { getRoleColor } = useRotaColors() as {
+  getRoleColor: (id?: string | null) => ColourPalette;
+};
 
 // Constants to eliminate magic numbers and comply with linting standards.
 const INITIALS_LIMIT = 2;
@@ -48,17 +59,17 @@ const pillStyles = computed(() => ({
 
 /**
  * Extracts initials from a user's name.
- * @param {string} [name] - The display name to process.
- * @returns {string} The formatted initials (e.g. "JD").
+ * @param name - The display name to process.
+ * @returns The formatted initials (e.g. "JD").
  */
-const getInitials = (name) => {
+const getInitials = (name?: string): string => {
   if (!name) {
     return '??';
   }
 
   return name
     .split(' ')
-    .map((/** @type {string} */ n) => n[0])
+    .map((n) => n[0])
     .join('')
     .slice(0, INITIALS_LIMIT)
     .toUpperCase();
@@ -123,7 +134,7 @@ const getInitials = (name) => {
   width: 100%;
 }
 
-/* Logic: allows children to ignore this wrapper's box model for grid layouts */
+/* Logic: allows children to ignore this wrapper's box model for grid layouts. */
 .slot-contents {
   display: contents;
 }
@@ -188,7 +199,7 @@ const getInitials = (name) => {
 .empty-placeholder {
   align-items: center;
 
-  /* Logic: darkened to Slate 600 (#475569) to pass WCAG AA contrast on light backgrounds */
+  /* Logic: darkened to Slate 600 (#475569) to pass WCAG AA contrast on light backgrounds. */
   color: #475569;
   display: flex;
   inset: 0;
@@ -227,7 +238,7 @@ const getInitials = (name) => {
   border-radius: 50%;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
 
-  /* Logic: darkened to Blue 700 (#1d4ed8) to pass contrast requirements on white */
+  /* Logic: darkened to Blue 700 (#1d4ed8) to pass contrast requirements on white. */
   color: #1d4ed8;
   display: flex;
   padding: 6px;

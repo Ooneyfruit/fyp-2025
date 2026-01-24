@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Manages user permission states and security constraints.
  * Logic: prevents self-promotion for non-admins and triggers warnings for self-demotion.
@@ -9,30 +9,33 @@ import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseFormBlock from '@/components/shared/BaseFormBlock.vue';
 import BaseToggleDescription from '@/components/shared/BaseToggleDescription.vue';
 import { user as authUser } from '@/composables/useAuth';
+import { type UserProfile } from '@/features/users/userTypes';
 
-const props = defineProps({
-  // The member object containing permission flags.
-  modelValue: { type: Object, required: true },
-  // Flag indicating if this user is the final administrator in the practice.
-  isLastAdmin: { type: Boolean, default: false },
-  // Flag indicating if the user being edited is the active session user.
-  isSelf: { type: Boolean, default: false }
-});
+// Define the shape of the form data we are editing
+export interface UserAccessForm {
+  is_administrator: boolean;
+  is_employee: boolean;
+  [key: string]: unknown; // Allow other properties to pass through spread
+}
 
-const emit = defineEmits(['update:modelValue']);
+const props = defineProps<{
+  modelValue: UserAccessForm;
+  isLastAdmin: boolean;
+  isSelf: boolean;
+}>();
+
+const emit = defineEmits<(e: 'update:modelValue', val: UserAccessForm) => void>();
 
 // Controls the visibility of the privilege de-escalation warning banner.
 const showDemotionWarning = ref(false);
 
 /**
  * Logic: determines if the administrative toggle should be interactive.
- * Utilises a type cast to resolve the 'never' inference error from the authUser ref.
- * @type {import('vue').ComputedRef<boolean>}
  */
 const isAdminToggleDisabled = computed(() => {
-  // Cast the value to an object to bypass TypeScript's restrictive null inference.
-  const userData = /** @type {any} */ (authUser.value);
-  const currentUserIsAdmin = userData?.is_administrator;
+  // We can safely cast/check authUser here because useAuth is strictly typed now.
+  const currentUser = authUser.value as UserProfile | null;
+  const currentUserIsAdmin = currentUser?.is_administrator ?? false;
 
   // The toggle is disabled if the viewer lacks admin rights or is the sole admin.
   return !currentUserIsAdmin || (props.isLastAdmin && props.isSelf);
@@ -40,9 +43,9 @@ const isAdminToggleDisabled = computed(() => {
 
 /**
  * Logic: handles administrative toggle changes and manages demotion state.
- * @param {boolean} val - The target state for administrative access.
+ * @param val - The target state for administrative access.
  */
-const handleToggleAdmin = (val) => {
+const handleToggleAdmin = (val: boolean) => {
   // If the current user attempts to remove their own admin rights, display a warning.
   if (props.isSelf && props.modelValue.is_administrator && !val) {
     showDemotionWarning.value = true;
@@ -53,9 +56,9 @@ const handleToggleAdmin = (val) => {
 
 /**
  * Logic: handles employment status changes.
- * @param {boolean} val - The target state for internal employment.
+ * @param val - The target state for internal employment.
  */
-const handleToggleEmployee = (val) => {
+const handleToggleEmployee = (val: boolean) => {
   emit('update:modelValue', { ...props.modelValue, is_employee: val });
 };
 

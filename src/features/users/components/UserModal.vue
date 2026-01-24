@@ -1,9 +1,17 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Orchestrates the user management modal workflow.
  * Logic: handles dual-write operations to both 'users' and 'practice_users' collections.
  */
-import { collection, deleteDoc, doc, getDocs, Timestamp, writeBatch } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  type DocumentReference,
+  getDocs,
+  Timestamp,
+  writeBatch
+} from 'firebase/firestore';
 import { computed, onMounted, ref } from 'vue';
 
 import BaseButton from '@/components/shared/BaseButton.vue';
@@ -12,22 +20,41 @@ import BaseModal from '@/components/shared/BaseModal.vue';
 import BaseSelect from '@/components/shared/BaseSelect.vue';
 import { user as authUser } from '@/composables/useAuth';
 import { useToast } from '@/composables/useToast';
+import { type PracticeRole } from '@/features/rota/rotaTypes';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
 import { db } from '@/services/firebase';
 
-import UserModalAccess from './UserModalAccess.vue';
+import UserModalAccess, { type UserAccessForm } from './UserModalAccess.vue';
 
 /**
- * @typedef {object} UserForm
- * @property {string} name - Full name of the user.
- * @property {string} email - Contact email address.
- * @property {string} address - Physical residential address.
- * @property {string} role - Assigned practice role.
- * @property {boolean} is_administrator - System admin status.
- * @property {boolean} is_employee - Internal employment status.
- * @property {string} profile_image - URL to the user profile icon.
- * @property {string} user_id - The unique identifier for the user.
+ * Form shape definition.
  */
+interface UserForm extends UserAccessForm {
+  name: string;
+  email: string;
+  address: string;
+  role: string;
+  profile_image: string;
+  user_id: string;
+}
+
+/**
+ * Interface to safely handle the loose input data structure from various sources.
+ * Replaces 'any' to satisfy strict linting.
+ */
+interface InboundUser {
+  uid?: string;
+  user?: {
+    id?: string;
+    _path?: { segments?: string[] };
+  };
+  profile?: Record<string, unknown>;
+  role?: string;
+  is_administrator?: unknown;
+  is_employee?: unknown;
+  profile_image?: string;
+  [key: string]: unknown;
+}
 
 const { users } = usePracticeUsers();
 const { showToast } = useToast();
@@ -37,12 +64,7 @@ const isEdit = ref(false);
 const saving = ref(false);
 const loadingRoles = ref(true);
 
-/**
- * List of available practice roles.
- * @type {import('vue').Ref<any[]>}
- */
-const rolesList = ref([]);
-
+const rolesList = ref<PracticeRole[]>([]);
 const initialState = ref('');
 
 // State to manage the two-step delete verification.
@@ -50,9 +72,9 @@ const deleteConfirmation = ref(false);
 
 /**
  * Returns the default empty state for the user form.
- * @returns {UserForm} A fresh form object with empty default values.
+ * @returns A fresh form object with empty default values.
  */
-const defaultForm = () => ({
+const defaultForm = (): UserForm => ({
   name: '',
   email: '',
   address: '',
@@ -63,37 +85,27 @@ const defaultForm = () => ({
   user_id: ''
 });
 
-/** @type {import('vue').Ref<UserForm>} */
-const form = ref(defaultForm());
+const form = ref<UserForm>(defaultForm());
 
 // Logic: checks if the session user is editing their own record.
 const isSelf = computed(() => form.value.user_id === authUser.value?.uid);
 
 // Logic: prevents lockout by checking if the user is the only administrator left.
 const isLastAdmin = computed(() => {
-  const admins = users.value.filter((u) => {
-    const member = /** @type {any} */ (u);
-    return member.is_administrator;
-  });
+  const admins = users.value.filter((u) => u.is_administrator);
 
-  return (
-    admins.length <= 1 &&
-    admins.some((a) => {
-      const adminRef = /** @type {any} */ (a);
-      return adminRef.user?.id === form.value.user_id;
-    })
-  );
+  return admins.length <= 1 && admins.some((a) => a.uid === form.value.user_id);
 });
 
 // Logic: triggers the 'Save changes' button activation state based on modifications.
 const isDirty = computed(() => JSON.stringify(form.value) !== initialState.value);
 
 /**
- * Helper to safely extract the user ID from various potential data structures.
- * @param {any} u - The user object.
- * @returns {string} The resolved user ID.
+ * Helper to safely extract the user ID.
+ * @param u - The raw user object from Firestore or internal state.
+ * @returns The resolved user ID string.
  */
-const resolveId = (u) => {
+const resolveId = (u: InboundUser): string => {
   if (u.user?.id) return u.user.id;
   if (u.uid) return u.uid;
   if (u.user?._path?.segments?.[1]) return u.user._path.segments[1];
@@ -102,47 +114,76 @@ const resolveId = (u) => {
 
 /**
  * Helper to resolve a string field from profile or root object.
- * @param {any} u - The user object.
- * @param {string} field - The field name to look up.
- * @returns {string} The resolved string value.
+ * @param u - The raw user object.
+ * @param field - The key of the field to retrieve.
+ * @returns The resolved string value or empty string.
  */
-const resolveStr = (u, field) => {
-  return u.profile?.[field] || u[field] || '';
+const resolveStr = (u: InboundUser, field: string): string => {
+  const profileVal = u.profile?.[field];
+  if (typeof profileVal === 'string') {
+    return profileVal;
+  }
+
+  const rootVal = u[field];
+  if (typeof rootVal === 'string') {
+    return rootVal;
+  }
+
+  return '';
+};
+
+/**
+ * Helper to determine the correct profile image URL.
+ * @param u - The raw user object.
+ * @returns The resolved image URL or an empty string.
+ */
+const resolveProfileImage = (u: InboundUser): string => {
+  const profileImg = u.profile?.profile_image;
+  if (typeof profileImg === 'string') {
+    return profileImg;
+  }
+
+  if (typeof u.profile_image === 'string') {
+    return u.profile_image;
+  }
+
+  return '';
 };
 
 /**
  * Helper to normalise boolean flags with default values.
- * @param {any} val - The raw value.
- * @param {boolean} fallback - The default if val is null/undefined.
- * @returns {boolean} The normalised boolean.
+ * @param val - The raw value to check.
+ * @param fallback - The default boolean to return if val is null/undefined.
+ * @returns The resolved boolean value.
  */
-const resolveBool = (val, fallback) => (val !== undefined && val !== null ? val : fallback);
+const resolveBool = (val: unknown, fallback: boolean): boolean =>
+  val !== undefined && val !== null ? Boolean(val) : fallback;
 
 /**
  * Normalises complex incoming user data into a flat form structure.
- * @param {any} u - The raw user data object.
- * @returns {UserForm} The normalised form state.
+ * @param u - The raw user data object.
+ * @returns The normalised UserForm object.
  */
-const normaliseUserData = (u) => ({
+const normaliseUserData = (u: InboundUser): UserForm => ({
   name: resolveStr(u, 'name'),
   email: resolveStr(u, 'email'),
   address: resolveStr(u, 'address'),
   role: u.role || '',
-  is_administrator: !!u.is_administrator,
+  is_administrator: Boolean(u.is_administrator),
   is_employee: resolveBool(u.is_employee, true),
-  profile_image: u.profile?.profile_image || u.profile_image || '',
+  profile_image: resolveProfileImage(u),
   user_id: resolveId(u)
 });
 
 /**
  * Prepares the form state for either user creation or updates.
- * @param {object|null} [userData] - The user object to edit, or null for new user.
+ * @param userData - The user object to edit, or null for new user.
  */
-const open = (userData = null) => {
+const open = (userData: unknown = null) => {
   deleteConfirmation.value = false;
   if (userData) {
     isEdit.value = true;
-    form.value = normaliseUserData(userData);
+    form.value = normaliseUserData(userData as InboundUser);
   } else {
     isEdit.value = false;
     form.value = defaultForm();
@@ -162,7 +203,7 @@ onMounted(async () => {
     const practiceId = authUser.value?.practiceRef?.id;
     if (practiceId) {
       const snap = await getDocs(collection(db, 'practices', practiceId, 'roles'));
-      rolesList.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      rolesList.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as PracticeRole);
     }
   } finally {
     loadingRoles.value = false;
@@ -171,10 +212,10 @@ onMounted(async () => {
 
 /**
  * Helper to handle errors during save/delete operations.
- * @param {unknown} error - The caught error object.
- * @param {string} fallbackMsg - Default message if error is not an instance of Error.
+ * @param error - The caught error object.
+ * @param fallbackMsg - A default error message if the error object is not standard.
  */
-const handleError = (error, fallbackMsg = 'Unknown error') => {
+const handleError = (error: unknown, fallbackMsg = 'Unknown error') => {
   const msg = error instanceof Error ? error.message : fallbackMsg;
   showToast(`Save Failure: ${msg}`, { duration: 5000 });
 };
@@ -209,9 +250,9 @@ const handleDelete = async () => {
 
 /**
  * Constructs and commits the batch update for user data.
- * @param {import('firebase/firestore').DocumentReference} pRef - Reference to the current practice.
+ * @param pRef - The DocumentReference to the current practice.
  */
-const executeBatchSave = async (pRef) => {
+const executeBatchSave = async (pRef: DocumentReference) => {
   const batch = writeBatch(db);
   const uid = form.value.user_id || doc(collection(db, 'users')).id;
   const userRef = doc(db, 'users', uid);
