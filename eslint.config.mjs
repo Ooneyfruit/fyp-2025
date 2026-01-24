@@ -54,7 +54,11 @@ export default [
         }
       },
       // Register virtual modules to prevent unresolvable path errors for Vite plugins.
-      'import/core-modules': ['virtual:pwa-register/vue']
+      'import/core-modules': ['virtual:pwa-register/vue'],
+      // Configure JSDoc plugin to understand TypeScript syntax (like import types)
+      jsdoc: {
+        mode: 'typescript'
+      }
     }
   },
 

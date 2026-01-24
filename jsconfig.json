@@ -14,8 +14,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "maxNodeModuleJsDepth": 0
   },
-  "include": ["src/**/*", "vite.config.js"],
+  "include": ["src/**/*", "vite.config.js", "src/shims-vue.d.ts"],
   "exclude": ["node_modules", "dist", "public"]
 }
