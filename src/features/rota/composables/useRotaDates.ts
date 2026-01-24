@@ -1,4 +1,6 @@
-import { computed, ref, watch } from 'vue';
+import { computed, type ComputedRef, ref, watch } from 'vue';
+
+import type { UseBreakpointsReturn } from '@/composables/useBreakpoints';
 
 // Constants to eliminate magic numbers and comply with project linting standards.
 const STORAGE_KEY = 'rotadent_view_date';
@@ -11,25 +13,37 @@ const MONDAY_ADJUSTMENT = -6;
 const MIDNIGHT_HOUR = 0;
 
 /**
- * key - Unique key for list rendering.
- * iso - ISO date string.
- * label - Formatted weekday and day.
- * dateObj - Native date object.
- * isWeekend - Weekend flag.
- * isToday - Current date flag.
- * isBeforeToday - Past date flag.
+ * Interface representing a single day column in the rota grid.
  */
+export interface RotaDay {
+  key: string;
+  iso: string;
+  label: string;
+  dateObj: Date;
+  isWeekend: boolean;
+  isToday: boolean;
+  isBeforeToday: boolean;
+}
 
 /**
- * isMobile - Reactive mobile state.
+ * Return interface for the composable.
  */
+export interface UseRotaDatesReturn {
+  currentStartDate: ComputedRef<Date>;
+  visibleDays: ComputedRef<RotaDay[]>;
+  monthLabel: ComputedRef<string>;
+  changePeriod: (direction: number) => void;
+  changeDay: (direction: number) => void;
+  goToToday: () => void;
+  jumpMonth: (months: number) => void;
+}
 
 /**
  * Adjusts a date object to the start of its week (Monday).
  * @param date - The date to adjust.
  * @returns The Monday of the containing week.
  */
-const getStartOfWeek = (date) => {
+const getStartOfWeek = (date: Date): Date => {
   const d = new Date(date);
   const day = d.getDay();
   const diff = d.getDate() - day + (day === SUNDAY_INDEX ? MONDAY_ADJUSTMENT : MONDAY_START_OFFSET);
@@ -42,7 +56,7 @@ const getStartOfWeek = (date) => {
  * Retrieves the initial anchor date from local storage or defaults to today.
  * @returns The initialised anchor date.
  */
-const getInitialAnchorDate = () => {
+const getInitialAnchorDate = (): Date => {
   const saved = localStorage.getItem(STORAGE_KEY);
   const now = new Date();
   now.setHours(MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR);
@@ -62,7 +76,7 @@ const getInitialAnchorDate = () => {
  * @param d - The date to format.
  * @returns Formatted month and year (e.g. "January 2025").
  */
-const formatMonthYear = (d) =>
+const formatMonthYear = (d: Date): string =>
   new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
 
 /**
@@ -71,7 +85,7 @@ const formatMonthYear = (d) =>
  * @param days - The visible days in the current view.
  * @returns Formatted month/year range string.
  */
-const formatMonthLabel = (days) => {
+const formatMonthLabel = (days: RotaDay[]): string => {
   const start = days[SUNDAY_INDEX]?.dateObj;
   const end = days.at(-1)?.dateObj;
 
@@ -92,8 +106,8 @@ const formatMonthLabel = (days) => {
  * @param count - Number of days to generate.
  * @returns Collection of day descriptors.
  */
-const generateDaysArray = (startDate, count) => {
-  const days = [];
+const generateDaysArray = (startDate: Date, count: number): RotaDay[] => {
+  const days: RotaDay[] = [];
   const today = new Date();
   today.setHours(MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR, MIDNIGHT_HOUR);
   const todayStr = today.toISOString().split('T')[0];
@@ -121,7 +135,7 @@ const generateDaysArray = (startDate, count) => {
  * @param breakpoints - Breakpoints composable for responsive logic.
  * @returns Date state and control methods.
  */
-export function useRotaDates(breakpoints) {
+export function useRotaDates(breakpoints: UseBreakpointsReturn): UseRotaDatesReturn {
   const anchorDate = ref(getInitialAnchorDate());
 
   // Watch for changes to the anchor and persist to local storage.
@@ -138,14 +152,14 @@ export function useRotaDates(breakpoints) {
     )
   );
 
-  const changePeriod = (direction) => {
+  const changePeriod = (direction: number) => {
     const d = new Date(anchorDate.value);
     const offset = breakpoints.isMobile.value ? MOBILE_DAY_COUNT : DESKTOP_DAY_COUNT;
     d.setDate(d.getDate() + direction * offset);
     anchorDate.value = d;
   };
 
-  const jumpMonth = (months) => {
+  const jumpMonth = (months: number) => {
     const d = new Date(anchorDate.value);
     const originalDay = d.getDate();
     d.setDate(1);
@@ -160,7 +174,7 @@ export function useRotaDates(breakpoints) {
     visibleDays,
     monthLabel: computed(() => formatMonthLabel(visibleDays.value)),
     changePeriod,
-    changeDay: (direction) => {
+    changeDay: (direction: number) => {
       const d = new Date(anchorDate.value);
       d.setDate(d.getDate() + direction);
       anchorDate.value = d;

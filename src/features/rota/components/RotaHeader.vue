@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import AppPageHeaderGroup from '@/components/layout/AppPageHeaderGroup.vue';
 
 import RotaHeaderDesktop from './RotaHeaderDesktop.vue';

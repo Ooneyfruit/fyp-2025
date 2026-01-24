@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * RotaSlot.
  * Primary responsibility: provides a grid cell for the rota, displaying assigned staff

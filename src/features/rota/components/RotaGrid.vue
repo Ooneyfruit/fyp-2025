@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Primary responsibility: displays the Rota in a responsive grid.
  * Refactored to eliminate nested templates and resolve TypeScript type errors.
