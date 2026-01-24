@@ -8,11 +8,10 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
-  Timestamp,
   type DocumentData,
-  type QuerySnapshot
-} from 'firebase/firestore';
+  getDocs,
+  type QuerySnapshot,
+  Timestamp} from 'firebase/firestore';
 
 import { db } from '@/services/firebase';
 
@@ -61,6 +60,7 @@ export const fetchPracticeSurgeries = async (practiceId: string): Promise<Practi
 /**
  * Helper to safely parse a Firestore snapshot into typed Shift objects.
  * Silently ignores documents that fail Zod validation to prevent app crashes.
+ * @param snap
  */
 const mapShiftSnapshot = (snap: QuerySnapshot<DocumentData, DocumentData>): Shift[] => {
   return snap.docs

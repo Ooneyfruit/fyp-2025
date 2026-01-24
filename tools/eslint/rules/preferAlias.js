@@ -35,8 +35,8 @@ export default {
 
   /**
    * Creates the visitor functions for the rule.
-   * @param {object} context - The ESLint rule context.
-   * @returns {object} The visitor object.
+   * @param context - The ESLint rule context.
+   * @returns The visitor object.
    */
   create(context) {
     // Configuration defaults based on RotaDent's structure.
@@ -46,7 +46,7 @@ export default {
     return {
       /**
        * Checks import declarations for relative parent paths.
-       * @param {object} node - The import declaration node.
+       * @param node - The import declaration node.
        */
       ImportDeclaration(node) {
         const importPath = node.source.value;
@@ -82,8 +82,8 @@ export default {
           messageId: 'preferAlias',
           /**
            * Fixes the import path by replacing it with the aliased version.
-           * @param {object} fixer - The ESLint fixer object.
-           * @returns {object} The fix instruction.
+           * @param fixer - The ESLint fixer object.
+           * @returns The fix instruction.
            */
           fix(fixer) {
             return fixer.replaceText(node.source, `'${aliasedPath}'`);

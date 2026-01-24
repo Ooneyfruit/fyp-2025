@@ -22,7 +22,7 @@ const elementId = useId();
 /**
  * Handles the change event triggered by the native checkbox.
  * Logic: safely casts the event target to an HTMLInputElement to satisfy strict type safety requirements.
- * @param {Event} event - The native DOM change event.
+ * @param event - The native DOM change event.
  */
 function handleChange(event) {
   const target = event.target;

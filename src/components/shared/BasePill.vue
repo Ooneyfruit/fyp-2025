@@ -13,8 +13,7 @@ defineProps({
     type: String,
     default: 'muted',
     validator: (v) =>
-      ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes(
-        /** @type {string} */ (v)
+      ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes( (v)
       )
   }
 });

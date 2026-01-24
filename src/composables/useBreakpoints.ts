@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { onMounted, onUnmounted, type Ref,ref } from 'vue';
 
 // Default width threshold in REMs for mobile layout breaks.
 const DEFAULT_MOBILE_THRESHOLD = 50;
@@ -19,6 +19,8 @@ const getRemValue = (): number => {
 
 /**
  * Monitors the container width to determine layout mode.
+ * @param targetRef
+ * @param threshold
  */
 export function useBreakpoints(
   targetRef: Ref<HTMLElement | null>,

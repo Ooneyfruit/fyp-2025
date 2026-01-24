@@ -55,7 +55,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
 /**
  * Generates a mock PWA registration module for the test environment.
  * This prevents the build from failing when vite-plugin-pwa virtual modules are missing.
- * @returns {Plugin} A vite plugin object.
+ * @returns A vite plugin object.
  */
 const getPwaMockPlugin = (): Plugin => ({
   name: 'virtual-pwa-mock',
@@ -82,8 +82,8 @@ const getPwaMockPlugin = (): Plugin => ({
 /**
  * Strategy for segregating vendor libraries into dedicated chunks.
  * Isolates heavier dependencies (Firestore) to prevent bundle bloat warnings.
- * @param {string} id - The absolute path of the module being processed.
- * @returns {string | undefined} The name of the chunk or undefined.
+ * @param id - The absolute path of the module being processed.
+ * @returns The name of the chunk or undefined.
  */
 const getManualChunks = (id: string): string | undefined => {
   // Only process third-party dependencies located in node_modules.

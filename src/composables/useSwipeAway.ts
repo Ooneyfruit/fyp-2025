@@ -8,18 +8,18 @@ const DEFAULT_SWIPE_THRESHOLD = 80;
 
 /**
  * Manages touch states and calculates horizontal displacement.
- * @param {object} options - Configuration for the swipe behaviour.
- * @param {Function} options.onTrigger - Callback executed when swipe exceeds threshold.
- * @param {number} options.threshold - Distance in pixels required to trigger the action.
- * @param {import('vue').Ref<boolean>} options.enabled - Reactive Vue Ref used to toggle the logic state.
- * @returns {{
- * isSwiping: import('vue').Ref<boolean>,
- * swipeOffset: import('vue').ComputedRef<number>,
- * swipeTransform: import('vue').ComputedRef<import('vue').StyleValue>,
- * handleTouchStart: (event: TouchEvent) => void,
- * handleTouchMove: (event: TouchEvent) => void,
- * handleTouchEnd: () => void
- * }} Touch handlers and reactive displacement states.
+ * @param options - Configuration for the swipe behaviour.
+ * @param options.onTrigger - Callback executed when swipe exceeds threshold.
+ * @param options.threshold - Distance in pixels required to trigger the action.
+ * @param options.enabled - Reactive Vue Ref used to toggle the logic state.
+ * @returns
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ *  Touch handlers and reactive displacement states.
  */
 export function useSwipeAway({ onTrigger, threshold = DEFAULT_SWIPE_THRESHOLD, enabled }) {
   const touchStartX = ref(0);
@@ -44,7 +44,7 @@ export function useSwipeAway({ onTrigger, threshold = DEFAULT_SWIPE_THRESHOLD, e
 
   /**
    * Initialises the touch tracking sequence.
-   * @param {TouchEvent} event - Native touch start event.
+   * @param event - Native touch start event.
    */
   const handleTouchStart = (event) => {
     // Prevent tracking if the swipe logic is explicitly disabled via the reactive prop.
@@ -56,7 +56,7 @@ export function useSwipeAway({ onTrigger, threshold = DEFAULT_SWIPE_THRESHOLD, e
 
   /**
    * Updates current position to provide real-time visual feedback.
-   * @param {TouchEvent} event - Native touch move event.
+   * @param event - Native touch move event.
    */
   const handleTouchMove = (event) => {
     // Only track movement if the initial touch sequence was successfully validated.
