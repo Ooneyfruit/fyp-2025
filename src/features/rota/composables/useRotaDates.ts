@@ -1,4 +1,4 @@
-import { computed, type ComputedRef,ref, watch } from 'vue';
+import { computed, type ComputedRef, ref, watch } from 'vue';
 
 import { type UseBreakpointsReturn } from '@/composables/useBreakpoints';
 
@@ -33,7 +33,8 @@ export interface UseRotaDatesReturn {
 
 /**
  * Adjusts a date object to the start of its week (Monday).
- * @param date
+ * @param date - The original date to be adjusted.
+ * @returns A new date object set to the preceding or current Monday at midnight.
  */
 const getStartOfWeek = (date: Date): Date => {
   const d = new Date(date);
@@ -46,6 +47,7 @@ const getStartOfWeek = (date: Date): Date => {
 
 /**
  * Retrieves the initial anchor date from local storage or defaults to today.
+ * @returns The stored anchor date or a fresh date object set to today's midnight.
  */
 const getInitialAnchorDate = (): Date => {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -63,14 +65,16 @@ const getInitialAnchorDate = (): Date => {
 
 /**
  * Standardises a date into a long-form month and year string.
- * @param d
+ * @param d - The date object to format.
+ * @returns A string representing the month and year in British English format.
  */
 const formatMonthYear = (d: Date): string =>
   new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
 
 /**
  * Formats a date range into a readable month label for the header.
- * @param days
+ * @param days - The array of day objects currently visible in the grid.
+ * @returns A single month label or a range if the visible days span across two months.
  */
 const formatMonthLabel = (days: RotaDay[]): string => {
   const start = days[SUNDAY_INDEX]?.dateObj;
@@ -89,8 +93,9 @@ const formatMonthLabel = (days: RotaDay[]): string => {
 
 /**
  * Generates an array of day objects for the rota grid view.
- * @param startDate
- * @param count
+ * @param startDate - The starting date for the sequence.
+ * @param count - The total number of days to include in the sequence.
+ * @returns A collection of metadata objects for each day in the range.
  */
 const generateDaysArray = (startDate: Date, count: number): RotaDay[] => {
   const days: RotaDay[] = [];
@@ -117,7 +122,8 @@ const generateDaysArray = (startDate: Date, count: number): RotaDay[] => {
 
 /**
  * Manages date logic for the Rota view with persistence and cross-breakpoint consistency.
- * @param breakpoints
+ * @param breakpoints - Reactive breakpoint state for determining layout-specific day counts.
+ * @returns Reactive state and methods for navigating the rota timeline.
  */
 export function useRotaDates(breakpoints: UseBreakpointsReturn): UseRotaDatesReturn {
   const anchorDate = ref(getInitialAnchorDate());

@@ -3,16 +3,16 @@
  * @description Manages the global state for the notification system.
  * Provides a centralised way to trigger alerts across the application.
  */
-import { type Ref,ref } from 'vue';
+import { type Ref, ref } from 'vue';
 
 const DEFAULT_DURATION = 4000;
 
-export interface ToastAction {
+interface ToastAction {
   label: string;
   callback: () => void;
 }
 
-export interface ToastOptions {
+interface ToastOptions {
   duration?: number;
   action?: ToastAction | null;
 }
@@ -47,8 +47,8 @@ const clearActiveTimeout = (): void => {
 
 /**
  * Updates the reactive state variables for the toast UI.
- * @param msg
- * @param action
+ * @param msg - The text content to display in the toast.
+ * @param [action] - The optional action button configuration.
  */
 const updateState = (msg: string, action?: ToastAction | null): void => {
   message.value = msg;
@@ -72,15 +72,11 @@ const hideToast = (): void => {
 
 /**
  * Triggers a global toast notification with customisable duration.
- * @param msg
- * @param root0
- * @param root0.duration
- * @param root0.action
+ * @param msg - The message content to display.
+ * @param [options] - Configuration options for the toast.
  */
-const showToast = (
-  msg: string,
-  { duration = DEFAULT_DURATION, action = null }: ToastOptions = {}
-): void => {
+const showToast = (msg: string, options: ToastOptions = {}): void => {
+  const { duration = DEFAULT_DURATION, action = null } = options;
   clearActiveTimeout();
   updateState(msg, action);
 
@@ -105,6 +101,7 @@ const handleAction = (): void => {
 
 /**
  * Composable for interacting with the global toast notification system.
+ * @returns The interface for controlling the toast notifications.
  */
 export function useToast(): UseToastReturn {
   return {

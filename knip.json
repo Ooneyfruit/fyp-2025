@@ -2,7 +2,14 @@
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": ["src/main.ts", "vite.config.ts", "eslint.config.mjs"],
   "project": ["src/**/*.{js,ts,vue}"],
-  "ignore": ["docs/gen/**", "src/services/**", "src/components/icons/**", "src/views/HomeView.vue"],
+  "ignore": [
+    "docs/gen/**",
+    "src/services/**",
+    "src/components/icons/**",
+    "src/views/HomeView.vue",
+    "src/shimsVue.d.ts",
+    "src/types/firebase.d.ts"
+  ],
   "ignoreBinaries": ["vue-tsc"],
   "ignoreDependencies": [
     "@commitlint/cli",

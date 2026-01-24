@@ -51,11 +51,11 @@ const router = createRouter({
 
 /**
  * Navigation guard to enforce authentication and role-based access.
- * @param to - Target route.
- * @param from - Source route.
- * @param next - Navigation control function.
+ * Uses return-based navigation control to satisfy modern Vue Router standards.
+ * @param {RouteLocationNormalized} to - Target route.
+ * @returns {Promise<string | void>} Resolves with a route path for redirection or undefined to proceed.
  */
-router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next) => {
+router.beforeEach(async (to: RouteLocationNormalized): Promise<string | void> => {
   const { error: notifyError } = useToast();
 
   // Ensure the authentication listener has completed its initial check before proceeding.
@@ -76,17 +76,15 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
 
   // Redirect unauthenticated users to the login page unless they are already navigating there.
   if (!currentUser && to.path !== '/login') {
-    return next('/login');
+    return '/login';
   }
 
   // Restrict access to administrative views based on the user profile flag.
   if (to.meta.requiresAdmin && currentUser?.is_administrator !== true) {
     // Notify the user of the permission failure to improve the feedback loop.
     notifyError('Access denied: administrator privileges required.');
-    return next('/');
+    return '/';
   }
-
-  next();
 });
 
 export default router;

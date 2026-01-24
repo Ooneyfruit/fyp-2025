@@ -1,4 +1,8 @@
-/* src/features/users/composables/usePracticeUsers.ts */
+/**
+ * @file usePracticeUsers.ts
+ * @description Composable for synchronising and managing practice user memberships and profiles.
+ * Handles live Firestore listeners for both membership records and individual user profiles.
+ */
 import {
   collection,
   doc,
@@ -9,8 +13,9 @@ import {
   query,
   type QuerySnapshot,
   type Unsubscribe,
-  where} from 'firebase/firestore';
-import { computed, type ComputedRef,onUnmounted, type Ref, ref, watch } from 'vue';
+  where
+} from 'firebase/firestore';
+import { computed, type ComputedRef, onUnmounted, type Ref, ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
 import {
@@ -19,7 +24,7 @@ import {
   type UserProfile
 } from '@/features/users/userTypes';
 import { db } from '@/services/firebase';
-import { type Dict,type Nullable } from '@/types/generic';
+import { type Dict, type Nullable } from '@/types/generic';
 
 /**
  * Global cache management for user profiles.
@@ -33,7 +38,7 @@ const profileListeners = new Map<string, { unsubscribe: Unsubscribe; count: numb
 
 /**
  * Increments the reference count and initialises a profile listener if needed.
- * @param userRef
+ * @param userRef - The Firestore document reference for the user.
  */
 const attachProfileListener = (userRef: DocumentReference): void => {
   const uid = userRef.id;
@@ -65,7 +70,7 @@ const attachProfileListener = (userRef: DocumentReference): void => {
 
 /**
  * Decrements the reference count and destroys the listener if no longer required.
- * @param uid
+ * @param uid - The unique identifier for the user.
  */
 const detachProfileListener = (uid: string): void => {
   const active = profileListeners.get(uid);
@@ -82,9 +87,9 @@ const detachProfileListener = (uid: string): void => {
 
 /**
  * Processes the membership list snapshot and updates listeners.
- * @param snapshot
- * @param memberships
- * @param isLoading
+ * @param snapshot - The Firestore query snapshot containing membership documents.
+ * @param memberships - Reactive reference to the current membership list.
+ * @param isLoading - Reactive flag indicating the loading state of the data.
  */
 const handleSyncSnapshot = (
   snapshot: QuerySnapshot<DocumentData, DocumentData>,
@@ -125,8 +130,9 @@ const handleSyncSnapshot = (
 
 /**
  * Creates the Firestore query for practice users based on permissions.
- * @param practiceId
- * @param user
+ * @param practiceId - The unique identifier for the practice.
+ * @param user - The profile of the authenticated user.
+ * @returns The configured Firestore query.
  */
 const createSyncQuery = (practiceId: string, user: Nullable<UserProfile>): Query => {
   const practiceRef = doc(db, 'practices', practiceId);
@@ -143,7 +149,8 @@ const createSyncQuery = (practiceId: string, user: Nullable<UserProfile>): Query
 
 /**
  * Transforms raw membership data into a sorted list of users with profiles.
- * @param memberships
+ * @param memberships - Reactive reference to the membership data.
+ * @returns A computed list of combined user and membership data.
  */
 const useSortedUsers = (memberships: Ref<PracticeMembership[]>): ComputedRef<PracticeUser[]> =>
   computed(() => {
@@ -172,6 +179,7 @@ const useSortedUsers = (memberships: Ref<PracticeMembership[]>): ComputedRef<Pra
 
 /**
  * Composable for managing practice user memberships and profiles.
+ * @returns The reactive user list and loading status.
  */
 export function usePracticeUsers(): {
   users: ComputedRef<PracticeUser[]>;

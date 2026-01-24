@@ -1,287 +1,109 @@
 <script setup lang="ts">
 /**
- * RotaSlot.
- * Primary responsibility: provides a grid cell for the rota, displaying assigned staff
- * or an empty placeholder. Supports dynamic colouring based on the associated role.
- * Refactored to satisfy strict accessibility, contrast, and TypeScript standards.
+ * Rota slot component.
+ * Primary responsibility: represents an individual cell in the rota grid,
+ * displaying assigned shifts or providing an interface to create new ones.
  */
 import { computed } from 'vue';
 
-import IconEdit from '@/components/icons/IconEdit.vue';
-import IconPlus from '@/components/icons/IconPlus.vue';
-import { useRotaColors } from '@/features/rota/composables/useRotaColors';
-import type { Shift } from '@/features/rota/rotaTypes';
+import { type Shift } from '@/features/rota/rotaTypes';
 
-// Definition of the colour palette structure to ensure type safety.
-interface ColourPalette {
-  bg: string;
-  accent: string;
+import RotaAssignedStaff from './RotaAssignedStaff.vue';
+
+interface Props {
+  /** The collection of shifts assigned to this specific slot. */
+  shifts: Shift[];
+  /** Indicates if the slot falls on a weekend. */
+  isWeekend?: boolean;
+  /** Indicates if the date of this slot is in the past. */
+  isPast?: boolean;
 }
 
-const props = withDefaults(
-  defineProps<{
-    shifts?: Shift[];
-    roleId?: string | null;
-    isWeekend?: boolean;
-    isToday?: boolean;
-    isBeforeToday?: boolean;
-  }>(),
-  {
-    shifts: () => [],
-    roleId: null,
-    isWeekend: false,
-    isToday: false,
-    isBeforeToday: false
-  }
-);
-
-defineEmits<{
-  (e: 'click'): void;
-}>();
-
-// Logic: useRotaColors provides the palette based on the role identifier.
-const { getRoleColor } = useRotaColors() as {
-  getRoleColor: (id?: string | null) => ColourPalette;
-};
-
-// Constants to eliminate magic numbers and comply with linting standards.
-const INITIALS_LIMIT = 2;
-
-const hasData = computed(() => props.shifts.length > 0);
-
-const colors = computed(() => getRoleColor(props.roleId));
-
-const pillStyles = computed(() => ({
-  backgroundColor: colors.value.bg,
-  borderColor: colors.value.accent,
-  color: colors.value.accent
-}));
+const props = withDefaults(defineProps<Props>(), {
+  isWeekend: false,
+  isPast: false
+});
 
 /**
- * Extracts initials from a user's name.
- * @param name - The display name to process.
- * @returns The formatted initials (e.g. "JD").
+ * Emits a selection event when the slot is clicked.
  */
-const getInitials = (name?: string): string => {
-  if (!name) {
-    return '??';
-  }
+const emit = defineEmits<{
+  select: [];
+}>();
 
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, INITIALS_LIMIT)
-    .toUpperCase();
+const hasShifts = computed(() => props.shifts.length > 0);
+
+/**
+ * Handles the click event on the slot container.
+ */
+const handleClick = (): void => {
+  emit('select');
 };
 </script>
 
 <template>
-  <button
+  <div
     class="rota-slot"
     :class="{
-      'has-data': hasData,
-      'slot-weekend': isWeekend,
-      'slot-past': isBeforeToday && !isWeekend,
-      'slot-weekday': !isWeekend && !isBeforeToday,
-      'slot-today': isToday,
-      'slot-weekend-past': isWeekend && isBeforeToday
+      'is-weekend': isWeekend,
+      'is-past': isPast,
+      'has-shifts': hasShifts
     }"
-    type="button"
-    @click="$emit('click')"
+    @click="handleClick"
   >
-    <div v-if="hasData" class="slot-contents">
-      <div v-for="shift in shifts" :key="shift.id" class="shift-pill" :style="pillStyles">
-        <div class="pill-content">
-          <span class="initials" :style="{ color: colors.accent }">
-            {{ getInitials(shift.user_name) }}
-          </span>
-          <span class="name" :style="{ color: colors.accent }">
-            {{ shift.user_name }}
-          </span>
-        </div>
-      </div>
+    <RotaAssignedStaff v-if="hasShifts" :shifts="shifts" />
 
-      <div class="edit-overlay">
-        <div class="edit-icon-wrapper">
-          <IconEdit class="edit-icon" :stroke-width="2" />
-        </div>
-      </div>
+    <div v-else-if="!isPast" class="slot-placeholder">
+      <span class="plus-icon">+</span>
     </div>
-
-    <div v-else class="empty-placeholder">
-      <IconPlus class="plus-icon" :stroke-width="2" />
-    </div>
-  </button>
+  </div>
 </template>
 
 <style scoped>
 .rota-slot {
-  background: none;
-  border: none;
-  border-radius: var(--border-radius);
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
   cursor: pointer;
+  min-height: 80px;
+  padding: 0.5rem;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.rota-slot:hover {
+  background-color: var(--color-background-soft);
+}
+
+.rota-slot.is-weekend {
+  background-color: var(--color-background-mute);
+}
+
+.rota-slot.is-past {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.rota-slot.has-shifts {
+  cursor: pointer;
+}
+
+.slot-placeholder {
+  align-items: center;
+  color: var(--color-text-light);
   display: flex;
-  flex-direction: column;
-  font-family: inherit;
-  gap: 0.25rem;
+  font-size: 1.5rem;
   height: 100%;
   justify-content: center;
-  min-height: 4rem;
-  padding: 0.25rem;
-  position: relative;
-  transition: all 0.2s ease;
-  width: 100%;
-}
-
-/* Logic: allows children to ignore this wrapper's box model for grid layouts. */
-.slot-contents {
-  display: contents;
-}
-
-/* --- State Styling --- */
-
-.rota-slot.slot-weekday {
-  background-color: white;
-  border: 1px solid #e2e8f0;
-}
-
-.rota-slot.slot-weekend {
-  background-color: #f3f4f6;
-  border: 1px solid #e2e4e7;
-}
-
-.rota-slot.slot-weekend-past {
-  background-color: #f3f4f6;
-  border: 1px solid transparent;
-}
-
-.rota-slot.slot-past {
-  background-color: transparent;
-  border: 0 solid #e2e8f0;
-}
-
-.rota-slot.slot-today {
-  background-color: #eff6ff;
-  border: 1px solid #93c5fd;
-}
-
-/* Hover States */
-.rota-slot:hover {
-  background-color: white;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 4px 6px -1px rgb(59 130 246 / 10%);
-  z-index: 10;
-}
-
-.rota-slot:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Data Present State */
-.rota-slot.has-data.slot-weekday {
-  border-color: #e2e8f0;
-}
-
-.rota-slot.has-data.slot-weekend {
-  background-color: #f3f4f6;
-  border-color: transparent;
-}
-
-.rota-slot.has-data.slot-today {
-  background-color: #eff6ff;
-  border-color: #93c5fd;
-}
-
-/* --- Placeholders & Overlays --- */
-
-.empty-placeholder {
-  align-items: center;
-
-  /* Logic: darkened to Slate 600 (#475569) to pass WCAG AA contrast on light backgrounds. */
-  color: #475569;
-  display: flex;
-  inset: 0;
-  justify-content: center;
   opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  transition: all 0.2s ease;
-}
-
-.rota-slot:hover .empty-placeholder {
-  color: #3b82f6;
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-.edit-overlay {
-  align-items: center;
-  background-color: rgb(255 255 255 / 60%);
-  border-radius: var(--border-radius);
-  display: flex;
-  inset: 0;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
   transition: opacity 0.2s ease;
 }
 
-.rota-slot:hover .edit-overlay {
+.rota-slot:hover .slot-placeholder {
   opacity: 1;
 }
 
-.edit-icon-wrapper {
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
-
-  /* Logic: darkened to Blue 700 (#1d4ed8) to pass contrast requirements on white. */
-  color: #1d4ed8;
-  display: flex;
-  padding: 6px;
-}
-
-.edit-icon {
-  height: 1rem;
-  width: 1rem;
-}
-
 .plus-icon {
-  height: 1.15rem;
-  width: 1.15rem;
-}
-
-/* --- Pill Styling --- */
-
-.shift-pill {
-  border-radius: 999px;
-  border-style: solid;
-  border-width: 1px;
-  max-width: 100%;
-  padding: 0.125rem 0.5rem;
-}
-
-.pill-content {
-  align-items: center;
-  display: flex;
-  gap: 0.35rem;
-  overflow: hidden;
-}
-
-.initials {
-  flex-shrink: 0;
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-.name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 300;
 }
 </style>

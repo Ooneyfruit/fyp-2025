@@ -2,11 +2,13 @@
 /**
  * RotaHeader.
  * Controls date navigation and period selection for the rota grid.
+ * Logic: utilises BaseSelectorBar for standardised layout and spacing.
  */
 import IconCalendar from '@/components/icons/IconCalendar.vue';
 import IconChevronLeft from '@/components/icons/IconChevronLeft.vue';
 import IconChevronRight from '@/components/icons/IconChevronRight.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
+import BaseSelectorBar from '@/components/shared/BaseSelectorBar.vue';
 
 defineProps<{
   monthLabel: string;
@@ -24,7 +26,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <header class="rota-header">
+  <BaseSelectorBar class="rota-header">
     <div class="header-group left">
       <div v-if="isMobile" class="nav-controls mobile">
         <BaseButton
@@ -89,20 +91,21 @@ const emit = defineEmits<{
         />
       </div>
     </div>
-  </header>
+  </BaseSelectorBar>
 </template>
 
 <style scoped>
-/* Layout: Flex container for the header bar */
+/* Layout: overrides for the selector bar to fit the header context. */
 .rota-header {
-  align-items: center;
-  background: white;
   border-bottom: 1px solid var(--border-color);
-  display: flex;
+  border-left: none;
+  border-radius: 0;
+  border-right: none;
+  border-top: none;
+  box-shadow: none;
   height: 4rem;
   justify-content: space-between;
-  padding: 0 var(--spacing-md);
-  width: 100%;
+  min-height: auto;
 }
 
 .header-group {
@@ -111,7 +114,7 @@ const emit = defineEmits<{
   gap: var(--spacing-md);
 }
 
-/* Typography & Controls */
+/* Typography & Controls. */
 .month-title {
   color: var(--text-main);
   font-size: 1.125rem;
@@ -142,7 +145,7 @@ const emit = defineEmits<{
   white-space: nowrap;
 }
 
-/* Week Stepper Styling */
+/* Week Stepper Styling. */
 .week-stepper {
   align-items: center;
   background: var(--bg-app);

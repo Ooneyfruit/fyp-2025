@@ -2,26 +2,29 @@
  * Provides reusable logic for horizontal swipe gestures with visual tracking.
  * Typically used for 'swipe-to-dismiss' patterns in mobile interfaces.
  */
-import { computed, ref } from 'vue';
+import { computed, type Ref, ref, type StyleValue } from 'vue';
 
 const DEFAULT_SWIPE_THRESHOLD = 80;
+
+interface UseSwipeAwayOptions {
+  onTrigger: () => void;
+  threshold?: number;
+  enabled: Ref<boolean>;
+}
 
 /**
  * Manages touch states and calculates horizontal displacement.
  * @param options - Configuration for the swipe behaviour.
  * @param options.onTrigger - Callback executed when swipe exceeds threshold.
- * @param options.threshold - Distance in pixels required to trigger the action.
+ * @param [options.threshold] - Distance in pixels required to trigger the action.
  * @param options.enabled - Reactive Vue Ref used to toggle the logic state.
- * @returns
- * 
- * 
- * 
- * 
- * 
- * 
- *  Touch handlers and reactive displacement states.
+ * @returns Touch handlers and reactive displacement states.
  */
-export function useSwipeAway({ onTrigger, threshold = DEFAULT_SWIPE_THRESHOLD, enabled }) {
+export function useSwipeAway({
+  onTrigger,
+  threshold = DEFAULT_SWIPE_THRESHOLD,
+  enabled
+}: UseSwipeAwayOptions) {
   const touchStartX = ref(0);
   const touchCurrentX = ref(0);
   const isSwiping = ref(false);
@@ -34,7 +37,7 @@ export function useSwipeAway({ onTrigger, threshold = DEFAULT_SWIPE_THRESHOLD, e
   });
 
   // Reactive transform object for direct template binding in the component.
-  const swipeTransform = computed(() => {
+  const swipeTransform = computed((): StyleValue => {
     if (!isSwiping.value || swipeOffset.value === 0) return {};
     return {
       transform: `translateX(${swipeOffset.value}px)`,
@@ -46,7 +49,7 @@ export function useSwipeAway({ onTrigger, threshold = DEFAULT_SWIPE_THRESHOLD, e
    * Initialises the touch tracking sequence.
    * @param event - Native touch start event.
    */
-  const handleTouchStart = (event) => {
+  const handleTouchStart = (event: TouchEvent) => {
     // Prevent tracking if the swipe logic is explicitly disabled via the reactive prop.
     if (!enabled.value) return;
     touchStartX.value = event.touches[0].clientX;
@@ -58,7 +61,7 @@ export function useSwipeAway({ onTrigger, threshold = DEFAULT_SWIPE_THRESHOLD, e
    * Updates current position to provide real-time visual feedback.
    * @param event - Native touch move event.
    */
-  const handleTouchMove = (event) => {
+  const handleTouchMove = (event: TouchEvent) => {
     // Only track movement if the initial touch sequence was successfully validated.
     if (!isSwiping.value) return;
     touchCurrentX.value = event.touches[0].clientX;

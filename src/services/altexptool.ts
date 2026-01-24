@@ -1,5 +1,5 @@
 /**
- * @file altexptool.js
+ * @file altexptool.ts
  * @description Alternative export utility for extracting Firestore data.
  * Features flat-mapped collection processing and recursive subcollection traversal.
  */
@@ -24,15 +24,17 @@ const db = firestore();
  * @param docRef - The document reference.
  * @returns A map of subcollection data or null.
  */
-async function fetchSubcollections(docRef) {
+async function fetchSubcollections(
+  docRef: firestore.DocumentReference
+): Promise<Record<string, Record<string, firestore.DocumentData>> | null> {
   const subRefs = await docRef.listCollections();
   if (subRefs.length === 0) {
     return null;
   }
-
-  const subs = {};
-  for (const subRef of subRefs) {
-    const subDocs = {};
+
+  const subs: Record<string, Record<string, firestore.DocumentData>> = {};
+  for (const subRef of subRefs) {
+    const subDocs: Record<string, firestore.DocumentData> = {};
     const snapshot = await subRef.get();
 
     for (const doc of snapshot.docs) {
@@ -49,14 +51,14 @@ async function fetchSubcollections(docRef) {
  * Processes root collections and ensures subcollections are captured.
  * @returns Resolves when the export file is written.
  */
-async function runExport() {
-  const collections = await db.listCollections();
-  const data = {};
+async function runExport(): Promise<void> {
+  const collections = await db.listCollections();
+  const data: Record<string, Record<string, firestore.DocumentData>> = {};
 
   for (const collection of collections) {
     process.stdout.write(`Exporting collection: ${collection.id}\n`);
-
-    const collectionData = {};
+
+    const collectionData: Record<string, firestore.DocumentData> = {};
     const snapshot = await collection.get();
 
     for (const doc of snapshot.docs) {

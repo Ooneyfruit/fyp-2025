@@ -2,7 +2,7 @@
  * Orchestrates the loading and filtering of rota-related data for the grid view.
  */
 import { type DocumentReference } from 'firebase/firestore';
-import { computed, type ComputedRef, type Ref,ref } from 'vue';
+import { computed, type ComputedRef, type Ref, ref } from 'vue';
 
 import { fetchPracticeRoles, fetchPracticeSurgeries, fetchShifts } from '@/features/rota/rotaApi';
 import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
@@ -23,7 +23,8 @@ interface UseRotaDataReturn {
 
 /**
  * Helper to safely extract the ISO date string from a shift object.
- * @param shift
+ * @param shift - The shift object containing date information.
+ * @returns An ISO date string (YYYY-MM-DD) or null if the date is missing.
  */
 const getShiftDateIso = (shift: Shift): string | null => {
   if (!shift.date) {
@@ -41,8 +42,9 @@ const getShiftDateIso = (shift: Shift): string | null => {
 
 /**
  * Helper to check if a reference matches an ID.
- * @param refObj
- * @param targetId
+ * @param refObj - The Firestore document reference to check.
+ * @param targetId - The unique identifier to match against.
+ * @returns True if the reference ID or path matches the target identifier.
  */
 const isRefMatch = (refObj: DocumentReference | undefined, targetId: string): boolean => {
   return refObj?.id === targetId || refObj?.path?.endsWith(targetId) || false;
@@ -50,10 +52,11 @@ const isRefMatch = (refObj: DocumentReference | undefined, targetId: string): bo
 
 /**
  * Filters the raw shifts array for a specific grid slot.
- * @param shifts
- * @param rId
- * @param sId
- * @param dIso
+ * @param shifts - The collection of all fetched shifts.
+ * @param rId - The role identifier for the grid row.
+ * @param sId - The surgery identifier for the grid row.
+ * @param dIso - The ISO date string for the grid column.
+ * @returns A filtered array of shifts matching the specific slot coordinates.
  */
 const filterShifts = (shifts: Shift[], rId: string, sId: string, dIso: string): Shift[] => {
   return shifts.filter((s) => {
@@ -70,6 +73,7 @@ const filterShifts = (shifts: Shift[], rId: string, sId: string, dIso: string): 
 /**
  * Composable to manage the fetching and organisation of rota data.
  * @param userRef - Reactive Ref containing the current user profile.
+ * @returns Reactive state and methods for managing rota grid data.
  */
 export function useRotaData(userRef: Ref<Nullable<UserProfile>>): UseRotaDataReturn {
   const practiceRoles = ref<PracticeRole[]>([]);
@@ -79,6 +83,7 @@ export function useRotaData(userRef: Ref<Nullable<UserProfile>>): UseRotaDataRet
 
   /**
    * Fetches required data collections concurrently.
+   * @returns A promise that resolves once all data is loaded.
    */
   const loadData = async (): Promise<void> => {
     if (!userRef.value?.practiceRef) return;
@@ -94,8 +99,8 @@ export function useRotaData(userRef: Ref<Nullable<UserProfile>>): UseRotaDataRet
       practiceRoles.value = roles;
       practiceSurgeries.value = surgeries;
       rawShifts.value = shifts;
-    } catch (error) {
-      console.error('Failed to load rota data', error);
+    } catch {
+      // Error handling is managed by the individual API fetchers.
     } finally {
       isLoading.value = false;
     }

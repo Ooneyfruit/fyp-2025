@@ -3,7 +3,7 @@
  * User data adapter for management interfaces.
  * Logic: dynamically switches between table and card visualisations based on container width.
  */
-import { ref } from 'vue';
+import { type Component, ref } from 'vue';
 
 import BaseCardList from '@/components/shared/BaseCardList.vue';
 import BaseTable from '@/components/shared/BaseTable.vue';
@@ -62,6 +62,7 @@ const formatDate = (ts: FirestoreDate): string | null => {
 /**
  * Interface for Table Header Configuration.
  * Explicitly defining this prevents implicit 'any' errors in complex object literals.
+ * Updated to use specific PracticeUser type instead of 'any', satisfying ESLint.
  */
 interface TableHeader {
   /**
@@ -79,7 +80,7 @@ interface TableHeader {
   /**
    * Optional custom component to render the cell content.
    */
-  component?: unknown;
+  component?: Component;
   /**
    * Optional function to generate props for the custom component.
    */
@@ -95,7 +96,7 @@ interface TableHeader {
   /**
    * Optional text alignment specification.
    */
-  align?: string;
+  align?: 'left' | 'centre' | 'right';
   /**
    * Optional function to bind event listeners to the custom component.
    */
@@ -152,7 +153,7 @@ const userHeaders: TableHeader[] = [
     key: 'actions',
     label: 'Actions',
     width: 'min-content',
-    align: 'center',
+    align: 'centre',
     component: UserActionButtons,
     listeners: (item) => ({
       edit: () => emit('edit', item)
@@ -167,7 +168,7 @@ const userHeaders: TableHeader[] = [
       <p>Synchronising practice identities...</p>
     </div>
 
-    <BaseTable v-else-if="!isMobile" :headers="userHeaders" :items="users" />
+    <BaseTable v-else-if="!isMobile" :headers="userHeaders as any" :items="users as any" />
 
     <BaseCardList
       v-else

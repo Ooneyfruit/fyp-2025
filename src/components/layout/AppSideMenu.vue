@@ -19,7 +19,7 @@ import { useSwipeAway } from '@/composables/useSwipeAway';
  * path - The router path for navigation.
  * adminOnly - Restricts visibility to administrators only.
  */
-
+
 const MENU_CONFIG = [
   { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
   { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true }

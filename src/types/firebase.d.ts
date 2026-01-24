@@ -11,7 +11,10 @@ declare module 'firebase/auth' {
    * This helps when accessing idTokenResult.claims.
    */
   interface User extends FirebaseUser {
-    // Example: Custom claims if we implement RBAC at the token level later.
-    // role?: 'admin' | 'standard';
+    /**
+     * Custom role parameter for role-based access control.
+     * Logic: allows distinguishing between admins and standard users at the token level.
+     */
+    role?: 'admin' | 'standard';
   }
 }

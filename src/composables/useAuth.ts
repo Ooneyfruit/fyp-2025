@@ -2,7 +2,6 @@
  * Authentication and profile synchronisation composable.
  * Logic: manages user sessions and ensures Google profile data is persisted to Firestore.
  */
-
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -131,7 +130,7 @@ const handleUserSnapshot = async (
 
     const { mData, practiceName } = await fetchPracticeDetails(firebaseUser.uid, practiceRef);
 
-    // Merge and Validate using Zod.
+    // Merge context data into a single profile object.
     const mergedProfile = {
       uid: firebaseUser.uid,
       ...userData,
@@ -142,12 +141,8 @@ const handleUserSnapshot = async (
 
     const parsedResult = UserProfileSchema.safeParse(mergedProfile);
 
-    if (parsedResult.success) {
-      user.value = parsedResult.data;
-    } else {
-      // Fallback: cast to UserProfile to prevent app lockout.
-      user.value = mergedProfile as UserProfile;
-    }
+    // Validate the merged profile and update the global user state.
+    user.value = parsedResult.success ? parsedResult.data : (mergedProfile as UserProfile);
   } catch {
     // Fallback to basic profile if membership or practice data is inaccessible.
     user.value = {
@@ -177,9 +172,7 @@ const handleSnapshotError = (): void => {
  */
 const startProfileListener = (firebaseUser: FirebaseUser): void => {
   // Clean up any existing listeners before establishing a new connection.
-  if (profileListener) {
-    profileListener();
-  }
+  profileListener?.();
 
   const userRef = doc(db, 'users', firebaseUser.uid);
 
@@ -197,13 +190,13 @@ const startProfileListener = (firebaseUser: FirebaseUser): void => {
 onAuthStateChanged(auth, (firebaseUser) => {
   if (firebaseUser) {
     startProfileListener(firebaseUser);
-  } else {
-    if (profileListener) {
-      profileListener();
-    }
-    user.value = null;
-    isAuthReady.value = true;
+    return;
   }
+
+  // Handle logout: terminate active profile listeners and reset user state.
+  profileListener?.();
+  user.value = null;
+  isAuthReady.value = true;
 });
 
 /**
@@ -218,9 +211,7 @@ export function useAuth(): AuthInterface {
     login: () => signInWithPopup(auth, provider),
     // Terminates the session and cleans up active listeners.
     logout: async () => {
-      if (profileListener) {
-        profileListener();
-      }
+      profileListener?.();
       await signOut(auth);
     }
   };
