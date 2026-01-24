@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue';
 
 import IconChevronDoubleLeft from '@/components/icons/IconChevronDoubleLeft.vue';
@@ -8,20 +8,15 @@ import IconChevronRight from '@/components/icons/IconChevronRight.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseSelectorBar from '@/components/shared/BaseSelectorBar.vue';
 
-const props = defineProps<{
-  dateRangeLabel: string;
-  monthLabel: string;
-  showTodayButton: boolean;
-}>();
+const props = defineProps({
+  dateRangeLabel: { type: String, required: true },
+  monthLabel: { type: String, required: true },
+  showTodayButton: { type: Boolean, default: false }
+});
 
-const emit = defineEmits<{
-  (e: 'navigate-month', direction: number): void;
-  (e: 'navigate-period', direction: number): void;
-  (e: 'navigate-day', direction: number): void;
-  (e: 'jump-today'): void;
-}>();
+defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today']);
 
-const monthLabelShort = computed<string>(() => {
+const monthLabelShort = computed(() => {
   return props.monthLabel
     .replace('January', 'Jan')
     .replace('February', 'Feb')
@@ -43,7 +38,7 @@ const monthLabelShort = computed<string>(() => {
       :icon="IconChevronDoubleLeft"
       title="Back Month"
       variant="ghost"
-      @click="emit('navigate-month', -1)"
+      @click="$emit('navigate-month', -1)"
     >
       M
     </BaseButton>
@@ -53,7 +48,7 @@ const monthLabelShort = computed<string>(() => {
       :icon="IconChevronLeft"
       title="Back 3 Days"
       variant="ghost"
-      @click="emit('navigate-period', -1)"
+      @click="$emit('navigate-period', -1)"
     >
       3D
     </BaseButton>
@@ -63,7 +58,7 @@ const monthLabelShort = computed<string>(() => {
       :icon="IconChevronLeft"
       title="Back Day"
       variant="outline"
-      @click="emit('navigate-day', -1)"
+      @click="$emit('navigate-day', -1)"
     >
       D
     </BaseButton>
@@ -72,7 +67,7 @@ const monthLabelShort = computed<string>(() => {
       <span class="month-mobile">{{ monthLabelShort }}</span>
       <span class="range-mobile">{{ dateRangeLabel }}</span>
 
-      <button v-if="showTodayButton" class="today-link-mobile" @click="emit('jump-today')">
+      <button v-if="showTodayButton" class="today-link-mobile" @click="$emit('jump-today')">
         Today
       </button>
     </div>
@@ -83,7 +78,7 @@ const monthLabelShort = computed<string>(() => {
       icon-position="right"
       title="Forward Day"
       variant="outline"
-      @click="emit('navigate-day', 1)"
+      @click="$emit('navigate-day', 1)"
     >
       D
     </BaseButton>
@@ -94,7 +89,7 @@ const monthLabelShort = computed<string>(() => {
       icon-position="right"
       title="Forward 3 Days"
       variant="ghost"
-      @click="emit('navigate-period', 1)"
+      @click="$emit('navigate-period', 1)"
     >
       3D
     </BaseButton>
@@ -105,7 +100,7 @@ const monthLabelShort = computed<string>(() => {
       icon-position="right"
       title="Forward Month"
       variant="ghost"
-      @click="emit('navigate-month', 1)"
+      @click="$emit('navigate-month', 1)"
     >
       M
     </BaseButton>
@@ -119,7 +114,7 @@ const monthLabelShort = computed<string>(() => {
   flex-direction: column;
   justify-content: center;
 
-  /* Layout: Min-width stabilizes the layout so buttons don't jump. */
+  /* Min-width stabilizes the layout so buttons don't jump */
   min-width: 6.5rem;
 }
 
@@ -157,7 +152,7 @@ const monthLabelShort = computed<string>(() => {
   padding: 0 4px;
 }
 
-/* Fix: Reset BaseButton internal transforms to force pure flex centring. */
+/* Fix: Reset BaseButton internal transforms to force pure flex centring */
 .dense-btn :deep(.icon-frame),
 .dense-btn :deep(.button-label) {
   line-height: 1;

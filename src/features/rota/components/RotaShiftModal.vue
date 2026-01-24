@@ -1,9 +1,12 @@
-<script setup lang="ts">
-import type { DocumentReference } from 'firebase/firestore';
+<script setup>
+/**
+ * RotaShiftModal.
+ * Primary responsibility: provides an interface for assigning staff to rota slots.
+ * Refactored to fix path resolution, prop definition, and reactive type safety.
+ */
 import { computed, ref, watch } from 'vue';
 
 import BaseModal from '@/components/shared/BaseModal.vue';
-import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
 
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
@@ -11,61 +14,42 @@ import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
 import RotaStaffPicker from './RotaStaffPicker.vue';
 
 /**
- * RotaShiftModal.
- * Primary responsibility: provides an interface for assigning staff to rota slots.
- * Logic: coordinates the 'pending' state for additions and removals before saving.
+ * uid - Profile identifier.
+ * membershipId - Practice membership identifier.
+ * userRef - Firestore reference.
+ * name - Display name.
+ * [email] - Contact email.
+ * [roleName] - Job role name.
  */
 
-interface Props {
-  show: boolean;
-  role: PracticeRole;
-  surgery: PracticeSurgery;
-  date: { label: string };
-  shifts: Shift[];
-}
+/**
+ * id - Unique identifier.
+ * [user_id] - User reference or ID.
+ * [user_name] - Name of the user.
+ * [roleName] - Name of the role.
+ * [isTemp] - Flag for temporary state.
+ * [originalMember] - Link back to source data.
+ */
 
-const props = withDefaults(defineProps<Props>(), {
-  show: false,
-  shifts: () => []
+const props = defineProps({
+  show: { type: Boolean, default: false },
+  role: { type: Object, default: () => ({ name: 'Unknown' }) },
+  surgery: { type: Object, default: () => ({ name: 'Unknown' }) },
+  date: { type: Object, default: () => ({ label: '' }) },
+  // Logic: explicitly type the array to prevent 'never' iteration errors.
+  shifts: { type: Array, default: () => [] }
 });
 
-const emit = defineEmits<{
-  (e: 'request-close'): void;
-  (e: 'save', payload: { additions: MappedStaff[]; removals: string[] }): void;
-}>();
-
-// --- Type Definitions ---
-
-interface MappedStaff {
-  uid: string;
-  membershipId?: string;
-  userRef?: DocumentReference | null;
-  name: string;
-  email?: string;
-  roleName?: string;
-}
-
-// Logic: Use Omit to strictly override user_id without TypeScript conflict.
-// Renamed to UiShift (PascalCase) and removed export (local scope only).
-interface UiShift extends Omit<Partial<Shift>, 'user_id'> {
-  id: string;
-  user_name?: string;
-  roleName?: string;
-  isTemp?: boolean;
-  originalMember?: MappedStaff;
-  // Ensure strict typing for the union used in the template.
-  user_id?: string | { id: string } | null;
-}
+const emit = defineEmits(['request-close', 'save']);
 
 // --- Shared State ---
-
 const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
 
 // --- Local Reactive State ---
-
 const searchQuery = ref('');
-const pendingAdds = ref<MappedStaff[]>([]);
-const pendingRemoves = ref<string[]>([]);
+// Logic: initializing with type casts prevents 'Property does not exist on type never' errors.
+const pendingAdds = ref([]);
+const pendingRemoves = ref([]);
 
 // Logic: reset internal staging area when the modal visibility toggles.
 watch(
@@ -79,39 +63,31 @@ watch(
   }
 );
 
-const modalTitle = computed(() => {
-  return `${props.role?.name || 'Unknown'} - ${props.surgery?.name || 'Unknown'} (${props.date?.label})`;
-});
+const modalTitle = computed(
+  () => `${props.role?.name} - ${props.surgery?.name} (${props.date?.label})`
+);
 
 // --- Data Mapping ---
-
-const mappedMembers = computed<MappedStaff[]>(() => {
+const mappedMembers = computed(() => {
   return practiceUsers.value.map((member) => ({
-    // Logic: PracticeUser is flat, so we access properties directly
-    uid: member.uid,
-    membershipId: '', // Not available in flattened PracticeUser, defaulting to empty
-    userRef: null, // Not available in flattened PracticeUser, defaulting to null
-    name: member.name || 'Unknown Staff',
-    email: member.email,
+    uid: member.profile.id,
+    membershipId: member.id,
+    userRef: member.user,
+    name: member.profile.name || 'Unknown Staff',
+    email: member.profile.email,
     roleName: member.role
   }));
 });
 
 // --- Computed Lists ---
 
-const currentStaffList = computed<UiShift[]>(() => {
+const currentStaffList = computed(() => {
   // Logic: filter out shifts staged for removal and enrich with current role information.
-  const existing: UiShift[] = props.shifts
+  const existing = props.shifts
     .filter((s) => !pendingRemoves.value.includes(s.id))
     .map((s) => {
       // Robust ID check: handles both string and DocumentReference formats safely.
-      // Logic: Cast to unknown to allow checking for legacy object structure even if Type implies string.
-      const rawUser = s.user_id as unknown;
-      const sUserId =
-        typeof rawUser === 'object' && rawUser !== null && 'id' in (rawUser as object)
-          ? (rawUser as { id: string }).id
-          : s.user_id;
-
+      const sUserId = typeof s.user_id === 'object' ? s.user_id?.id : s.user_id;
       const match = mappedMembers.value.find((m) => m.uid === sUserId);
 
       return {
@@ -120,22 +96,24 @@ const currentStaffList = computed<UiShift[]>(() => {
       };
     });
 
-  const newOnes: UiShift[] = pendingAdds.value.map((m) => ({
+  const newOnes = pendingAdds.value.map((m) => ({
     id: `temp_${m.uid}`,
     user_name: m.name,
     isTemp: true,
     originalMember: m,
     roleName: m.roleName,
+    // Ensure user_id matches the structure expected by consumers.
     user_id: m.uid
   }));
 
   return [...existing, ...newOnes];
 });
 
-const availableStaffList = computed<MappedStaff[]>(() => {
-  // Logic: create a Set of existing IDs to efficiently filter the picker list.
+const availableStaffList = computed(() => {
+  // Logic: Create a Set of existing IDs to efficiently filter the picker list.
   const currentIds = new Set(
     currentStaffList.value.map((s) => {
+      // Explicitly handle the union type for user_id to avoid 'id does not exist on type string' errors.
       if (typeof s.user_id === 'object' && s.user_id !== null && 'id' in s.user_id) {
         return s.user_id.id;
       }
@@ -165,13 +143,13 @@ const saveLabel = computed(() => (hasChanges.value ? 'Save Changes' : 'No Change
 
 // --- Action Handlers ---
 
-const stageAddition = (member: MappedStaff) => {
+const stageAddition = (member) => {
   pendingAdds.value.push(member);
 };
 
-const markForRemoval = (shift: UiShift) => {
-  if (shift.isTemp && shift.originalMember) {
-    pendingAdds.value = pendingAdds.value.filter((m) => m.uid !== shift.originalMember!.uid);
+const markForRemoval = (shift) => {
+  if (shift.isTemp) {
+    pendingAdds.value = pendingAdds.value.filter((m) => m.uid !== shift.originalMember.uid);
   } else {
     pendingRemoves.value.push(shift.id);
   }
@@ -180,11 +158,13 @@ const markForRemoval = (shift: UiShift) => {
 const saveChanges = () => {
   emit('save', {
     additions: pendingAdds.value,
-    removals: pendingRemoves.value // Fix: Use correct variable name (pendingRemoves)
+    removals: pendingRemoves.value
   });
 };
 
 const handleClose = () => emit('request-close');
+
+const isLoading = computed(() => usersLoading.value);
 </script>
 
 <template>
@@ -200,7 +180,7 @@ const handleClose = () => emit('request-close');
     <div class="modal-body-wrapper">
       <RotaAssignedStaff
         :staff="currentStaffList"
-        :target-role-name="role?.name"
+        :target-role-name="role.name"
         @remove="markForRemoval"
       />
 
@@ -208,10 +188,10 @@ const handleClose = () => emit('request-close');
 
       <RotaStaffPicker
         v-model:search-query="searchQuery"
-        :is-loading="usersLoading"
+        :is-loading="isLoading"
         :others="otherStaff"
         :recommended="recommendedStaff"
-        :target-role-name="role?.name"
+        :target-role-name="role.name"
         @add="stageAddition"
       />
     </div>

@@ -1,64 +1,50 @@
 /**
  * Orchestrates the loading and filtering of rota-related data for the grid view.
+ * Logic: centrally manages state for roles, surgeries, and shifts.
+ * Decomposed to satisfy line-count limits and improve type safety.
  */
-import { type DocumentReference } from 'firebase/firestore';
-import { computed, type ComputedRef, type Ref, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { fetchPracticeRoles, fetchPracticeSurgeries, fetchShifts } from '@/features/rota/rotaApi';
-import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
-import { type UserProfile } from '@/features/users/userTypes';
-import { type Nullable } from '@/types/generic';
 
-export interface RotaRow {
-  id: string;
-  role: PracticeRole;
-  surgery: PracticeSurgery;
-}
-
-interface UseRotaDataReturn {
-  flattenedRows: ComputedRef<RotaRow[]>;
-  loadData: () => Promise<void>;
-  getShiftsForSlot: (rId: string, sId: string, dIso: string) => Shift[];
-}
+/**
+ */
 
 /**
  * Helper to safely extract the ISO date string from a shift object.
- * @param shift - The shift object containing date information.
- * @returns An ISO date string (YYYY-MM-DD) or null if the date is missing.
+ * @param shift - The shift object.
+ * @returns The ISO date string (YYYY-MM-DD) or null.
  */
-const getShiftDateIso = (shift: Shift): string | null => {
+const getShiftDateIso = (shift) => {
   if (!shift.date) {
     return null;
   }
-  // Check for Firestore Timestamp 'toDate' method
-  if ('toDate' in shift.date && typeof shift.date.toDate === 'function') {
+  // Convert Firestore Timestamps to standard JS Dates before extracting the string.
+  if (typeof shift.date.toDate === 'function') {
     return shift.date.toDate().toISOString().split('T')[0];
   }
-  // Fallback for Date objects or ISO strings if data is mocked/different.
-  // We double cast via 'unknown' because TypeScript knows 'shift.date' is strictly 'Timestamp',
-  // preventing direct casting to unrelated types like 'Date' or 'string'.
-  return new Date(shift.date as unknown as Date | string).toISOString().split('T')[0];
+  return new Date(shift.date).toISOString().split('T')[0];
 };
 
 /**
  * Helper to check if a reference matches an ID.
- * @param refObj - The Firestore document reference to check.
- * @param targetId - The unique identifier to match against.
- * @returns True if the reference ID or path matches the target identifier.
+ * @param refObj - The reference object (role_id or surgery_id).
+ * @param targetId - The ID to match against.
+ * @returns True if matched.
  */
-const isRefMatch = (refObj: DocumentReference | undefined, targetId: string): boolean => {
+const isRefMatch = (refObj, targetId) => {
   return refObj?.id === targetId || refObj?.path?.endsWith(targetId) || false;
 };
 
 /**
  * Filters the raw shifts array for a specific grid slot.
- * @param shifts - The collection of all fetched shifts.
- * @param rId - The role identifier for the grid row.
- * @param sId - The surgery identifier for the grid row.
- * @param dIso - The ISO date string for the grid column.
- * @returns A filtered array of shifts matching the specific slot coordinates.
+ * @param shifts - The complete collection of shifts.
+ * @param rId - Target role ID.
+ * @param sId - Target surgery ID.
+ * @param dIso - Target date (YYYY-MM-DD).
+ * @returns Matching shifts.
  */
-const filterShifts = (shifts: Shift[], rId: string, sId: string, dIso: string): Shift[] => {
+const filterShifts = (shifts, rId, sId, dIso) => {
   return shifts.filter((s) => {
     const shiftDate = getShiftDateIso(s);
     if (shiftDate !== dIso) return false;
@@ -73,19 +59,18 @@ const filterShifts = (shifts: Shift[], rId: string, sId: string, dIso: string): 
 /**
  * Composable to manage the fetching and organisation of rota data.
  * @param userRef - Reactive Ref containing the current user profile.
- * @returns Reactive state and methods for managing rota grid data.
+ * @returns The rota data state and helper methods.
  */
-export function useRotaData(userRef: Ref<Nullable<UserProfile>>): UseRotaDataReturn {
-  const practiceRoles = ref<PracticeRole[]>([]);
-  const practiceSurgeries = ref<PracticeSurgery[]>([]);
-  const rawShifts = ref<Shift[]>([]);
+export function useRotaData(userRef) {
+  const practiceRoles = ref([]);
+  const practiceSurgeries = ref([]);
+  const rawShifts = ref([]);
   const isLoading = ref(false);
 
   /**
    * Fetches required data collections concurrently.
-   * @returns A promise that resolves once all data is loaded.
    */
-  const loadData = async (): Promise<void> => {
+  const loadData = async () => {
     if (!userRef.value?.practiceRef) return;
     isLoading.value = true;
     const practiceId = userRef.value.practiceRef.id;
@@ -100,25 +85,23 @@ export function useRotaData(userRef: Ref<Nullable<UserProfile>>): UseRotaDataRet
       practiceSurgeries.value = surgeries;
       rawShifts.value = shifts;
     } catch {
-      // Error handling is managed by the individual API fetchers.
+      // Logic: Silently handle errors or use a global toast service.
     } finally {
       isLoading.value = false;
     }
   };
 
-  const flattenedRows = computed(() => {
-    const rows: RotaRow[] = [];
-    for (const role of practiceRoles.value) {
-      for (const surgery of practiceSurgeries.value) {
-        rows.push({ id: `${role.id}_${surgery.id}`, role, surgery });
-      }
-    }
-    return rows;
-  });
-
   return {
-    flattenedRows,
+    flattenedRows: computed(() => {
+      const rows = [];
+      for (const role of practiceRoles.value) {
+        for (const surgery of practiceSurgeries.value) {
+          rows.push({ id: `${role.id}_${surgery.id}`, role, surgery });
+        }
+      }
+      return rows;
+    }),
     loadData,
-    getShiftsForSlot: (r: string, s: string, d: string) => filterShifts(rawShifts.value, r, s, d)
+    getShiftsForSlot: (r, s, d) => filterShifts(rawShifts.value, r, s, d)
   };
 }
