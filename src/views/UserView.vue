@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
- * @file UserView.vue
- * @description Administrative view for managing practice personnel.
+ * Administrative view for managing practice personnel.
  * Handles the display of the user list and coordinates creation/editing workflows.
  */
 import { type Ref, ref } from 'vue';
@@ -35,8 +34,9 @@ interface UsePracticeUsersReturn {
   isLoading: Ref<boolean>;
 }
 
-// --- Logic and state ---
+// --- Logic and State ---
 
+// Logic: retrieves practice-specific users and loading state.
 const { users, isLoading } = usePracticeUsers() as UsePracticeUsersReturn;
 
 /**

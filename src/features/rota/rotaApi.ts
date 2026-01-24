@@ -11,7 +11,8 @@ import {
   type DocumentData,
   getDocs,
   type QuerySnapshot,
-  Timestamp} from 'firebase/firestore';
+  Timestamp
+} from 'firebase/firestore';
 
 import { db } from '@/services/firebase';
 
@@ -34,8 +35,7 @@ export const fetchPracticeRoles = async (practiceId: string): Promise<PracticeRo
   try {
     const snap = await getDocs(collection(db, `practices/${practiceId}/roles`));
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as PracticeRole);
-  } catch (error) {
-    console.error('Failed to fetch practice roles:', error);
+  } catch {
     return [];
   }
 };
@@ -49,8 +49,7 @@ export const fetchPracticeSurgeries = async (practiceId: string): Promise<Practi
   try {
     const snap = await getDocs(collection(db, `practices/${practiceId}/surgeries`));
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as PracticeSurgery);
-  } catch (error) {
-    console.error('Failed to fetch practice surgeries:', error);
+  } catch {
     return [];
   }
 };
@@ -60,7 +59,8 @@ export const fetchPracticeSurgeries = async (practiceId: string): Promise<Practi
 /**
  * Helper to safely parse a Firestore snapshot into typed Shift objects.
  * Silently ignores documents that fail Zod validation to prevent app crashes.
- * @param snap
+ * @param snap - The Firestore query snapshot containing shift documents.
+ * @returns An array of validated Shift objects.
  */
 const mapShiftSnapshot = (snap: QuerySnapshot<DocumentData, DocumentData>): Shift[] => {
   return snap.docs
@@ -68,7 +68,6 @@ const mapShiftSnapshot = (snap: QuerySnapshot<DocumentData, DocumentData>): Shif
       const data = { id: d.id, ...d.data() };
       const result = ShiftSchema.safeParse(data);
       if (!result.success) {
-        console.warn(`Skipping invalid shift document ${d.id}:`, result.error);
         return null;
       }
       return result.data;
@@ -88,8 +87,7 @@ export const fetchShifts = async (practiceId: string): Promise<Shift[]> => {
 
     // Client-side filtering: check if the shift's role reference path contains the practice ID.
     return allShifts.filter((s) => s.role_id?.path?.includes(practiceId));
-  } catch (error) {
-    console.error('Failed to fetch shifts:', error);
+  } catch {
     return [];
   }
 };
@@ -100,6 +98,7 @@ export const fetchShifts = async (practiceId: string): Promise<Shift[]> => {
  * Persists a new shift record to the database with initial draft status.
  * Logic: standardises the date to a Firestore Timestamp.
  * @param shiftData - The raw data representing the new shift.
+ * @returns A promise that resolves when the shift is created.
  */
 export const createShift = async (shiftData: ShiftInput): Promise<void> => {
   const payload = {
@@ -118,6 +117,7 @@ export const createShift = async (shiftData: ShiftInput): Promise<void> => {
 /**
  * Removes a specific shift record from the global shifts collection.
  * @param shiftId - The unique identifier of the shift to be deleted.
+ * @returns A promise that resolves when the shift is deleted.
  */
 export const deleteShift = async (shiftId: string): Promise<void> => {
   await deleteDoc(doc(db, 'shifts', shiftId));

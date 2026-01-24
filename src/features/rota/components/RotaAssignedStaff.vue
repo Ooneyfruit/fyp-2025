@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * RotaAssignedStaff.
+ * Rota assigned staff component.
  * Primary responsibility: displays a list of staff members assigned to a specific
  * surgery or role slot, allowing for removal and highlighting role mismatches.
  * Refactored to satisfy strict accessibility, contrast, and TypeScript standards.
@@ -10,7 +10,9 @@ import type { Shift } from '@/features/rota/rotaTypes';
 
 const props = withDefaults(
   defineProps<{
+    /** The collection of shifts assigned to the current slot. */
     staff?: Shift[];
+    /** The expected role name for this slot to check for mismatches. */
     targetRoleName?: string;
   }>(),
   {
@@ -19,8 +21,11 @@ const props = withDefaults(
   }
 );
 
-defineEmits<{
-  (e: 'remove', shift: Shift): void;
+/**
+ * Emits a removal event when a staff member is deselected.
+ */
+const emit = defineEmits<{
+  remove: [shift: Shift];
 }>();
 
 /**
@@ -39,7 +44,7 @@ const isException = (shift: Shift): boolean => {
 
 <template>
   <div class="assigned-section">
-    <h4 class="section-heading">Assigned Staff</h4>
+    <h4 class="section-heading">Assigned staff</h4>
 
     <div v-if="staff.length > 0" class="staff-grid">
       <button
@@ -48,13 +53,13 @@ const isException = (shift: Shift): boolean => {
         class="staff-card assigned"
         title="Click to remove from shift"
         type="button"
-        @click="$emit('remove', shift)"
+        @click="emit('remove', shift)"
       >
         <div class="staff-info">
           <span class="staff-name">{{ shift.user_name }}</span>
 
           <span v-if="isException(shift)" class="exception-role">
-            {{ shift.role_name || 'Unknown Role' }}
+            {{ shift.role_name || 'Unknown role' }}
           </span>
         </div>
 
@@ -63,6 +68,7 @@ const isException = (shift: Shift): boolean => {
         </div>
       </button>
     </div>
+
     <p v-else class="empty-text">No staff currently assigned.</p>
   </div>
 </template>
@@ -86,19 +92,19 @@ const isException = (shift: Shift): boolean => {
 .staff-card {
   align-items: center;
 
-  /* Default State: Info Style. */
+  /* Default state: info style. */
   background: #f0f9ff;
   border: 1px solid #bae6fd;
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
-  font-family: inherit; /* Button Reset. */
+  font-family: inherit; /* Button reset. */
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  text-align: left; /* Button Reset. */
+  text-align: left; /* Button reset. */
   transition: all 0.2s ease;
   user-select: none;
-  width: 100%; /* Button Reset. */
+  width: 100%; /* Button reset. */
 }
 
 .staff-info {
@@ -107,7 +113,7 @@ const isException = (shift: Shift): boolean => {
   overflow: hidden;
 }
 
-/* Base definitions must come BEFORE hover overrides. */
+/* Base definitions must come before hover overrides. */
 
 .staff-name {
   color: var(--text-main);
@@ -146,7 +152,7 @@ const isException = (shift: Shift): boolean => {
   padding: 0.5rem 0;
 }
 
-/* Hover State: "Removal" Style. */
+/* Hover state: removal style. */
 
 /* Placed at end to satisfy no-descending-specificity. */
 

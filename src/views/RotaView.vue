@@ -4,7 +4,7 @@
  * Orchestrates the grid, navigation header, and shift modification modals.
  */
 import { doc } from 'firebase/firestore';
-import { computed, type Ref, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 // Components and composables.
 import AppPageContainer from '@/components/layout/AppPageContainer.vue';
@@ -14,47 +14,13 @@ import { useToast } from '@/composables/useToast';
 import RotaGrid from '@/features/rota/components/RotaGrid.vue';
 import RotaHeader from '@/features/rota/components/RotaHeader.vue';
 import RotaShiftModal from '@/features/rota/components/RotaShiftModal.vue';
-import { useRotaData } from '@/features/rota/composables/useRotaData';
-import { useRotaDates } from '@/features/rota/composables/useRotaDates';
+import { type RotaRow, useRotaData } from '@/features/rota/composables/useRotaData';
+import { type RotaDay, useRotaDates } from '@/features/rota/composables/useRotaDates';
 import { createShift, deleteShift } from '@/features/rota/rotaApi';
 import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
 import { db } from '@/services/firebase';
 
-// --- Type Definitions (Local Interfaces for JS Composables) ---
-
-interface RotaDay {
-  iso: string;
-  label: string;
-}
-
-interface BreakpointsInterface {
-  isMobile: Ref<boolean>;
-}
-
-interface ToastInterface {
-  success: (message: string) => void;
-  error: (message: string) => void;
-}
-
-interface RotaDatesInterface {
-  visibleDays: Ref<RotaDay[]>;
-  monthLabel: Ref<string>;
-  changePeriod: (direction: number) => void;
-  changeDay: (direction: number) => void;
-  goToToday: () => void;
-  jumpMonth: (months: number) => void;
-}
-
-interface RotaRow {
-  role: PracticeRole;
-  surgery: PracticeSurgery;
-}
-
-interface RotaDataInterface {
-  flattenedRows: Ref<RotaRow[]>;
-  loadData: () => Promise<void>;
-  getShiftsForSlot: (roleId: string, surgeryId: string, date: string) => Shift[];
-}
+// --- Type Definitions ---
 
 interface SelectedCell {
   role: PracticeRole;
@@ -80,16 +46,16 @@ const SIDEBAR_OFFSET_PX = 80;
 
 const { user } = useAuth();
 
-const { isMobile } = useBreakpoints(ref(document.body), SIDEBAR_OFFSET_PX) as BreakpointsInterface;
-const toast = useToast() as ToastInterface;
+const { isMobile } = useBreakpoints(ref(document.body), SIDEBAR_OFFSET_PX);
+const toast = useToast();
 
 // 1. Date Management.
 const { visibleDays, monthLabel, changePeriod, changeDay, goToToday, jumpMonth } = useRotaDates({
   isMobile
-}) as RotaDatesInterface;
+});
 
 // 2. Data Management.
-const { flattenedRows, loadData, getShiftsForSlot } = useRotaData(user) as RotaDataInterface;
+const { flattenedRows, loadData, getShiftsForSlot } = useRotaData(user);
 
 // 3. Computed Props for UI.
 const dateRangeLabel = computed(() => {

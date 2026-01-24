@@ -2,33 +2,36 @@
  * Manages event listeners to detect clicks outside a specific DOM element.
  * Essential for the closing logic of interactive UI overlays.
  */
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, type Ref } from 'vue';
 
 /**
  * Handles detection of interactions outside a specific element.
  * Useful for closing modals, dropdowns, and menus.
  * @param elRef - Vue template ref for the target element.
  * @param callback - Function to execute on outside click or escape.
- * @returns
  */
-export function useClickOutside(elRef, callback) {
+export function useClickOutside(
+  elRef: Ref<HTMLElement | null | undefined>,
+  callback: (event: MouseEvent | KeyboardEvent) => void
+): void {
   /**
    * Global event listener for mouse and keyboard interactions.
    * @param event - The DOM event object.
    */
-  const listener = (event) => {
-    // Determine if the interaction happened outside the referenced element.
-    // We checks instance types to satisfy the compiler and ensure safe property access.
-    const isClickOutside =
+  const listener = (event: Event): void => {
+    // Process escape key interactions to trigger the callback sequence.
+    if (event instanceof KeyboardEvent && event.key === 'Escape') {
+      callback(event);
+      return;
+    }
+
+    // Identify mouse interactions occurring outside the referenced element.
+    // Instance types are verified to satisfy the compiler and ensure safe property access.
+    if (
       event instanceof MouseEvent &&
       event.target instanceof Node &&
-      !elRef.value?.contains(event.target);
-
-    // Identify if the escape key was pressed to trigger the callback sequence.
-    const isEscKey = event instanceof KeyboardEvent && event.key === 'Escape';
-
-    // Execute the callback if either an outside click or an escape key press occurred.
-    if (isClickOutside || isEscKey) {
+      !elRef.value?.contains(event.target)
+    ) {
       callback(event);
     }
   };

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Primary responsibility: provides a flexible, equally-spaced container for navigation items.
  * Uses space-evenly to ensure uniform gaps between all child elements and container edges.
@@ -12,7 +12,7 @@
 </template>
 
 <style scoped>
-/* Layout: Standardised interactive bar styling */
+/* Layout: standardised interactive bar styling. */
 .rd-selector-bar {
   align-items: center;
   background-color: var(--bg-surface, #fff);
@@ -27,7 +27,7 @@
   width: 100%;
 }
 
-/* Logic: Prevent children from stretching or shrinking unevenly */
+/* Logic: prevent children from stretching or shrinking unevenly. */
 :deep(> *) {
   align-items: center;
   display: flex;
@@ -35,7 +35,7 @@
   justify-content: center;
 }
 
-/* Tablet: Tighten padding for narrower viewports */
+/* Tablet: tighten padding for narrower viewports. */
 @media (width <= 48rem) {
   .rd-selector-bar {
     min-height: 4rem;
