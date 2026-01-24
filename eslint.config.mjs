@@ -10,6 +10,7 @@ import pluginSonar from 'eslint-plugin-sonarjs';
 import pluginUnicorn from 'eslint-plugin-unicorn';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 // Import the custom local rule to discourage nested templates.
 import noNestedTemplate from './tools/eslint/rules/noNestedTemplate.js';
@@ -37,20 +38,26 @@ export default [
 
   // 2. Setup environment and shared settings.
   {
-    files: ['**/*.{js,mjs,cjs,vue}'],
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
     languageOptions: {
       globals: {
-        ...globals.browser
+        ...globals.browser,
+        ...globals.node
       }
     },
     plugins: {
       import: pluginImport
     },
     settings: {
-      // Use the TypeScript resolver to handle path aliases via jsconfig.json.
+      // Fix: Explicitly tell import plugin how to parse TS files
+      'import/parsers': {
+        '@typescript-eslint/parser': ['.ts', '.tsx', '.vue']
+      },
+      // Fix: Configure the TypeScript resolver to always look for definitions
       'import/resolver': {
         typescript: {
-          project: './jsconfig.json'
+          project: './tsconfig.app.json',
+          alwaysTryTypes: true
         }
       },
       // Register virtual modules to prevent unresolvable path errors for Vite plugins.
@@ -62,17 +69,32 @@ export default [
     }
   },
 
-  // 3. Plugin integrations.
+  // 3. Plugin integrations (Base configs).
   pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
-  pluginJsdoc.configs['flat/recommended'],
+  pluginJsdoc.configs['flat/recommended-typescript'],
   pluginPromise.configs['flat/recommended'],
   pluginSonar.configs.recommended,
   pluginUnicorn.configs['flat/recommended'],
 
-  // 4. Strict rules enforcement.
+  // 4. Vue & TypeScript Parser Configuration.
   {
-    files: ['**/*.{js,mjs,cjs,vue}'],
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: pluginVue.parser,
+      parserOptions: {
+        parser: tseslint.parser,
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+        extraFileExtensions: ['.vue']
+      }
+    }
+  },
+
+  // 5. Strict rules enforcement.
+  {
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
     plugins: {
       'simple-import-sort': pluginSimpleImportSort
     },
@@ -121,6 +143,7 @@ export default [
           html: { void: 'always', normal: 'always', component: 'always' }
         }
       ],
+      'vue/multi-word-component-names': 'off', // Often conflicts with domain-driven file naming.
 
       // --- Unicorn (modern JS) ---
       'unicorn/filename-case': ['error', { cases: { camelCase: true, pascalCase: true } }],
@@ -129,15 +152,23 @@ export default [
 
       // --- JSDoc strictness ---
       'jsdoc/require-description': 'error',
-      'jsdoc/require-param-type': 'error',
-      'jsdoc/require-returns-type': 'error',
-      'jsdoc/check-types': 'error'
+      'jsdoc/require-param-type': 'off', // Types are now handled by TypeScript
+      'jsdoc/require-returns-type': 'off', // Types are now handled by TypeScript
+      'jsdoc/check-types': 'off', // Types are now handled by TypeScript
+      'jsdoc/no-undefined-types': 'off', // Types are now handled by TypeScript
+
+      // --- TypeScript Specific Overrides ---
+      // Disable the base JS rule to prevent false positives, enable the TS version.
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/explicit-function-return-type': 'off', // Inference is preferred in modern TS.
+      '@typescript-eslint/no-explicit-any': 'warn' // Discourage 'any', but allow with warning during migration.
     }
   },
 
-  // 5. Project-specific RotaDent constraints.
+  // 6. Project-specific RotaDent constraints.
   {
-    files: ['**/*.{js,vue}'],
+    files: ['**/*.{js,ts,vue}'],
     plugins: {
       rotadent: {
         rules: {

@@ -1,15 +1,14 @@
 import { fileURLToPath, URL } from 'node:url';
 
 import vue from '@vitejs/plugin-vue';
-import { VitePWA } from 'vite-plugin-pwa';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type Plugin } from 'vite';
+import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
 
 /**
  * PWA configuration options.
  * Defines behaviour for offline access, asset caching, and manifest generation.
- * @type {Partial<import('vite-plugin-pwa').VitePWAOptions>}
  */
-const pwaOptions = {
+const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'prompt',
   injectRegister: 'auto',
 
@@ -56,9 +55,9 @@ const pwaOptions = {
 /**
  * Generates a mock PWA registration module for the test environment.
  * This prevents the build from failing when vite-plugin-pwa virtual modules are missing.
- * @returns {import('vite').Plugin} A vite plugin object.
+ * @returns {Plugin} A vite plugin object.
  */
-const getPwaMockPlugin = () => ({
+const getPwaMockPlugin = (): Plugin => ({
   name: 'virtual-pwa-mock',
   resolveId(id) {
     // Intercept the virtual import used in App.vue.
@@ -84,9 +83,9 @@ const getPwaMockPlugin = () => ({
  * Strategy for segregating vendor libraries into dedicated chunks.
  * Isolates heavier dependencies (Firestore) to prevent bundle bloat warnings.
  * @param {string} id - The absolute path of the module being processed.
- * @returns {string|void} The name of the chunk or undefined.
+ * @returns {string | undefined} The name of the chunk or undefined.
  */
-const getManualChunks = (id) => {
+const getManualChunks = (id: string): string | undefined => {
   // Only process third-party dependencies located in node_modules.
   if (id.includes('node_modules')) {
     // Separate Firestore as it is the largest component of the Firebase SDK.
@@ -109,9 +108,6 @@ const getManualChunks = (id) => {
 /**
  * Primary Vite configuration.
  * Orchestrates build tooling, plugin integrations, and development server behaviour.
- * @param {object} configEnv - The environment configuration object.
- * @param {string} configEnv.mode - The current execution mode.
- * @returns {import('vite').UserConfig} The resolved Vite configuration.
  */
 export default defineConfig(({ mode }) => {
   const plugins = [vue()];

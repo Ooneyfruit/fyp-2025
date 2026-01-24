@@ -2,29 +2,48 @@
  * Manages the list of practices associated with the current user.
  * Intended for use in the Navigation bar to allow context switching.
  */
-import { collection, doc, getDoc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
-import { onUnmounted, ref, watch } from 'vue';
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  updateDoc,
+  where,
+  type QueryDocumentSnapshot,
+  type Unsubscribe
+} from 'firebase/firestore';
+import { onUnmounted, ref, watch, type Ref } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
+import { type PracticeSummary } from '@/features/navbar/navTypes';
 import { db } from '@/services/firebase';
 
 /**
  * Fetches the full practice details (name, etc.) for a list of membership docs.
- * @param {import('firebase/firestore').QueryDocumentSnapshot[]} bridgeDocs - The membership documents.
- * @returns {Promise<any[]>} The resolved practice objects.
+ * @param bridgeDocs - The membership documents.
+ * @returns The resolved practice objects.
  */
-const fetchPracticeDetails = async (bridgeDocs) => {
+const fetchPracticeDetails = async (
+  bridgeDocs: QueryDocumentSnapshot[]
+): Promise<PracticeSummary[]> => {
   try {
     const lookups = bridgeDocs.map(async (d) => {
       const pRef = d.data().practice;
       const pSnap = await getDoc(pRef);
-      return pSnap.exists()
-        ? { id: pRef.id, ...pSnap.data() }
-        : { id: pRef.id, name: 'Unknown Practice' };
+
+      if (pSnap.exists()) {
+        const data = pSnap.data();
+        // Fix: Explicitly cast data to an object type to satisfy TS spread constraints
+        return { id: pRef.id, ...(data as Record<string, unknown>) } as PracticeSummary;
+      }
+
+      return { id: pRef.id, name: 'Unknown Practice' } as PracticeSummary;
     });
+
     const results = await Promise.all(lookups);
+
     // Sort alphabetically by practice name for the dropdown.
-    // Mutating 'results' is safe here as it is a fresh local array.
     results.sort((a, b) => a.name.localeCompare(b.name));
     return results;
   } catch {
@@ -34,9 +53,9 @@ const fetchPracticeDetails = async (bridgeDocs) => {
 
 /**
  * Updates the user's 'current_practice' field in Firestore.
- * @param {string} practiceId - The target practice ID.
+ * @param practiceId - The target practice ID.
  */
-const performSwitch = async (practiceId) => {
+const performSwitch = async (practiceId: string): Promise<void> => {
   // Validate the user and practice ID before attempting the write.
   if (!authUser.value?.uid || !practiceId) return;
   try {
@@ -50,25 +69,22 @@ const performSwitch = async (practiceId) => {
 
 /**
  * Composable for fetching user's practices and handling context switching.
- * @returns {{
- * practices: import('vue').Ref<any[]>,
- * handleSwitch: (practiceId: string) => Promise<void>,
- * isLoading: import('vue').Ref<boolean>
- * }} The practices list and switch handler.
  */
-export function useUserPractices() {
-  /** @type {import('vue').Ref<any[]>} */
-  const practices = ref([]);
+export function useUserPractices(): {
+  practices: Ref<PracticeSummary[]>;
+  handleSwitch: (practiceId: string) => Promise<void>;
+  isLoading: Ref<boolean>;
+} {
+  const practices = ref<PracticeSummary[]>([]);
   const isLoading = ref(true);
 
-  /** @type {import('firebase/firestore').Unsubscribe | null} */
-  let bridgeListener = null;
+  let bridgeListener: Unsubscribe | null = null;
 
   /**
    * Sets up the listener for the user's memberships.
-   * @param {string} uid - The user ID to query.
+   * @param uid - The user ID to query.
    */
-  const init = (uid) => {
+  const init = (uid: string): void => {
     if (bridgeListener) bridgeListener();
     // Query the bridge collection to find all practices the user is a member of.
     const q = query(collection(db, 'practice_users'), where('user', '==', doc(db, 'users', uid)));

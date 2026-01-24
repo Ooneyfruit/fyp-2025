@@ -1,37 +1,33 @@
-<script setup>
+<script setup lang="ts">
 /**
  * UserListCard.
  * Encapsulates the card view for a single user using component injection for headers.
  */
 import BaseCard from '@/components/shared/BaseCard.vue';
+import { type FirestoreDate, type PracticeUser } from '@/features/users/userTypes';
 
 import UserListCardHeader from './UserListCardHeader.vue';
 import UserStatusPills from './UserStatusPills.vue';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
-// Prop definition without variable assignment to satisfy 'no-unused-vars' rule.
-defineProps({
-  item: {
-    type: Object,
-    required: true
-  }
-});
+defineProps<{
+  item: PracticeUser;
+}>();
 
-defineEmits(['edit']);
+defineEmits<(e: 'edit', item: PracticeUser) => void>();
 
 /**
  * Logic: supports Firestore timestamps, objects with second offsets, or raw millisecond numbers.
- * @param {any} ts - The raw timestamp data to format.
- * @returns {string|null} Formatted date (e.g. "01 Jan 2023") or null if invalid.
+ * @param ts - The raw timestamp data (Timestamp, seconds object, or number).
+ * @returns Formatted date string (e.g. "01 Jan 2023") or null if invalid.
  */
-const formatDate = (ts) => {
+const formatDate = (ts: FirestoreDate): string | null => {
   if (!ts) {
     return null;
   }
 
-  /** @type {Date} */
-  let dateObj;
+  let dateObj: Date;
 
   // Handle Firestore Timestamp objects with native toDate methods.
   if (typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function') {
@@ -52,31 +48,29 @@ const formatDate = (ts) => {
   <BaseCard
     :header-component="UserListCardHeader"
     :header-listeners="{ edit: () => $emit('edit', item) }"
-    :header-props="{ profile: /** @type {any} */ (item).profile }"
+    :header-props="{ profile: item }"
   >
     <div class="detail-row">
       <span class="label">Role</span>
-      <UserStatusPills :member="/** @type {any} */ (item)" type="role" />
+      <UserStatusPills :member="item" type="role" />
     </div>
 
     <div class="detail-row">
       <span class="label">Status</span>
-      <UserStatusPills :member="/** @type {any} */ (item)" type="admin" />
+      <UserStatusPills :member="item" type="admin" />
     </div>
 
     <div class="detail-row">
       <span class="label">Joined</span>
       <span class="date-text">
-        {{ formatDate(/** @type {any} */ (item).start_date) }}
+        {{ formatDate(item.start_date) }}
       </span>
     </div>
 
     <div class="detail-row">
       <span class="label">Ends</span>
       <span class="date-text">
-        {{
-          /** @type {any} */ (item).end_date ? formatDate(/** @type {any} */ (item).end_date) : '—'
-        }}
+        {{ item.end_date ? formatDate(item.end_date) : '—' }}
       </span>
     </div>
   </BaseCard>

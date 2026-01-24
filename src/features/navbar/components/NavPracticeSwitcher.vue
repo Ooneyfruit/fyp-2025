@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Atomic practice context switcher.
  * Utilizes the id prefix method to reliably capture all user clinic associations.
@@ -7,8 +7,12 @@ import BaseSelect from '@/components/shared/BaseSelect.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useUserPractices } from '@/features/navbar/composables/useUserPractices';
 
-defineProps({
-  label: { type: String, default: '' }
+interface Props {
+  label?: string;
+}
+
+withDefaults(defineProps<Props>(), {
+  label: ''
 });
 
 const { user } = useAuth();
@@ -22,7 +26,7 @@ const { practices, handleSwitch } = useUserPractices();
       :label="label"
       :model-value="user?.practiceRef?.id"
       name="practice_id"
-      @update:model-value="handleSwitch"
+      @update:model-value="(val: unknown) => handleSwitch(String(val))"
     >
       <option v-for="p in practices" :key="p.id" :value="p.id">
         {{ p.name }}

@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Application navigation shell.
  * Aggregates brand identity and session-specific navigation components.
  */
-import { provide,ref } from 'vue';
+import { provide, type Ref, ref } from 'vue';
 
 import IconLogoInvert from '@/components/icons/IconLogoInvert.vue';
 import IconMenu from '@/components/icons/IconMenu.vue';
@@ -15,11 +15,22 @@ import UserModal from '@/features/users/components/UserModal.vue';
 import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
 import NavUserMenu from './NavUserMenu.vue';
 
-defineEmits(['toggleSidebar']);
+// --- Type Definitions ---
+interface UseLayoutReturn {
+  isMobile: Ref<boolean>;
+}
+
+// Define the shape of the UserModal instance we are referencing
+interface UserModalInstance {
+  open: (userData: unknown) => void;
+}
+
+// Fix: Use function type syntax for defineEmits to satisfy SonarLint S6598
+defineEmits<(e: 'toggleSidebar') => void>();
 
 const { user } = useAuth();
-const { isMobile } = useLayout();
-const userModalRef = ref(null);
+const { isMobile } = useLayout() as UseLayoutReturn;
+const userModalRef = ref<UserModalInstance | null>(null);
 
 /**
  * Exposes the user modal reference to children.

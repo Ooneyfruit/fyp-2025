@@ -1,19 +1,18 @@
-<script setup>
+<script setup lang="ts">
 /**
  * UserListCardHeader.
  * Specialized header for user cards, handling identity display and action triggers.
  */
+import { type UserProfile } from '@/features/users/userTypes';
+
 import UserActionButtons from './UserActionButtons.vue';
 import UserIdentity from './UserIdentity.vue';
 
-defineProps({
-  profile: {
-    type: Object,
-    required: true
-  }
-});
+defineProps<{
+  profile: UserProfile;
+}>();
 
-defineEmits(['edit']);
+defineEmits<(e: 'edit') => void>();
 </script>
 
 <template>

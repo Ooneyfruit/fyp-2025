@@ -1,12 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import IconIdenticon from '@/components/icons/IconIdenticon.vue';
+import { type UserProfile } from '@/features/users/userTypes';
 
 /**
  * Displays user identity with dynamic support for synchronized Google icons.
  */
-defineProps({
-  profile: { type: Object, default: () => ({}) }
-});
+withDefaults(
+  defineProps<{
+    profile?: UserProfile | Partial<UserProfile>;
+  }>(),
+  {
+    profile: () => ({})
+  }
+);
 </script>
 
 <template>
@@ -21,7 +27,7 @@ defineProps({
       />
 
       <div v-else class="avatar identicon">
-        <IconIdenticon :seed="profile?.id || 'default'" />
+        <IconIdenticon :seed="profile?.uid || profile?.id || 'default'" />
       </div>
     </div>
 

@@ -1,11 +1,10 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Main view for the Rota Management feature.
  * Orchestrates the grid, navigation header, and shift modification modals.
- * Refactored to include explicit type annotations and resolve strict TypeScript errors.
  */
 import { doc } from 'firebase/firestore';
-import { computed, ref, watch } from 'vue';
+import { computed, type Ref, ref, watch } from 'vue';
 
 // Components and composables.
 import AppPageContainer from '@/components/layout/AppPageContainer.vue';
@@ -18,104 +17,79 @@ import RotaShiftModal from '@/features/rota/components/RotaShiftModal.vue';
 import { useRotaData } from '@/features/rota/composables/useRotaData';
 import { useRotaDates } from '@/features/rota/composables/useRotaDates';
 import { createShift, deleteShift } from '@/features/rota/rotaApi';
+import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
 import { db } from '@/services/firebase';
 
-// --- Type Definitions ---
+// --- Type Definitions (Local Interfaces for JS Composables) ---
 
-/**
- * @typedef {object} RotaRole
- * @property {string} id - The unique identifier for the role.
- * @property {string} name - The display name of the role.
- */
+interface RotaDay {
+  iso: string;
+  label: string;
+}
 
-/**
- * @typedef {object} RotaSurgery
- * @property {string} id - The unique identifier for the surgery.
- * @property {string} name - The display name of the surgery.
- */
+interface BreakpointsInterface {
+  isMobile: Ref<boolean>;
+}
 
-/**
- * @typedef {object} RotaDay
- * @property {string} iso - The ISO date string (YYYY-MM-DD).
- * @property {string} label - The formatted date label.
- */
+interface ToastInterface {
+  success: (message: string) => void;
+  error: (message: string) => void;
+}
 
-/**
- * @typedef {object} RotaRowItem
- * @property {RotaRole} role - The role associated with this grid row.
- * @property {RotaSurgery} surgery - The surgery associated with this grid row.
- */
+interface RotaDatesInterface {
+  visibleDays: Ref<RotaDay[]>;
+  monthLabel: Ref<string>;
+  changePeriod: (direction: number) => void;
+  changeDay: (direction: number) => void;
+  goToToday: () => void;
+  jumpMonth: (months: number) => void;
+}
 
-/**
- * @typedef {object} SelectedCell
- * @property {RotaRole} role - The role for the selected cell.
- * @property {RotaSurgery} surgery - The surgery for the selected cell.
- * @property {RotaDay} date - The date of the selected cell.
- * @property {Array<any>} shifts - The existing shifts in this cell.
- */
+interface RotaRow {
+  role: PracticeRole;
+  surgery: PracticeSurgery;
+}
 
-/**
- * @typedef {object} User
- * @property {object} [practiceRef] - Firestore reference to the practice.
- * @property {string} practiceRef.id - The ID of the practice.
- */
+interface RotaDataInterface {
+  flattenedRows: Ref<RotaRow[]>;
+  loadData: () => Promise<void>;
+  getShiftsForSlot: (roleId: string, surgeryId: string, date: string) => Shift[];
+}
 
-/**
- * @typedef {object} AuthInterface
- * @property {import('vue').Ref<User>} user - The current authenticated user.
- */
+interface SelectedCell {
+  role: PracticeRole;
+  surgery: PracticeSurgery;
+  date: RotaDay;
+  shifts: Shift[];
+}
 
-/**
- * @typedef {object} BreakpointsInterface
- * @property {import('vue').Ref<boolean>} isMobile - Reactive reference for mobile state.
- */
+interface SlotClickPayload {
+  rowItem: RotaRow;
+  day: RotaDay;
+}
 
-/**
- * @typedef {object} ToastInterface
- * @property {(message: string) => void} success - Displays a success toast.
- * @property {(message: string) => void} error - Displays an error toast.
- */
-
-/**
- * @typedef {object} RotaDatesInterface
- * @property {import('vue').Ref<Array<RotaDay>>} visibleDays - Days currently displayed.
- * @property {import('vue').Ref<string>} monthLabel - Label for the current month.
- * @property {(direction: number) => void} changePeriod - Toggles week/month views.
- * @property {(direction: number) => void} changeDay - Navigates to a specific day.
- * @property {() => void} goToToday - Jumps to the current date.
- * @property {(months: number) => void} jumpMonth - Navigates between months.
- */
-
-/**
- * @typedef {object} RotaDataInterface
- * @property {import('vue').Ref<Array<any>>} flattenedRows - Processed grid rows.
- * @property {() => Promise<void>} loadData - Triggers a data fetch.
- * @property {(roleId: string, surgeryId: string, date: string) => Array<any>} getShiftsForSlot - Gets shifts.
- */
+interface SaveShiftsPayload {
+  additions: Array<{ userRef: string; name: string }>;
+  removals: string[];
+}
 
 // --- Constants ---
 const SIDEBAR_OFFSET_PX = 80;
 
 // --- Logic & State ---
 
-// Explicit casting ensures the compiler recognises destructured properties from JS modules.
-const { user } = /** @type {AuthInterface} */ (useAuth());
+const { user } = useAuth();
 
-const { isMobile } = /** @type {BreakpointsInterface} */ (
-  useBreakpoints(ref(document.body), SIDEBAR_OFFSET_PX)
-);
-
-const toast = /** @type {ToastInterface} */ (useToast());
+const { isMobile } = useBreakpoints(ref(document.body), SIDEBAR_OFFSET_PX) as BreakpointsInterface;
+const toast = useToast() as ToastInterface;
 
 // 1. Date Management.
-// Logic: pass the reactive isMobile ref directly to ensure navigation consistency.
-const { visibleDays, monthLabel, changePeriod, changeDay, goToToday, jumpMonth } =
-  /** @type {RotaDatesInterface} */ (useRotaDates({ isMobile }));
+const { visibleDays, monthLabel, changePeriod, changeDay, goToToday, jumpMonth } = useRotaDates({
+  isMobile
+}) as RotaDatesInterface;
 
 // 2. Data Management.
-const { flattenedRows, loadData, getShiftsForSlot } = /** @type {RotaDataInterface} */ (
-  useRotaData(user)
-);
+const { flattenedRows, loadData, getShiftsForSlot } = useRotaData(user) as RotaDataInterface;
 
 // 3. Computed Props for UI.
 const dateRangeLabel = computed(() => {
@@ -123,29 +97,26 @@ const dateRangeLabel = computed(() => {
     return '';
   }
   const start = visibleDays.value[0].label;
+  // Fix: Replaced .at(-1) with standard indexing to support older JS targets/libs.
   const end = visibleDays.value.at(-1)?.label || '';
   return `${start} - ${end}`;
 });
 
 const isCurrentWeek = computed(() => {
   const today = new Date().toISOString().split('T')[0];
-  // Logic: annotate parameter d to prevent implicit any errors.
-  return visibleDays.value.some((/** @type {RotaDay} */ d) => d.iso === today);
+  return visibleDays.value.some((d) => d.iso === today);
 });
 
 // 4. Modal / Interaction Logic.
 const showModal = ref(false);
-
-// Logic: apply explicit type cast to the ref to avoid 'never' type inference.
-const selectedCell = ref(/** @type {SelectedCell | null} */ (null));
+const selectedCell = ref<SelectedCell | null>(null);
 
 /**
  * Handles clicks on a specific grid slot to open the management modal.
- * @param {object} payload - The event payload.
- * @param {RotaRowItem} payload.rowItem - The row data (role/surgery).
- * @param {RotaDay} payload.day - The date object for the clicked column.
+ * @param payload - The event payload containing the row item and clicked day.
  */
-const onSlotClick = ({ rowItem, day }) => {
+const onSlotClick = (payload: SlotClickPayload) => {
+  const { rowItem, day } = payload;
   selectedCell.value = {
     role: rowItem.role,
     surgery: rowItem.surgery,
@@ -165,16 +136,14 @@ const closeShiftModal = () => {
 
 /**
  * Persists shift additions and removals to Firestore.
- * @param {object} payload - The changes payload.
- * @param {Array<{userRef: string, name: string}>} payload.additions - New shifts.
- * @param {Array<string>} payload.removals - IDs of shifts to delete.
+ * @param payload - The changes payload containing additions and removal IDs.
  */
-const onSaveShifts = async ({ additions, removals }) => {
-  // Logic: check for selectedCell value to satisfy TypeScript null safety.
+const onSaveShifts = async (payload: SaveShiftsPayload) => {
   if (!selectedCell.value) {
     return;
   }
 
+  const { additions, removals } = payload;
   const currentCell = selectedCell.value;
 
   try {
@@ -185,11 +154,11 @@ const onSaveShifts = async ({ additions, removals }) => {
     }
 
     // Process all removals in parallel to improve performance.
-    await Promise.all(removals.map((/** @type {string} */ id) => deleteShift(id)));
+    await Promise.all(removals.map((id) => deleteShift(id)));
 
     // Generate specific Firestore references for each new shift entry.
     await Promise.all(
-      additions.map((/** @type {{userRef: string, name: string}} */ member) => {
+      additions.map((member) => {
         const roleRef = doc(db, `practices/${practiceId}/roles`, currentCell.role.id);
         const surgeryRef = doc(db, `practices/${practiceId}/surgeries`, currentCell.surgery.id);
 
@@ -206,7 +175,7 @@ const onSaveShifts = async ({ additions, removals }) => {
     );
 
     closeShiftModal();
-    loadData();
+    await loadData();
     toast.success('Rota updated successfully.');
   } catch {
     toast.error('Failed to save changes.');
@@ -216,7 +185,7 @@ const onSaveShifts = async ({ additions, removals }) => {
 // Initialises the data load whenever the practice context changes.
 watch(
   () => user.value?.practiceRef?.id,
-  (/** @type {string | undefined} */ id) => {
+  (id) => {
     if (id) {
       loadData();
     }

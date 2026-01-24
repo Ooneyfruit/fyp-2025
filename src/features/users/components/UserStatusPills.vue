@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Unified status indicator for user attributes.
  * Maps member data and type to specific BasePill variants.
@@ -6,19 +6,42 @@
 import { computed } from 'vue';
 
 import BasePill from '@/components/shared/BasePill.vue';
+import { type PracticeUser } from '@/features/users/userTypes';
 
-const props = defineProps({
-  member: { type: Object, required: true },
-  // The attribute type determines which data field to visualise: 'role', 'admin', or 'contract'.
-  type: { type: String, required: true }
-});
+const props = defineProps<{
+  member: PracticeUser;
+  type: 'role' | 'admin' | 'contract';
+}>();
+
+interface PillConfig {
+  label: string;
+  variant: 'primary' | 'admin' | 'muted' | 'success' | 'warning' | 'danger';
+}
+
+/**
+ * Logic: Helper to determine contract status without nested ternaries.
+ * Satisfies SonarLint S3358.
+ * @param m - The practice user member.
+ * @returns The configuration object for the pill (label and variant).
+ */
+const getContractConfig = (m: PracticeUser): PillConfig => {
+  if (m.status === 'invited') {
+    return { label: 'Invited', variant: 'warning' };
+  }
+  // Default to true if undefined, as per legacy logic
+  const isEmployee = m.is_employee ?? true;
+
+  if (isEmployee) {
+    return { label: 'Employee', variant: 'success' };
+  }
+
+  return { label: 'Contractor', variant: 'warning' };
+};
 
 /**
  * Configuration for different status types and their visual mapping.
- * Uses an index signature to satisfy linting requirements for object mapping.
- * @type { {[key: string]: (m: any) => {label: string, variant: string}} }
  */
-const typeMappers = {
+const typeMappers: Record<string, (m: PracticeUser) => PillConfig> = {
   role: (m) => ({
     label: m.role || 'No Role',
     variant: 'primary'
@@ -27,23 +50,16 @@ const typeMappers = {
     label: m.is_administrator ? 'Admin' : 'User',
     variant: m.is_administrator ? 'admin' : 'muted'
   }),
-  contract: (m) => ({
-    label: m.is_employee ? 'Employee' : 'Contractor',
-    variant: m.is_employee ? 'success' : 'warning'
-  })
+  contract: getContractConfig
 };
 
-const pillConfig = computed(() => {
-  // Retrieve the mapper function based on the provided type prop.
-  // This avoids switch-statement complexity and allows for easy extension.
+const pillConfig = computed<PillConfig>(() => {
   const mapper = typeMappers[props.type];
 
-  // Provide a fallback configuration if the provided type is not supported.
   if (!mapper) {
     return { label: 'Unknown', variant: 'muted' };
   }
 
-  // Execute the mapper to retrieve label and variant settings based on member data.
   return mapper(props.member);
 });
 </script>
