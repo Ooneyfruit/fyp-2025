@@ -4,6 +4,7 @@
  */
 
 // Primary user interface components for identity and management.
+export { default as UserIdentity } from './components/UserIdentity.vue';
 export { default as UserModal } from './components/UserModal.vue';
 
 // Data adapters and layout helpers for displaying user collections.

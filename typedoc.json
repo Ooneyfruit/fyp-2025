@@ -9,7 +9,7 @@
     "invalidLink": true,
     "notDocumented": false
   },
-  "tsconfig": "./jsconfig.json",
+  "tsconfig": "./tsconfig.app.json",
   "exclude": ["**/*.test.js", "**/*.spec.js", "node_modules/**"],
   "name": "RotaDent Documentation",
   "includeVersion": true

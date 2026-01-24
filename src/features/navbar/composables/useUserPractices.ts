@@ -11,8 +11,9 @@ import {
   type QueryDocumentSnapshot,
   type Unsubscribe,
   updateDoc,
-  where} from 'firebase/firestore';
-import { onUnmounted, type Ref,ref, watch } from 'vue';
+  where
+} from 'firebase/firestore';
+import { onUnmounted, type Ref, ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
 import { type PracticeSummary } from '@/features/navbar/navTypes';
@@ -33,7 +34,7 @@ const fetchPracticeDetails = async (
 
       if (pSnap.exists()) {
         const data = pSnap.data();
-        // Fix: Explicitly cast data to an object type to satisfy TS spread constraints
+        // Explicitly cast data to an object type to satisfy TS spread constraints.
         return { id: pRef.id, ...(data as Record<string, unknown>) } as PracticeSummary;
       }
 
@@ -53,6 +54,7 @@ const fetchPracticeDetails = async (
 /**
  * Updates the user's 'current_practice' field in Firestore.
  * @param practiceId - The target practice ID.
+ * @returns A promise that resolves when the update is complete.
  */
 const performSwitch = async (practiceId: string): Promise<void> => {
   // Validate the user and practice ID before attempting the write.
@@ -68,6 +70,7 @@ const performSwitch = async (practiceId: string): Promise<void> => {
 
 /**
  * Composable for fetching user's practices and handling context switching.
+ * @returns An object containing the reactive practices list, switch handler, and loading state.
  */
 export function useUserPractices(): {
   practices: Ref<PracticeSummary[]>;

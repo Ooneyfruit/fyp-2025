@@ -1,18 +1,19 @@
 <script setup lang="ts">
-/**
- * Rota assigned staff component.
- * Primary responsibility: displays a list of staff members assigned to a specific
- * surgery or role slot, allowing for removal and highlighting role mismatches.
- * Refactored to satisfy strict accessibility, contrast, and TypeScript standards.
- */
+import { computed } from 'vue';
+
 import IconClose from '@/components/icons/IconClose.vue';
-import type { Shift } from '@/features/rota/rotaTypes';
+
+// Logic: defines the shape of the shift object expected by the UI.
+// Renamed to PascalCase to satisfy sonarjs/class-name.
+interface UiShift {
+  id: string;
+  user_name?: string;
+  roleName?: string;
+}
 
 const props = withDefaults(
   defineProps<{
-    /** The collection of shifts assigned to the current slot. */
-    staff?: Shift[];
-    /** The expected role name for this slot to check for mismatches. */
+    staff: UiShift[];
     targetRoleName?: string;
   }>(),
   {
@@ -21,34 +22,30 @@ const props = withDefaults(
   }
 );
 
-/**
- * Emits a removal event when a staff member is deselected.
- */
-const emit = defineEmits<{
-  remove: [shift: Shift];
-}>();
+// Logic: Refactored to function type to satisfy typescript:S6598.
+const emit = defineEmits<(e: 'remove', shift: UiShift) => void>();
+
+const staffList = computed<UiShift[]>(() => props.staff);
 
 /**
  * Checks if the shift role differs from the target role.
  * @param shift - The shift object.
- * @returns True if the assigned role is an exception to the target.
+ * @returns True if the roles do not match.
  */
-const isException = (shift: Shift): boolean => {
-  // If the role is unknown, do not flag as an exception to avoid visual noise.
-  if (!shift.role_name) {
-    return false;
-  }
-  return shift.role_name !== props.targetRoleName;
+const isException = (shift: UiShift): boolean => {
+  // Logic: if we don't know the role (e.g. data load issue), don't flag as exception.
+  if (!shift.roleName) return false;
+  return shift.roleName !== props.targetRoleName;
 };
 </script>
 
 <template>
   <div class="assigned-section">
-    <h4 class="section-heading">Assigned staff</h4>
+    <h4 class="section-heading">Assigned Staff</h4>
 
-    <div v-if="staff.length > 0" class="staff-grid">
+    <div v-if="staffList.length > 0" class="staff-grid">
       <button
-        v-for="shift in staff"
+        v-for="shift in staffList"
         :key="shift.id"
         class="staff-card assigned"
         title="Click to remove from shift"
@@ -59,7 +56,7 @@ const isException = (shift: Shift): boolean => {
           <span class="staff-name">{{ shift.user_name }}</span>
 
           <span v-if="isException(shift)" class="exception-role">
-            {{ shift.role_name || 'Unknown role' }}
+            {{ shift.roleName || 'Unknown Role' }}
           </span>
         </div>
 
@@ -68,7 +65,6 @@ const isException = (shift: Shift): boolean => {
         </div>
       </button>
     </div>
-
     <p v-else class="empty-text">No staff currently assigned.</p>
   </div>
 </template>
@@ -92,19 +88,19 @@ const isException = (shift: Shift): boolean => {
 .staff-card {
   align-items: center;
 
-  /* Default state: info style. */
+  /* Default State: Info Style. */
   background: #f0f9ff;
   border: 1px solid #bae6fd;
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
-  font-family: inherit; /* Button reset. */
+  font-family: inherit; /* Button Reset. */
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  text-align: left; /* Button reset. */
+  text-align: left; /* Button Reset. */
   transition: all 0.2s ease;
   user-select: none;
-  width: 100%; /* Button reset. */
+  width: 100%; /* Button Reset. */
 }
 
 .staff-info {
@@ -113,8 +109,7 @@ const isException = (shift: Shift): boolean => {
   overflow: hidden;
 }
 
-/* Base definitions must come before hover overrides. */
-
+/* Base definitions must come BEFORE hover overrides. */
 .staff-name {
   color: var(--text-main);
   font-size: 0.9rem;
@@ -152,10 +147,9 @@ const isException = (shift: Shift): boolean => {
   padding: 0.5rem 0;
 }
 
-/* Hover state: removal style. */
+/* Hover State: "Removal" Style. */
 
 /* Placed at end to satisfy no-descending-specificity. */
-
 .staff-card:hover {
   background-color: #fee2e2;
   border-color: #fca5a5;

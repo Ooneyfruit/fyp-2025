@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import IconChevronDoubleLeft from '@/components/icons/IconChevronDoubleLeft.vue';
 import IconChevronDoubleRight from '@/components/icons/IconChevronDoubleRight.vue';
 import IconChevronLeft from '@/components/icons/IconChevronLeft.vue';
@@ -6,13 +6,17 @@ import IconChevronRight from '@/components/icons/IconChevronRight.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseSelectorBar from '@/components/shared/BaseSelectorBar.vue';
 
-defineProps({
-  dateRangeLabel: { type: String, required: true },
-  monthLabel: { type: String, required: true },
-  showTodayButton: { type: Boolean, default: false }
-});
+defineProps<{
+  dateRangeLabel: string;
+  monthLabel: string;
+  showTodayButton: boolean;
+}>();
 
-defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
+const emit = defineEmits<{
+  (e: 'navigate-month', direction: number): void;
+  (e: 'navigate-period', direction: number): void;
+  (e: 'jump-today'): void;
+}>();
 </script>
 
 <template>
@@ -21,7 +25,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
       :icon="IconChevronDoubleLeft"
       title="Back 1 Month"
       variant="ghost"
-      @click="$emit('navigate-month', -1)"
+      @click="emit('navigate-month', -1)"
     >
       Month
     </BaseButton>
@@ -30,7 +34,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
       :icon="IconChevronLeft"
       title="Back 1 Week"
       variant="outline"
-      @click="$emit('navigate-period', -1)"
+      @click="emit('navigate-period', -1)"
     >
       Prev Week
     </BaseButton>
@@ -39,7 +43,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
       <span class="month-label">{{ monthLabel }}</span>
       <span class="range-label">{{ dateRangeLabel }}</span>
 
-      <button v-if="showTodayButton" class="today-link-desktop" @click="$emit('jump-today')">
+      <button v-if="showTodayButton" class="today-link-desktop" @click="emit('jump-today')">
         Back to Today
       </button>
     </div>
@@ -49,7 +53,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
       icon-position="right"
       title="Forward 1 Week"
       variant="outline"
-      @click="$emit('navigate-period', 1)"
+      @click="emit('navigate-period', 1)"
     >
       Next Week
     </BaseButton>
@@ -59,7 +63,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
       icon-position="right"
       title="Forward 1 Month"
       variant="ghost"
-      @click="$emit('navigate-month', 1)"
+      @click="emit('navigate-month', 1)"
     >
       Month
     </BaseButton>
@@ -73,7 +77,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
   flex-direction: column;
   justify-content: center;
 
-  /* Min-width ensures buttons don't move when month name length changes */
+  /* Layout: Min-width ensures buttons don't move when month name length changes. */
   min-width: 16rem;
   text-align: center;
 }
@@ -93,7 +97,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
   margin-top: 2px;
 }
 
-/* In-flow button styling */
+/* Layout: In-flow button styling. */
 .today-link-desktop {
   background: none;
   border: none;
@@ -101,7 +105,7 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 600;
-  height: 1.2rem; /* Fixed height context */
+  height: 1.2rem; /* Layout: Fixed height context. */
   line-height: 1;
   margin-top: 4px;
   padding: 2px 4px;
@@ -110,11 +114,5 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
 
 .today-link-desktop:hover {
   text-decoration: underline;
-}
-
-.today-link-placeholder {
-  height: 1.2rem; /* Keeps vertical rhythm consistent even when button is hidden */
-  margin-top: 4px;
-  width: 1px;
 }
 </style>
