@@ -25,8 +25,8 @@ const db = firestore();
 /**
  * Checks if an object structure matches a Firestore Timestamp.
  * Verifies the presence of internal seconds and nanoseconds properties.
- * @param {any} obj - The object to check.
- * @returns {boolean} True if the object is a timestamp.
+ * @param obj - The object to check.
+ * @returns True if the object is a timestamp.
  */
 function isTimestamp(obj) {
   return (
@@ -40,8 +40,8 @@ function isTimestamp(obj) {
 /**
  * Checks if an object structure matches a Firestore DocumentReference.
  * Evaluates the path structure and segments array.
- * @param {any} obj - The object to check.
- * @returns {boolean} True if the object is a reference.
+ * @param obj - The object to check.
+ * @returns True if the object is a reference.
  */
 function isDocumentReference(obj) {
   return obj && typeof obj === 'object' && obj._path && Array.isArray(obj._path.segments);
@@ -50,9 +50,9 @@ function isDocumentReference(obj) {
 /**
  * Processes a single value to determine if it needs Firestore type revival.
  * Converts serialised JSON structures back into native Firestore object instances.
- * @param {string} key - The current key being processed.
- * @param {any} value - The value to check and potentially convert.
- * @returns {any} The original value, a revived Firestore object, or a recursed object.
+ * @param key - The current key being processed.
+ * @param value - The value to check and potentially convert.
+ * @returns The original value, a revived Firestore object, or a recursed object.
  */
 function processValue(key, value) {
   // Skip nulls or non-objects immediately.
@@ -79,8 +79,8 @@ function processValue(key, value) {
 /**
  * Traverses a data object to convert JSON representations back into Firestore types.
  * Recursively handles nested objects but skips strict subcollection structures.
- * @param {Record<string, any>} data - The raw JSON data object.
- * @returns {Record<string, any>} The data object with Firestore types restored.
+ * @param data - The raw JSON data object.
+ * @returns The data object with Firestore types restored.
  */
 function reviveFirestoreTypes(data) {
   if (!data || typeof data !== 'object') {
@@ -96,9 +96,9 @@ function reviveFirestoreTypes(data) {
 
 /**
  * Writes a single document to Firestore and logs the action to stdout.
- * @param {string} docPath - The full document path.
- * @param {Record<string, any>} data - The document data.
- * @returns {Promise<void>} Resolves when the write is complete.
+ * @param docPath - The full document path.
+ * @param data - The document data.
+ * @returns Resolves when the write is complete.
  */
 async function setDocument(docPath, data) {
   try {
@@ -112,10 +112,10 @@ async function setDocument(docPath, data) {
 
 /**
  * Processes a subcollection and its documents recursively.
- * @param {string} parentPath - The path of the parent document.
- * @param {string} subcollectionId - The ID of the subcollection.
- * @param {Record<string, any>} subcollectionData - Map of document IDs to data.
- * @returns {Promise<void>} Resolves when subcollection is processed.
+ * @param parentPath - The path of the parent document.
+ * @param subcollectionId - The ID of the subcollection.
+ * @param subcollectionData - Map of document IDs to data.
+ * @returns Resolves when subcollection is processed.
  */
 async function processSubcollection(parentPath, subcollectionId, subcollectionData) {
   process.stdout.write(`    Processing subcollection: ${subcollectionId}\n`);
@@ -129,10 +129,10 @@ async function processSubcollection(parentPath, subcollectionId, subcollectionDa
 
 /**
  * Processes a single document, including its fields and subcollections.
- * @param {string} collectionId - The parent collection ID.
- * @param {string} docId - The document ID.
- * @param {Record<string, any>} rawData - The raw JSON data for the document.
- * @returns {Promise<void>} Resolves when document and children are processed.
+ * @param collectionId - The parent collection ID.
+ * @param docId - The document ID.
+ * @param rawData - The raw JSON data for the document.
+ * @returns Resolves when document and children are processed.
  */
 async function processDocument(collectionId, docId, rawData) {
   const docData = { ...rawData };
@@ -155,9 +155,9 @@ async function processDocument(collectionId, docId, rawData) {
 
 /**
  * Iterates through all documents in a collection.
- * @param {string} collectionId - The collection ID.
- * @param {Record<string, any>} collectionData - Map of document IDs to data.
- * @returns {Promise<void>} Resolves when the collection is processed.
+ * @param collectionId - The collection ID.
+ * @param collectionData - Map of document IDs to data.
+ * @returns Resolves when the collection is processed.
  */
 async function processCollection(collectionId, collectionData) {
   process.stdout.write(`Processing collection: ${collectionId}\n`);
@@ -170,7 +170,7 @@ async function processCollection(collectionId, collectionData) {
 /**
  * Reads the export file and writes collections and subcollections to Firestore.
  * This is an async operation that manages the primary execution loop.
- * @returns {Promise<void>} Resolves when the entire import is complete.
+ * @returns Resolves when the entire import is complete.
  */
 async function importData() {
   // Construct the absolute path to the data file ensuring cross-platform compatibility.

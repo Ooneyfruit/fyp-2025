@@ -39,7 +39,7 @@ const props = defineProps({
 const emit = defineEmits(['request-close', 'closed']);
 
 // Logic: explicit type casting resolves 'Property does not exist on type never' errors.
-const modalRef = ref(/** @type {HTMLDialogElement | null} */ (null));
+const modalRef = ref((null));
 
 /**
  * Synchronises the native dialogue state with the reactive 'show' prop.

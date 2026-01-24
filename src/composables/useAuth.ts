@@ -14,13 +14,15 @@ import {
 import {
   doc,
   type DocumentReference,
+  type DocumentSnapshot,
   getDoc,
   onSnapshot,
   type Unsubscribe,
-  updateDoc} from 'firebase/firestore';
-import { type Ref,ref } from 'vue';
+  updateDoc
+} from 'firebase/firestore';
+import { type Ref, ref } from 'vue';
 
-import { type UserProfile,UserProfileSchema } from '@/features/users/userTypes';
+import { type UserProfile, UserProfileSchema } from '@/features/users/userTypes';
 import { auth, db } from '@/services/firebase';
 import { type Nullable } from '@/types/generic';
 
@@ -79,6 +81,96 @@ const syncProfileImage = async (
 };
 
 /**
+ * Fetches practice and membership details for the user.
+ * @param uid - The user's unique identifier.
+ * @param practiceRef - The reference to the practice document.
+ * @returns An object containing membership data and the practice name.
+ */
+const fetchPracticeDetails = async (uid: string, practiceRef: DocumentReference) => {
+  const membershipId = `${uid}_${practiceRef.id}`;
+
+  // Concurrent fetch for membership roles and practice details.
+  const [mSnap, pSnap] = await Promise.all([
+    getDoc(doc(db, 'practice_users', membershipId)),
+    getDoc(practiceRef)
+  ]);
+
+  const mData = mSnap.exists() ? mSnap.data() : { is_administrator: false, role: 'Guest' };
+  const practiceName = pSnap.exists() ? pSnap.data().name : 'Unknown Practice';
+
+  return { mData, practiceName };
+};
+
+/**
+ * Handles the successful retrieval of a user snapshot.
+ * Logic: validates the user profile and merges it with practice context data.
+ * @param userSnap - The Firestore document snapshot.
+ * @param firebaseUser - The authenticated Firebase user.
+ */
+const handleUserSnapshot = async (
+  userSnap: DocumentSnapshot,
+  firebaseUser: FirebaseUser
+): Promise<void> => {
+  if (!userSnap.exists()) {
+    user.value = null;
+    isAuthReady.value = true;
+    return;
+  }
+
+  const userData = userSnap.data();
+
+  // Update the profile image if the Google provider version has changed.
+  await syncProfileImage(firebaseUser.uid, firebaseUser.photoURL, userData.profile_image);
+
+  const practiceRef = userData.current_practice as DocumentReference | undefined;
+
+  try {
+    if (!practiceRef) {
+      throw new Error('No practice context assigned.');
+    }
+
+    const { mData, practiceName } = await fetchPracticeDetails(firebaseUser.uid, practiceRef);
+
+    // Merge and Validate using Zod.
+    const mergedProfile = {
+      uid: firebaseUser.uid,
+      ...userData,
+      ...mData,
+      practiceRef: practiceRef,
+      activePracticeName: practiceName
+    };
+
+    const parsedResult = UserProfileSchema.safeParse(mergedProfile);
+
+    if (parsedResult.success) {
+      user.value = parsedResult.data;
+    } else {
+      // Fallback: cast to UserProfile to prevent app lockout.
+      user.value = mergedProfile as UserProfile;
+    }
+  } catch {
+    // Fallback to basic profile if membership or practice data is inaccessible.
+    user.value = {
+      uid: firebaseUser.uid,
+      ...userData,
+      is_administrator: false,
+      activePracticeName: 'Error'
+    } as UserProfile;
+  } finally {
+    isAuthReady.value = true;
+  }
+};
+
+/**
+ * Handles errors occurring during the snapshot listener.
+ * Logic: ensures the app does not hang by setting the auth ready state.
+ */
+const handleSnapshotError = (): void => {
+  // Handle snapshot errors by marking auth as ready to unblock the UI.
+  isAuthReady.value = true;
+};
+
+/**
  * Starts a real-time listener for the user profile and practice context.
  * Logic: maps Firestore document data and membership state to the global user ref.
  * @param firebaseUser - The authenticated Firebase user.
@@ -93,73 +185,8 @@ const startProfileListener = (firebaseUser: FirebaseUser): void => {
 
   profileListener = onSnapshot(
     userRef,
-    async (userSnap) => {
-      if (!userSnap.exists()) {
-        user.value = null;
-        isAuthReady.value = true;
-        return;
-      }
-
-      const userData = userSnap.data();
-
-      // Update the profile image if the Google provider version has changed.
-      await syncProfileImage(firebaseUser.uid, firebaseUser.photoURL, userData.profile_image);
-
-      const practiceRef = userData.current_practice as DocumentReference | undefined;
-
-      try {
-        if (!practiceRef) {
-          throw new Error('No practice context assigned.');
-        }
-
-        const membershipId = `${firebaseUser.uid}_${practiceRef.id}`;
-
-        // Concurrent fetch for membership roles and practice details.
-        const [mSnap, pSnap] = await Promise.all([
-          getDoc(doc(db, 'practice_users', membershipId)),
-          getDoc(practiceRef)
-        ]);
-
-        const mData = mSnap.exists() ? mSnap.data() : { is_administrator: false, role: 'Guest' };
-        const practiceName = pSnap.exists() ? pSnap.data().name : 'Unknown Practice';
-
-        // Merge and Validate using Zod
-        // We construct the object first, then parse it to ensure it matches the UserProfile type safely.
-        const mergedProfile = {
-          uid: firebaseUser.uid,
-          ...userData,
-          ...mData,
-          practiceRef: practiceRef,
-          activePracticeName: practiceName
-        };
-
-        const parsedResult = UserProfileSchema.safeParse(mergedProfile);
-
-        if (parsedResult.success) {
-          user.value = parsedResult.data;
-        } else {
-          console.warn('User profile validation failed:', parsedResult.error);
-          // Fallback: cast to UserProfile to prevent app lockout, but log warning
-          user.value = mergedProfile as UserProfile;
-        }
-      } catch (error) {
-        console.error('Error constructing user profile:', error);
-        // Fallback to basic profile if membership or practice data is inaccessible.
-        user.value = {
-          uid: firebaseUser.uid,
-          ...userData,
-          is_administrator: false,
-          activePracticeName: 'Error'
-        } as UserProfile;
-      } finally {
-        isAuthReady.value = true;
-      }
-    },
-    (error) => {
-      console.error('Profile snapshot error:', error);
-      // Handle snapshot errors by marking auth as ready to unblock the UI.
-      isAuthReady.value = true;
-    }
+    (snap) => handleUserSnapshot(snap, firebaseUser),
+    handleSnapshotError
   );
 };
 

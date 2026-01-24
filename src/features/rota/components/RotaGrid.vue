@@ -4,16 +4,10 @@
  * The core matrix display for the rota system.
  * Renders rows (Role/Surgery combinations) against columns (Days).
  */
+import { type RotaDay } from '@/features/rota/composables/useRotaDates';
 import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
 
 // --- Type Definitions ---
-
-interface RotaDay {
-  iso: string;
-  label: string;
-  isToday: boolean;
-  isWeekend: boolean;
-}
 
 interface RotaRow {
   id: string;
@@ -34,7 +28,6 @@ defineProps<{
   getShifts: (roleId: string, surgeryId: string, dateIso: string) => Shift[];
 }>();
 
-// Fix: Use arrow function syntax for defineEmits to satisfy SonarLint S6598
 const emit = defineEmits<(e: 'slot-click', payload: SlotClickPayload) => void>();
 
 /**

@@ -1,19 +1,22 @@
 /**
- * @file index.js
+ * @file index.ts
  * @description Central routing configuration and navigation guards.
  * Manages access control, authentication state synchronisation, and view mapping.
  */
 import { watch } from 'vue';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router';
 
 import { isAuthReady, user } from '@/composables/useAuth';
 import { useToast } from '@/composables/useToast';
 
 /**
- * @typedef {object} RouterUser
- * @property {boolean} is_administrator - Flag indicating if the user has admin rights.
- * @property {string} uid - Unique identifier for the authenticated user.
+ * Interface representing the user properties required by the router.
+ * Extracted from original JSDoc typedef.
  */
+interface RouterUser {
+  is_administrator?: boolean;
+  uid: string;
+}
 
 /**
  * Define the application routes.
@@ -48,29 +51,28 @@ const router = createRouter({
 
 /**
  * Navigation guard to enforce authentication and role-based access.
- * @param {import('vue-router').RouteLocationNormalized} to - Target route.
- * @param {import('vue-router').RouteLocationNormalized} from - Source route.
- * @param {Function} next - Navigation control function.
+ * @param to - Target route.
+ * @param from - Source route.
+ * @param next - Navigation control function.
  */
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next) => {
   const { error: notifyError } = useToast();
 
   // Ensure the authentication listener has completed its initial check before proceeding.
   // This prevents race conditions where a user is redirected to login before the session is restored.
   if (!isAuthReady.value) {
-    await /** @type {Promise<void>} */ (
-      new Promise((resolve) => {
-        const unwatch = watch(isAuthReady, (ready) => {
-          if (ready) {
-            unwatch();
-            resolve();
-          }
-        });
-      })
-    );
+    await new Promise<void>((resolve) => {
+      const unwatch = watch(isAuthReady, (ready) => {
+        if (ready) {
+          unwatch();
+          resolve();
+        }
+      });
+    });
   }
 
-  const currentUser = /** @type {RouterUser | null} */ (user.value);
+  // Cast the generic user ref to our specific RouterUser interface.
+  const currentUser = user.value as RouterUser | null;
 
   // Redirect unauthenticated users to the login page unless they are already navigating there.
   if (!currentUser && to.path !== '/login') {

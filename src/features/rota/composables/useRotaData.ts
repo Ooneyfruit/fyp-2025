@@ -2,11 +2,11 @@
  * Orchestrates the loading and filtering of rota-related data for the grid view.
  */
 import { type DocumentReference } from 'firebase/firestore';
-import { computed, ref, type ComputedRef, type Ref } from 'vue';
+import { computed, type ComputedRef, type Ref,ref } from 'vue';
 
-import { type UserProfile } from '@/features/users/userTypes';
 import { fetchPracticeRoles, fetchPracticeSurgeries, fetchShifts } from '@/features/rota/rotaApi';
 import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
+import { type UserProfile } from '@/features/users/userTypes';
 import { type Nullable } from '@/types/generic';
 
 export interface RotaRow {
@@ -23,6 +23,7 @@ interface UseRotaDataReturn {
 
 /**
  * Helper to safely extract the ISO date string from a shift object.
+ * @param shift
  */
 const getShiftDateIso = (shift: Shift): string | null => {
   if (!shift.date) {
@@ -40,6 +41,8 @@ const getShiftDateIso = (shift: Shift): string | null => {
 
 /**
  * Helper to check if a reference matches an ID.
+ * @param refObj
+ * @param targetId
  */
 const isRefMatch = (refObj: DocumentReference | undefined, targetId: string): boolean => {
   return refObj?.id === targetId || refObj?.path?.endsWith(targetId) || false;
@@ -47,6 +50,10 @@ const isRefMatch = (refObj: DocumentReference | undefined, targetId: string): bo
 
 /**
  * Filters the raw shifts array for a specific grid slot.
+ * @param shifts
+ * @param rId
+ * @param sId
+ * @param dIso
  */
 const filterShifts = (shifts: Shift[], rId: string, sId: string, dIso: string): Shift[] => {
   return shifts.filter((s) => {

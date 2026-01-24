@@ -16,12 +16,15 @@
   "eslint.workingDirectories": [{ "mode": "auto" }],
 
   // Ensure these languages are validated and probed.
-  "eslint.validate": ["javascript", "vue", "html"],
-  "eslint.probe": ["javascript", "vue", "html"],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
+  "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
 
   // --- Vue and Volar strictness ---
   // Disable hybrid mode to ensure full TypeScript strictness within templates.
   "vue.server.hybridMode": false,
+
+  // Ensure the status bar shows you if ESLint is running or failed
+  "eslint.alwaysShowStatus": true,
 
   // --- Stylelint strictness ---
   // Tell Stylelint to validate Vue files to enforce CSS order and syntax.

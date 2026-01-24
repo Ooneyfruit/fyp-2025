@@ -20,33 +20,28 @@ import { UserModal } from '@/features/users/usersApi';
 // --- Type Definitions ---
 
 /**
- * @typedef {object} User
- * @property {string} [name] - The user's display name.
+ * [name] - The user's display name.
  */
 
 /**
- * @typedef {object} AuthInterface
- * @property {import('vue').Ref<User | null>} user - The current authenticated user.
+ * user - The current authenticated user.
  */
 
 /**
- * @typedef {object} ToastInterface
- * @property {Function} showToast - Displays a generic toast notification.
+ * showToast - Displays a generic toast notification.
  */
 
 /**
- * @typedef {object} UserModalInstance
- * @property {(user?: User | null) => void} open - Opens the modal.
+ * open - Opens the modal.
  */
 
 // --- Logic & State ---
 
-const { user } = /** @type {AuthInterface} */ (useAuth());
-const { showToast } = /** @type {ToastInterface} */ (useToast());
+const { user } = (useAuth());
+const { showToast } = (useToast());
 
 /**
  * State management for the user profile modal.
- * @type {import('vue').Ref<UserModalInstance | null>}
  */
 const userModal = ref(null);
 

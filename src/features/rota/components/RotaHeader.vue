@@ -3,9 +3,9 @@
  * RotaHeader.
  * Controls date navigation and period selection for the rota grid.
  */
-import IconArrowLeft from '@/components/icons/IconArrowLeft.vue';
-import IconArrowRight from '@/components/icons/IconArrowRight.vue';
 import IconCalendar from '@/components/icons/IconCalendar.vue';
+import IconChevronLeft from '@/components/icons/IconChevronLeft.vue';
+import IconChevronRight from '@/components/icons/IconChevronRight.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 
 defineProps<{
@@ -15,7 +15,6 @@ defineProps<{
   showTodayButton: boolean;
 }>();
 
-// Fix: Use arrow function syntax for defineEmits
 const emit = defineEmits<{
   (e: 'navigate-period', direction: number): void;
   (e: 'navigate-day', direction: number): void;
@@ -29,14 +28,14 @@ const emit = defineEmits<{
     <div class="header-group left">
       <div v-if="isMobile" class="nav-controls mobile">
         <BaseButton
-          :icon="IconArrowLeft"
+          :icon="IconChevronLeft"
           icon-only
           variant="secondary"
           @click="emit('navigate-day', -1)"
         />
         <span class="date-label">{{ monthLabel }}</span>
         <BaseButton
-          :icon="IconArrowRight"
+          :icon="IconChevronRight"
           icon-only
           variant="secondary"
           @click="emit('navigate-day', 1)"
@@ -46,14 +45,14 @@ const emit = defineEmits<{
       <div v-else class="nav-controls desktop">
         <div class="month-stepper">
           <BaseButton
-            :icon="IconArrowLeft"
+            :icon="IconChevronLeft"
             icon-only
             variant="ghost"
             @click="emit('navigate-month', -1)"
           />
           <h2 class="month-title">{{ monthLabel }}</h2>
           <BaseButton
-            :icon="IconArrowRight"
+            :icon="IconChevronRight"
             icon-only
             variant="ghost"
             @click="emit('navigate-month', 1)"
@@ -73,7 +72,7 @@ const emit = defineEmits<{
     <div class="header-group right">
       <div v-if="!isMobile" class="week-stepper">
         <BaseButton
-          :icon="IconArrowLeft"
+          :icon="IconChevronLeft"
           icon-only
           variant="secondary"
           @click="emit('navigate-period', -1)"
@@ -83,7 +82,7 @@ const emit = defineEmits<{
           <span class="range-text">{{ dateRangeLabel }}</span>
         </div>
         <BaseButton
-          :icon="IconArrowRight"
+          :icon="IconChevronRight"
           icon-only
           variant="secondary"
           @click="emit('navigate-period', 1)"

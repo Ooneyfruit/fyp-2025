@@ -7,14 +7,14 @@ import { onMounted, onUnmounted } from 'vue';
 /**
  * Handles detection of interactions outside a specific element.
  * Useful for closing modals, dropdowns, and menus.
- * @param {import('vue').Ref<HTMLElement | null>} elRef - Vue template ref for the target element.
- * @param {Function} callback - Function to execute on outside click or escape.
- * @returns {void}
+ * @param elRef - Vue template ref for the target element.
+ * @param callback - Function to execute on outside click or escape.
+ * @returns
  */
 export function useClickOutside(elRef, callback) {
   /**
    * Global event listener for mouse and keyboard interactions.
-   * @param {Event} event - The DOM event object.
+   * @param event - The DOM event object.
    */
   const listener = (event) => {
     // Determine if the interaction happened outside the referenced element.

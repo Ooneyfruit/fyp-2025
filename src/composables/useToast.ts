@@ -3,7 +3,7 @@
  * @description Manages the global state for the notification system.
  * Provides a centralised way to trigger alerts across the application.
  */
-import { ref, type Ref } from 'vue';
+import { type Ref,ref } from 'vue';
 
 const DEFAULT_DURATION = 4000;
 
@@ -47,6 +47,8 @@ const clearActiveTimeout = (): void => {
 
 /**
  * Updates the reactive state variables for the toast UI.
+ * @param msg
+ * @param action
  */
 const updateState = (msg: string, action?: ToastAction | null): void => {
   message.value = msg;
@@ -70,6 +72,10 @@ const hideToast = (): void => {
 
 /**
  * Triggers a global toast notification with customisable duration.
+ * @param msg
+ * @param root0
+ * @param root0.duration
+ * @param root0.action
  */
 const showToast = (
   msg: string,

@@ -13,7 +13,7 @@ defineProps({
   variant: {
     type: String,
     default: 'secondary',
-    validator: (v) => ['primary', 'secondary', 'danger'].includes(/** @type {string} */ (v))
+    validator: (v) => ['primary', 'secondary', 'danger'].includes((v))
   },
   fluid: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false }
@@ -23,10 +23,10 @@ const emit = defineEmits(['update:modelValue']);
 
 /**
  * Synchronizes the internal state and forces a blur to reset animations.
- * @param {Event} event - The native change event.
+ * @param event - The native change event.
  */
 const handleChange = (event) => {
-  const target = /** @type {HTMLSelectElement | null} */ (event.target);
+  const target = (event.target);
 
   if (!target) {
     return;

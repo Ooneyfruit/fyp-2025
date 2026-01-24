@@ -9,7 +9,7 @@ import { computed } from 'vue';
 const props = defineProps({
   // The array of data objects to be transformed into card elements.
   items: {
-    type: /** @type {import('vue').PropType<any[]>} */ (Array),
+    type: (Array),
     required: true
   },
   // The object property name used to provide a unique key for list reconciliation.
@@ -41,7 +41,7 @@ const props = defineProps({
  * Accessor for list items with type safety.
  * Logic: ensures 'item' is treated as a record for key access.
  */
-const typedItems = computed(() => /** @type {Record<string, any>[]} */ (props.items));
+const typedItems = computed(() => (props.items));
 </script>
 
 <template>

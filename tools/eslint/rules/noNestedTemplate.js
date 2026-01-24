@@ -31,8 +31,8 @@ export default {
 
   /**
    * Creates the visitor functions for the rule.
-   * @param {object} context - The ESLint rule context.
-   * @returns {object} The visitor object.
+   * @param context - The ESLint rule context.
+   * @returns The visitor object.
    */
   create(context) {
     // In ESLint 9, parser services must be accessed via context.sourceCode to maintain compatibility with the flat configuration system.
@@ -49,7 +49,7 @@ export default {
     return parserServices.defineTemplateBodyVisitor({
       /**
        * Checks every VElement in the template.
-       * @param {object} node - The current template element node.
+       * @param node - The current template element node.
        */
       VElement(node) {
         // Filter elements to only target those specifically named 'template'.

@@ -20,11 +20,10 @@ const db = firestore();
 
 /**
  * Retrieves all documents within a specific subcollection.
- * @param {import('firebase-admin').firestore.CollectionReference} collectionRef - The subcollection reference.
- * @returns {Promise<Record<string, any>>} A map of document IDs to their data.
+ * @param collectionRef - The subcollection reference.
+ * @returns A map of document IDs to their data.
  */
-async function getSubcollectionData(collectionRef) {
-  /** @type {Record<string, any>} */
+async function getSubcollectionData(collectionRef) {
   const subData = {};
   const snapshot = await collectionRef.get();
 
@@ -38,8 +37,8 @@ async function getSubcollectionData(collectionRef) {
 
 /**
  * Processes a single document to extract its fields and any nested subcollections.
- * @param {import('firebase-admin').firestore.QueryDocumentSnapshot} doc - The Firestore document snapshot.
- * @returns {Promise<Record<string, any>>} The combined document data and subcollections.
+ * @param doc - The Firestore document snapshot.
+ * @returns The combined document data and subcollections.
  */
 async function getDocumentData(doc) {
   const docData = doc.data();
@@ -48,8 +47,7 @@ async function getDocumentData(doc) {
   if (subcollections.length === 0) {
     return docData;
   }
-
-  /** @type {Record<string, any>} */
+
   const subTrees = {};
   for (const sub of subcollections) {
     subTrees[sub.id] = await getSubcollectionData(sub);
@@ -64,15 +62,13 @@ async function getDocumentData(doc) {
 /**
  * Exports all Firestore collections and subcollections to a local JSON file.
  * Organises data into a hierarchical tree structure compatible with the import service.
- * @returns {Promise<void>} Resolves when the export file has been written.
+ * @returns Resolves when the export file has been written.
  */
 async function exportData() {
-  const collections = await db.listCollections();
-  /** @type {Record<string, any>} */
+  const collections = await db.listCollections();
   const output = {};
 
-  for (const collection of collections) {
-    /** @type {Record<string, any>} */
+  for (const collection of collections) {
     const collectionData = {};
     const documents = await collection.get();
 

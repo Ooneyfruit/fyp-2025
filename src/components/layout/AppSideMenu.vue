@@ -14,14 +14,12 @@ import { useLayout } from '@/composables/useLayout';
 import { useSwipeAway } from '@/composables/useSwipeAway';
 
 /**
- * @typedef {object} MenuItem
- * @property {string} name - The display label for the menu item.
- * @property {object} icon - The Vue component object for the icon.
- * @property {string} path - The router path for navigation.
- * @property {boolean} adminOnly - Restricts visibility to administrators only.
+ * name - The display label for the menu item.
+ * icon - The Vue component object for the icon.
+ * path - The router path for navigation.
+ * adminOnly - Restricts visibility to administrators only.
  */
-
-/** @type {MenuItem[]} */
+
 const MENU_CONFIG = [
   { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
   { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true }
@@ -49,7 +47,7 @@ const filteredMenuItems = computed(() => {
 
 /**
  * Handles navigation events and ensures menu closure on mobile.
- * @param {MenuItem} item - Navigation item metadata.
+ * @param item - Navigation item metadata.
  */
 const handleNavigation = (item) => {
   if (isMobile.value) {

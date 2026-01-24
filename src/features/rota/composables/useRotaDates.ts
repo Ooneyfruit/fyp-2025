@@ -1,4 +1,5 @@
-import { computed, ref, watch, type ComputedRef } from 'vue';
+import { computed, type ComputedRef,ref, watch } from 'vue';
+
 import { type UseBreakpointsReturn } from '@/composables/useBreakpoints';
 
 const STORAGE_KEY = 'rotadent_view_date';
@@ -32,6 +33,7 @@ export interface UseRotaDatesReturn {
 
 /**
  * Adjusts a date object to the start of its week (Monday).
+ * @param date
  */
 const getStartOfWeek = (date: Date): Date => {
   const d = new Date(date);
@@ -61,12 +63,14 @@ const getInitialAnchorDate = (): Date => {
 
 /**
  * Standardises a date into a long-form month and year string.
+ * @param d
  */
 const formatMonthYear = (d: Date): string =>
   new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(d);
 
 /**
  * Formats a date range into a readable month label for the header.
+ * @param days
  */
 const formatMonthLabel = (days: RotaDay[]): string => {
   const start = days[SUNDAY_INDEX]?.dateObj;
@@ -85,6 +89,8 @@ const formatMonthLabel = (days: RotaDay[]): string => {
 
 /**
  * Generates an array of day objects for the rota grid view.
+ * @param startDate
+ * @param count
  */
 const generateDaysArray = (startDate: Date, count: number): RotaDay[] => {
   const days: RotaDay[] = [];
@@ -111,6 +117,7 @@ const generateDaysArray = (startDate: Date, count: number): RotaDay[] => {
 
 /**
  * Manages date logic for the Rota view with persistence and cross-breakpoint consistency.
+ * @param breakpoints
  */
 export function useRotaDates(breakpoints: UseBreakpointsReturn): UseRotaDatesReturn {
   const anchorDate = ref(getInitialAnchorDate());

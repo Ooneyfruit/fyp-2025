@@ -5,7 +5,7 @@
  */
 import { computed, ref, watch } from 'vue';
 
-import IconMinus from '@/components/icons/IconMinus.vue';
+import IconClose from '@/components/icons/IconClose.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
@@ -35,7 +35,6 @@ const props = defineProps<{
   shifts: Shift[];
 }>();
 
-// Fix: Use arrow function syntax for defineEmits
 const emit = defineEmits<{
   (e: 'request-close'): void;
   (e: 'save', payload: SavePayload): void;
@@ -191,7 +190,7 @@ const handleSave = () => {
           <span class="user-name">{{ shift.name }}</span>
           <BaseButton
             class="remove-btn"
-            :icon="IconMinus"
+            :icon="IconClose"
             icon-only
             size="sm"
             variant="ghost"

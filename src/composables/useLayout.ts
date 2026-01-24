@@ -116,17 +116,16 @@ if (typeof globalThis !== 'undefined') {
 
 /**
  * Definition of the UseLayout return object.
- * @typedef {object} UseLayoutReturn
- * @property {import('vue').Ref<boolean>} isMobile - Reactive state indicating if viewport is mobile.
- * @property {import('vue').Ref<boolean>} isSidebarOpen - Reactive state for sidebar visibility.
- * @property {import('vue').Ref<boolean>} canAnimate - State indicating if layout animations are allowed.
- * @property {Function} toggleSidebar - Toggles the sidebar open/closed state.
- * @property {Function} closeSidebar - Forces the sidebar to close.
+ * isMobile - Reactive state indicating if viewport is mobile.
+ * isSidebarOpen - Reactive state for sidebar visibility.
+ * canAnimate - State indicating if layout animations are allowed.
+ * toggleSidebar - Toggles the sidebar open/closed state.
+ * closeSidebar - Forces the sidebar to close.
  */
 
 /**
  * Provides access to centralised layout states and control methods.
- * @returns {UseLayoutReturn} Reactive layout properties and mutation functions.
+ * @returns Reactive layout properties and mutation functions.
  */
 export function useLayout() {
   const toggleSidebar = () => {

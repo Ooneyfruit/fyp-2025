@@ -6,19 +6,17 @@ import { db } from './firebase';
 /**
  * Reactive list of log messages.
  * Shared state that can be imported by components.
- * @type {import('vue').Ref<string[]>}
  */
 export const logs = ref([]);
 
 /**
  * Reactive loading state.
- * @type {import('vue').Ref<boolean>}
  */
 export const loading = ref(false);
 
 /**
  * Appends a message to the logs with a timestamp.
- * @param {string} msg - The message to record.
+ * @param msg - The message to record.
  */
 const addLog = (msg) => {
   logs.value.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
@@ -27,9 +25,9 @@ const addLog = (msg) => {
 /**
  * Processes a single document for migration.
  * Determines if the document needs to be moved to a deterministic ID.
- * @param {import('firebase/firestore').QueryDocumentSnapshot} d - The document snapshot.
- * @param {import('firebase/firestore').WriteBatch} batch - The Firestore write batch.
- * @returns {boolean} - True if the document was migrated (added to batch), false otherwise.
+ * @param d - The document snapshot.
+ * @param batch - The Firestore write batch.
+ * @returns - True if the document was migrated (added to batch), false otherwise.
  */
 const processDocument = (d, batch) => {
   const data = d.data();
@@ -74,7 +72,7 @@ const processDocument = (d, batch) => {
 /**
  * Executes the database repair migration.
  * Converts practice_users documents to deterministic IDs.
- * @returns {Promise<void>} Promise that resolves when repair is complete.
+ * @returns Promise that resolves when repair is complete.
  */
 export const runRepair = async () => {
   loading.value = true;

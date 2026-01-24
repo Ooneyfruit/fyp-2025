@@ -2,25 +2,24 @@
 import {
   collection,
   doc,
-  onSnapshot,
-  query,
-  where,
+  type DocumentData,
   type DocumentReference,
+  onSnapshot,
   type Query,
-  type Unsubscribe,
+  query,
   type QuerySnapshot,
-  type DocumentData
-} from 'firebase/firestore';
-import { computed, onUnmounted, ref, watch, type Ref, type ComputedRef } from 'vue';
+  type Unsubscribe,
+  where} from 'firebase/firestore';
+import { computed, type ComputedRef,onUnmounted, type Ref, ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
-import { db } from '@/services/firebase';
 import {
-  type PracticeUser,
   type PracticeMembership,
+  type PracticeUser,
   type UserProfile
 } from '@/features/users/userTypes';
-import { type Nullable, type Dict } from '@/types/generic';
+import { db } from '@/services/firebase';
+import { type Dict,type Nullable } from '@/types/generic';
 
 /**
  * Global cache management for user profiles.
@@ -34,6 +33,7 @@ const profileListeners = new Map<string, { unsubscribe: Unsubscribe; count: numb
 
 /**
  * Increments the reference count and initialises a profile listener if needed.
+ * @param userRef
  */
 const attachProfileListener = (userRef: DocumentReference): void => {
   const uid = userRef.id;
@@ -65,6 +65,7 @@ const attachProfileListener = (userRef: DocumentReference): void => {
 
 /**
  * Decrements the reference count and destroys the listener if no longer required.
+ * @param uid
  */
 const detachProfileListener = (uid: string): void => {
   const active = profileListeners.get(uid);
@@ -81,6 +82,9 @@ const detachProfileListener = (uid: string): void => {
 
 /**
  * Processes the membership list snapshot and updates listeners.
+ * @param snapshot
+ * @param memberships
+ * @param isLoading
  */
 const handleSyncSnapshot = (
   snapshot: QuerySnapshot<DocumentData, DocumentData>,
@@ -121,6 +125,8 @@ const handleSyncSnapshot = (
 
 /**
  * Creates the Firestore query for practice users based on permissions.
+ * @param practiceId
+ * @param user
  */
 const createSyncQuery = (practiceId: string, user: Nullable<UserProfile>): Query => {
   const practiceRef = doc(db, 'practices', practiceId);
@@ -137,6 +143,7 @@ const createSyncQuery = (practiceId: string, user: Nullable<UserProfile>): Query
 
 /**
  * Transforms raw membership data into a sorted list of users with profiles.
+ * @param memberships
  */
 const useSortedUsers = (memberships: Ref<PracticeMembership[]>): ComputedRef<PracticeUser[]> =>
   computed(() => {

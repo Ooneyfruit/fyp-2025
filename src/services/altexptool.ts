@@ -21,19 +21,17 @@ const db = firestore();
 
 /**
  * Recursively fetches all subcollections for a given document.
- * @param {import('firebase-admin').firestore.DocumentReference} docRef - The document reference.
- * @returns {Promise<Record<string, any> | null>} A map of subcollection data or null.
+ * @param docRef - The document reference.
+ * @returns A map of subcollection data or null.
  */
 async function fetchSubcollections(docRef) {
   const subRefs = await docRef.listCollections();
   if (subRefs.length === 0) {
     return null;
   }
-
-  /** @type {Record<string, any>} */
+
   const subs = {};
-  for (const subRef of subRefs) {
-    /** @type {Record<string, any>} */
+  for (const subRef of subRefs) {
     const subDocs = {};
     const snapshot = await subRef.get();
 
@@ -49,17 +47,15 @@ async function fetchSubcollections(docRef) {
 /**
  * Orchestrates the data extraction for the entire database.
  * Processes root collections and ensures subcollections are captured.
- * @returns {Promise<void>} Resolves when the export file is written.
+ * @returns Resolves when the export file is written.
  */
 async function runExport() {
-  const collections = await db.listCollections();
-  /** @type {Record<string, any>} */
+  const collections = await db.listCollections();
   const data = {};
 
   for (const collection of collections) {
     process.stdout.write(`Exporting collection: ${collection.id}\n`);
-
-    /** @type {Record<string, any>} */
+
     const collectionData = {};
     const snapshot = await collection.get();
 

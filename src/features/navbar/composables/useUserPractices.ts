@@ -8,12 +8,11 @@ import {
   getDoc,
   onSnapshot,
   query,
-  updateDoc,
-  where,
   type QueryDocumentSnapshot,
-  type Unsubscribe
-} from 'firebase/firestore';
-import { onUnmounted, ref, watch, type Ref } from 'vue';
+  type Unsubscribe,
+  updateDoc,
+  where} from 'firebase/firestore';
+import { onUnmounted, type Ref,ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
 import { type PracticeSummary } from '@/features/navbar/navTypes';
