@@ -1,301 +1,236 @@
 <script setup lang="ts">
-/**
- * RotaShiftModal.
- * Interface for modifying the staff assigned to a specific role/surgery/date slot.
- */
+import type { DocumentReference } from 'firebase/firestore';
 import { computed, ref, watch } from 'vue';
 
-import IconClose from '@/components/icons/IconClose.vue';
-import IconPlus from '@/components/icons/IconPlus.vue';
-import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
-import BaseSelect from '@/components/shared/BaseSelect.vue';
-import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
-import { usePracticeUsers } from '@/features/users/usersApi';
+import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
+import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
 
-// --- Type Definitions ---
+import RotaAssignedStaff from './RotaAssignedStaff.vue';
+import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
+import RotaStaffPicker from './RotaStaffPicker.vue';
 
-interface RotaDay {
-  iso: string;
-  label: string;
-}
+/**
+ * RotaShiftModal.
+ * Primary responsibility: provides an interface for assigning staff to rota slots.
+ * Logic: coordinates the 'pending' state for additions and removals before saving.
+ */
 
-interface SavePayload {
-  additions: Array<{ userRef: string; name: string }>;
-  removals: string[];
-}
-
-// --- Props & Emits ---
-
-const props = defineProps<{
+interface Props {
   show: boolean;
   role: PracticeRole;
   surgery: PracticeSurgery;
-  date: RotaDay;
+  date: { label: string };
   shifts: Shift[];
-}>();
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  show: false,
+  shifts: () => []
+});
 
 const emit = defineEmits<{
   (e: 'request-close'): void;
-  (e: 'save', payload: SavePayload): void;
+  (e: 'save', payload: { additions: MappedStaff[]; removals: string[] }): void;
 }>();
 
-// --- Logic ---
+// --- Type Definitions ---
 
-const { users } = usePracticeUsers();
+interface MappedStaff {
+  uid: string;
+  membershipId?: string;
+  userRef?: DocumentReference | null;
+  name: string;
+  email?: string;
+  roleName?: string;
+}
 
-// Local state for the dropdown selection
-const selectedUserId = ref('');
+// Logic: Use Omit to strictly override user_id without TypeScript conflict.
+// Renamed to UiShift (PascalCase) and removed export (local scope only).
+interface UiShift extends Omit<Partial<Shift>, 'user_id'> {
+  id: string;
+  user_name?: string;
+  roleName?: string;
+  isTemp?: boolean;
+  originalMember?: MappedStaff;
+  // Ensure strict typing for the union used in the template.
+  user_id?: string | { id: string } | null;
+}
 
-// Track pending changes
-const pendingAdditions = ref<Array<{ userRef: string; name: string }>>([]);
-const pendingRemovals = ref<string[]>([]); // Array of Shift IDs to remove
+// --- Shared State ---
 
-/**
- * Reset local state when the modal opens or the target slot changes.
- */
+const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
+
+// --- Local Reactive State ---
+
+const searchQuery = ref('');
+const pendingAdds = ref<MappedStaff[]>([]);
+const pendingRemoves = ref<string[]>([]);
+
+// Logic: reset internal staging area when the modal visibility toggles.
 watch(
   () => props.show,
   (isOpen) => {
     if (isOpen) {
-      selectedUserId.value = '';
-      pendingAdditions.value = [];
-      pendingRemovals.value = [];
+      pendingAdds.value = [];
+      pendingRemoves.value = [];
+      searchQuery.value = '';
     }
   }
 );
 
-/**
- * Adds a user to the pending list.
- */
-const addUser = () => {
-  if (!selectedUserId.value) return;
-
-  const user = users.value.find((u) => u.uid === selectedUserId.value);
-  if (!user) return;
-
-  // Prevent duplicates
-  const alreadyInShifts = props.shifts.some((s) => s.user_id === user.uid);
-  const alreadyInPending = pendingAdditions.value.some((p) => p.userRef === user.uid);
-
-  if (!alreadyInShifts && !alreadyInPending) {
-    pendingAdditions.value.push({
-      userRef: user.uid,
-      name: user.name || 'Unknown'
-    });
-  }
-
-  selectedUserId.value = '';
-};
-
-/**
- * Marks a shift for removal.
- * @param shiftId - The ID of the existing shift.
- */
-const removeExistingShift = (shiftId: string) => {
-  if (!pendingRemovals.value.includes(shiftId)) {
-    pendingRemovals.value.push(shiftId);
-  }
-};
-
-/**
- * Cancels a pending addition.
- * @param index - Index in the pending additions array.
- */
-const removePendingAddition = (index: number) => {
-  pendingAdditions.value.splice(index, 1);
-};
-
-// Filter users available for selection (exclude those already assigned or pending)
-const availableUsers = computed(() => {
-  const assignedIds = new Set([
-    ...props.shifts.map((s) => s.user_id),
-    ...pendingAdditions.value.map((p) => p.userRef)
-  ]);
-
-  return users.value.filter((u) => !assignedIds.has(u.uid));
+const modalTitle = computed(() => {
+  return `${props.role?.name || 'Unknown'} - ${props.surgery?.name || 'Unknown'} (${props.date?.label})`;
 });
 
-// Calculate the final list of shifts to display (Existing - Removals + Additions)
-const displayShifts = computed(() => {
-  const existing = props.shifts
-    .filter((s) => !pendingRemovals.value.includes(s.id))
-    .map((s) => ({
-      id: s.id,
-      name: s.user_name,
-      isPending: false,
-      isRemoved: false
-    }));
+// --- Data Mapping ---
 
-  const pending = pendingAdditions.value.map((p) => ({
-    id: `pending-${p.userRef}`,
-    name: p.name,
-    isPending: true,
-    isRemoved: false
+const mappedMembers = computed<MappedStaff[]>(() => {
+  return practiceUsers.value.map((member) => ({
+    // Logic: PracticeUser is flat, so we access properties directly
+    uid: member.uid,
+    membershipId: '', // Not available in flattened PracticeUser, defaulting to empty
+    userRef: null, // Not available in flattened PracticeUser, defaulting to null
+    name: member.name || 'Unknown Staff',
+    email: member.email,
+    roleName: member.role
+  }));
+});
+
+// --- Computed Lists ---
+
+const currentStaffList = computed<UiShift[]>(() => {
+  // Logic: filter out shifts staged for removal and enrich with current role information.
+  const existing: UiShift[] = props.shifts
+    .filter((s) => !pendingRemoves.value.includes(s.id))
+    .map((s) => {
+      // Robust ID check: handles both string and DocumentReference formats safely.
+      // Logic: Cast to unknown to allow checking for legacy object structure even if Type implies string.
+      const rawUser = s.user_id as unknown;
+      const sUserId =
+        typeof rawUser === 'object' && rawUser !== null && 'id' in (rawUser as object)
+          ? (rawUser as { id: string }).id
+          : s.user_id;
+
+      const match = mappedMembers.value.find((m) => m.uid === sUserId);
+
+      return {
+        ...s,
+        roleName: match?.roleName
+      };
+    });
+
+  const newOnes: UiShift[] = pendingAdds.value.map((m) => ({
+    id: `temp_${m.uid}`,
+    user_name: m.name,
+    isTemp: true,
+    originalMember: m,
+    roleName: m.roleName,
+    user_id: m.uid
   }));
 
-  return [...existing, ...pending];
+  return [...existing, ...newOnes];
 });
 
-const handleSave = () => {
+const availableStaffList = computed<MappedStaff[]>(() => {
+  // Logic: create a Set of existing IDs to efficiently filter the picker list.
+  const currentIds = new Set(
+    currentStaffList.value.map((s) => {
+      if (typeof s.user_id === 'object' && s.user_id !== null && 'id' in s.user_id) {
+        return s.user_id.id;
+      }
+      return s.user_id || s.originalMember?.uid;
+    })
+  );
+
+  const query = searchQuery.value.toLowerCase();
+
+  return mappedMembers.value.filter((m) => {
+    if (currentIds.has(m.uid)) return false;
+    return m.name.toLowerCase().includes(query);
+  });
+});
+
+const recommendedStaff = computed(() =>
+  availableStaffList.value.filter((m) => m.roleName === props.role?.name)
+);
+
+const otherStaff = computed(() =>
+  availableStaffList.value.filter((m) => m.roleName !== props.role?.name)
+);
+
+const hasChanges = computed(() => pendingAdds.value.length > 0 || pendingRemoves.value.length > 0);
+
+const saveLabel = computed(() => (hasChanges.value ? 'Save Changes' : 'No Changes'));
+
+// --- Action Handlers ---
+
+const stageAddition = (member: MappedStaff) => {
+  pendingAdds.value.push(member);
+};
+
+const markForRemoval = (shift: UiShift) => {
+  if (shift.isTemp && shift.originalMember) {
+    pendingAdds.value = pendingAdds.value.filter((m) => m.uid !== shift.originalMember!.uid);
+  } else {
+    pendingRemoves.value.push(shift.id);
+  }
+};
+
+const saveChanges = () => {
   emit('save', {
-    additions: pendingAdditions.value,
-    removals: pendingRemovals.value
+    additions: pendingAdds.value,
+    removals: pendingRemoves.value // Fix: Use correct variable name (pendingRemoves)
   });
 };
+
+const handleClose = () => emit('request-close');
 </script>
 
 <template>
   <BaseModal
+    :footer-component="RotaShiftModalFooter"
+    :footer-listeners="{ close: handleClose, save: saveChanges }"
+    :footer-props="{ saveLabel, hasChanges }"
     :show="show"
-    size="sm"
-    :title="`Manage Shifts: ${date.label}`"
-    @request-close="emit('request-close')"
+    size="md"
+    :title="modalTitle"
+    @request-close="handleClose"
   >
-    <div class="modal-context">
-      <span class="context-pill">{{ role.name }}</span>
-      <span class="context-separator">@</span>
-      <span class="context-pill">{{ surgery.name }}</span>
-    </div>
+    <div class="modal-body-wrapper">
+      <RotaAssignedStaff
+        :staff="currentStaffList"
+        :target-role-name="role?.name"
+        @remove="markForRemoval"
+      />
 
-    <div class="modal-body">
-      <div class="add-section">
-        <div class="select-wrapper">
-          <BaseSelect id="shift-user-select" v-model="selectedUserId" fluid label="Assign Staff">
-            <option disabled value="">Select user...</option>
-            <option v-for="u in availableUsers" :key="u.uid" :value="u.uid">
-              {{ u.name }}
-            </option>
-          </BaseSelect>
-        </div>
-        <BaseButton
-          class="add-btn"
-          :disabled="!selectedUserId"
-          :icon="IconPlus"
-          icon-only
-          variant="primary"
-          @click="addUser"
-        />
-      </div>
+      <hr class="divider" />
 
-      <div class="shifts-list">
-        <div v-if="displayShifts.length === 0" class="empty-state">No staff assigned</div>
-
-        <div
-          v-for="shift in displayShifts"
-          :key="shift.id"
-          class="shift-row"
-          :class="{ 'is-pending': shift.isPending }"
-        >
-          <span class="user-name">{{ shift.name }}</span>
-          <BaseButton
-            class="remove-btn"
-            :icon="IconClose"
-            icon-only
-            size="sm"
-            variant="ghost"
-            @click="
-              shift.isPending
-                ? removePendingAddition(pendingAdditions.findIndex((p) => p.name === shift.name))
-                : removeExistingShift(shift.id)
-            "
-          />
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <BaseButton label="Cancel" variant="secondary" @click="emit('request-close')" />
-      <BaseButton label="Save Changes" variant="primary" @click="handleSave" />
+      <RotaStaffPicker
+        v-model:search-query="searchQuery"
+        :is-loading="usersLoading"
+        :others="otherStaff"
+        :recommended="recommendedStaff"
+        :target-role-name="role?.name"
+        @add="stageAddition"
+      />
     </div>
   </BaseModal>
 </template>
 
 <style scoped>
-/* Context Header */
-.modal-context {
-  align-items: center;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-}
-
-.context-pill {
-  background: var(--bg-app);
-  border-radius: var(--border-radius-sm);
-  color: var(--text-main);
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.2rem 0.5rem;
-}
-
-.context-separator {
-  color: var(--text-muted);
-}
-
-/* Add Section */
-.add-section {
-  align-items: flex-end;
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.select-wrapper {
-  flex: 1;
-}
-
-.add-btn {
-  height: 2.5rem;
-  margin-bottom: 1px; /* Align with input border */
-  width: 2.5rem;
-}
-
-/* List Section */
-.shifts-list {
+.modal-body-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  min-height: 100px;
+  gap: 1.5rem;
+  max-height: 70vh;
+  min-height: 500px;
+  overflow: hidden;
 }
 
-.empty-state {
-  color: var(--text-muted);
-  font-style: italic;
-  padding: 1rem;
-  text-align: center;
-}
-
-.shift-row {
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-}
-
-.shift-row.is-pending {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-}
-
-.user-name {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* Footer */
-.modal-footer {
+.divider {
+  border: 0;
   border-top: 1px solid var(--border-color);
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
+  margin: 0;
 }
 </style>

@@ -1,14 +1,14 @@
 /**
  * Manages colour logic for the Rota view.
- * Primary responsibility: generates consistent, accessible colours for Job Roles based on their ID
+ * Primary responsibility: generates consistent, accessible colours for job roles based on their ID
  * to ensure visual distinction across the interface.
- * Refactored to resolve strict TypeScript index checks and function scoping requirements.
+ * Implements module-level state to persist assignments across component lifecycles.
  */
 
 /**
- * Defines the structure for the colour pairs used in the UI.
+ * Defines the structure for the colour pairs used in the user interface.
  */
-export interface ColourPalette {
+interface ColourPalette {
   bg: string;
   accent: string;
 }
@@ -27,21 +27,21 @@ const DEFAULT_PALETTE_INDEX = 7;
  * Logic: tones are selected to ensure high contrast and maximum visual distinction.
  */
 const ROLE_PALETTE: ColourPalette[] = [
-  // Sky Blue
+  // Sky blue.
   { bg: '#e0f2fe', accent: '#0369a1' },
-  // Purple
+  // Purple.
   { bg: '#f3e8ff', accent: '#7e22ce' },
-  // Green
+  // Green.
   { bg: '#dcfce7', accent: '#15803d' },
-  // Orange
+  // Orange.
   { bg: '#ffedd5', accent: '#c2410c' },
-  // Fuchsia
+  // Fuchsia.
   { bg: '#fae8ff', accent: '#a21caf' },
-  // Yellow
+  // Yellow.
   { bg: '#fef08a', accent: '#854d0e' },
-  // Rose
+  // Rose.
   { bg: '#ffe4e6', accent: '#a03f58' },
-  // Slate
+  // Slate.
   { bg: '#e2e8f0', accent: '#334155' }
 ];
 
@@ -75,7 +75,7 @@ const getRoleColor = (roleId?: string | null): ColourPalette => {
 
 /**
  * Composable providing colour assignment logic.
- * @returns The colour utility methods.
+ * @returns An object containing the colour utility methods.
  */
 export function useRotaColors() {
   return { getRoleColor };

@@ -1,39 +1,24 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Navigation sidebar with enhanced touch interaction.
  * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
  */
-import { computed, markRaw } from 'vue';
+import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-// Component icons.
-import IconCalendar from '@/components/icons/IconCalendar.vue';
-import IconUsers from '@/components/icons/IconUsers.vue';
-import { useAuth } from '@/composables/useAuth';
 import { useLayout } from '@/composables/useLayout';
 import { useSwipeAway } from '@/composables/useSwipeAway';
-
-/**
- * name - The display label for the menu item.
- * icon - The Vue component object for the icon.
- * path - The router path for navigation.
- * adminOnly - Restricts visibility to administrators only.
- */
-
-const MENU_CONFIG = [
-  { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
-  { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true }
-];
+import { type NavItem, useNavigation } from '@/features/navbar/navbarApi';
 
 const { isSidebarOpen, isMobile, closeSidebar } = useLayout();
-const { user } = useAuth();
+const { filteredMenuItems } = useNavigation();
 const router = useRouter();
 const route = useRoute();
 
 // Gesture logic is active only when the sidebar is visible on mobile.
 const isSwipeEnabled = computed(() => isMobile.value && isSidebarOpen.value);
 
-// Initialize generalized swipe logic to drive the sidebar animation.
+// Initialize generalised swipe logic to drive the sidebar animation.
 const { isSwiping, swipeTransform, handleTouchStart, handleTouchMove, handleTouchEnd } =
   useSwipeAway({
     threshold: 80,
@@ -41,19 +26,15 @@ const { isSwiping, swipeTransform, handleTouchStart, handleTouchMove, handleTouc
     enabled: isSwipeEnabled
   });
 
-const filteredMenuItems = computed(() => {
-  return MENU_CONFIG.filter((item) => (item.adminOnly ? user.value?.is_administrator : true));
-});
-
 /**
  * Handles navigation events and ensures menu closure on mobile.
  * @param item - Navigation item metadata.
  */
-const handleNavigation = (item) => {
+const handleNavigation = (item: NavItem): void => {
   if (isMobile.value) {
     closeSidebar();
   }
-  router.push(item.path);
+  router.push(item.to);
 };
 </script>
 
@@ -81,11 +62,11 @@ const handleNavigation = (item) => {
       <nav class="sidebar-nav">
         <a
           v-for="item in filteredMenuItems"
-          :key="item.name"
+          :key="item.label"
           class="nav-item"
-          :class="{ active: route.path === item.path }"
+          :class="{ active: route.path === item.to }"
           href="#"
-          :title="!isSidebarOpen && !isMobile ? item.name : ''"
+          :title="!isSidebarOpen && !isMobile ? item.label : ''"
           @click.prevent="handleNavigation(item)"
         >
           <span class="icon">
@@ -93,7 +74,7 @@ const handleNavigation = (item) => {
           </span>
 
           <span class="label" :class="{ visible: isSidebarOpen }">
-            {{ item.name }}
+            {{ item.label }}
           </span>
         </a>
       </nav>
@@ -102,7 +83,7 @@ const handleNavigation = (item) => {
 </template>
 
 <style scoped>
-/* Sidebar container with transition logic for state changes */
+/* Sidebar container with transition logic for state changes. */
 .sidebar {
   background: white;
   border-right: 0.0625rem solid var(--border-color);
@@ -119,7 +100,7 @@ const handleNavigation = (item) => {
   z-index: var(--z-sidebar);
 }
 
-/* Prevent transition conflicts during active manual swiping */
+/* Prevent transition conflicts during active manual swiping. */
 .sidebar.is-swiping {
   transition: none;
 }
@@ -176,7 +157,7 @@ const handleNavigation = (item) => {
   pointer-events: auto;
 }
 
-/* Mobile positioning logic */
+/* Mobile positioning logic. */
 @media (width <= 48rem) {
   .sidebar {
     transform: translateX(-100%);
@@ -188,7 +169,7 @@ const handleNavigation = (item) => {
   }
 }
 
-/* Overlay serves as the touch proxy for viewport-wide gestures */
+/* Overlay serves as the touch proxy for viewport-wide gestures. */
 .mobile-overlay {
   backdrop-filter: blur(2px);
   background: rgb(31 41 55 / 30%);

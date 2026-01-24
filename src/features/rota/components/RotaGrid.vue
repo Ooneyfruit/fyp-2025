@@ -4,8 +4,12 @@
  * The core matrix display for the rota system.
  * Renders rows (Role/Surgery combinations) against columns (Days).
  */
+import { computed } from 'vue';
+
 import { type RotaDay } from '@/features/rota/composables/useRotaDates';
 import { type PracticeRole, type PracticeSurgery, type Shift } from '@/features/rota/rotaTypes';
+
+import RotaSlot from './RotaSlot.vue';
 
 // --- Type Definitions ---
 
@@ -22,13 +26,23 @@ interface SlotClickPayload {
 
 // --- Props & Emits ---
 
-defineProps<{
+const props = defineProps<{
   days: RotaDay[];
   rows: RotaRow[];
   getShifts: (roleId: string, surgeryId: string, dateIso: string) => Shift[];
 }>();
 
 const emit = defineEmits<(e: 'slot-click', payload: SlotClickPayload) => void>();
+
+// --- Logic ---
+
+// Determine 'today' based on the provided days prop to ensure consistency with the parent view
+const todayIso = computed(() => {
+  const today = props.days.find((d) => d.isToday);
+  return today ? today.iso : new Date().toISOString().split('T')[0];
+});
+
+const isDatePast = (iso: string) => iso < todayIso.value;
 
 /**
  * Handles the user interaction with a specific grid cell.
@@ -61,23 +75,17 @@ const handleSlotClick = (row: RotaRow, day: RotaDay) => {
           <div class="surgery-text">{{ row.surgery.name }}</div>
         </div>
 
-        <div
+        <RotaSlot
           v-for="day in days"
           :key="day.iso"
-          class="grid-cell"
-          :class="{ 'is-weekend': day.isWeekend }"
+          class="grid-cell-slot"
+          :is-before-today="isDatePast(day.iso)"
+          :is-today="day.isToday"
+          :is-weekend="day.isWeekend"
+          :role-id="row.role.id"
+          :shifts="getShifts(row.role.id, row.surgery.id, day.iso)"
           @click="handleSlotClick(row, day)"
-        >
-          <div class="shift-stack">
-            <div
-              v-for="shift in getShifts(row.role.id, row.surgery.id, day.iso)"
-              :key="shift.id"
-              class="shift-pill"
-            >
-              {{ shift.user_name }}
-            </div>
-          </div>
-        </div>
+        />
       </div>
     </div>
   </div>
@@ -102,7 +110,7 @@ const handleSlotClick = (row: RotaRow, day: RotaDay) => {
 .grid-body-row {
   display: grid;
 
-  /* 1st col: fixed 160px label, Rest: equal sized day columns */
+  /* 1st col: fixed 10rem label, Rest: equal sized day columns */
   grid-template-columns: 10rem repeat(auto-fit, minmax(8rem, 1fr));
 }
 
@@ -152,41 +160,11 @@ const handleSlotClick = (row: RotaRow, day: RotaDay) => {
   font-size: 0.75rem;
 }
 
-/* Cells */
-.grid-cell {
-  background: white;
+/* Slots */
+
+/* Override specific slot styles if needed to fit the grid context, though RotaSlot handles most itself */
+.grid-cell-slot {
   border-bottom: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
-  cursor: pointer;
-  min-height: 4rem;
-  padding: 0.25rem;
-  transition: background 0.1s ease;
-}
-
-.grid-cell:hover {
-  background: #f8fafc;
-}
-
-.grid-cell.is-weekend {
-  background: #fcfcfc;
-}
-
-/* Shift Pills */
-.shift-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.shift-pill {
-  background: var(--color-primary-light);
-  border-radius: 0.25rem;
-  color: var(--color-primary);
-  font-size: 0.75rem;
-  font-weight: 500;
-  overflow: hidden;
-  padding: 0.15rem 0.4rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

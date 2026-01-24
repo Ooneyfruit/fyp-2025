@@ -3,7 +3,6 @@
  * RotaStaffPicker.
  * Primary responsibility: provides a searchable interface for selecting staff members
  * to add to the rota, with specific highlighting for recommended matches.
- * Refactored to satisfy strict accessibility and TypeScript standards.
  */
 import IconPlus from '@/components/icons/IconPlus.vue';
 
@@ -13,7 +12,7 @@ interface StaffMember {
   roleName?: string;
 }
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     searchQuery?: string;
     isLoading?: boolean;
@@ -40,9 +39,8 @@ const emit = defineEmits<{
  * Logic: casts the event target to an HTMLInputElement to satisfy strict type checks.
  * @param event - The native input event.
  */
-const handleSearchInput = (event: Event): void => {
+const handleSearchInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
-
   if (target) {
     emit('update:searchQuery', target.value);
   }
@@ -72,7 +70,7 @@ const handleSearchInput = (event: Event): void => {
           v-for="member in recommended"
           :key="member.uid"
           class="staff-card available"
-          @click="$emit('add', member)"
+          @click="emit('add', member)"
         >
           <span class="staff-name">{{ member.name }}</span>
           <IconPlus class="add-icon" />
@@ -87,7 +85,7 @@ const handleSearchInput = (event: Event): void => {
           v-for="member in others"
           :key="member.uid"
           class="staff-card available warning-card"
-          @click="$emit('add', member)"
+          @click="emit('add', member)"
         >
           <div class="staff-info">
             <span class="staff-name">{{ member.name }}</span>

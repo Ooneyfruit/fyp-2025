@@ -1,5 +1,13 @@
-import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
-import { ref } from 'vue';
+import {
+  collection,
+  doc,
+  type DocumentData,
+  getDocs,
+  type QueryDocumentSnapshot,
+  type WriteBatch,
+  writeBatch
+} from 'firebase/firestore';
+import { type Ref, ref } from 'vue';
 
 import { db } from './firebase';
 
@@ -7,7 +15,7 @@ import { db } from './firebase';
  * Reactive list of log messages.
  * Shared state that can be imported by components.
  */
-export const logs = ref([]);
+export const logs: Ref<string[]> = ref([]);
 
 /**
  * Reactive loading state.
@@ -18,7 +26,7 @@ export const loading = ref(false);
  * Appends a message to the logs with a timestamp.
  * @param msg - The message to record.
  */
-const addLog = (msg) => {
+const addLog = (msg: string) => {
   logs.value.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
 };
 
@@ -29,7 +37,7 @@ const addLog = (msg) => {
  * @param batch - The Firestore write batch.
  * @returns - True if the document was migrated (added to batch), false otherwise.
  */
-const processDocument = (d, batch) => {
+const processDocument = (d: QueryDocumentSnapshot<DocumentData>, batch: WriteBatch) => {
   const data = d.data();
 
   // Safely access IDs with optional chaining

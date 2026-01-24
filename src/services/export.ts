@@ -1,5 +1,5 @@
 /**
- * @file export.js
+ * @file export.ts
  * @description Handles the extraction of data from Firestore into a local JSON format.
  * Extracts all collections and their first-level subcollections for backup purposes.
  */
@@ -23,8 +23,10 @@ const db = firestore();
  * @param collectionRef - The subcollection reference.
  * @returns A map of document IDs to their data.
  */
-async function getSubcollectionData(collectionRef) {
-  const subData = {};
+async function getSubcollectionData(
+  collectionRef: firestore.CollectionReference | firestore.Query
+): Promise<Record<string, firestore.DocumentData>> {
+  const subData: Record<string, firestore.DocumentData> = {};
   const snapshot = await collectionRef.get();
 
   // Iterate over the docs array to satisfy iterator requirements.
@@ -40,15 +42,17 @@ async function getSubcollectionData(collectionRef) {
  * @param doc - The Firestore document snapshot.
  * @returns The combined document data and subcollections.
  */
-async function getDocumentData(doc) {
+async function getDocumentData(
+  doc: firestore.QueryDocumentSnapshot
+): Promise<firestore.DocumentData> {
   const docData = doc.data();
   const subcollections = await doc.ref.listCollections();
 
   if (subcollections.length === 0) {
     return docData;
   }
-
-  const subTrees = {};
+
+  const subTrees: Record<string, Record<string, firestore.DocumentData>> = {};
   for (const sub of subcollections) {
     subTrees[sub.id] = await getSubcollectionData(sub);
   }
@@ -65,11 +69,11 @@ async function getDocumentData(doc) {
  * @returns Resolves when the export file has been written.
  */
 async function exportData() {
-  const collections = await db.listCollections();
-  const output = {};
+  const collections = await db.listCollections();
+  const output: Record<string, Record<string, firestore.DocumentData>> = {};
 
-  for (const collection of collections) {
-    const collectionData = {};
+  for (const collection of collections) {
+    const collectionData: Record<string, firestore.DocumentData> = {};
     const documents = await collection.get();
 
     for (const doc of documents.docs) {
