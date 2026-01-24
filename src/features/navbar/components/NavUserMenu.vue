@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
  * User menu coordinator.
  * Orchestrates responsive views and global dismissal behaviours for the settings menu.
  */
-import { computed, inject, ref } from 'vue';
+import { computed, inject, type Ref, ref } from 'vue';
 
 import IconSettings from '@/components/icons/IconSettings.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
@@ -14,20 +14,31 @@ import { useLayout } from '@/composables/useLayout';
 import NavUserDropdown from './NavUserDropdown.vue';
 import NavUserTrigger from './NavUserTrigger.vue';
 
-// Destructure reactive authentication state and the logout method.
+// --- Type Definitions ---
+// Define local interface for the injected modal to ensure type safety
+interface UserModalInstance {
+  open: (userData: unknown) => void;
+}
+
+interface UseLayoutReturn {
+  isMobile: Ref<boolean>;
+}
+
+// --- Logic ---
+
 const { user, logout } = useAuth();
 
 // Determine device layout for responsive conditional rendering.
-const { isMobile } = useLayout();
+const { isMobile } = useLayout() as UseLayoutReturn;
 
 // Manage the visibility state of the mobile dropdown menu.
 const isOpen = ref(false);
 
 // Reference the root element for external click detection logic.
-const menuRef = ref(null);
+const menuRef = ref<HTMLElement | null>(null);
 
 // Inject the global modal handler for user account management.
-const userModal = inject('userModal');
+const userModal = inject<Ref<UserModalInstance | null>>('userModal');
 
 /**
  * Prepares profile data for the global account management modal.
@@ -44,7 +55,6 @@ const normalizedUserData = computed(() => {
 
 /**
  * Derives the user's email address for display.
- * Logic: provides a fallback empty string to satisfy strict prop typing during transitional null states.
  */
 const userEmail = computed(() => {
   return user.value?.email ?? '';
@@ -58,7 +68,9 @@ useClickOutside(menuRef, () => {
 // Closes the menu context and triggers the account editing modal.
 const openAccountModal = () => {
   isOpen.value = false;
-  userModal.value?.open(normalizedUserData.value);
+  if (userModal?.value && normalizedUserData.value) {
+    userModal.value.open(normalizedUserData.value);
+  }
 };
 
 // Logic: terminates the user session and performs a hard redirect to clear state.

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Mobile user settings card.
  * Composes identity displays and functional action groups for the navigation overlay.
@@ -11,24 +11,18 @@ import { UserIdentity } from '@/features/users/usersApi';
 
 import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
 
-/**
- * @typedef {object} AuthInterface
- * @property {import('vue').Ref<any>} user - The current authenticated user state.
- * @property {import('vue').Ref<boolean>} isAuthReady - Initialisation state.
- * @property {Function} login - Sign-in method.
- * @property {Function} logout - Sign-out method.
- */
+defineEmits<{
+  (e: 'edit'): void;
+  (e: 'logout'): void;
+}>();
 
-defineEmits(['edit', 'logout']);
-
-// Extract user state using explicit type casting to resolve property inference.
-const { user } = /** @type {AuthInterface} */ (useAuth());
+const { user } = useAuth();
 </script>
 
 <template>
   <div class="nav-user-dropdown rd-card animate-slide-in">
     <div class="rd-card-header dropdown-header">
-      <UserIdentity :profile="user" />
+      <UserIdentity v-if="user" :profile="user" />
       <span class="rd-pill rd-pill-muted role-badge">{{ user?.role || 'Guest' }}</span>
     </div>
 

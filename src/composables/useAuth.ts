@@ -3,45 +3,44 @@
  * Logic: manages user sessions and ensures Google profile data is persisted to Firestore.
  */
 
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { ref } from 'vue';
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  type User as FirebaseUser,
+  type UserCredential
+} from 'firebase/auth';
+import {
+  doc,
+  type DocumentReference,
+  getDoc,
+  onSnapshot,
+  type Unsubscribe,
+  updateDoc} from 'firebase/firestore';
+import { type Ref,ref } from 'vue';
 
+import { type UserProfile,UserProfileSchema } from '@/features/users/userTypes';
 import { auth, db } from '@/services/firebase';
+import { type Nullable } from '@/types/generic';
 
 /**
- * Define a generic Ref type for JSDoc.
- * @template T
- * @typedef {import('vue').Ref<T>} Ref
+ * Interface for the authentication composable return value.
  */
-
-/**
- * @typedef {object} UserProfile
- * @property {string} uid - Unique identifier for the user.
- * @property {string} email - Primary email address from the identity provider.
- * @property {string} profile_image - URL to the user's avatar.
- * @property {string} activePracticeName - The display name of the current practice context.
- * @property {boolean} is_administrator - Flag indicating elevated privilege levels.
- * @property {any} practiceRef - Firestore document reference for the active practice.
- */
-
-/**
- * @typedef {object} AuthInterface
- * @property {Ref<UserProfile | null>} user - Reactive reference to the current user profile.
- * @property {Ref<boolean>} isAuthReady - Tracks if the initial session check has been completed.
- * @property {function(): Promise<import('firebase/auth').UserCredential>} login - Triggers the Google OAuth flow.
- * @property {function(): Promise<void>} logout - Terminates the session and cleans up listeners.
- */
+export interface AuthInterface {
+  user: Ref<Nullable<UserProfile>>;
+  isAuthReady: Ref<boolean>;
+  login: () => Promise<UserCredential>;
+  logout: () => Promise<void>;
+}
 
 /**
  * The global user state ref.
- * @type {Ref<UserProfile | null>}
  */
-export const user = ref(null);
+export const user = ref<Nullable<UserProfile>>(null);
 
 /**
  * Indicates if the initial authentication check has completed.
- * @type {Ref<boolean>}
  */
 export const isAuthReady = ref(false);
 
@@ -49,20 +48,21 @@ const provider = new GoogleAuthProvider();
 
 /**
  * Internal listener for Firestore profile updates.
- * Typed explicitly to resolve 'any' inference errors during unsubscription.
- * @type {import('firebase/firestore').Unsubscribe | null}
  */
-let profileListener = null;
+let profileListener: Unsubscribe | null = null;
 
 /**
  * Synchronises and overwrites the database profile image with the Google OAuth icon.
  * Logic: triggers only if the Google URL is new, facilitating a slow migration to real icons.
- * @param {string} uid - User ID.
- * @param {string | null} googleUrl - The photo URL from the Google provider.
- * @param {string} currentUrl - The existing URL in Firestore.
- * @returns {Promise<void>} Resolves when the update is complete or skipped.
+ * @param uid - User ID.
+ * @param googleUrl - The photo URL from the Google provider.
+ * @param currentUrl - The existing URL in Firestore.
  */
-const syncProfileImage = async (uid, googleUrl, currentUrl) => {
+const syncProfileImage = async (
+  uid: string,
+  googleUrl: Nullable<string>,
+  currentUrl?: string
+): Promise<void> => {
   if (googleUrl && googleUrl !== currentUrl) {
     const userRef = doc(db, 'users', uid);
     try {
@@ -81,10 +81,9 @@ const syncProfileImage = async (uid, googleUrl, currentUrl) => {
 /**
  * Starts a real-time listener for the user profile and practice context.
  * Logic: maps Firestore document data and membership state to the global user ref.
- * @param {import('firebase/auth').User} firebaseUser - The authenticated Firebase user.
- * @returns {void}
+ * @param firebaseUser - The authenticated Firebase user.
  */
-const startProfileListener = (firebaseUser) => {
+const startProfileListener = (firebaseUser: FirebaseUser): void => {
   // Clean up any existing listeners before establishing a new connection.
   if (profileListener) {
     profileListener();
@@ -104,9 +103,9 @@ const startProfileListener = (firebaseUser) => {
       const userData = userSnap.data();
 
       // Update the profile image if the Google provider version has changed.
-      syncProfileImage(firebaseUser.uid, firebaseUser.photoURL, userData.profile_image);
+      await syncProfileImage(firebaseUser.uid, firebaseUser.photoURL, userData.profile_image);
 
-      const practiceRef = userData.current_practice;
+      const practiceRef = userData.current_practice as DocumentReference | undefined;
 
       try {
         if (!practiceRef) {
@@ -124,28 +123,40 @@ const startProfileListener = (firebaseUser) => {
         const mData = mSnap.exists() ? mSnap.data() : { is_administrator: false, role: 'Guest' };
         const practiceName = pSnap.exists() ? pSnap.data().name : 'Unknown Practice';
 
-        // Explicit cast: assert that the spread Firestore data fulfils the UserProfile contract.
-        user.value = /** @type {UserProfile} */ ({
+        // Merge and Validate using Zod
+        // We construct the object first, then parse it to ensure it matches the UserProfile type safely.
+        const mergedProfile = {
           uid: firebaseUser.uid,
           ...userData,
           ...mData,
           practiceRef: practiceRef,
           activePracticeName: practiceName
-        });
-      } catch {
+        };
+
+        const parsedResult = UserProfileSchema.safeParse(mergedProfile);
+
+        if (parsedResult.success) {
+          user.value = parsedResult.data;
+        } else {
+          console.warn('User profile validation failed:', parsedResult.error);
+          // Fallback: cast to UserProfile to prevent app lockout, but log warning
+          user.value = mergedProfile as UserProfile;
+        }
+      } catch (error) {
+        console.error('Error constructing user profile:', error);
         // Fallback to basic profile if membership or practice data is inaccessible.
-        // Explicit cast used here to satisfy strict type requirements during error states.
-        user.value = /** @type {UserProfile} */ ({
+        user.value = {
           uid: firebaseUser.uid,
           ...userData,
           is_administrator: false,
           activePracticeName: 'Error'
-        });
+        } as UserProfile;
       } finally {
         isAuthReady.value = true;
       }
     },
-    () => {
+    (error) => {
+      console.error('Profile snapshot error:', error);
       // Handle snapshot errors by marking auth as ready to unblock the UI.
       isAuthReady.value = true;
     }
@@ -170,9 +181,9 @@ onAuthStateChanged(auth, (firebaseUser) => {
 
 /**
  * Exported authentication interface.
- * @returns {AuthInterface} The reactive auth state and session management methods.
+ * @returns The reactive auth state and session management methods.
  */
-export function useAuth() {
+export function useAuth(): AuthInterface {
   return {
     user,
     isAuthReady,

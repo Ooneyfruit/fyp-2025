@@ -1,8 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import IconEdit from '@/components/icons/IconEdit.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 
-defineEmits(['edit']);
+defineEmits<(e: 'edit') => void>();
 </script>
 
 <template>

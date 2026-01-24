@@ -1,13 +1,11 @@
 /**
- * @file usersApi.js
+ * @file usersApi.ts
  * @description Centralises access to user-related components and logic.
  * Serves as the public API for the users feature module to ensure consistent imports.
- * Updated to explicitly export shared types for cross-feature compatibility.
  */
 
-/**
- * @typedef {import('./composables/usePracticeUsers').PracticeUser} UserMember
- */
+// Export shared types for cross-feature compatibility
+export type { PracticeUser as UserMember } from './userTypes';
 
 // Primary user interface components for identity and management.
 export { default as UserIdentity } from './components/UserIdentity.vue';

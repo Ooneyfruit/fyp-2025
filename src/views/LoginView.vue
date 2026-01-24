@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * @file LoginView.vue
  * @description Public-facing login page.
@@ -11,18 +11,9 @@ import { useRouter } from 'vue-router';
 import BaseButton from '@/components/shared/BaseButton.vue';
 import { useAuth } from '@/composables/useAuth';
 
-// --- Type Definitions ---
-
-/**
- * @typedef {object} AuthInterface
- * @property {import('vue').Ref<any>} user - The current authenticated user object (or null).
- * @property {() => Promise<any>} login - Function to initiate the login process.
- */
-
 // --- Logic & State ---
 
-// Explicit casting ensures the compiler recognises the destructured properties from the auth composable.
-const { user, login } = /** @type {AuthInterface} */ (useAuth());
+const { user, login } = useAuth();
 
 const router = useRouter();
 const errorMsg = ref('');
@@ -37,9 +28,8 @@ watchEffect(() => {
 /**
  * Triggers the login flow and handles potential errors.
  * Displays a user-friendly message if the authentication sequence fails.
- * @returns {Promise<void>}
  */
-const handleLogin = async () => {
+const handleLogin = async (): Promise<void> => {
   try {
     await login();
     // Successful login will be caught by the watchEffect above.
