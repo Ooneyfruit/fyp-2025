@@ -39,9 +39,8 @@ const monthLabelShort = computed(() => {
       title="Back Month"
       variant="ghost"
       @click="$emit('navigate-month', -1)"
+      >M</BaseButton
     >
-      M
-    </BaseButton>
 
     <BaseButton
       class="dense-btn"
@@ -49,9 +48,8 @@ const monthLabelShort = computed(() => {
       title="Back 3 Days"
       variant="ghost"
       @click="$emit('navigate-period', -1)"
+      >3D</BaseButton
     >
-      3D
-    </BaseButton>
 
     <BaseButton
       class="dense-btn"
@@ -59,9 +57,8 @@ const monthLabelShort = computed(() => {
       title="Back Day"
       variant="outline"
       @click="$emit('navigate-day', -1)"
+      >D</BaseButton
     >
-      D
-    </BaseButton>
 
     <div class="date-info-mobile">
       <span class="month-mobile">{{ monthLabelShort }}</span>
@@ -79,9 +76,8 @@ const monthLabelShort = computed(() => {
       title="Forward Day"
       variant="outline"
       @click="$emit('navigate-day', 1)"
+      >D</BaseButton
     >
-      D
-    </BaseButton>
 
     <BaseButton
       class="dense-btn"
@@ -90,9 +86,8 @@ const monthLabelShort = computed(() => {
       title="Forward 3 Days"
       variant="ghost"
       @click="$emit('navigate-period', 1)"
+      >3D</BaseButton
     >
-      3D
-    </BaseButton>
 
     <BaseButton
       class="dense-btn"
@@ -101,9 +96,8 @@ const monthLabelShort = computed(() => {
       title="Forward Month"
       variant="ghost"
       @click="$emit('navigate-month', 1)"
+      >M</BaseButton
     >
-      M
-    </BaseButton>
   </BaseSelectorBar>
 </template>
 
@@ -152,7 +146,7 @@ const monthLabelShort = computed(() => {
   padding: 0 4px;
 }
 
-/* Fix: Reset BaseButton internal transforms to force pure flex centring */
+/* Fix: Reset BaseButton internal transforms to force pure flex centering */
 .dense-btn :deep(.icon-frame),
 .dense-btn :deep(.button-label) {
   line-height: 1;

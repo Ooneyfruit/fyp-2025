@@ -1,57 +1,31 @@
 <script setup lang="ts">
-/**
- * RotaShiftModal.
- * Primary responsibility: provides an interface for assigning staff to rota slots.
- * Refactored to fix path resolution, prop definition, and reactive type safety.
- */
 import { computed, ref, watch } from 'vue';
 
+import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
 
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
-import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
 import RotaStaffPicker from './RotaStaffPicker.vue';
 
-/**
- * uid - Profile identifier.
- * membershipId - Practice membership identifier.
- * userRef - Firestore reference.
- * name - Display name.
- * [email] - Contact email.
- * [roleName] - Job role name.
- */
-
-/**
- * id - Unique identifier.
- * [user_id] - User reference or ID.
- * [user_name] - Name of the user.
- * [roleName] - Name of the role.
- * [isTemp] - Flag for temporary state.
- * [originalMember] - Link back to source data.
- */
-
 const props = defineProps({
-  show: { type: Boolean, default: false },
+  show: Boolean,
   role: { type: Object, default: () => ({ name: 'Unknown' }) },
   surgery: { type: Object, default: () => ({ name: 'Unknown' }) },
   date: { type: Object, default: () => ({ label: '' }) },
-  // Logic: explicitly type the array to prevent 'never' iteration errors.
   shifts: { type: Array, default: () => [] }
 });
 
 const emit = defineEmits(['request-close', 'save']);
 
-// --- Shared State ---
+// --- Use Shared User Logic ---
 const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
 
-// --- Local Reactive State ---
+// --- Local State ---
 const searchQuery = ref('');
-// Logic: initializing with type casts prevents 'Property does not exist on type never' errors.
 const pendingAdds = ref([]);
 const pendingRemoves = ref([]);
 
-// Logic: reset internal staging area when the modal visibility toggles.
 watch(
   () => props.show,
   (isOpen) => {
@@ -81,43 +55,47 @@ const mappedMembers = computed(() => {
 
 // --- Computed Lists ---
 
+/**
+ * Staff currently assigned (Props - Removals + Additions)
+ * ENRICHED: Now looks up the role for existing shifts to detect exceptions.
+ */
 const currentStaffList = computed(() => {
-  // Logic: filter out shifts staged for removal and enrich with current role information.
+  // 1. Process Existing Shifts
   const existing = props.shifts
     .filter((s) => !pendingRemoves.value.includes(s.id))
     .map((s) => {
-      // Robust ID check: handles both string and DocumentReference formats safely.
-      const sUserId = typeof s.user_id === 'object' ? s.user_id?.id : s.user_id;
+      // Robust ID check: s.user_id might be a string or a Firestore Reference object
+      const sUserId = s.user_id?.id || s.user_id;
+
+      // Find the member to get their current role
       const match = mappedMembers.value.find((m) => m.uid === sUserId);
 
       return {
         ...s,
+        // Attach the Role Name if found, otherwise undefined (or 'Unknown')
         roleName: match?.roleName
       };
     });
 
+  // 2. Process Pending Additions
   const newOnes = pendingAdds.value.map((m) => ({
     id: `temp_${m.uid}`,
     user_name: m.name,
     isTemp: true,
     originalMember: m,
-    roleName: m.roleName,
-    // Ensure user_id matches the structure expected by consumers.
-    user_id: m.uid
+    roleName: m.roleName
   }));
 
   return [...existing, ...newOnes];
 });
 
 const availableStaffList = computed(() => {
-  // Logic: Create a Set of existing IDs to efficiently filter the picker list.
+  // Combine IDs from both sources to exclude them from the picker
   const currentIds = new Set(
     currentStaffList.value.map((s) => {
-      // Explicitly handle the union type for user_id to avoid 'id does not exist on type string' errors.
-      if (typeof s.user_id === 'object' && s.user_id !== null && 'id' in s.user_id) {
-        return s.user_id.id;
-      }
-      return s.user_id || s.originalMember?.uid;
+      // For existing shifts, user_id is the reference/ID
+      // For temps, originalMember.uid is the ID
+      return s.user_id?.id || s.user_id || s.originalMember?.uid;
     })
   );
 
@@ -129,19 +107,22 @@ const availableStaffList = computed(() => {
   });
 });
 
-const recommendedStaff = computed(() =>
-  availableStaffList.value.filter((m) => m.roleName === props.role?.name)
-);
+const recommendedStaff = computed(() => {
+  return availableStaffList.value.filter((m) => m.roleName === props.role?.name);
+});
 
-const otherStaff = computed(() =>
-  availableStaffList.value.filter((m) => m.roleName !== props.role?.name)
-);
+const otherStaff = computed(() => {
+  return availableStaffList.value.filter((m) => m.roleName !== props.role?.name);
+});
 
 const hasChanges = computed(() => pendingAdds.value.length > 0 || pendingRemoves.value.length > 0);
 
-const saveLabel = computed(() => (hasChanges.value ? 'Save Changes' : 'No Changes'));
+const saveLabel = computed(() => {
+  if (!hasChanges.value) return 'No Changes';
+  return 'Save Changes';
+});
 
-// --- Action Handlers ---
+// --- Actions ---
 
 const stageAddition = (member) => {
   pendingAdds.value.push(member);
@@ -168,15 +149,7 @@ const isLoading = computed(() => usersLoading.value);
 </script>
 
 <template>
-  <BaseModal
-    :footer-component="RotaShiftModalFooter"
-    :footer-listeners="{ close: handleClose, save: saveChanges }"
-    :footer-props="{ saveLabel, hasChanges }"
-    :show="show"
-    size="md"
-    :title="modalTitle"
-    @request-close="handleClose"
-  >
+  <BaseModal :show="show" size="md" :title="modalTitle" @request-close="handleClose">
     <div class="modal-body-wrapper">
       <RotaAssignedStaff
         :staff="currentStaffList"
@@ -195,6 +168,13 @@ const isLoading = computed(() => usersLoading.value);
         @add="stageAddition"
       />
     </div>
+
+    <template #footer>
+      <div class="footer-actions">
+        <BaseButton label="Cancel" variant="text" @click="handleClose" />
+        <BaseButton :disabled="!hasChanges" :label="saveLabel" @click="saveChanges" />
+      </div>
+    </template>
   </BaseModal>
 </template>
 
@@ -212,5 +192,12 @@ const isLoading = computed(() => usersLoading.value);
   border: 0;
   border-top: 1px solid var(--border-color);
   margin: 0;
+}
+
+.footer-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  width: 100%;
 }
 </style>

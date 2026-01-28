@@ -1,227 +1,161 @@
-/**
- * @file usePracticeUsers.ts
- * @description Composable for synchronising and managing practice user memberships and profiles.
- * Handles live Firestore listeners for both membership records and individual user profiles.
- */
-import {
-  collection,
-  doc,
-  type DocumentData,
-  type DocumentReference,
-  onSnapshot,
-  type Query,
-  query,
-  type QuerySnapshot,
-  type Unsubscribe,
-  where
-} from 'firebase/firestore';
-import { computed, type ComputedRef, onUnmounted, type Ref, ref, watch } from 'vue';
+/* src/features/users/composables/usePracticeUsers.js */
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { computed, onUnmounted, ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
-import {
-  type PracticeMembership,
-  type PracticeUser,
-  type UserProfile
-} from '@/features/users/userTypes';
 import { db } from '@/services/firebase';
-import { type Dict, type Nullable } from '@/types/generic';
 
 /**
  * Global cache management for user profiles.
+ * Moving these outside the function body ensures data persists across practice switches.
  */
-const globalProfileStore = ref<Dict<UserProfile>>({});
+const globalProfileStore = ref({});
+const profileListeners = new Map(); // UID -> { unsub: Function, count: number }
 
 /**
- * Maps user IDs to their active listeners and reference counts.
+ *
  */
-const profileListeners = new Map<string, { unsubscribe: Unsubscribe; count: number }>();
-
-/**
- * Increments the reference count and initialises a profile listener if needed.
- * @param userRef - The Firestore document reference for the user.
- */
-const attachProfileListener = (userRef: DocumentReference): void => {
-  const uid = userRef.id;
-  const existing = profileListeners.get(uid);
-
-  if (existing) {
-    existing.count++;
-    return;
-  }
-
-  const unsubscribe = onSnapshot(
-    userRef,
-    (pSnap) => {
-      if (pSnap.exists()) {
-        const data = pSnap.data() as UserProfile;
-        globalProfileStore.value[uid] = {
-          ...data,
-          uid // Ensure the ID is always included.
-        };
-      }
-    },
-    () => {
-      // Error handling silenced for linting compliance.
-    }
-  );
-
-  profileListeners.set(uid, { unsubscribe, count: 1 });
-};
-
-/**
- * Decrements the reference count and destroys the listener if no longer required.
- * @param uid - The unique identifier for the user.
- */
-const detachProfileListener = (uid: string): void => {
-  const active = profileListeners.get(uid);
-  if (!active) return;
-
-  active.count--;
-
-  if (active.count <= 0) {
-    active.unsubscribe();
-    profileListeners.delete(uid);
-    delete globalProfileStore.value[uid];
-  }
-};
-
-/**
- * Processes the membership list snapshot and updates listeners.
- * @param snapshot - The Firestore query snapshot containing membership documents.
- * @param memberships - Reactive reference to the current membership list.
- * @param isLoading - Reactive flag indicating the loading state of the data.
- */
-const handleSyncSnapshot = (
-  snapshot: QuerySnapshot<DocumentData, DocumentData>,
-  memberships: Ref<PracticeMembership[]>,
-  isLoading: Ref<boolean>
-): void => {
-  const newUids = new Set(snapshot.docs.map((d) => (d.data().user as DocumentReference).id));
-  const oldUids = new Set(memberships.value.map((m) => m.user.id));
-
-  for (const mDoc of snapshot.docs) {
-    const userRef = mDoc.data().user as DocumentReference;
-    if (!oldUids.has(userRef.id)) {
-      attachProfileListener(userRef);
-    }
-  }
-
-  for (const uid of oldUids) {
-    if (!newUids.has(uid)) {
-      detachProfileListener(uid);
-    }
-  }
-
-  memberships.value = snapshot.docs.map((d) => {
-    const data = d.data();
-    return {
-      id: d.id,
-      user: data.user,
-      practice: data.practice,
-      role: data.role,
-      start_date: data.start_date,
-      end_date: data.end_date,
-      is_administrator: !!data.is_administrator,
-      is_employee: !!data.is_employee
-    } as PracticeMembership;
-  });
-  isLoading.value = false;
-};
-
-/**
- * Creates the Firestore query for practice users based on permissions.
- * @param practiceId - The unique identifier for the practice.
- * @param user - The profile of the authenticated user.
- * @returns The configured Firestore query.
- */
-const createSyncQuery = (practiceId: string, user: Nullable<UserProfile>): Query => {
-  const practiceRef = doc(db, 'practices', practiceId);
-  const bridgeCol = collection(db, 'practice_users');
-
-  if (user?.is_administrator) {
-    return query(bridgeCol, where('practice', '==', practiceRef));
-  }
-
-  const uid = user?.uid || 'unknown';
-  const userRef = doc(db, 'users', uid);
-  return query(bridgeCol, where('practice', '==', practiceRef), where('user', '==', userRef));
-};
-
-/**
- * Transforms raw membership data into a sorted list of users with profiles.
- * @param memberships - Reactive reference to the membership data.
- * @returns A computed list of combined user and membership data.
- */
-const useSortedUsers = (memberships: Ref<PracticeMembership[]>): ComputedRef<PracticeUser[]> =>
-  computed(() => {
-    return memberships.value
-      .map((m) => {
-        const profile =
-          globalProfileStore.value[m.user.id] ||
-          ({
-            uid: m.user.id,
-            email: '',
-            activePracticeName: 'Loading...',
-            is_administrator: false
-          } as UserProfile);
-
-        return {
-          ...profile,
-          role: m.role,
-          status: 'active',
-          is_employee: m.is_employee,
-          start_date: m.start_date,
-          end_date: m.end_date
-        } as PracticeUser;
-      })
-      .sort((a, b) => (a.activePracticeName || '').localeCompare(b.activePracticeName || ''));
-  });
-
-/**
- * Composable for managing practice user memberships and profiles.
- * @returns The reactive user list and loading status.
- */
-export function usePracticeUsers(): {
-  users: ComputedRef<PracticeUser[]>;
-  isLoading: Ref<boolean>;
-} {
-  const memberships = ref<PracticeMembership[]>([]);
+export function usePracticeUsers() {
+  const memberships = ref([]);
   const isLoading = ref(true);
-  let listListener: Unsubscribe | null = null;
+  let listListener = null;
 
-  const startLiveSync = (practiceId: string): void => {
+  /**
+   * Increments the reference count and initializes a profile listener if needed.
+   * @param userRef - the Firestore reference to the user document.
+   */
+  const attachProfileListener = (userRef) => {
+    const uid = userRef.id;
+    const existing = profileListeners.get(uid);
+
+    if (existing) {
+      // Logic: increase the reference count to prevent cleanup while this instance is active.
+      existing.count++;
+      return;
+    }
+
+    // Logic: establish a new real-time listener for the profile data.
+    const unsub = onSnapshot(
+      userRef,
+      (pSnap) => {
+        if (pSnap.exists()) {
+          globalProfileStore.value[uid] = pSnap.data();
+        }
+      },
+      (err) => console.error(`[usePracticeUsers] Profile Error (${uid}):`, err.message)
+    );
+
+    profileListeners.set(uid, { unsub, count: 1 });
+  };
+
+  /**
+   * Decrements the reference count and destroys the listener if no longer required.
+   * @param uid - the unique identifier for the user profile.
+   */
+  const detachProfileListener = (uid) => {
+    const active = profileListeners.get(uid);
+    if (!active) return;
+
+    active.count--;
+
+    if (active.count <= 0) {
+      // Logic: kill the listener and remove data from memory when reference count reaches zero.
+      active.unsub();
+      profileListeners.delete(uid);
+      delete globalProfileStore.value[uid];
+    }
+  };
+
+  /**
+   * Initiates real-time synchronization for practice memberships.
+   * @param practiceId - the id of the practice to monitor.
+   */
+  const startLiveSync = (practiceId) => {
     if (listListener) listListener();
 
-    const q = createSyncQuery(practiceId, authUser.value);
+    const practiceRef = doc(db, 'practices', practiceId);
+    const bridgeCol = collection(db, 'practice_users');
+
+    // Logic: restrict data access based on the current user's administrative status.
+    let q;
+    if (authUser.value?.is_administrator) {
+      q = query(bridgeCol, where('practice', '==', practiceRef));
+    } else {
+      const userRef = doc(db, 'users', authUser.value.uid);
+      q = query(bridgeCol, where('practice', '==', practiceRef), where('user', '==', userRef));
+    }
 
     listListener = onSnapshot(
       q,
-      (s) => handleSyncSnapshot(s, memberships, isLoading),
-      () => {
+      (snapshot) => {
+        const newUids = new Set(snapshot.docs.map((d) => d.data().user.id));
+        const oldUids = new Set(memberships.value.map((m) => m.user.id));
+
+        // Performance: attach listeners for new users entering the set.
+        for (const mDoc of snapshot.docs) {
+          const userRef = mDoc.data().user;
+          if (!oldUids.has(userRef.id)) {
+            attachProfileListener(userRef);
+          }
+        }
+
+        // Performance: detach listeners for users no longer present in the results.
+        for (const uid of oldUids) {
+          if (!newUids.has(uid)) {
+            detachProfileListener(uid);
+          }
+        }
+
+        memberships.value = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+        isLoading.value = false;
+      },
+      (err) => {
+        console.error('[usePracticeUsers] Sync Error:', err.message);
         isLoading.value = false;
       }
     );
   };
 
-  const cleanup = (): void => {
+  /**
+   * Aggregates membership data with profile information.
+   * Logic: explicitly includes the document ID in the profile object for avatar detection.
+   */
+  const users = computed(() => {
+    return memberships.value
+      .map((m) => ({
+        ...m,
+        profile: {
+          id: m.user.id,
+          ...(globalProfileStore.value[m.user.id] || { name: 'Loading...' })
+        }
+      }))
+      .sort((a, b) => (a.profile?.name || '').localeCompare(b.profile?.name || ''));
+  });
+
+  /**
+   * Cleans up all active listeners associated with this instance.
+   */
+  const cleanup = () => {
     if (listListener) listListener();
+    // Logic: ensure all profiles attached by this instance are detached correctly.
     for (const m of memberships.value) detachProfileListener(m.user.id);
     memberships.value = [];
   };
 
   onUnmounted(cleanup);
 
+  // Synchronize the membership list whenever the active practice context or permissions change.
   watch(
-    () => {
-      const user = authUser.value;
-      return [user?.practiceRef?.id, user?.is_administrator];
-    },
+    () => [authUser.value?.practiceRef?.id, authUser.value?.is_administrator],
     ([newId]) => {
-      if (newId) startLiveSync(newId as string);
-      else cleanup();
+      if (newId) {
+        startLiveSync(newId);
+      } else {
+        cleanup();
+      }
     },
     { immediate: true }
   );
 
-  return { users: useSortedUsers(memberships), isLoading };
+  return { users, isLoading };
 }
