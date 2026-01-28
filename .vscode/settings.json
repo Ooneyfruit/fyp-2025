@@ -7,6 +7,11 @@
     "source.fixAll.stylelint": "explicit"
   },
 
+  // --- SonarLint configuration ---
+  // SonarLint requires a Java 17+ JRE to run the language server.
+  // REPLACE the path below with your actual Java installation folder (e.g. run 'readlink -f /usr/bin/java | sed "s:bin/java::"')
+  "sonarlint.ls.javaHome": "/usr/lib/jvm/java-17-openjdk-amd64",
+
   // --- ESLint configuration ---
   // Ensure the extension uses the flat config system for the RotaDent project.
   "eslint.useFlatConfig": true,
