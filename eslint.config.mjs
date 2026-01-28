@@ -33,7 +33,7 @@ const NO_MAGIC_NUMBERS_IGNORE = [-1, 0, 1];
 export default [
   // 1. Global ignores.
   {
-    ignores: ['dist/', 'coverage/', '.firebase/', 'public/', 'docs/gen/']
+    ignores: ['dist/', 'coverage/', '.firebase/', 'public/', 'docs/gen/**']
   },
 
   // 2. Setup environment and shared settings.

@@ -3,6 +3,7 @@
   "entry": ["src/main.ts", "vite.config.ts", "eslint.config.mjs"],
   "project": ["src/**/*.{js,ts,vue}"],
   "ignore": [
+    "node_modules",
     "docs/gen/**",
     "src/services/**",
     "src/components/icons/**",
