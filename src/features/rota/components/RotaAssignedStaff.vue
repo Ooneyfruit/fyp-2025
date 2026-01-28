@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
 import IconClose from '@/components/icons/IconClose.vue';
-
-/**
- * id - Unique identifier for the shift assignment.
- * user_name - Name of the staff member assigned to the shift.
- * [roleName] - Name of the specific role assigned for this shift.
- */
 
 const props = defineProps({
   staff: { type: Array, default: () => [] },
@@ -16,16 +8,6 @@ const props = defineProps({
 
 defineEmits(['remove']);
 
-// Create a typed computed property to resolve 'unknown' type errors in the template
-const staffList = computed(() => {
-  return props.staff;
-});
-
-/**
- * Checks if the shift role differs from the target role.
- * @param shift - The shift object.
- * @returns True if exception.
- */
 const isException = (shift) => {
   // If we don't know the role (e.g. data load issue), don't flag as exception to avoid noise
   if (!shift.roleName) return false;
@@ -37,14 +19,16 @@ const isException = (shift) => {
   <div class="assigned-section">
     <h4 class="section-heading">Assigned Staff</h4>
 
-    <div v-if="staffList.length > 0" class="staff-grid">
-      <button
-        v-for="shift in staffList"
+    <div v-if="staff.length > 0" class="staff-grid">
+      <div
+        v-for="shift in staff"
         :key="shift.id"
         class="staff-card assigned"
+        role="button"
+        tabindex="0"
         title="Click to remove from shift"
-        type="button"
         @click="$emit('remove', shift)"
+        @keydown.enter="$emit('remove', shift)"
       >
         <div class="staff-info">
           <span class="staff-name">{{ shift.user_name }}</span>
@@ -57,7 +41,7 @@ const isException = (shift) => {
         <div class="remove-indicator">
           <IconClose :stroke-width="2.5" />
         </div>
-      </button>
+      </div>
     </div>
     <p v-else class="empty-text">No staff currently assigned.</p>
   </div>
@@ -76,7 +60,7 @@ const isException = (shift) => {
 .staff-grid {
   display: grid;
   gap: 0.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Slightly wider for role text */
 }
 
 .staff-card {
@@ -88,13 +72,30 @@ const isException = (shift) => {
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
-  font-family: inherit; /* Button Reset */
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  text-align: left; /* Button Reset */
   transition: all 0.2s ease;
   user-select: none;
-  width: 100%; /* Button Reset */
+}
+
+/* Hover State: "Removal" Style */
+.staff-card:hover {
+  background-color: #fee2e2; /* Red-50 */
+  border-color: #fca5a5; /* Red-300 */
+}
+
+/* On hover, change text colors to indicate destructive action */
+.staff-card:hover .staff-name {
+  color: #b91c1c; /* Red-700 */
+}
+
+.staff-card:hover .exception-role {
+  color: #b91c1c;
+  opacity: 0.8;
+}
+
+.staff-card:hover .remove-indicator {
+  color: #b91c1c;
 }
 
 .staff-info {
@@ -102,8 +103,6 @@ const isException = (shift) => {
   flex-direction: column;
   overflow: hidden;
 }
-
-/* Base definitions must come BEFORE hover overrides */
 
 .staff-name {
   color: var(--text-main);
@@ -125,7 +124,7 @@ const isException = (shift) => {
 
 .remove-indicator {
   align-items: center;
-  color: #bae6fd;
+  color: #bae6fd; /* Subtle when not hovered */
   display: flex;
   flex-shrink: 0;
   height: 1.25rem;
@@ -140,27 +139,5 @@ const isException = (shift) => {
   font-size: 0.9rem;
   font-style: italic;
   padding: 0.5rem 0;
-}
-
-/* Hover State: "Removal" Style */
-
-/* Placed at end to satisfy no-descending-specificity */
-
-.staff-card:hover {
-  background-color: #fee2e2;
-  border-color: #fca5a5;
-}
-
-.staff-card:hover .staff-name {
-  color: #b91c1c;
-}
-
-.staff-card:hover .exception-role {
-  color: #b91c1c;
-  opacity: 0.8;
-}
-
-.staff-card:hover .remove-indicator {
-  color: #b91c1c;
 }
 </style>
