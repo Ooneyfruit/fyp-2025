@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * (needs description).
+ */
+
 import IconPlus from '@/components/icons/IconPlus.vue';
 
 defineProps({
@@ -144,7 +148,7 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .add-icon {
-  color: var(--text-light);
+  color: #000;
   height: 1.25rem;
   width: 1.25rem;
 }

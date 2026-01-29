@@ -4,7 +4,6 @@
  * Orchestrates global layout states and manages PWA update notifications.
  */
 
-// @ts-expect-error Virtual module 'virtual:pwa-register/vue' does not have type definitions.
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { onMounted, type Ref, watch } from 'vue';
 

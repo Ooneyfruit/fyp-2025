@@ -116,11 +116,11 @@ if (typeof globalThis !== 'undefined') {
 
 /**
  * Definition of the UseLayout return object.
- * isMobile - Reactive state indicating if viewport is mobile.
- * isSidebarOpen - Reactive state for sidebar visibility.
- * canAnimate - State indicating if layout animations are allowed.
- * toggleSidebar - Toggles the sidebar open/closed state.
- * closeSidebar - Forces the sidebar to close.
+ * IsMobile - Reactive state indicating if viewport is mobile.
+ * IsSidebarOpen - Reactive state for sidebar visibility.
+ * CanAnimate - State indicating if layout animations are allowed.
+ * ToggleSidebar - Toggles the sidebar open/closed state.
+ * CloseSidebar - Forces the sidebar to close.
  */
 
 /**

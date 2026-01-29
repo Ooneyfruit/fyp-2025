@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * (needs description).
+ */
+
 import { computed, ref, watch } from 'vue';
 
 import BaseButton from '@/components/shared/BaseButton.vue';

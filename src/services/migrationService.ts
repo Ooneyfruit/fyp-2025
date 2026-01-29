@@ -1,3 +1,7 @@
+/**
+ * (needs description).
+ */
+
 import {
   collection,
   doc,

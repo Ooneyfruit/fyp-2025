@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable 'hamburger' menu icon for navigation controls.
+ * Three horizontal lines stacked vertically.
+ * Provides a scalable 'hamburger' menu icon for navigation controls.
  */
 
-// Define component properties for visual customization.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

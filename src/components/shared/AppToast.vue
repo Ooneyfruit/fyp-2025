@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a global, interactive notification system.
+ * Provides a global, interactive notification system.
  * Animates messages and optional action buttons into the viewport.
  */
 import IconClose from '@/components/icons/IconClose.vue';

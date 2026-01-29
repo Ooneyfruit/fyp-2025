@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * (needs description).
+ */
+
 import IconClose from '@/components/icons/IconClose.vue';
 
 const props = defineProps({

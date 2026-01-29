@@ -1,6 +1,5 @@
 /**
- * @file export.ts
- * @description Handles the extraction of data from Firestore into a local JSON format.
+ * Handles the extraction of data from Firestore into a local JSON format.
  * Extracts all collections and their first-level subcollections for backup purposes.
  */
 import { writeFileSync } from 'node:fs';

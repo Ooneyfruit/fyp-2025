@@ -1,6 +1,5 @@
 /**
- * @file import.ts
- * @description Handles the importation of data from a JSON file into the Firestore database.
+ * Handles the importation of data from a JSON file into the Firestore database.
  * Reconstructs Firestore-specific types (Timestamps, DocumentReferences) from the raw JSON data.
  */
 import { readFileSync } from 'node:fs';

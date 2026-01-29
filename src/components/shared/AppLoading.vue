@@ -1,6 +1,7 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a standardized loading interface for both inline content and full-page transitions.
+ * Loading spinner.
+ * Provides a standardized loading interface for both inline content and full-page transitions.
  */
 import { computed } from 'vue';
 

@@ -1,10 +1,8 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: Provides a flexible button component that supports navigation,
+ * Provides a flexible button component that supports navigation,
  * various visual states, and semantic variations.
- * @file BaseButton.vue
  */
-
 defineProps({
   label: { type: String, default: '' }, // Not required if slot is used
   to: { type: [String, Object], default: null },

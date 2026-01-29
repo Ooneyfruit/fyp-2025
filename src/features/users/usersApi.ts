@@ -1,5 +1,5 @@
 /**
- * Centralises access to user-related components and logic.
+ * Centralised access to user-related components and logic.
  * Serves as the public API for the users feature module to ensure consistent imports.
  */
 

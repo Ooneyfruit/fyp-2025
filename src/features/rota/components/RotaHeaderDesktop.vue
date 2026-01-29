@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * (needs description).
+ */
+
 import IconChevronDoubleLeft from '@/components/icons/IconChevronDoubleLeft.vue';
 import IconChevronDoubleRight from '@/components/icons/IconChevronDoubleRight.vue';
 import IconChevronLeft from '@/components/icons/IconChevronLeft.vue';

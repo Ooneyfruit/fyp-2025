@@ -1,9 +1,8 @@
 /**
- * PreferAlias.
- *
+ * PreferAlias Rule.
  * Custom ESLint rule for the RotaDent project.
  * Automatically detects relative imports that traverse up the directory tree
- * and suggests replacing them with the project's '@' alias.
+ * and suggests replacing them with the project's '\@' alias.
  */
 
 import path from 'node:path';

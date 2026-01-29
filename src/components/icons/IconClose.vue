@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable 'X' icon for closing modals or dismissing alerts.
+ * Icon representing closing with a cross.
+ * Provides a scalable 'X' icon for closing modals or dismissing alerts.
  */
 
-// Define component properties with default visual styling.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

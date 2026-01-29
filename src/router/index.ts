@@ -1,6 +1,5 @@
 /**
- * @file index.ts
- * @description Central routing configuration and navigation guards.
+ * Central routing configuration and navigation guards.
  * Manages access control, authentication state synchronisation, and view mapping.
  */
 import { watch } from 'vue';
@@ -11,7 +10,7 @@ import { useToast } from '@/composables/useToast';
 
 /**
  * Interface representing the user properties required by the router.
- * Extracted from original JSDoc typedef.
+ * Extracted from original documentation definitions.
  */
 interface RouterUser {
   is_administrator?: boolean;
@@ -52,8 +51,8 @@ const router = createRouter({
 /**
  * Navigation guard to enforce authentication and role-based access.
  * Uses return-based navigation control to satisfy modern Vue Router standards.
- * @param {RouteLocationNormalized} to - Target route.
- * @returns {Promise<string | void>} Resolves with a route path for redirection or undefined to proceed.
+ * * @param to - Target route.
+ * @returns Resolves with a route path for redirection or undefined to proceed.
  */
 router.beforeEach(async (to: RouteLocationNormalized): Promise<string | void> => {
   const { error: notifyError } = useToast();

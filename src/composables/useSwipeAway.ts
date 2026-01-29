@@ -4,20 +4,24 @@
  */
 import { computed, type Ref, ref, type StyleValue } from 'vue';
 
+// Define the standard pixel threshold for triggering a swipe action if not specified.
 const DEFAULT_SWIPE_THRESHOLD = 80;
 
+/**
+ * Configuration for the swipe-away gesture logic.
+ */
 interface UseSwipeAwayOptions {
+  /** Callback executed when the swipe exceeds the defined pixel threshold. */
   onTrigger: () => void;
+  /** Distance in pixels required to trigger the dismissal action. */
   threshold?: number;
+  /** Reactive Vue Ref used to toggle the logic state on or off. */
   enabled: Ref<boolean>;
 }
 
 /**
- * Manages touch states and calculates horizontal displacement.
+ * Manages touch states and calculates horizontal displacement for swipe interactions.
  * @param options - Configuration for the swipe behaviour.
- * @param options.onTrigger - Callback executed when swipe exceeds threshold.
- * @param [options.threshold] - Distance in pixels required to trigger the action.
- * @param options.enabled - Reactive Vue Ref used to toggle the logic state.
  * @returns Touch handlers and reactive displacement states.
  */
 export function useSwipeAway({

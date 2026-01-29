@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable gear icon for accessing preferences or settings.
+ * Gear icon for settings.
+ * Provides a scalable gear icon for accessing preferences or settings.
  */
 
-// Define component properties for visual customization.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

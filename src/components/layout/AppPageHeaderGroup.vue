@@ -1,10 +1,11 @@
-<script setup>
-import AppPageHeader from './AppPageHeader.vue';
-
+<script setup lang="ts">
 /**
  * High-level layout orchestrator for page headers.
  * Combines page identification and action buttons into a responsive group.
  */
+
+import AppPageHeader from './AppPageHeader.vue';
+
 defineProps({
   // The primary text for the page heading.
   title: { type: String, required: true },

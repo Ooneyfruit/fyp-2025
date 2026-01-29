@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable clock icon representing time or scheduling.
+ * Clock icon.
+ * Provides a scalable clock icon representing time or scheduling.
  */
 
-// Define component properties with default visual styling.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

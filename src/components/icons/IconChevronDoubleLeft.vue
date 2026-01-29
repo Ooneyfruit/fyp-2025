@@ -1,5 +1,6 @@
-<script setup>
+<script setup lang="ts">
 /**
+ * Left-pointing double chevron icon.
  * Standardized double chevron icon for large navigational jumps (Left).
  * Typically used for 'Previous Month' or 'First Page'.
  */

@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable icon representing edit or modify actions.
+ * Icon of pen in square to represent edit action.
+ * Provides a scalable icon representing edit or modify actions.
  */
 
-// Define component properties with default visual styling.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

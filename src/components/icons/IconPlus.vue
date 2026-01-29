@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable plus icon for adding items or creating new records.
+ * Plus icon.
+ * Provides a scalable plus icon for adding items or creating new records.
  */
 
-// Define component properties for visual customization.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

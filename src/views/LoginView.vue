@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
- * @file LoginView.vue
- * @description Public-facing login page.
+ * Public-facing login page.
  * Handles authentication via the useAuth composable and redirects authenticated users.
  */
 import { ref, watchEffect } from 'vue';

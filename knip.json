@@ -9,7 +9,11 @@
     "src/components/icons/**",
     "src/views/HomeView.vue",
     "src/shimsVue.d.ts",
-    "src/types/firebase.d.ts"
+    "src/types/firebase.d.ts",
+    "src/types/generic.ts",
+    "src/features/users/userTypes.ts",
+    "src/features/rota/rotaTypes.ts",
+    "src/features/rota/composables/useRotaDates.ts"
   ],
   "ignoreBinaries": ["vue-tsc"],
   "ignoreDependencies": [

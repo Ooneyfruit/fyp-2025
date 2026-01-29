@@ -1,6 +1,5 @@
 /**
- * @file altexptool.ts
- * @description Alternative export utility for extracting Firestore data.
+ * Alternative export utility for extracting Firestore data.
  * Features flat-mapped collection processing and recursive subcollection traversal.
  */
 import { writeFileSync } from 'node:fs';

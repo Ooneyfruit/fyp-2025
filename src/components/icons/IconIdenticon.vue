@@ -1,8 +1,9 @@
 <script setup lang="ts">
 /**
- * IconIdenticon.
- * Primary responsibility: renders a unique, symmetrical insignia based on a seed string.
- * Refactored to use explicit SVG elements for better maintainability and type safety.
+ * Changeable icon dependent on a seed string.
+ * Renders a unique, symmetrical insignia based on a seed string.
+ * Refactored to use a "Greedy Meshing" algorithm to merge adjacent shapes into a single SVG path.
+ * Includes precision rounding to prevent sub-pixel rendering artifacts.
  */
 import { computed } from 'vue';
 
@@ -22,9 +23,48 @@ const SHAPE_TRI_LIMIT = 14;
 const TRIANGLE_ROTATION_BASE = 11;
 const TRIANGLE_ROTATION_STEP = 90;
 
+// Geometry constants to avoid magic numbers.
+const HALF_CELL = 0.5;
+const HALF_TURN_DEGREES = 180;
+const SMALL_RECT_INSET = 0.2;
+const SMALL_RECT_SIZE = 0.6;
+const TRIANGLE_VERTICES = 3;
+const COORD_PRECISION = 3;
+
+/**
+ * Internal enumeration for shape types to assist the meshing algorithm.
+ */
+enum ShapeType {
+  None,
+  FullRect,
+  Circle,
+  Triangle,
+  SmallRect
+}
+
+interface GridCellData {
+  type: ShapeType;
+  rotation: number; // In degrees
+}
+
+interface Point {
+  x: number;
+  y: number;
+}
+
 const props = defineProps<{
   seed: string;
 }>();
+
+/**
+ * Rounds a number to a fixed precision to avoid floating point artifacts in SVG.
+ * E.g., 0.99999999999 becomes 1.
+ * @param n - The number to round.
+ * @returns The rounded number.
+ */
+const rnd = (n: number): number => {
+  return Number.parseFloat(n.toFixed(COORD_PRECISION));
+};
 
 /**
  * Generates a deterministic hash from the seed.
@@ -43,7 +83,7 @@ const generateHash = (str: string): number => {
 
 /**
  * Determines the colour scheme for the identicon.
- * Logic: uses the hash to pick a primary hue and generates a high-contrast pairing.
+ * @returns An object containing the background and foreground CSS colour strings.
  */
 const theme = computed(() => {
   const h = generateHash(props.seed);
@@ -56,122 +96,309 @@ const theme = computed(() => {
   };
 });
 
-interface ShapeConfig {
-  type: 'rect' | 'circle' | 'path';
-  props: Record<string, string | number>;
-  rotation?: number;
-}
-
-interface GridCell {
-  id: string;
-  type: 'rect' | 'circle' | 'path';
-  props: Record<string, string | number>;
-  transform: string;
-}
-
 /**
- * Resolves the shape configuration for a specific entropy value.
- * Extracting this logic reduces the complexity of the main grid loop.
+ * Decodes the hash value into a specific shape configuration.
  * @param val - The 4-bit integer representing the cell entropy.
- * @returns The shape properties or null if the cell is empty.
+ * @returns The geometric configuration for the cell.
  */
-const getShapeConfig = (val: number): ShapeConfig | null => {
-  // Logic: 0-5 are empty to ensure whitespace/clarity in the insignia.
+const getShapeData = (val: number): GridCellData => {
   if (val < SHAPE_MIN_VAL) {
-    return null;
+    return { type: ShapeType.None, rotation: 0 };
   }
-
   if (val <= SHAPE_RECT_LIMIT) {
-    return { type: 'rect', props: { x: 0, y: 0, width: 1, height: 1 } };
+    return { type: ShapeType.FullRect, rotation: 0 };
   }
-
   if (val <= SHAPE_CIRCLE_LIMIT) {
-    return { type: 'circle', props: { cx: 0.5, cy: 0.5, r: 0.5 } };
+    return { type: ShapeType.Circle, rotation: 0 };
   }
-
   if (val <= SHAPE_TRI_LIMIT) {
-    // Logic: create 4 distinct triangle rotations based on the value.
     const rotation = (val - TRIANGLE_ROTATION_BASE) * TRIANGLE_ROTATION_STEP;
-    return {
-      type: 'path',
-      props: { d: 'M 0 0 L 1 0 L 0 1 Z' },
-      rotation
-    };
+    return { type: ShapeType.Triangle, rotation };
   }
-
-  // Value is 15.
-  return { type: 'rect', props: { x: 0.2, y: 0.2, width: 0.6, height: 0.6 } };
+  // Value is 15
+  return { type: ShapeType.SmallRect, rotation: 0 };
 };
 
 /**
- * Generates the render data for a specific grid cell.
- * @param x - The x-coordinate on the grid.
- * @param y - The y-coordinate on the grid.
- * @param hash - The pre-calculated hash.
- * @returns The cell render object or null if empty.
+ * Builds the abstract 5x5 grid of shapes based on the hash.
+ * @param hash - The deterministic hash derived from the seed.
+ * @returns A 2D array of grid cell data.
  */
-const generateCell = (x: number, y: number, hash: number): GridCell | null => {
-  // Logic: mirror columns (0 mirrors 4, 1 mirrors 3).
-  const sourceX = x > PIVOT_INDEX ? GRID_SIZE - 1 - x : x;
-  const cellId = y * UNIQUE_COLS + sourceX;
+const generateGrid = (hash: number): GridCellData[][] => {
+  const grid: GridCellData[][] = Array.from({ length: GRID_SIZE }, () =>
+    Array.from({ length: GRID_SIZE }, () => ({ type: ShapeType.None, rotation: 0 }))
+  );
 
-  // Extract 4 bits of entropy per unique cell.
-  const val = (hash >> cellId) & ENTROPY_MASK;
-  const shape = getShapeConfig(val);
+  for (let y = 0; y < GRID_SIZE; y++) {
+    for (let x = 0; x < GRID_SIZE; x++) {
+      // Mirroring logic: Columns 3 and 4 mirror 1 and 0.
+      const sourceX = x > PIVOT_INDEX ? GRID_SIZE - 1 - x : x;
+      const cellId = y * UNIQUE_COLS + sourceX;
+      const val = (hash >> cellId) & ENTROPY_MASK;
+      grid[y][x] = getShapeData(val);
+    }
+  }
+  return grid;
+};
 
-  if (!shape) {
-    return null;
+/**
+ * Calculates the maximum width for a mergeable rectangle starting at (x,y).
+ * @param x - The starting x-coordinate of the potential merge.
+ * @param y - The starting y-coordinate of the potential merge.
+ * @param grid - The complete grid data structure.
+ * @param visited - The matrix of cells that have already been processed.
+ * @returns The width (number of cells) of the mergeable area.
+ */
+const getMergeWidth = (
+  x: number,
+  y: number,
+  grid: GridCellData[][],
+  visited: boolean[][]
+): number => {
+  let width = 1;
+  while (
+    x + width < GRID_SIZE &&
+    grid[y][x + width].type === ShapeType.FullRect &&
+    !visited[y][x + width]
+  ) {
+    width++;
+  }
+  return width;
+};
+
+/**
+ * Checks if a row segment can be added to the current merge block.
+ * @param x - The starting x-coordinate of the block.
+ * @param y - The starting y-coordinate of the block.
+ * @param currentHeight - The current height offset being checked.
+ * @param width - The determined width of the block.
+ * @param grid - The complete grid data structure.
+ * @param visited - The matrix of cells that have already been processed.
+ * @returns True if the row segment matches the block criteria, otherwise false.
+ */
+const canExtendHeight = (
+  x: number,
+  y: number,
+  currentHeight: number,
+  width: number,
+  grid: GridCellData[][],
+  visited: boolean[][]
+): boolean => {
+  const checkY = y + currentHeight;
+  if (checkY >= GRID_SIZE) {
+    return false;
   }
 
-  let transform = `translate(${x} ${y})`;
-
-  // Logic: apply rotation if the shape configuration specifies it (e.g., triangles).
-  if (shape.rotation !== undefined) {
-    transform += ` rotate(${shape.rotation} 0.5 0.5)`;
+  for (let k = 0; k < width; k++) {
+    if (grid[checkY][x + k].type !== ShapeType.FullRect || visited[checkY][x + k]) {
+      return false;
+    }
   }
+  return true;
+};
+
+/**
+ * Calculates the maximum height for a mergeable rectangle given a fixed width.
+ * @param x - The starting x-coordinate of the block.
+ * @param y - The starting y-coordinate of the block.
+ * @param width - The confirmed width of the block.
+ * @param grid - The complete grid data structure.
+ * @param visited - The matrix of cells that have already been processed.
+ * @returns The height (number of cells) of the mergeable area.
+ */
+const getMergeHeight = (
+  x: number,
+  y: number,
+  width: number,
+  grid: GridCellData[][],
+  visited: boolean[][]
+): number => {
+  let height = 1;
+  while (canExtendHeight(x, y, height, width, grid, visited)) {
+    height++;
+  }
+  return height;
+};
+
+/**
+ * Marks a block of cells as visited.
+ * @param x - The starting x-coordinate.
+ * @param y - The starting y-coordinate.
+ * @param width - The width of the block to mark.
+ * @param height - The height of the block to mark.
+ * @param visited - The visited state matrix to update.
+ */
+const markVisited = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  visited: boolean[][]
+): void => {
+  for (let dy = 0; dy < height; dy++) {
+    for (let dx = 0; dx < width; dx++) {
+      visited[y + dy][x + dx] = true;
+    }
+  }
+};
+
+/**
+ * Orchestrates the greedy meshing for a rectangle and returns its path.
+ * Refactored to reduce cognitive complexity.
+ * @param x - The starting x-coordinate.
+ * @param y - The starting y-coordinate.
+ * @param grid - The complete grid data.
+ * @param visited - The state map of processed cells.
+ * @returns The SVG path string for the merged rectangle.
+ */
+const getMergedRectPath = (
+  x: number,
+  y: number,
+  grid: GridCellData[][],
+  visited: boolean[][]
+): string => {
+  const width = getMergeWidth(x, y, grid, visited);
+  const height = getMergeHeight(x, y, width, grid, visited);
+
+  markVisited(x, y, width, height, visited);
+
+  // Use rounding to ensure clean coordinates
+  const x1 = rnd(x);
+  const y1 = rnd(y);
+  const x2 = rnd(x + width);
+  const y2 = rnd(y + height);
+
+  return `M${x1},${y1} L${x2},${y1} L${x2},${y2} L${x1},${y2} Z `;
+};
+
+/**
+ * Rotate a point around a center (0.5, 0.5) and translate to grid position (x, y).
+ * @param p - The point to transform.
+ * @param angleDeg - Rotation angle in degrees.
+ * @param x - Grid x offset.
+ * @param y - Grid y offset.
+ * @returns The transformed point.
+ */
+const transformPoint = (p: Point, angleDeg: number, x: number, y: number): Point => {
+  const rad = (angleDeg * Math.PI) / HALF_TURN_DEGREES;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+
+  const px = p.x - HALF_CELL;
+  const py = p.y - HALF_CELL;
+
+  const rx = px * cos - py * sin;
+  const ry = px * sin + py * cos;
 
   return {
-    id: `${x}-${y}`,
-    type: shape.type,
-    props: shape.props,
-    transform
+    x: rx + HALF_CELL + x,
+    y: ry + HALF_CELL + y
   };
 };
 
 /**
- * Generates the flattened list of cells for the 5x5 grid.
- * Logic: returns a flat array to avoid nested templates and reduce loop depth.
+ * Generates the SVG path for non-mergeable shapes (Circle, Triangle, SmallRect).
+ * @param x - The x-coordinate.
+ * @param y - The y-coordinate.
+ * @param cell - The cell data containing type and rotation.
+ * @returns The SVG path string.
  */
-const cells = computed<GridCell[]>(() => {
+const getStandardShapePath = (x: number, y: number, cell: GridCellData): string => {
+  if (cell.type === ShapeType.SmallRect) {
+    const rx = rnd(x + SMALL_RECT_INSET);
+    const ry = rnd(y + SMALL_RECT_INSET);
+    const s = rnd(SMALL_RECT_SIZE);
+    return `M${rx},${ry} h${s} v${s} h-${s} Z `;
+  }
+
+  if (cell.type === ShapeType.Circle) {
+    const cx = rnd(x + HALF_CELL);
+    const cy = rnd(y + HALF_CELL);
+    const r = rnd(HALF_CELL);
+    // Draw two semicircles
+    return `M${cx - r},${cy} A${r},${r} 0 1,0 ${cx + r},${cy} A${r},${r} 0 1,0 ${cx - r},${cy} Z `;
+  }
+
+  if (cell.type === ShapeType.Triangle) {
+    const points: Point[] = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: 1 }
+    ];
+
+    const tp = points.map((p) => transformPoint(p, cell.rotation, x, y));
+
+    if (tp.length === TRIANGLE_VERTICES) {
+      return `M${rnd(tp[0].x)},${rnd(tp[0].y)} L${rnd(tp[1].x)},${rnd(tp[1].y)} L${rnd(tp[2].x)},${rnd(tp[2].y)} Z `;
+    }
+  }
+
+  return '';
+};
+
+/**
+ * Processes a single cell and determines which path generation strategy to use.
+ * Helper function to reduce the complexity of the main loop.
+ * @param x - The x-coordinate of the cell.
+ * @param y - The y-coordinate of the cell.
+ * @param grid - The complete grid data structure.
+ * @param visited - The matrix of cells that have already been processed.
+ * @returns The SVG path command for this cell or merged block.
+ */
+const processCell = (
+  x: number,
+  y: number,
+  grid: GridCellData[][],
+  visited: boolean[][]
+): string => {
+  if (visited[y][x]) {
+    return '';
+  }
+
+  const cell = grid[y][x];
+
+  if (cell.type === ShapeType.None) {
+    visited[y][x] = true;
+    return '';
+  }
+
+  if (cell.type === ShapeType.FullRect) {
+    return getMergedRectPath(x, y, grid, visited);
+  }
+
+  visited[y][x] = true;
+  return getStandardShapePath(x, y, cell);
+};
+
+/**
+ * Generates the flattened SVG Path Data string for the entire grid.
+ * Implements "Greedy Meshing" to optimize rendering performance and visual quality.
+ */
+const combinedPath = computed(() => {
   const h = generateHash(props.seed);
-  const list: GridCell[] = [];
+  const grid = generateGrid(h);
+
+  // Explicitly type the iterator return to satisfy TypeScript assignment
+  const visited: boolean[][] = Array.from({ length: GRID_SIZE }, (): boolean[] =>
+    Array.from({ length: GRID_SIZE }, () => false)
+  );
+
+  let d = '';
 
   for (let y = 0; y < GRID_SIZE; y++) {
     for (let x = 0; x < GRID_SIZE; x++) {
-      const cell = generateCell(x, y, h);
-      if (cell) {
-        list.push(cell);
-      }
+      d += processCell(x, y, grid, visited);
     }
   }
-  return list;
+
+  return d;
 });
 </script>
 
 <template>
-  <svg
-    height="100%"
-    shape-rendering="crispEdges"
-    viewBox="0 0 5 5"
-    width="100%"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg height="100%" viewBox="0 0 5 5" width="100%" xmlns="http://www.w3.org/2000/svg">
     <rect :fill="theme.bg" height="5" width="5" />
 
-    <g v-for="cell in cells" :key="cell.id" :transform="cell.transform">
-      <rect v-if="cell.type === 'rect'" :fill="theme.fg" v-bind="cell.props" />
-      <circle v-else-if="cell.type === 'circle'" :fill="theme.fg" v-bind="cell.props" />
-      <path v-else-if="cell.type === 'path'" :fill="theme.fg" v-bind="cell.props" />
-    </g>
+    <path :d="combinedPath" :fill="theme.fg" />
   </svg>
 </template>

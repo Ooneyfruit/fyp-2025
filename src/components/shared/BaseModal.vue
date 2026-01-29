@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Primary responsibility: provides a robust, accessible modal dialog system
+ * Provides a robust, accessible modal dialog system
  * with built-in scroll locking, keyboard dismissal, and flexible sizing.
  */
 import { onUnmounted, watch } from 'vue';
@@ -27,13 +27,13 @@ const handleRequestClose = () => emit('request-close');
  * Monitors keyboard events to provide standard escape-key dismissal logic.
  * @param e - The keyboard event object.
  */
-const handleKeyDown = (e) => {
+const handleKeyDown = (e: KeyboardEvent) => {
   // Only trigger dismissal if the escape key is pressed while the modal is active.
   if (e.key === 'Escape' && props.show) handleRequestClose();
 };
 
 /**
- * Manage global side effects when the modal state changes.
+ * Manages global side effects when the modal state changes.
  */
 watch(
   () => props.show,
@@ -51,7 +51,7 @@ watch(
   { immediate: true }
 );
 
-// Ensure global side effects are cleared if the component is destroyed.
+// Ensures global side effects are cleared if the component is destroyed.
 onUnmounted(() => {
   document.body.style.overflow = '';
   globalThis.removeEventListener('keydown', handleKeyDown);
@@ -61,17 +61,10 @@ onUnmounted(() => {
 <template>
   <Teleport to="body">
     <Transition name="rd-modal" @after-leave="$emit('closed')">
-      <div
-        v-if="show"
-        aria-modal="true"
-        class="modal-root"
-        :class="[`size-${size}`]"
-        role="dialog"
-        tabindex="-1"
-      >
+      <div v-if="show" class="modal-root" :class="[`size-${size}`]">
         <div class="modal-overlay" @click="handleRequestClose"></div>
 
-        <div class="modal-container rd-card">
+        <dialog aria-modal="true" class="modal-container rd-card" open tabindex="-1">
           <header class="modal-header rd-card-header">
             <slot name="header">
               <h3 class="modal-title">{{ title }}</h3>
@@ -93,7 +86,7 @@ onUnmounted(() => {
           <footer v-if="$slots.footer" class="modal-footer">
             <slot name="footer" />
           </footer>
-        </div>
+        </dialog>
       </div>
     </Transition>
   </Teleport>
@@ -135,6 +128,14 @@ onUnmounted(() => {
   transform-origin: center;
   width: calc(100% - (var(--spacing-md) * 2));
   z-index: 1;
+}
+
+/* Resets default user-agent styles for the native dialog element. */
+dialog.modal-container {
+  border: none;
+  color: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 /* Sizing Logic: max-width definitions for various modal sizes. */

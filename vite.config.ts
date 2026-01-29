@@ -1,13 +1,13 @@
+/**
+ * PWA configuration options.
+ * Defines behaviour for offline access, asset caching, and manifest generation.
+ */
 import { fileURLToPath, URL } from 'node:url';
 
 import vue from '@vitejs/plugin-vue';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
 
-/**
- * PWA configuration options.
- * Defines behaviour for offline access, asset caching, and manifest generation.
- */
 const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'prompt',
   injectRegister: 'auto',

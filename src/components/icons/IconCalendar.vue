@@ -1,7 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a generic calendar icon for rota/schedule navigation.
+ * Calendar icon.
+ * Provides a generic calendar icon for rota/schedule navigation.
  */
+
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });
