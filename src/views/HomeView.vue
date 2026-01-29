@@ -1,7 +1,7 @@
 <script setup>
 /**
- * @file HomeView.vue
- * @description Main dashboard landing page.
+ * Main dashboard landing page.
+ * Default landing page. Not currently in use but held as an archive.
  */
 import { ref } from 'vue';
 
@@ -24,21 +24,21 @@ import { UserModal } from '@/features/users/usersApi';
  */
 
 /**
- * user - The current authenticated user.
+ * User - The current authenticated user.
  */
 
 /**
- * showToast - Displays a generic toast notification.
+ * ShowToast - Displays a generic toast notification.
  */
 
 /**
- * open - Opens the modal.
+ * Open - Opens the modal.
  */
 
 // --- Logic & State ---
 
-const { user } = (useAuth());
-const { showToast } = (useToast());
+const { user } = useAuth();
+const { showToast } = useToast();
 
 /**
  * State management for the user profile modal.

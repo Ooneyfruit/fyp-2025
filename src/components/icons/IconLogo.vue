@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides the standard RotaDent brand logo with dynamic stroke scaling.
+ * The letter R made to look like then hands of a clock line-art logo.
+ * Provides the standard RotaDent brand logo with dynamic stroke scaling.
  */
 
-// Define component properties with default weight matching the standard icon set.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

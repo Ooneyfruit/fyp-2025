@@ -1,20 +1,18 @@
 <script setup>
 /**
- * Primary responsibility: Provides a standardized, functional wrapper for small status
+ * Provides a standardized, functional wrapper for small status
  * indicators and categorization tags within the RotaDent design system.
  */
 
 defineProps({
   /**
    * The visual theme variation of the pill.
-   * This maps directly to the .rd-pill-{variant} utility classes in the global stylesheet.
+   * This maps directly to the .rd-pill-variant utility classes in the global stylesheet.
    */
   variant: {
     type: String,
     default: 'muted',
-    validator: (v) =>
-      ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes( (v)
-      )
+    validator: (v) => ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes(v)
   }
 });
 </script>

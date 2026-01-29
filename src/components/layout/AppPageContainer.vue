@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Standard page wrapper to ensure consistent padding and max-width constraints.
  * Now supports a 'fluid' mode for wide data tables.

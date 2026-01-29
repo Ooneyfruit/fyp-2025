@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable house icon for home or dashboard navigation.
+ * Icon of a home.
+ * Provides a scalable house icon for home or dashboard navigation.
  */
 
-// Define component properties with default visual styling.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

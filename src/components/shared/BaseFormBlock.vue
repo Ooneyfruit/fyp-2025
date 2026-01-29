@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Logical sectioning for forms.
  * Provides consistent spacing and headers for form blocks.

@@ -8,13 +8,13 @@ import { ref } from 'vue';
 
 import BaseButton from '@/components/shared/BaseButton.vue';
 import { db } from '@/services/firebase';
-
+
 const logs = ref([]);
 const loading = ref(false);
 
 /**
  * Appends a message to the logs.
- * @param msg - The message to log
+ * @param msg - The message to log.
  */
 const addLog = (msg) => {
   logs.value.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
@@ -23,9 +23,9 @@ const addLog = (msg) => {
 /**
  * Checks and repairs a single user document.
  * Determines if the document ID matches the required format and adds operations to the batch.
- * @param d - The document snapshot to process
- * @param batch - The write batch to populate
- * @returns True if the document was repaired, false otherwise
+ * @param d - The document snapshot to process.
+ * @param batch - The write batch to populate.
+ * @returns True if the document was repaired, false otherwise.
  */
 const repairDocument = (d, batch) => {
   const data = d.data();
@@ -66,9 +66,9 @@ const repairDocument = (d, batch) => {
 
 /**
  * Iterates through the snapshots and populates the batch with repair operations.
- * @param snap - The snapshot of documents to process
- * @param batch - The write batch to populate
- * @returns The count of documents migrated
+ * @param snap - The snapshot of documents to process.
+ * @param batch - The write batch to populate.
+ * @returns The count of documents migrated.
  */
 const processSnapshots = (snap, batch) => {
   let count = 0;
@@ -82,7 +82,7 @@ const processSnapshots = (snap, batch) => {
 
 /**
  * Handles errors occurring during the repair process.
- * @param error - The caught error object
+ * @param error - The caught error object.
  */
 const handleError = (error) => {
   if (error instanceof Error) {

@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides an inverted variation of the RotaDent logo for specific theme requirements.
+ * White-space version of logo with hands of clock to make out the letter R.
+ * Provides an inverted variation of the RotaDent logo for specific theme requirements.
  */
 
-// Define component properties with default weight matching the standard icon set.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

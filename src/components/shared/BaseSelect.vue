@@ -1,7 +1,7 @@
 <script setup>
 /**
  * Standardized form selection component.
- * Logic: Provides a visual wrapper for native selects with an animated chevron.
+ * Provides a visual wrapper for native selects with an animated chevron.
  */
 import IconChevronDown from '@/components/icons/IconChevronDown.vue';
 
@@ -13,7 +13,7 @@ defineProps({
   variant: {
     type: String,
     default: 'secondary',
-    validator: (v) => ['primary', 'secondary', 'danger'].includes((v))
+    validator: (v) => ['primary', 'secondary', 'danger'].includes(v)
   },
   fluid: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false }
@@ -26,7 +26,7 @@ const emit = defineEmits(['update:modelValue']);
  * @param event - The native change event.
  */
 const handleChange = (event) => {
-  const target = (event.target);
+  const target = event.target;
 
   if (!target) {
     return;

@@ -1,14 +1,13 @@
-/* src/features/users/composables/usePracticeUsers.js */
+/**
+ * Global cache management for user profiles.
+ * Moving these outside the function body ensures data persists across practice switches.
+ */
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
 import { db } from '@/services/firebase';
 
-/**
- * Global cache management for user profiles.
- * Moving these outside the function body ensures data persists across practice switches.
- */
 const globalProfileStore = ref({});
 const profileListeners = new Map(); // UID -> { unsub: Function, count: number }
 
@@ -22,7 +21,7 @@ export function usePracticeUsers() {
 
   /**
    * Increments the reference count and initializes a profile listener if needed.
-   * @param userRef - the Firestore reference to the user document.
+   * @param userRef - The Firestore reference to the user document.
    */
   const attachProfileListener = (userRef) => {
     const uid = userRef.id;
@@ -50,7 +49,7 @@ export function usePracticeUsers() {
 
   /**
    * Decrements the reference count and destroys the listener if no longer required.
-   * @param uid - the unique identifier for the user profile.
+   * @param uid - The unique identifier for the user profile.
    */
   const detachProfileListener = (uid) => {
     const active = profileListeners.get(uid);
@@ -68,7 +67,7 @@ export function usePracticeUsers() {
 
   /**
    * Initiates real-time synchronization for practice memberships.
-   * @param practiceId - the id of the practice to monitor.
+   * @param practiceId - The id of the practice to monitor.
    */
   const startLiveSync = (practiceId) => {
     if (listListener) listListener();

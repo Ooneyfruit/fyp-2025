@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * (needs description).
+ */
+
 import { computed } from 'vue';
 
 import IconEdit from '@/components/icons/IconEdit.vue';

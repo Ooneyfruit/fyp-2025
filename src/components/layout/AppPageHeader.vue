@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Primary page heading component.
  * Provides a standardized visual hierarchy for page titles and subtitles.

@@ -1,187 +1,117 @@
 <script setup lang="ts">
 /**
- * User data adapter for management interfaces.
- * Logic: dynamically switches between table and card visualisations based on container width.
+ * Data Adapter for User Management.
+ * Switches between Table and Card views based on available container width.
  */
-import { type Component, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import BaseCardList from '@/components/shared/BaseCardList.vue';
 import BaseTable from '@/components/shared/BaseTable.vue';
 import { useBreakpoints } from '@/composables/useBreakpoints';
-import { type FirestoreDate, type PracticeUser } from '@/features/users/userTypes';
 
 import UserActionButtons from './UserActionButtons.vue';
 import UserIdentity from './UserIdentity.vue';
-import UserListCard from './UserListCard.vue';
 import UserStatusPills from './UserStatusPills.vue';
 
-// Constants to eliminate magic numbers and improve maintainability.
-const MOBILE_LAYOUT_THRESHOLD = 62;
-const MILLISECONDS_IN_SECOND = 1000;
+const props = defineProps({ users: Array });
+defineEmits(['edit']);
 
-defineProps<{
-  /**
-   * The collection of practice users to display.
-   */
-  users: PracticeUser[];
-}>();
+onMounted(() =>
+  console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`)
+);
 
-const emit = defineEmits<(e: 'edit', item: PracticeUser) => void>();
+const adapterRoot = ref(null);
 
-const adapterRoot = ref<HTMLElement | null>(null);
+// Adjusted threshold to 62rem (approx 992px).
+// Increased to prevent the actions column from clipping before the switch to mobile view occurs.
+const { isMobile } = useBreakpoints(adapterRoot, 62);
 
-// Observe the root container width to trigger responsive layout shifts.
-const { isMobile } = useBreakpoints(adapterRoot, MOBILE_LAYOUT_THRESHOLD);
-
-/**
- * Formats a raw timestamp or numeric value into a readable UK date string.
- * @param ts - The raw timestamp data to format (Firestore Timestamp, seconds object, or number).
- * @returns The formatted date string (e.g. "01 Jan 2023") or null if input is invalid.
- */
-const formatDate = (ts: FirestoreDate): string | null => {
-  if (!ts) {
-    return null;
-  }
-
-  let dateObj: Date;
-
-  // Handle Firestore Timestamp objects with native toDate methods.
-  if (typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function') {
-    dateObj = ts.toDate();
-  } else if (typeof ts === 'object' && 'seconds' in ts) {
-    // Handle plain objects containing second-based offsets.
-    dateObj = new Date(Number(ts.seconds) * MILLISECONDS_IN_SECOND);
-  } else {
-    // Fallback to direct numeric conversion for milliseconds.
-    dateObj = new Date(Number(ts));
-  }
-
-  return dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+const formatDate = (ts) => {
+  if (!ts) return null;
+  const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000 || ts);
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
 /**
- * Interface for Table Header Configuration.
- * Explicitly defining this prevents implicit 'any' errors in complex object literals.
- * Updated to use specific PracticeUser type instead of 'any', satisfying ESLint.
+ * The 'member' column uses minmax() to enforce readability.
+ * Calculation: Icon (2.25rem) + Gap (0.75rem) + Text (4.5rem) + Padding (~2rem) = ~9.5rem.
+ * Has min-width set to 10rem to guarantee the text is at least twice the icon width.
  */
-interface TableHeader {
-  /**
-   * Unique identifier for the column.
-   */
-  key: string;
-  /**
-   * Display label for the column header.
-   */
-  label: string;
-  /**
-   * CSS grid width specification.
-   */
-  width: string;
-  /**
-   * Optional custom component to render the cell content.
-   */
-  component?: Component;
-  /**
-   * Optional function to generate props for the custom component.
-   */
-  props?: (item: PracticeUser) => Record<string, unknown>;
-  /**
-   * Optional function to format the raw value into a display string.
-   */
-  formatter?: (val: unknown, item: PracticeUser) => string | null;
-  /**
-   * Optional CSS class to apply to the cell.
-   */
-  cellClass?: string;
-  /**
-   * Optional text alignment specification.
-   */
-  align?: 'left' | 'centre' | 'right';
-  /**
-   * Optional function to bind event listeners to the custom component.
-   */
-  listeners?: (item: PracticeUser) => Record<string, unknown>;
-}
-
-/**
- * Configuration for the data table headers using component injection.
- */
-const userHeaders: TableHeader[] = [
-  {
-    key: 'member',
-    label: 'Member',
-    width: 'minmax(10rem, 1fr)',
-    component: UserIdentity,
-    props: (item) => ({ profile: item })
-  },
-  {
-    key: 'role',
-    label: 'Role',
-    width: 'min-content',
-    component: UserStatusPills,
-    props: (item) => ({ member: item, type: 'role' })
-  },
-  {
-    key: 'status',
-    label: 'Status',
-    width: 'min-content',
-    component: UserStatusPills,
-    props: (item) => ({ member: item, type: 'admin' })
-  },
-  {
-    key: 'contract',
-    label: 'Contract',
-    width: 'min-content',
-    component: UserStatusPills,
-    props: (item) => ({ member: item, type: 'contract' })
-  },
-  {
-    key: 'joined',
-    label: 'Joined',
-    width: '8.5rem',
-    formatter: (_, item) => formatDate(item.start_date),
-    cellClass: 'date-text'
-  },
-  {
-    key: 'endDate',
-    label: 'End Date',
-    width: '8.5rem',
-    formatter: (_, item) => (item.end_date ? formatDate(item.end_date) : '—'),
-    cellClass: 'date-text'
-  },
-  {
-    key: 'actions',
-    label: 'Actions',
-    width: 'min-content',
-    align: 'centre',
-    component: UserActionButtons,
-    listeners: (item) => ({
-      edit: () => emit('edit', item)
-    })
-  }
+const userHeaders = [
+  { key: 'member', label: 'Member', width: 'minmax(10rem, 1fr)' },
+  { key: 'role', label: 'Role', width: 'min-content' },
+  { key: 'status', label: 'Status', width: 'min-content' },
+  { key: 'contract', label: 'Contract', width: 'min-content' },
+  { key: 'joined', label: 'Joined', width: '8.5rem' },
+  { key: 'endDate', label: 'End Date', width: '8.5rem' },
+  { key: 'actions', label: 'Actions', width: 'min-content', align: 'center' }
 ];
 </script>
 
 <template>
   <div ref="adapterRoot" class="adapter-container">
     <div v-if="!users || users.length === 0" class="loading-overlay">
-      <p>Synchronising practice identities...</p>
+      <p>Synchronizing Practice Identities...</p>
     </div>
 
-    <BaseTable v-else-if="!isMobile" :headers="userHeaders as any" :items="users as any" />
+    <BaseTable v-else-if="!isMobile" :headers="userHeaders" :items="users">
+      <template #cell(member)="{ item }">
+        <UserIdentity :profile="item.profile" />
+      </template>
 
-    <BaseCardList
-      v-else
-      :card-component="UserListCard"
-      :items="users"
-      min-card-width="18rem"
-      @edit="(item: PracticeUser) => emit('edit', item)"
-    />
+      <template #cell(role)="{ item }">
+        <UserStatusPills :member="item" type="role" />
+      </template>
+
+      <template #cell(status)="{ item }">
+        <UserStatusPills :member="item" type="admin" />
+      </template>
+
+      <template #cell(contract)="{ item }">
+        <UserStatusPills :member="item" type="contract" />
+      </template>
+
+      <template #cell(joined)="{ item }">
+        <span class="date-text">{{ formatDate(item.start_date) }}</span>
+      </template>
+
+      <template #cell(endDate)="{ item }">
+        <span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span>
+      </template>
+
+      <template #cell(actions)="{ item }">
+        <UserActionButtons @edit="$emit('edit', item)" />
+      </template>
+    </BaseTable>
+
+    <BaseCardList v-else :items="users" min-card-width="18rem">
+      <template #card-header="{ item }">
+        <div class="card-identity-wrapper">
+          <UserIdentity :profile="item.profile" />
+          <UserActionButtons class="card-edit-btn" @edit="$emit('edit', item)" />
+        </div>
+      </template>
+      <template #card-body="{ item }">
+        <div class="detail-row">
+          <span class="label">Role</span><UserStatusPills :member="item" type="role" />
+        </div>
+        <div class="detail-row">
+          <span class="label">Status</span><UserStatusPills :member="item" type="admin" />
+        </div>
+        <div class="detail-row">
+          <span class="label">Joined</span
+          ><span class="date-text">{{ formatDate(item.start_date) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Ends</span
+          ><span class="date-text">{{ item.end_date ? formatDate(item.end_date) : '—' }}</span>
+        </div>
+      </template>
+    </BaseCardList>
   </div>
 </template>
 
 <style scoped>
-/* Main container: base styling for the responsive data adapter. */
 .adapter-container {
   min-height: 200px;
   position: relative;
@@ -189,7 +119,6 @@ const userHeaders: TableHeader[] = [
   width: 100%;
 }
 
-/* Loading: placeholder state for asynchronous data fetching. */
 .loading-overlay {
   align-items: center;
   color: var(--text-muted);
@@ -199,10 +128,33 @@ const userHeaders: TableHeader[] = [
   justify-content: center;
 }
 
-/* Typography: standardisation for date text appearance across layouts. */
-:deep(.date-text) {
+.date-text {
   color: var(--text-main);
   font-size: 0.85rem;
   white-space: nowrap;
+}
+
+/* Layout: Flex container for the card header. */
+.card-identity-wrapper {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  width: 100%; /* Ensure the wrapper fills the card header width so space-between works */
+}
+
+.detail-row {
+  align-items: center;
+  display: grid;
+  gap: var(--spacing-sm);
+  grid-template-columns: 6.25rem 1fr;
+  margin-bottom: var(--spacing-xs);
+}
+
+.detail-row .label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 </style>

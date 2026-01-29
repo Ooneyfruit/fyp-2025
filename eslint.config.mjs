@@ -1,20 +1,25 @@
+/**
+ * Centralised ESLint configuration for the RotaDent project.
+ * Enforces strict architectural boundaries, code complexity limits, and TSDoc standards.
+ */
+
 import process from 'node:process';
 
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginImport from 'eslint-plugin-import';
-import pluginJsdoc from 'eslint-plugin-jsdoc';
 import pluginPromise from 'eslint-plugin-promise';
 import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
 import pluginSonar from 'eslint-plugin-sonarjs';
+import pluginTsdoc from 'eslint-plugin-tsdoc';
 import pluginUnicorn from 'eslint-plugin-unicorn';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-// Import the custom local rule to discourage nested templates.
+// Import custom local rules
+import enforceFileHeader from './tools/eslint/rules/enforceFileHeader.js';
 import noNestedTemplate from './tools/eslint/rules/noNestedTemplate.js';
-// Import the custom local rule to enforce alias usage.
 import preferAlias from './tools/eslint/rules/preferAlias.js';
 
 /**
@@ -61,11 +66,7 @@ export default [
         }
       },
       // Register virtual modules to prevent unresolvable path errors for Vite plugins.
-      'import/core-modules': ['virtual:pwa-register/vue'],
-      // Configure JSDoc plugin to understand TypeScript syntax (like import types)
-      jsdoc: {
-        mode: 'typescript'
-      }
+      'import/core-modules': ['virtual:pwa-register/vue']
     }
   },
 
@@ -73,7 +74,6 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
-  pluginJsdoc.configs['flat/recommended-typescript'],
   pluginPromise.configs['flat/recommended'],
   pluginSonar.configs.recommended,
   pluginUnicorn.configs['flat/recommended'],
@@ -96,7 +96,8 @@ export default [
   {
     files: ['**/*.{js,mjs,cjs,ts,vue}'],
     plugins: {
-      'simple-import-sort': pluginSimpleImportSort
+      'simple-import-sort': pluginSimpleImportSort,
+      tsdoc: pluginTsdoc
     },
     rules: {
       // --- Console & debugging ---
@@ -150,12 +151,8 @@ export default [
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/no-null': 'off',
 
-      // --- JSDoc strictness ---
-      'jsdoc/require-description': 'error',
-      'jsdoc/require-param-type': 'off', // Types are now handled by TypeScript
-      'jsdoc/require-returns-type': 'off', // Types are now handled by TypeScript
-      'jsdoc/check-types': 'off', // Types are now handled by TypeScript
-      'jsdoc/no-undefined-types': 'off', // Types are now handled by TypeScript
+      // --- TSDoc strictness ---
+      'tsdoc/syntax': 'warn',
 
       // --- TypeScript Specific Overrides ---
       // Disable the base JS rule to prevent false positives, enable the TS version.
@@ -172,12 +169,14 @@ export default [
     plugins: {
       rotadent: {
         rules: {
+          'enforce-file-header': enforceFileHeader,
           'no-nested-template': noNestedTemplate,
           'prefer-alias': preferAlias
         }
       }
     },
     rules: {
+      'rotadent/enforce-file-header': 'error',
       'rotadent/no-nested-template': 'warn',
       'rotadent/prefer-alias': 'error'
     }

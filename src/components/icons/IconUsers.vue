@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primary responsibility: provides a scalable icon representing teams, staff, or user management.
+ * Person silhouette line-art for profile icon.
+ * Provides a scalable icon representing teams, staff, or user management.
  */
 
-// Define component properties for visual customization.
 defineProps({
   strokeWidth: { type: [Number, String], default: 2 }
 });

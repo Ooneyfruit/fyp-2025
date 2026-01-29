@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import IconIdenticon from '@/components/icons/IconIdenticon.vue';
-import { type UserProfile } from '@/features/users/userTypes';
-
 /**
  * Displays user identity with dynamic support for synchronized Google icons.
  */
+
+import IconIdenticon from '@/components/icons/IconIdenticon.vue';
+import { type UserProfile } from '@/features/users/userTypes';
+
 withDefaults(
   defineProps<{
     profile?: UserProfile | Partial<UserProfile>;

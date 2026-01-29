@@ -1,6 +1,7 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Standardized chevron icon for directional indicators.
+ * Down-pointing chevron icon.
+ * Standardised chevron icon for directional indicators.
  * Used primarily in dropdowns and select components.
  */
 </script>

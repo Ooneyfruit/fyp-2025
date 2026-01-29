@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * (needs description).
+ */
+
 import { computed } from 'vue';
 
 import BaseTable from '@/components/shared/BaseTable.vue';
@@ -20,8 +24,8 @@ const { getRoleColor } = useRotaColors();
 
 /**
  * Converts a string to sentence case (first letter upper, rest lower).
- * @param str - The input string
- * @returns Formatted string
+ * @param str - The input string.
+ * @returns Formatted string.
  */
 const toSentenceCase = (str) => {
   if (!str) return '';
@@ -55,8 +59,8 @@ const tableHeaders = computed(() => {
 
 /**
  * Generates style object for role badges based on role ID.
- * @param roleId - The ID of the role
- * @returns Style object with color properties
+ * @param roleId - The ID of the role.
+ * @returns Style object with color properties.
  */
 const getRoleBadgeStyle = (roleId) => {
   const c = getRoleColor(roleId);
@@ -102,7 +106,7 @@ const getRoleBadgeStyle = (roleId) => {
 
     <template #empty>
       <div class="empty-state-content">
-        <p>No roles configured. Please add Roles and Surgeries.</p>
+        <p>Loading...</p>
       </div>
     </template>
   </BaseTable>

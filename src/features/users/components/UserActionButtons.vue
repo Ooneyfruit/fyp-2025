@@ -1,4 +1,7 @@
 <script setup lang="ts">
+/**
+ * (needs description).
+ */
 import IconEdit from '@/components/icons/IconEdit.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 

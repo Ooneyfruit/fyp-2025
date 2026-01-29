@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Component logic for monitoring global authentication readiness.
  */
@@ -20,8 +20,7 @@ const { isAuthReady } = useAuth();
 </template>
 
 <style scoped>
-/** * Layout: Component-specific overrides 
- */
+/* Layout: Component-specific overrides */
 .app-auth-guard {
   /* Match the global app background to ensure seamless transitions during initial load */
   background-color: var(--bg-app);

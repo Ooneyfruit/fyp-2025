@@ -1,15 +1,21 @@
-<script setup>
+<script setup lang="ts">
 /**
  * Primary responsibility: provides a flexible grid layout for rendering data objects.
  * Automatically adjusts columns based on available width using CSS Grid.
- * Reconfigured to use component injection instead of slots to avoid template nesting.
+ * Uses slot forwarding via props to render headers without violating nesting rules.
  */
-import { computed } from 'vue';
+import { type Component, type PropType, useSlots } from 'vue';
 
-const props = defineProps({
+import BaseCard from './BaseCard.vue';
+
+// Retrieve slots to pass them programmatically to children.
+const slots = useSlots();
+
+defineProps({
   // The array of data objects to be transformed into card elements.
   items: {
-    type: (Array),
+    // Uses Record<string, unknown> to avoid 'any' while allowing dynamic property access.
+    type: Array as PropType<Array<Record<string, unknown>>>,
     required: true
   },
   // The object property name used to provide a unique key for list reconciliation.
@@ -28,20 +34,14 @@ const props = defineProps({
     default: '300px'
   },
   /**
-   * Component to render for each item.
-   * This component must accept an 'item' prop and handle its own internal layout.
+   * Optional component to render in the card header.
+   * passed down to BaseCard for rendering.
    */
-  cardComponent: {
-    type: Object,
-    required: true
+  headerComponent: {
+    type: Object as PropType<Component>,
+    default: null
   }
 });
-
-/**
- * Accessor for list items with type safety.
- * Logic: ensures 'item' is treated as a record for key access.
- */
-const typedItems = computed(() => (props.items));
 </script>
 
 <template>
@@ -52,19 +52,22 @@ const typedItems = computed(() => (props.items));
       '--min-card-width': minCardWidth
     }"
   >
-    <component
-      :is="cardComponent"
-      v-for="(item, index) in typedItems"
-      :key="item[keyField] || index"
-      :item="item"
-      v-on="$attrs"
-    />
+    <BaseCard
+      v-for="(item, index) in items"
+      :key="(item[keyField] as string | number) || index"
+      :header-component="headerComponent"
+      :header-props="{ item }"
+      :header-slot="slots['card-header']"
+    >
+      <slot :item="item" name="card-body" />
+    </BaseCard>
   </div>
 </template>
 
 <style scoped>
 /* * Layout: Responsive grid container using auto-fit.
- * 'auto-fit' collapses empty tracks, ensuring items expand to fill the row.
+ * 'auto-fit' collapses empty tracks, ensuring items expand to fill the row 
+ * even if there are fewer items than available columns (space filling).
  */
 .card-list {
   display: grid;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Orchestrates the user management modal workflow.
- * Logic: handles dual-write operations to both 'users' and 'practice_users' collections.
+ * Handles dual-write operations to both 'users' and 'practice_users' collections.
  */
 import {
   collection,
