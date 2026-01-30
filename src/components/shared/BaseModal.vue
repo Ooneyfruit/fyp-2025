@@ -5,6 +5,11 @@
  * Declared in a separate script block to exist at the module level (singleton).
  */
 let openModalCount = 0;
+
+export default {
+  // Explicit name required for recursive usage in the template.
+  name: 'BaseModal'
+};
 </script>
 
 <script setup lang="ts">
@@ -14,10 +19,12 @@ let openModalCount = 0;
  * - Stack-aware scroll locking (via shared module state).
  * - Keyboard dismissal.
  * - Flexible sizing and footer injection.
+ * - Integrated "Unsaved Changes" protection logic.
  */
-import { type Component, onUnmounted, watch } from 'vue';
+import { type Component, computed, onUnmounted, ref, watch } from 'vue';
 
 import IconClose from '@/components/icons/IconClose.vue';
+import BaseModalConfirmationFooter from '@/components/shared/BaseModalConfirmationFooter.vue';
 
 // Props are defined inline to avoid "exported variable using private name" (VLS)
 // and "unused exported type" (Knip) errors simultaneously.
@@ -44,6 +51,28 @@ const props = withDefaults(
      * Essential for modals that are conditionally rendered (v-if) in the parent.
      */
     appear?: boolean;
+    /**
+     * If true, attempts to close via UI interactions (click/escape) will trigger a confirmation.
+     */
+    preventClose?: boolean;
+    /**
+     * Title for the internal exit confirmation modal.
+     */
+    closeConfirmationTitle?: string;
+    /**
+     * Message body for the internal exit confirmation modal.
+     */
+    closeConfirmationMessage?: string;
+    /**
+     * Component to render as the footer for the confirmation modal.
+     * Defaults to a standard "Keep editing / Discard changes" setup.
+     */
+    closeConfirmationFooter?: Component;
+    /**
+     * Props to pass to the confirmation footer component.
+     * The modal will automatically inject 'onStay' and 'onDiscard' handlers.
+     */
+    closeConfirmationFooterProps?: Record<string, unknown>;
   }>(),
   {
     title: 'Modal Window',
@@ -51,17 +80,58 @@ const props = withDefaults(
     size: 'md',
     footerComponent: undefined,
     footerProps: () => ({}),
-    appear: true
+    appear: true,
+    preventClose: false,
+    closeConfirmationTitle: 'Unsaved Changes',
+    closeConfirmationMessage: 'You have unsaved changes. Are you sure you want to discard them?',
+    closeConfirmationFooter: undefined,
+    closeConfirmationFooterProps: () => ({})
   }
 );
 
 // Define events for state management and cleanup notifications.
 const emit = defineEmits(['request-close', 'closed']);
 
+// Internal state for the exit confirmation dialog.
+const showExitConfirmation = ref(false);
+
 /**
  * Forwards a request to the parent component to toggle the visibility state.
+ * Intercepts the request if 'preventClose' is active.
  */
-const handleRequestClose = () => emit('request-close');
+const handleRequestClose = () => {
+  if (props.preventClose) {
+    showExitConfirmation.value = true;
+  } else {
+    emit('request-close');
+  }
+};
+
+/**
+ * Handler for the 'Stay' / 'Keep Editing' action in the confirmation modal.
+ */
+const handleStay = () => {
+  showExitConfirmation.value = false;
+};
+
+/**
+ * Handler for the 'Discard' action in the confirmation modal.
+ * Forces the parent to close by emitting the event directly.
+ */
+const handleDiscard = () => {
+  showExitConfirmation.value = false;
+  emit('request-close');
+};
+
+/**
+ * Computes the props for the confirmation footer.
+ * Merges user-provided props with the required action handlers.
+ */
+const resolvedConfirmationFooterProps = computed(() => ({
+  ...props.closeConfirmationFooterProps,
+  onStay: handleStay,
+  onDiscard: handleDiscard
+}));
 
 /**
  * Monitors keyboard events to provide standard escape-key dismissal logic.
@@ -69,7 +139,14 @@ const handleRequestClose = () => emit('request-close');
  */
 const handleKeyDown = (e: KeyboardEvent) => {
   // Only trigger dismissal if the escape key is pressed while the modal is active.
-  if (e.key === 'Escape' && props.show) handleRequestClose();
+  if (
+    e.key === 'Escape' &&
+    props.show && // If the confirmation is already open, let the user deal with that interaction specifically.
+    // Otherwise, attempt the standard close flow.
+    !showExitConfirmation.value
+  ) {
+    handleRequestClose();
+  }
 };
 
 // --- Scroll Locking Logic ---
@@ -108,6 +185,8 @@ watch(
   (isVisible) => {
     if (isVisible) {
       lockBody();
+      // Reset confirmation state when the modal re-opens.
+      showExitConfirmation.value = false;
     } else {
       unlockBody();
     }
@@ -150,6 +229,20 @@ onUnmounted(() => {
             <component :is="footerComponent" v-if="footerComponent" v-bind="footerProps" />
             <slot v-else name="footer" />
           </footer>
+
+          <BaseModal
+            :close-confirmation-footer="closeConfirmationFooter"
+            :footer-component="closeConfirmationFooter || BaseModalConfirmationFooter"
+            :footer-props="resolvedConfirmationFooterProps"
+            :show="showExitConfirmation"
+            size="sm"
+            :title="closeConfirmationTitle"
+            @request-close="showExitConfirmation = false"
+          >
+            <div class="confirmation-content">
+              <p>{{ closeConfirmationMessage }}</p>
+            </div>
+          </BaseModal>
         </dialog>
       </div>
     </Transition>
@@ -273,6 +366,11 @@ dialog.modal-container {
   border-bottom-right-radius: inherit;
   border-top: 1px solid var(--border-color);
   padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.confirmation-content {
+  color: var(--text-main);
+  padding: 1rem 0;
 }
 
 /* Animation: complex transitions for opacity and scale to create a high-quality feel. */

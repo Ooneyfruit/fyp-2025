@@ -19,9 +19,10 @@ This means at least the first letter of a comment or sentence should be in upper
 2. File Headers (MANDATORY)
    - Every file must start with a block comment describing its purpose.
    - This is enforced by the linter.
+   - Do not add @description as that is an invalid tag for TSDoc
    - Format:
      /**
-      * @description Brief summary of the module's responsibility.
+      * Brief summary of the module's responsibility.
       */
 
 3. TypeScript & Vue Script Blocks (TSDoc)

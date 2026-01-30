@@ -19,6 +19,7 @@ import BaseFormBlock from '@/components/shared/BaseFormBlock.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
 import BaseSelect from '@/components/shared/BaseSelect.vue';
 import { user as authUser } from '@/composables/useAuth';
+import { useModal } from '@/composables/useModal';
 import { useToast } from '@/composables/useToast';
 import { type PracticeRole } from '@/features/rota/rotaTypes';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
@@ -61,15 +62,10 @@ interface InboundUser {
 
 const { users } = usePracticeUsers();
 const { showToast } = useToast();
+const { isVisible, data: modalData, open, close } = useModal<InboundUser>();
 
-const isVisible = ref(false);
-const isEdit = ref(false);
 const saving = ref(false);
 const loadingRoles = ref(true);
-
-// State for the "Unsaved Changes" confirmation dialog.
-const showExitConfirmation = ref(false);
-
 const rolesList = ref<PracticeRole[]>([]);
 const initialState = ref('');
 
@@ -96,6 +92,9 @@ const form = ref<UserForm>(defaultForm());
 // Logic: checks if the session user is editing their own record.
 // Cast authUser to UserProfile to prevent potential inference issues.
 const isSelf = computed(() => form.value.user_id === (authUser.value as UserProfile)?.uid);
+
+// Logic: checks if this is an existing user or a new creation.
+const isEdit = computed(() => !!form.value.user_id && !!modalData.value);
 
 // Logic: prevents lockout by checking if the user is the only administrator left.
 const isLastAdmin = computed(() => {
@@ -183,46 +182,18 @@ const normaliseUserData = (u: InboundUser): UserForm => ({
 });
 
 /**
- * Prepares the form state for either user creation or updates.
- * @param userData - The user object to edit, or null for new user.
+ * Intercepts the open action to prepare the form state.
+ * @param userData - The user object to edit, or null/undefined for new user.
  */
-const open = (userData: unknown = null) => {
+const handleOpen = (userData?: InboundUser) => {
   deleteConfirmation.value = false;
-  showExitConfirmation.value = false;
 
-  if (userData) {
-    isEdit.value = true;
-    form.value = normaliseUserData(userData as InboundUser);
-  } else {
-    isEdit.value = false;
-    form.value = defaultForm();
-  }
+  form.value = userData ? normaliseUserData(userData) : defaultForm();
   initialState.value = JSON.stringify(form.value);
-  isVisible.value = true;
+  open(userData);
 };
 
-/**
- * Unified Close Method.
- * Intercepts closing attempts (Cancel btn, X icon, Escape key) to check for unsaved changes.
- */
-const close = () => {
-  if (isDirty.value) {
-    showExitConfirmation.value = true;
-  } else {
-    isVisible.value = false;
-  }
-};
-
-/**
- * Forces the modal to close, bypassing the dirty check.
- * Used when the user confirms they want to discard changes.
- */
-const forceClose = () => {
-  showExitConfirmation.value = false;
-  isVisible.value = false;
-};
-
-defineExpose({ open, close });
+defineExpose({ open: handleOpen, close });
 
 onMounted(async () => {
   try {
@@ -266,7 +237,7 @@ const handleDelete = async () => {
     const pId = currentUser.practiceRef.id;
     await deleteDoc(doc(db, 'practice_users', `${form.value.user_id}_${pId}`));
     showToast(`User ${form.value.name} access revoked.`);
-    forceClose(); // Use forceClose to ensure prompt doesn't trigger
+    close();
   } catch (error) {
     handleError(error, 'Failed to revoke access.');
   } finally {
@@ -327,14 +298,12 @@ const save = async () => {
     return;
   }
 
-  // Close the confirmation prompt if it's open, so the user sees the main form "Saving..." state.
-  showExitConfirmation.value = false;
   saving.value = true;
 
   try {
     await executeBatchSave(currentUser.practiceRef);
     showToast(isEdit.value ? 'User profile updated.' : 'New user created.');
-    forceClose();
+    close();
   } catch (error) {
     handleError(error);
   } finally {
@@ -348,22 +317,27 @@ const footerProps = computed(() => ({
   hasChanges: isDirty.value,
   saving: saving.value,
   isEdit: isEdit.value,
-  onClose: close // Passing the unified close method handles button click
+  onClose: close,
+  onSave: save
 }));
 
 // --- Footer Configuration (Confirmation Dialog) ---
-const confirmationFooterComponent = markRaw(UserModalConfirmation);
+// We reuse the specific UserModal confirmation footer which supports a 'Save' action.
+const confirmationFooter = markRaw(UserModalConfirmation);
 const confirmationFooterProps = computed(() => ({
-  onStay: () => (showExitConfirmation.value = false),
-  onDiscard: forceClose,
   onSave: save
 }));
 </script>
 
 <template>
   <BaseModal
+    :close-confirmation-footer="confirmationFooter"
+    :close-confirmation-footer-props="confirmationFooterProps"
+    close-confirmation-message="You have unsaved changes. What would you like to do?"
+    close-confirmation-title="Unsaved Changes"
     :footer-component="footerComponent"
     :footer-props="footerProps"
+    :prevent-close="isDirty"
     :show="isVisible"
     size="md"
     :title="isEdit ? 'Update user profile' : 'Register new user'"
@@ -447,19 +421,6 @@ const confirmationFooterProps = computed(() => ({
         </div>
       </BaseFormBlock>
     </form>
-
-    <BaseModal
-      :footer-component="confirmationFooterComponent"
-      :footer-props="confirmationFooterProps"
-      :show="showExitConfirmation"
-      size="sm"
-      title="Unsaved Changes"
-      @request-close="showExitConfirmation = false"
-    >
-      <div class="confirmation-content">
-        <p>You have unsaved changes. What would you like to do?</p>
-      </div>
-    </BaseModal>
   </BaseModal>
 </template>
 
@@ -493,11 +454,6 @@ const confirmationFooterProps = computed(() => ({
 }
 
 .skeleton-padding {
-  padding: 1rem 0;
-}
-
-.confirmation-content {
-  color: var(--text-main);
   padding: 1rem 0;
 }
 </style>
