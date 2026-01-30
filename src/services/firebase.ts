@@ -1,5 +1,5 @@
 /**
- * (needs description).
+ * Firebase project configuration.
  */
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
@@ -9,9 +9,6 @@ import {
   persistentMultipleTabManager
 } from 'firebase/firestore';
 
-/**
- * Firebase project configuration.
- */
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
