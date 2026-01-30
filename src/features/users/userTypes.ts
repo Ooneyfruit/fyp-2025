@@ -1,6 +1,7 @@
 /**
  * User domain models.
  * Defines the structure of user profiles, memberships, and roles.
+ * Provides Zod schemas and TypeScript interfaces for user-related data.
  */
 
 import { type DocumentReference, type Timestamp } from 'firebase/firestore';
@@ -43,7 +44,7 @@ export interface PracticeMembership {
   user: DocumentReference;
   practice: DocumentReference;
   role: string;
-  status?: 'active' | 'invited' | 'suspended'; // Added to fix TS error in RotaShiftModal
+  status?: 'active' | 'invited' | 'suspended';
   start_date: FirestoreDate;
   end_date?: FirestoreDate;
   is_administrator?: boolean;
@@ -51,12 +52,12 @@ export interface PracticeMembership {
 }
 
 /**
- * Represents a user row in the administration data table.
+ * Represents a fully hydrated user row in the administration data table.
+ * Combines the practice-specific membership details with the global user profile.
  */
-export interface PracticeUser extends UserProfile {
-  role: string;
-  status: 'active' | 'invited' | 'suspended';
-  is_employee?: boolean;
-  start_date?: FirestoreDate;
-  end_date?: FirestoreDate;
+export interface PracticeUser extends PracticeMembership {
+  /**
+   * The global user profile data associated with this membership.
+   */
+  profile: UserProfile;
 }
