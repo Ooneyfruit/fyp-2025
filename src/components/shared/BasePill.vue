@@ -1,24 +1,53 @@
 <script setup>
 /**
+ * (needs description).
+ */
+
+import { computed } from 'vue';
+
+/**
  * Provides a standardized, functional wrapper for small status
  * indicators and categorization tags within the RotaDent design system.
  */
 
-defineProps({
+const props = defineProps({
   /**
    * The visual theme variation of the pill.
-   * This maps directly to the .rd-pill-variant utility classes in the global stylesheet.
+   * Maps to .rd-pill-variant classes.
    */
   variant: {
     type: String,
     default: 'muted',
     validator: (v) => ['primary', 'success', 'warning', 'danger', 'admin', 'muted'].includes(v)
+  },
+  /**
+   * Optional custom colour overrides.
+   * Enables dynamic branding (e.g. for Rota Roles) while keeping standard pill geometry.
+   * Structure: `{ bg: '#hex', accent: '#hex' }`
+   */
+  customColors: {
+    type: Object,
+    default: null
   }
+});
+
+/**
+ * Dynamically computes styles to override class-based defaults
+ * only when customColors are provided.
+ */
+const styles = computed(() => {
+  if (!props.customColors) return {};
+
+  return {
+    backgroundColor: props.customColors.bg,
+    color: props.customColors.accent,
+    borderColor: props.customColors.accent
+  };
 });
 </script>
 
 <template>
-  <span class="rd-pill" :class="[`rd-pill-${variant}`]">
+  <span class="rd-pill" :class="[`rd-pill-${variant}`]" :style="styles">
     <div v-if="$slots.icon" aria-hidden="true" class="rd-pill-icon-frame">
       <slot name="icon" />
     </div>

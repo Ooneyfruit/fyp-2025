@@ -49,6 +49,7 @@ const handleClick = () => {
       :is-today="day.isToday"
       :is-weekend="day.isWeekend"
       :role-id="row.role.id"
+      :role-name="row.role.name"
       :shifts="getShifts(row.role.id, row.surgery.id, day.iso)"
       @click="handleClick"
     />
