@@ -1,8 +1,6 @@
 <script setup lang="ts">
 /**
- * Primary responsibility: provides a flexible grid layout for rendering data objects.
- * Automatically adjusts columns based on available width using CSS Grid.
- * Uses slot forwarding via props to render headers without violating nesting rules.
+ * Provides a flexible grid layout for rendering data objects. Automatically adjusts columns based on available width using CSS Grid and supports slot forwarding via props.
  */
 import { type Component, type PropType, useSlots } from 'vue';
 
@@ -40,6 +38,30 @@ defineProps({
   headerComponent: {
     type: Object as PropType<Component>,
     default: null
+  },
+  /**
+   * Optional props object to pass to the header component.
+   * Merged with the default `{ item }` prop.
+   */
+  headerProps: {
+    type: Object as PropType<Record<string, unknown>>,
+    default: () => ({})
+  },
+  /**
+   * Optional component to render in the card body.
+   * Replaces the default slot if provided.
+   */
+  bodyComponent: {
+    type: Object as PropType<Component>,
+    default: null
+  },
+  /**
+   * Optional props object to pass to the body component.
+   * Merged with the default `{ item }` prop.
+   */
+  bodyProps: {
+    type: Object as PropType<Record<string, unknown>>,
+    default: () => ({})
   }
 });
 </script>
@@ -56,10 +78,11 @@ defineProps({
       v-for="(item, index) in items"
       :key="(item[keyField] as string | number) || index"
       :header-component="headerComponent"
-      :header-props="{ item }"
+      :header-props="{ item, ...headerProps }"
       :header-slot="slots['card-header']"
     >
-      <slot :item="item" name="card-body" />
+      <component :is="bodyComponent" v-if="bodyComponent" v-bind="{ item, ...bodyProps }" />
+      <slot v-else :item="item" name="card-body" />
     </BaseCard>
   </div>
 </template>

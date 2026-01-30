@@ -4,14 +4,29 @@
  */
 
 /**
- * Finds the script block in a Vue SFC AST.
+ * Finds the line number where the script content begins in a Vue SFC.
+ * Uses text matching to be robust against parser AST differences (e.g., missing templates).
  *
- * @param node - The Program node.
- * @returns The script element node or undefined.
+ * @param sourceCode - The ESLint source code object.
+ * @returns The expected line number for the header (line after <script> tag), or 1.
  */
-function findVueScriptBlock(node) {
-  const children = node.templateBody ? node.templateBody.parent.children : node.body;
-  return children.find((child) => child.type === 'VElement' && child.name === 'script');
+function getVueScriptStartLine(sourceCode) {
+  const text = sourceCode.getText();
+  // Matches the first <script> opening tag, handling attributes and multiline tags.
+  const scriptRegex = /<script[^>]*>/;
+  const match = text.match(scriptRegex);
+
+  if (match) {
+    // Find the end index of the opening tag (">")
+    const endIndex = match.index + match[0].length;
+    // Get the line number of that closing bracket
+    const loc = sourceCode.getLocFromIndex(endIndex);
+    // Expect the comment to start on the next line
+    return loc.line + 1;
+  }
+
+  // Fallback for non-SFC or parse errors
+  return 1;
 }
 
 /**
@@ -51,10 +66,7 @@ export default {
         let expectedLine = 1;
 
         if (isVue) {
-          const scriptBlock = findVueScriptBlock(node);
-          if (scriptBlock) {
-            expectedLine = scriptBlock.loc.start.line + 1;
-          }
+          expectedLine = getVueScriptStartLine(sourceCode);
         }
 
         const headerComment = sourceCode
@@ -75,9 +87,13 @@ export default {
             const headerTemplate = `/**\n * (needs description).\n */\n`;
 
             if (isVue) {
-              const scriptBlock = findVueScriptBlock(node);
-              if (scriptBlock && scriptBlock.startTag) {
-                return fixer.insertTextAfter(scriptBlock.startTag, '\n' + headerTemplate);
+              // For Vue, we need to insert after the script tag.
+              // We rely on the text match again to find the insertion point.
+              const text = sourceCode.getText();
+              const match = text.match(/<script[^>]*>/);
+              if (match) {
+                const endIndex = match.index + match[0].length;
+                return fixer.insertTextAfterRange([match.index, endIndex], '\n' + headerTemplate);
               }
               return null;
             }
