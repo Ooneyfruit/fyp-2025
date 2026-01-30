@@ -8,6 +8,7 @@ import { type DocumentReference, Timestamp } from 'firebase/firestore';
 import { computed, markRaw, type PropType, ref, watch } from 'vue';
 
 import BaseModal from '@/components/shared/BaseModal.vue';
+import { isRoleMatch } from '@/features/rota/composables/useRotaRoleMatch';
 import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
 
@@ -41,6 +42,8 @@ interface MappedMember {
 interface ExtendedShift extends Shift {
   isTemp?: boolean;
   originalMember?: MappedMember;
+  // This roleName comes from the User Profile, distinct from Shift.role_name
+  roleName?: string;
 }
 
 const props = defineProps({
@@ -146,6 +149,7 @@ const currentStaffList = computed<ExtendedShift[]>(() => {
         // Ensure user_id is normalized to string for the UI
         user_id: sUserId,
         // Attach the Role Name if found, otherwise undefined (or 'Unknown')
+        // This is the CRITICAL field for RotaAssignedStaff to detect exceptions
         roleName: match?.roleName
       };
     });
@@ -185,11 +189,13 @@ const availableStaffList = computed(() => {
 });
 
 const recommendedStaff = computed(() => {
-  return availableStaffList.value.filter((m) => m.roleName === props.role?.name);
+  // Use shared logic to find matches
+  return availableStaffList.value.filter((m) => isRoleMatch(m.roleName, props.role?.name));
 });
 
 const otherStaff = computed(() => {
-  return availableStaffList.value.filter((m) => m.roleName !== props.role?.name);
+  // Use shared logic to find non-matches
+  return availableStaffList.value.filter((m) => !isRoleMatch(m.roleName, props.role?.name));
 });
 
 const hasChanges = computed(() => pendingAdds.value.length > 0 || pendingRemoves.value.length > 0);
