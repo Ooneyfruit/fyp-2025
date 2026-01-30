@@ -1,19 +1,53 @@
+<script lang="ts">
+/**
+ * Shared state to track the number of open modals across the application.
+ * This ensures the body scroll lock is only removed when the LAST modal closes.
+ * Declared in a separate script block to exist at the module level (singleton).
+ */
+let openModalCount = 0;
+</script>
+
 <script setup lang="ts">
 /**
- * Provides a robust, accessible modal dialog system
- * with built-in scroll locking, keyboard dismissal, and flexible sizing.
+ * Primary responsibility: Provides a robust, accessible modal dialog system.
+ * Features:
+ * - Stack-aware scroll locking (via shared module state)
+ * - Keyboard dismissal
+ * - Flexible sizing and footer injection
  */
-import { onUnmounted, watch } from 'vue';
+import { type Component, onUnmounted, watch } from 'vue';
 
 import IconClose from '@/components/icons/IconClose.vue';
 
-// Define configuration for appearance and visibility state.
-const props = defineProps({
-  title: { type: String, default: 'Modal Window' },
-  show: { type: Boolean, default: false },
-  // Controls the maximum width of the modal container.
-  size: { type: String, default: 'md' }
-});
+// Props are defined inline to avoid "exported variable using private name" (VLS)
+// and "unused exported type" (Knip) errors simultaneously.
+const props = withDefaults(
+  defineProps<{
+    title?: string;
+    show?: boolean;
+    /**
+     * Controls the maximum width of the modal container.
+     * Options: 'sm' | 'md' | 'lg'
+     */
+    size?: string;
+    /**
+     * Optional component to render in the footer area.
+     * Eliminates the need for nested templates in parent components.
+     */
+    footerComponent?: Component;
+    /**
+     * Props to pass to the footerComponent.
+     */
+    footerProps?: Record<string, unknown>;
+  }>(),
+  {
+    title: 'Modal Window',
+    show: false,
+    size: 'md',
+    footerComponent: undefined,
+    footerProps: () => ({})
+  }
+);
 
 // Define events for state management and cleanup notifications.
 const emit = defineEmits(['request-close', 'closed']);
@@ -32,6 +66,34 @@ const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && props.show) handleRequestClose();
 };
 
+// --- Scroll Locking Logic ---
+// We track 'isLocked' per instance to prevent double-counting if the watcher fires redundantly.
+let isLocked = false;
+
+const lockBody = () => {
+  if (!isLocked) {
+    openModalCount++;
+    // Only apply the style if this is the first modal opening
+    if (openModalCount === 1) {
+      document.body.style.overflow = 'hidden';
+    }
+    isLocked = true;
+    globalThis.addEventListener('keydown', handleKeyDown);
+  }
+};
+
+const unlockBody = () => {
+  if (isLocked) {
+    openModalCount--;
+    // Only restore scrolling if NO other modals are open
+    if (openModalCount === 0) {
+      document.body.style.overflow = '';
+    }
+    isLocked = false;
+    globalThis.removeEventListener('keydown', handleKeyDown);
+  }
+};
+
 /**
  * Manages global side effects when the modal state changes.
  */
@@ -39,13 +101,9 @@ watch(
   () => props.show,
   (isVisible) => {
     if (isVisible) {
-      // Disable body scrolling to prevent layout shifting behind the modal.
-      document.body.style.overflow = 'hidden';
-      globalThis.addEventListener('keydown', handleKeyDown);
+      lockBody();
     } else {
-      // Restore default scroll behavior and clean up event listeners.
-      document.body.style.overflow = '';
-      globalThis.removeEventListener('keydown', handleKeyDown);
+      unlockBody();
     }
   },
   { immediate: true }
@@ -53,8 +111,7 @@ watch(
 
 // Ensures global side effects are cleared if the component is destroyed.
 onUnmounted(() => {
-  document.body.style.overflow = '';
-  globalThis.removeEventListener('keydown', handleKeyDown);
+  unlockBody();
 });
 </script>
 
@@ -83,8 +140,9 @@ onUnmounted(() => {
             <slot />
           </div>
 
-          <footer v-if="$slots.footer" class="modal-footer">
-            <slot name="footer" />
+          <footer v-if="footerComponent || $slots.footer" class="modal-footer">
+            <component :is="footerComponent" v-if="footerComponent" v-bind="footerProps" />
+            <slot v-else name="footer" />
           </footer>
         </dialog>
       </div>

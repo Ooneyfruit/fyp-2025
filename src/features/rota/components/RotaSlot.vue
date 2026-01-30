@@ -1,28 +1,39 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Rota slot component representing a single shift or empty space in the grid.
+ * Handles display of assigned staff initials and edit states.
  */
 
-import { computed } from 'vue';
+import { computed, type PropType } from 'vue';
 
 import IconEdit from '@/components/icons/IconEdit.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
 import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+import type { Shift } from '@/features/rota/rotaTypes';
+
+const MAX_INITIALS = 2;
 
 const props = defineProps({
-  shifts: { type: Array, default: () => [] },
-  roleId: { type: String, default: null },
+  shifts: {
+    type: Array as PropType<Shift[]>,
+    default: () => []
+  },
+  roleId: {
+    type: String as PropType<string | null>,
+    default: null
+  },
   isWeekend: { type: Boolean, default: false },
   isToday: { type: Boolean, default: false },
   isBeforeToday: { type: Boolean, default: false }
 });
 
 defineEmits(['click']);
+
 const { getRoleColor } = useRotaColors();
 
 const hasData = computed(() => props.shifts.length > 0);
 
-const colors = computed(() => getRoleColor(props.roleId));
+const colors = computed(() => getRoleColor(props.roleId || ''));
 
 const pillStyles = computed(() => ({
   backgroundColor: colors.value.bg,
@@ -30,19 +41,23 @@ const pillStyles = computed(() => ({
   color: colors.value.accent
 }));
 
-const getInitials = (name) => {
+/**
+ * Extracts the initials from a full name string.
+ * @param name - The full name of the staff member.
+ */
+const getInitials = (name: string | undefined): string => {
   if (!name) return '??';
   return name
     .split(' ')
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join('')
-    .slice(0, 2)
+    .slice(0, MAX_INITIALS)
     .toUpperCase();
 };
 </script>
 
 <template>
-  <div
+  <button
     class="rota-slot"
     :class="{
       'has-data': hasData,
@@ -52,50 +67,52 @@ const getInitials = (name) => {
       'slot-today': isToday,
       'slot-weekend-past': isWeekend && isBeforeToday
     }"
-    role="button"
-    tabindex="0"
+    type="button"
     @click="$emit('click')"
-    @keydown.enter="$emit('click')"
   >
-    <template v-if="hasData">
-      <div v-for="shift in shifts" :key="shift.id" class="shift-pill" :style="pillStyles">
-        <div class="pill-content">
-          <span class="initials" :style="{ color: colors.accent }">
-            {{ getInitials(shift.user_name) }}
-          </span>
-          <span class="name" :style="{ color: colors.accent }">
-            {{ shift.user_name }}
-          </span>
-        </div>
+    <div v-for="shift in shifts" :key="shift.id" class="shift-pill" :style="pillStyles">
+      <div class="pill-content">
+        <span class="initials" :style="{ color: colors.accent }">
+          {{ getInitials(shift.user_name) }}
+        </span>
+        <span class="name" :style="{ color: colors.accent }">
+          {{ shift.user_name }}
+        </span>
       </div>
+    </div>
 
-      <div class="edit-overlay">
-        <div class="edit-icon-wrapper">
-          <IconEdit class="edit-icon" :stroke-width="2" />
-        </div>
+    <div v-if="hasData" class="edit-overlay">
+      <div class="edit-icon-wrapper">
+        <IconEdit class="edit-icon" :stroke-width="2" />
       </div>
-    </template>
+    </div>
 
     <div v-else class="empty-placeholder">
       <IconPlus class="plus-icon" :stroke-width="2" />
     </div>
-  </div>
+  </button>
 </template>
 
 <style scoped>
 .rota-slot {
+  /* Reset button styles */
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent; /* Default transparent border */
   border-radius: var(--border-radius);
-
-  /* UPDATED: Ensuring cursor is pointer */
+  color: inherit;
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  font-family: inherit;
   gap: 0.25rem;
   height: 100%;
   justify-content: center;
+  margin: 0;
   min-height: 4rem;
   padding: 0.25rem;
   position: relative;
+  text-align: left;
   transition: all 0.2s ease;
   width: 100%;
 }
@@ -170,7 +187,7 @@ const getInitials = (name) => {
 /* 1. Empty State Plus Icon */
 .empty-placeholder {
   align-items: center;
-  color: #94a3b8;
+  color: #64748b; /* Updated to Slate 500 for better contrast against white/grey */
   display: flex;
   inset: 0;
   justify-content: center;
@@ -217,7 +234,7 @@ const getInitials = (name) => {
   background: white;
   border-radius: 50%;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
-  color: #3b82f6;
+  color: var(--color-primary);
   display: flex;
   padding: 6px;
 }

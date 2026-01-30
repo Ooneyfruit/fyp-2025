@@ -12,7 +12,7 @@ import {
   Timestamp,
   writeBatch
 } from 'firebase/firestore';
-import { computed, onMounted, ref } from 'vue';
+import { computed, markRaw, onMounted, ref } from 'vue';
 
 import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseFormBlock from '@/components/shared/BaseFormBlock.vue';
@@ -25,6 +25,8 @@ import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers'
 import { db } from '@/services/firebase';
 
 import UserModalAccess, { type UserAccessForm } from './UserModalAccess.vue';
+import UserModalConfirmation from './UserModalConfirmation.vue';
+import UserModalFooter from './UserModalFooter.vue';
 
 /**
  * Form shape definition.
@@ -63,6 +65,9 @@ const isVisible = ref(false);
 const isEdit = ref(false);
 const saving = ref(false);
 const loadingRoles = ref(true);
+
+// State for the "Unsaved Changes" confirmation dialog.
+const showExitConfirmation = ref(false);
 
 const rolesList = ref<PracticeRole[]>([]);
 const initialState = ref('');
@@ -181,6 +186,8 @@ const normaliseUserData = (u: InboundUser): UserForm => ({
  */
 const open = (userData: unknown = null) => {
   deleteConfirmation.value = false;
+  showExitConfirmation.value = false;
+
   if (userData) {
     isEdit.value = true;
     form.value = normaliseUserData(userData as InboundUser);
@@ -192,7 +199,24 @@ const open = (userData: unknown = null) => {
   isVisible.value = true;
 };
 
+/**
+ * Unified Close Method.
+ * Intercepts closing attempts (Cancel btn, X icon, Escape key) to check for unsaved changes.
+ */
 const close = () => {
+  if (isDirty.value) {
+    showExitConfirmation.value = true;
+  } else {
+    isVisible.value = false;
+  }
+};
+
+/**
+ * Forces the modal to close, bypassing the dirty check.
+ * Used when the user confirms they want to discard changes.
+ */
+const forceClose = () => {
+  showExitConfirmation.value = false;
   isVisible.value = false;
 };
 
@@ -240,7 +264,7 @@ const handleDelete = async () => {
     const pId = currentUser.practiceRef.id;
     await deleteDoc(doc(db, 'practice_users', `${form.value.user_id}_${pId}`));
     showToast(`User ${form.value.name} access revoked.`);
-    close();
+    forceClose(); // Use forceClose to ensure prompt doesn't trigger
   } catch (error) {
     handleError(error, 'Failed to revoke access.');
   } finally {
@@ -301,22 +325,43 @@ const save = async () => {
     return;
   }
 
+  // Close the confirmation prompt if it's open, so the user sees the main form "Saving..." state.
+  showExitConfirmation.value = false;
   saving.value = true;
 
   try {
     await executeBatchSave(currentUser.practiceRef);
     showToast(isEdit.value ? 'User profile updated.' : 'New user created.');
-    close();
+    forceClose();
   } catch (error) {
     handleError(error);
   } finally {
     saving.value = false;
   }
 };
+
+// --- Footer Configuration (Main Modal) ---
+const footerComponent = markRaw(UserModalFooter);
+const footerProps = computed(() => ({
+  hasChanges: isDirty.value,
+  saving: saving.value,
+  isEdit: isEdit.value,
+  onClose: close // Passing the unified close method handles button click
+}));
+
+// --- Footer Configuration (Confirmation Dialog) ---
+const confirmationFooterComponent = markRaw(UserModalConfirmation);
+const confirmationFooterProps = computed(() => ({
+  onStay: () => (showExitConfirmation.value = false),
+  onDiscard: forceClose,
+  onSave: save
+}));
 </script>
 
 <template>
   <BaseModal
+    :footer-component="footerComponent"
+    :footer-props="footerProps"
     :show="isVisible"
     size="md"
     :title="isEdit ? 'Update user profile' : 'Register new user'"
@@ -326,7 +371,7 @@ const save = async () => {
       <div class="skeleton-field" />
     </div>
 
-    <form v-else class="rd-form" @submit.prevent="save">
+    <form v-else id="user-modal-form" class="rd-form" @submit.prevent="save">
       <BaseFormBlock title="Basic information">
         <div class="rd-field">
           <label class="rd-field-label" for="user-full-name">Full name</label>
@@ -399,34 +444,30 @@ const save = async () => {
           />
         </div>
       </BaseFormBlock>
-
-      <div class="modal-footer">
-        <BaseButton label="Cancel" variant="secondary" @click="close" />
-        <BaseButton
-          :disabled="saving || !isDirty"
-          :label="saving ? 'Saving...' : isEdit ? 'Save changes' : 'Create account'"
-          :processing="saving"
-          type="submit"
-        />
-      </div>
     </form>
+
+    <BaseModal
+      :footer-component="confirmationFooterComponent"
+      :footer-props="confirmationFooterProps"
+      :show="showExitConfirmation"
+      size="sm"
+      title="Unsaved Changes"
+      @request-close="showExitConfirmation = false"
+    >
+      <div class="confirmation-content">
+        <p>You have unsaved changes. What would you like to do?</p>
+      </div>
+    </BaseModal>
   </BaseModal>
 </template>
 
 <style scoped>
-.modal-footer {
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
-  padding-top: 1.25rem;
-}
-
 .danger-card {
   align-items: center;
   background: hsl(var(--hue-danger) 100% 98%);
-  border: 1px solid hsl(var(--hue-danger) 100% 90%);
+
+  /* Changed to double line for better accessibility/color-blind visibility */
+  border: 8px double hsl(var(--hue-danger) 100% 90%);
   border-radius: var(--border-radius);
   display: flex;
   justify-content: space-between;
@@ -450,6 +491,11 @@ const save = async () => {
 }
 
 .skeleton-padding {
+  padding: 1rem 0;
+}
+
+.confirmation-content {
+  color: var(--text-main);
   padding: 1rem 0;
 }
 </style>

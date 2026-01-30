@@ -1,36 +1,55 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Rota grid component for displaying shifts in a tabular format.
+ * Organises data into roles and surgeries across a timeline of visible days.
  */
 
-import { computed } from 'vue';
+import { computed, markRaw, type PropType, provide } from 'vue';
 
 import BaseTable from '@/components/shared/BaseTable.vue';
-import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+import type { RotaDay } from '@/features/rota/composables/useRotaDates';
+import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
 
-import RotaSlot from './RotaSlot.vue';
-
-const props = defineProps({
-  days: { type: Array, required: true },
-  rows: { type: Array, required: true },
-  getShifts: { type: Function, required: true }
-});
-
-defineEmits(['slot-click']);
-
-const { getRoleColor } = useRotaColors();
-
-// --- Helpers ---
+import RotaDayCell from './RotaDayCell.vue';
+import RotaLoading from './RotaLoading.vue';
+import RotaRoleCell from './RotaRoleCell.vue';
 
 /**
- * Converts a string to sentence case (first letter upper, rest lower).
- * @param str - The input string.
- * @returns Formatted string.
+ * Represents a row in the rota grid.
+ * Includes denormalised role and surgery data.
+ * The index signature is required to ensure compatibility with BaseTable's Record type.
  */
-const toSentenceCase = (str) => {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
+interface RotaRow {
+  [key: string]: unknown;
+  id: string;
+  role: PracticeRole;
+  surgery: PracticeSurgery;
+  _isGroupStart?: boolean;
+}
+
+const props = defineProps({
+  days: {
+    type: Array as PropType<RotaDay[]>,
+    required: true
+  },
+  rows: {
+    type: Array as PropType<RotaRow[]>,
+    required: true
+  },
+  getShifts: {
+    type: Function as PropType<(roleId: string, surgeryId: string, dateIso: string) => Shift[]>,
+    required: true
+  }
+});
+
+const emit = defineEmits(['slot-click']);
+
+// --- Dependency Injection ---
+// Provide these functions to the Cell components to avoid prop drilling through BaseTable.
+provide('getShifts', props.getShifts);
+provide('onGridClick', (payload: { rowItem: unknown; day: RotaDay }) => {
+  emit('slot-click', payload);
+});
 
 // --- Table Configuration ---
 
@@ -39,145 +58,49 @@ const tableHeaders = computed(() => {
     {
       key: 'header_col',
       label: 'Role / Surgery',
-      // Using minmax(0, X) is critical here.
-      // Unlike fit-content, minmax(0, 14rem) allows the column to shrink below
-      // the intrinsic width of its content (min-content), forcing truncation.
+      // Using minmax(0, X) is critical here to allow column shrinking.
       width: 'minmax(0, 9.2rem)',
-      align: 'left'
+      align: 'left' as const,
+      cellComponent: markRaw(RotaRoleCell)
     },
-    ...props.days.map((d) => ({
+    ...props.days.map((d: RotaDay) => ({
       key: d.key,
       label: d.label,
       width: 'minmax(0, 1fr)',
-      align: 'left',
-      headerClass: d.isToday ? 'header-today' : ''
+      align: 'left' as const,
+      headerClass: d.isToday ? 'header-today' : '',
+      cellComponent: markRaw(RotaDayCell),
+      // Pass the day object as metadata so the cell component can access it
+      meta: d
     }))
   ];
 });
 
-// --- Styling Helpers ---
-
-/**
- * Generates style object for role badges based on role ID.
- * @param roleId - The ID of the role.
- * @returns Style object with color properties.
- */
-const getRoleBadgeStyle = (roleId) => {
-  const c = getRoleColor(roleId);
-  return {
-    backgroundColor: c.bg,
-    color: c.accent,
-    borderColor: c.accent
-  };
-};
+const emptyStateComponent = markRaw(RotaLoading);
 </script>
 
 <template>
   <BaseTable
     class="rota-table"
+    :empty-component="emptyStateComponent"
     group-by="role.id"
     :headers="tableHeaders"
     :items="rows"
     :vertical-lines="true"
-  >
-    <template #cell(header_col)="{ item }">
-      <div class="header-col-inner">
-        <div v-if="item._isGroupStart" class="role-title" :style="getRoleBadgeStyle(item.role.id)">
-          {{ toSentenceCase(item.role.name) }}
-        </div>
-        <div class="surgery-subtitle">
-          {{ item.surgery.name }}
-        </div>
-      </div>
-    </template>
-
-    <template v-for="day in days" :key="day.iso" #[`cell(${day.key})`]="{ item }">
-      <div class="cell-wrapper">
-        <RotaSlot
-          :is-before-today="day.isBeforeToday"
-          :is-today="day.isToday"
-          :is-weekend="day.isWeekend"
-          :role-id="item.role.id"
-          :shifts="getShifts(item.role.id, item.surgery.id, day.iso)"
-          @click="$emit('slot-click', { rowItem: item, day })"
-        />
-      </div>
-    </template>
-
-    <template #empty>
-      <div class="empty-state-content">
-        <p>Loading...</p>
-      </div>
-    </template>
-  </BaseTable>
+  />
 </template>
 
 <style scoped>
-/* Header Column Styling */
-.header-col-inner {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  /* CRITICAL: These styles ensure the content respects the parent's width cap. */
-
-  /* Without this, the grid item's implicit 'min-width: auto' would force the column open. */
-  width: 100%;
-}
-
-.role-title {
-  align-self: flex-start;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 700;
-
-  /* Removed text-transform: uppercase so sentence case helper works */
-  letter-spacing: 0.05em;
-  margin-bottom: 0.25rem;
-
-  /* Ensure badges also truncate if they exceed the narrow column width */
-  max-width: 100%;
-  overflow: hidden;
-  padding: 2px 6px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.surgery-subtitle {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-
-  /* Ensure subtitle truncates */
-  overflow: hidden;
-  padding-left: 4px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Cell Layout */
-.cell-wrapper {
-  display: flex;
-  height: 100%;
-  width: 100%;
-}
-
 /* Header Highlight for Today */
+
+/* Styles for cells have been moved to their respective components (RotaRoleCell, RotaDayCell). */
+
+/* We keep header styles here as BaseTable renders the <th> elements. */
+
 :deep(th.header-today),
 :deep(.header-cell.header-today) {
   background-color: #eff6ff !important;
   color: #2563eb !important;
   font-weight: 800 !important;
-}
-
-.empty-state-content {
-  color: var(--text-muted);
-  padding: 5rem;
-  text-align: center;
 }
 </style>

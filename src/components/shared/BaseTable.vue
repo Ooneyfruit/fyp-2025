@@ -4,14 +4,23 @@
  * This module supports visual grouping of rows via the 'groupBy' prop and ensures
  * high accessibility through semantic HTML elements.
  */
-import { computed } from 'vue';
+import { type Component, computed } from 'vue';
 
-interface TableHeader {
+export interface TableHeader {
   key: string;
   label: string;
   width?: string;
   align?: 'left' | 'center' | 'right';
   headerClass?: string;
+  /**
+   * Optional component to render for this cell instead of using a slot or default text.
+   * Useful for avoiding nested templates in parent components.
+   */
+  cellComponent?: Component;
+  /**
+   * Optional metadata to pass to the cell component (e.g., column-specific data).
+   */
+  meta?: unknown;
 }
 
 /**
@@ -34,12 +43,17 @@ interface Props {
    * Example: "role.id".
    */
   groupBy?: string | null;
+  /**
+   * Optional component to render when there are no records.
+   */
+  emptyComponent?: Component;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   rowClass: () => [],
   verticalLines: false,
-  groupBy: null
+  groupBy: null,
+  emptyComponent: undefined
 });
 
 /**
@@ -143,7 +157,13 @@ const getRowClasses = (item: Record<string, unknown>) => {
             class="cell body-cell"
             :class="[`align-${col.align || 'left'}`]"
           >
-            <slot :item="item" :name="`cell(${col.key})`">
+            <component
+              :is="col.cellComponent"
+              v-if="col.cellComponent"
+              :header="col"
+              :item="item"
+            />
+            <slot v-else :item="item" :name="`cell(${col.key})`">
               {{ item[col.key] }}
             </slot>
           </td>
@@ -153,7 +173,8 @@ const getRowClasses = (item: Record<string, unknown>) => {
       <tbody v-else class="table-body-group">
         <tr class="empty-state-row">
           <td class="empty-state">
-            <slot name="empty">No records found.</slot>
+            <component :is="emptyComponent" v-if="emptyComponent" />
+            <slot v-else name="empty">No records found.</slot>
           </td>
         </tr>
       </tbody>
