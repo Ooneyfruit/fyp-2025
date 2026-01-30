@@ -1,24 +1,57 @@
+<script setup lang="ts">
+/**
+ * Administrative view for managing practice personnel.
+ * Handles the display of the user list and coordinates creation/editing workflows.
+ */
+import { ref } from 'vue';
+
+// Icons.
+import IconPlus from '@/components/icons/IconPlus.vue';
+// Layout and core components.
+import AppAuthGuard from '@/components/layout/AppAuthGuard.vue';
+import AppPageContainer from '@/components/layout/AppPageContainer.vue';
+import AppPageHeaderGroup from '@/components/layout/AppPageHeaderGroup.vue';
+import AppLoading from '@/components/shared/AppLoading.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
+// Feature API.
+import { usePracticeUsers, UserDataViewAdapter, UserModal } from '@/features/users/usersApi';
+import { type PracticeUser } from '@/features/users/userTypes';
+
+// --- Type Definitions ---
+
+/**
+ * Interface defining the methods exposed by the UserModal component.
+ */
+interface UserModalInstance {
+  open: (user?: PracticeUser) => void;
+}
+
+// --- Logic and State ---
+
+// Logic: retrieves practice-specific users and loading state.
+// No casting needed as usePracticeUsers now returns the correct PracticeUser type.
+const { users, isLoading } = usePracticeUsers();
+
+/**
+ * Template reference for the shared user modal instance.
+ */
+const userModal = ref<UserModalInstance | null>(null);
+</script>
+
 <template>
   <AppAuthGuard>
     <AppPageContainer>
-      <AppPageHeaderGroup 
-        title="User Management" 
+      <AppPageHeaderGroup
         subtitle="Manage personnel and permissions for your practice."
+        title="User Management"
       >
-        <BaseButton 
-          label="Add User" 
-          :icon="IconPlus"
-          @click="userModal.open()"
-        />
+        <BaseButton :icon="IconPlus" label="Add User" @click="userModal?.open()" />
       </AppPageHeaderGroup>
 
       <AppLoading v-if="isLoading" />
-      
+
       <div v-else class="main-content-area">
-        <UserDataViewAdapter 
-          :users="users" 
-          @edit="(user) => userModal.open(user)" 
-        />
+        <UserDataViewAdapter :users="users" @edit="(user: PracticeUser) => userModal?.open(user)" />
       </div>
 
       <UserModal ref="userModal" />
@@ -26,36 +59,8 @@
   </AppAuthGuard>
 </template>
 
-<script setup>
-/**
- * Administrative view for managing practice personnel.
- * Handles the display of the user list and coordinates creation/editing workflows.
- */
-import { ref } from 'vue';
-import { usePracticeUsers } from '../features/users/composables/usePracticeUsers';
-
-// Layout & Core Components
-import AppAuthGuard from '../components/layout/AppAuthGuard.vue';
-import AppPageHeaderGroup from '../components/layout/AppPageHeaderGroup.vue';
-import AppPageContainer from '../components/layout/AppPageContainer.vue';
-import BaseButton from '../components/shared/BaseButton.vue';
-import AppLoading from '../components/shared/AppLoading.vue';
-
-// Feature Components
-import UserModal from '../features/users/components/UserModal.vue';
-import UserDataViewAdapter from '../features/users/components/UserDataViewAdapter.vue';
-
-// Icons
-import IconPlus from '../components/icons/IconPlus.vue';
-
-const { users, isLoading } = usePracticeUsers();
-
-// Template reference for the shared user modal instance
-const userModal = ref(null);
-</script>
-
 <style scoped>
-/* Main Content: container for the user data adapter */
+/* Main Content: container for the user data adapter. */
 .main-content-area {
   display: flex;
   flex-direction: column;

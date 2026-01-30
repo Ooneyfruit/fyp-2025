@@ -1,16 +1,37 @@
+<script setup lang="ts">
+/**
+ * Mobile user settings card.
+ * Composes identity displays and functional action groups for the navigation overlay.
+ */
+import IconEdit from '@/components/icons/IconEdit.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
+import { useAuth } from '@/composables/useAuth';
+// Switched to alias and standard lowercase 'Api' to resolve resolution conflicts.
+import { UserIdentity } from '@/features/users/usersApi';
+
+import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
+
+defineEmits<{
+  (e: 'edit'): void;
+  (e: 'logout'): void;
+}>();
+
+const { user } = useAuth();
+</script>
+
 <template>
   <div class="nav-user-dropdown rd-card animate-slide-in">
     <div class="rd-card-header dropdown-header">
-      <UserIdentity :profile="user" />
-      <span class="rd-pill rd-pill-muted role-badge">{{ user.role }}</span>
+      <UserIdentity v-if="user" :profile="user" />
+      <span class="rd-pill rd-pill-muted role-badge">{{ user?.role || 'Guest' }}</span>
     </div>
-    
+
     <div class="rd-card-body dropdown-body">
-      <BaseButton 
-        label="Edit Profile"
-        :icon="IconEdit"
-        variant="secondary"
+      <BaseButton
         class="full-width-btn"
+        :icon="IconEdit"
+        label="Edit Profile"
+        variant="secondary"
         @click="$emit('edit')"
       />
 
@@ -19,10 +40,10 @@
       </div>
 
       <div class="rd-card-footer">
-        <BaseButton 
+        <BaseButton
+          class="full-width-btn"
           label="Log Out"
           variant="danger"
-          class="full-width-btn"
           @click="$emit('logout')"
         />
       </div>
@@ -30,37 +51,22 @@
   </div>
 </template>
 
-<script setup>
-/**
- * Mobile user settings card.
- * Composes identity displays and functional action groups.
- */
-import { useAuth } from '../../../composables/useAuth';
-import { UserIdentity } from '../../users/usersAPI';
-import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import IconEdit from '../../../components/icons/IconEdit.vue';
-
-defineEmits(['edit', 'logout']);
-const { user } = useAuth();
-</script>
-
 <style scoped>
 /* Surface: specific constraints for the navigation dropdown card. */
 .nav-user-dropdown {
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 10%);
   position: absolute;
-  top: calc(100% + 0.625rem);
   right: 0;
+  top: calc(100% + 0.625rem);
   width: 17rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
   z-index: var(--z-overlay);
 }
 
 .dropdown-header {
-  flex-direction: column;
   align-items: flex-start !important;
-  gap: var(--spacing-xs);
   background: #f8fafc;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .role-badge {
@@ -73,7 +79,7 @@ const { user } = useAuth();
 }
 
 .full-width-btn {
-  width: 100%;
   justify-content: flex-start !important;
+  width: 100%;
 }
 </style>

@@ -1,0 +1,69 @@
+/**
+ * Provides logic for detecting layout breakpoints based on element dimensions.
+ * Converts pixel values to REMs to ensure consistent behaviour across different browser zoom levels.
+ */
+import { onMounted, onUnmounted, type Ref, ref } from 'vue';
+
+// Default width threshold in REMs for mobile layout breaks.
+const DEFAULT_MOBILE_THRESHOLD = 50;
+const BASE_FONT_SIZE = 16;
+
+export interface UseBreakpointsReturn {
+  isMobile: Ref<boolean>;
+}
+
+/**
+ * Calculates the current root font size to convert pixels to REMs accurately.
+ * @returns The root font size in pixels.
+ */
+const getRemValue = (): number => {
+  if (typeof document === 'undefined') {
+    return BASE_FONT_SIZE;
+  }
+  const fontSize = getComputedStyle(document.documentElement).fontSize;
+  return Number.parseFloat(fontSize) || BASE_FONT_SIZE;
+};
+
+/**
+ * Monitors the container width to determine the layout mode.
+ * @param targetRef - Vue template ref for the target element to observe.
+ * @param threshold - Width threshold in REMs for the mobile layout break.
+ * @returns An object containing the reactive mobile state.
+ */
+export function useBreakpoints(
+  targetRef: Ref<HTMLElement | null>,
+  threshold: number = DEFAULT_MOBILE_THRESHOLD
+): UseBreakpointsReturn {
+  const isMobile = ref(false);
+
+  // Internal observer instance for tracking resize events.
+  let observer: ResizeObserver | null = null;
+
+  onMounted(() => {
+    // Only initialise ResizeObserver in a browser environment.
+    if (typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          // Prefer borderBoxSize to include padding in the width calculation for accuracy.
+          const boxSize = entry.borderBoxSize?.[0];
+          const widthPx = boxSize ? boxSize.inlineSize : entry.contentRect.width;
+          const widthRem = widthPx / getRemValue();
+
+          isMobile.value = widthRem < threshold;
+        }
+      });
+    }
+
+    if (targetRef.value && observer) {
+      observer.observe(targetRef.value);
+    }
+  });
+
+  onUnmounted(() => {
+    if (observer) {
+      observer.disconnect();
+    }
+  });
+
+  return { isMobile };
+}

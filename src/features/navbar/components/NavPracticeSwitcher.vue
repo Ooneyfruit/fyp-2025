@@ -1,11 +1,32 @@
+<script setup lang="ts">
+/**
+ * Atomic practice context switcher.
+ * Utilizes the id prefix method to reliably capture all user clinic associations.
+ */
+import BaseSelect from '@/components/shared/BaseSelect.vue';
+import { useAuth } from '@/composables/useAuth';
+import { useUserPractices } from '@/features/navbar/composables/useUserPractices';
+
+interface Props {
+  label?: string;
+}
+
+withDefaults(defineProps<Props>(), {
+  label: ''
+});
+
+const { user } = useAuth();
+const { practices, handleSwitch } = useUserPractices();
+</script>
+
 <template>
   <div v-if="practices.length > 1" class="practice-switcher">
-    <BaseSelect 
+    <BaseSelect
       id="practice-context-selector"
-      name="practice_id"
-      :modelValue="user.practiceRef?.id" 
       :label="label"
-      @update:modelValue="handleSwitch"
+      :model-value="user?.practiceRef?.id"
+      name="practice_id"
+      @update:model-value="(val: unknown) => handleSwitch(String(val))"
     >
       <option v-for="p in practices" :key="p.id" :value="p.id">
         {{ p.name }}
@@ -13,23 +34,6 @@
     </BaseSelect>
   </div>
 </template>
-
-<script setup>
-/**
- * Atomic practice context switcher.
- * Utilizes the id prefix method to reliably capture all user clinic associations.
- */
-import { useAuth } from '../../../composables/useAuth';
-import { useUserPractices } from '../composables/useUserPractices';
-import BaseSelect from '../../../components/shared/BaseSelect.vue';
-
-defineProps({
-  label: { type: String, default: '' }
-});
-
-const { user } = useAuth();
-const { practices, handleSwitch } = useUserPractices();
-</script>
 
 <style scoped>
 /* Layout: base container for the switcher logic. */

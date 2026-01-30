@@ -1,25 +1,220 @@
+<script lang="ts">
+/**
+ * Shared state to track the number of open modals across the application.
+ * This ensures the body scroll lock is only removed when the LAST modal closes.
+ * Declared in a separate script block to exist at the module level (singleton).
+ */
+let openModalCount = 0;
+
+export default {
+  // Explicit name required for recursive usage in the template.
+  name: 'BaseModal'
+};
+</script>
+
+<script setup lang="ts">
+/**
+ * Primary responsibility: Provides a robust, accessible modal dialog system.
+ * Features:
+ * - Stack-aware scroll locking (via shared module state).
+ * - Keyboard dismissal.
+ * - Flexible sizing and footer injection.
+ * - Integrated "Unsaved Changes" protection logic.
+ */
+import { type Component, computed, onUnmounted, ref, watch } from 'vue';
+
+import IconClose from '@/components/icons/IconClose.vue';
+import BaseModalConfirmationFooter from '@/components/shared/BaseModalConfirmationFooter.vue';
+
+// Props are defined inline to avoid "exported variable using private name" (VLS)
+// and "unused exported type" (Knip) errors simultaneously.
+const props = withDefaults(
+  defineProps<{
+    title?: string;
+    show?: boolean;
+    /**
+     * Controls the maximum width of the modal container.
+     * Options: 'sm' | 'md' | 'lg'.
+     */
+    size?: string;
+    /**
+     * Optional component to render in the footer area.
+     * Eliminates the need for nested templates in parent components.
+     */
+    footerComponent?: Component;
+    /**
+     * Props to pass to the footerComponent.
+     */
+    footerProps?: Record<string, unknown>;
+    /**
+     * Whether the modal should animate on initial render.
+     * Essential for modals that are conditionally rendered (v-if) in the parent.
+     */
+    appear?: boolean;
+    /**
+     * If true, attempts to close via UI interactions (click/escape) will trigger a confirmation.
+     */
+    preventClose?: boolean;
+    /**
+     * Title for the internal exit confirmation modal.
+     */
+    closeConfirmationTitle?: string;
+    /**
+     * Message body for the internal exit confirmation modal.
+     */
+    closeConfirmationMessage?: string;
+    /**
+     * Component to render as the footer for the confirmation modal.
+     * Defaults to a standard "Keep editing / Discard changes" setup.
+     */
+    closeConfirmationFooter?: Component;
+    /**
+     * Props to pass to the confirmation footer component.
+     * The modal will automatically inject 'onStay' and 'onDiscard' handlers.
+     */
+    closeConfirmationFooterProps?: Record<string, unknown>;
+  }>(),
+  {
+    title: 'Modal Window',
+    show: false,
+    size: 'md',
+    footerComponent: undefined,
+    footerProps: () => ({}),
+    appear: true,
+    preventClose: false,
+    closeConfirmationTitle: 'Unsaved Changes',
+    closeConfirmationMessage: 'You have unsaved changes. Are you sure you want to discard them?',
+    closeConfirmationFooter: undefined,
+    closeConfirmationFooterProps: () => ({})
+  }
+);
+
+// Define events for state management and cleanup notifications.
+const emit = defineEmits(['request-close', 'closed']);
+
+// Internal state for the exit confirmation dialog.
+const showExitConfirmation = ref(false);
+
+/**
+ * Forwards a request to the parent component to toggle the visibility state.
+ * Intercepts the request if 'preventClose' is active.
+ */
+const handleRequestClose = () => {
+  if (props.preventClose) {
+    showExitConfirmation.value = true;
+  } else {
+    emit('request-close');
+  }
+};
+
+/**
+ * Handler for the 'Stay' / 'Keep Editing' action in the confirmation modal.
+ */
+const handleStay = () => {
+  showExitConfirmation.value = false;
+};
+
+/**
+ * Handler for the 'Discard' action in the confirmation modal.
+ * Forces the parent to close by emitting the event directly.
+ */
+const handleDiscard = () => {
+  showExitConfirmation.value = false;
+  emit('request-close');
+};
+
+/**
+ * Computes the props for the confirmation footer.
+ * Merges user-provided props with the required action handlers.
+ */
+const resolvedConfirmationFooterProps = computed(() => ({
+  ...props.closeConfirmationFooterProps,
+  onStay: handleStay,
+  onDiscard: handleDiscard
+}));
+
+/**
+ * Monitors keyboard events to provide standard escape-key dismissal logic.
+ * @param e - The keyboard event object.
+ */
+const handleKeyDown = (e: KeyboardEvent) => {
+  // Only trigger dismissal if the escape key is pressed while the modal is active.
+  if (
+    e.key === 'Escape' &&
+    props.show && // If the confirmation is already open, let the user deal with that interaction specifically.
+    // Otherwise, attempt the standard close flow.
+    !showExitConfirmation.value
+  ) {
+    handleRequestClose();
+  }
+};
+
+// --- Scroll Locking Logic ---
+// We track 'isLocked' per instance to prevent double-counting if the watcher fires redundantly.
+let isLocked = false;
+
+const lockBody = () => {
+  if (!isLocked) {
+    openModalCount++;
+    // Only apply the style if this is the first modal opening.
+    if (openModalCount === 1) {
+      document.body.style.overflow = 'hidden';
+    }
+    isLocked = true;
+    globalThis.addEventListener('keydown', handleKeyDown);
+  }
+};
+
+const unlockBody = () => {
+  if (isLocked) {
+    openModalCount--;
+    // Only restore scrolling if NO other modals are open.
+    if (openModalCount === 0) {
+      document.body.style.overflow = '';
+    }
+    isLocked = false;
+    globalThis.removeEventListener('keydown', handleKeyDown);
+  }
+};
+
+/**
+ * Manages global side effects when the modal state changes.
+ */
+watch(
+  () => props.show,
+  (isVisible) => {
+    if (isVisible) {
+      lockBody();
+      // Reset confirmation state when the modal re-opens.
+      showExitConfirmation.value = false;
+    } else {
+      unlockBody();
+    }
+  },
+  { immediate: true }
+);
+
+// Ensures global side effects are cleared if the component is destroyed.
+onUnmounted(() => {
+  unlockBody();
+});
+</script>
+
 <template>
   <Teleport to="body">
-    <Transition name="rd-modal" @after-leave="$emit('closed')">
-      <div 
-        v-if="show"
-        class="modal-root" 
-        :class="[`size-${size}`]"
-        role="dialog" 
-        aria-modal="true" 
-        tabindex="-1"
-      >
+    <Transition :appear="appear" name="rd-modal" @after-leave="$emit('closed')">
+      <div v-if="show" class="modal-root" :class="[`size-${size}`]">
         <div class="modal-overlay" @click="handleRequestClose"></div>
-        
-        <div class="modal-container rd-card">
+
+        <dialog aria-modal="true" class="modal-container rd-card" open tabindex="-1">
           <header class="modal-header rd-card-header">
             <slot name="header">
               <h3 class="modal-title">{{ title }}</h3>
-              <button 
-                class="close-btn" 
-                @click="handleRequestClose" 
-                type="button" 
+              <button
                 aria-label="Close"
+                class="close-btn"
+                type="button"
+                @click="handleRequestClose"
               >
                 <IconClose :stroke-width="2.5" />
               </button>
@@ -30,113 +225,91 @@
             <slot />
           </div>
 
-          <footer v-if="$slots.footer" class="modal-footer">
-            <slot name="footer" />
+          <footer v-if="footerComponent || $slots.footer" class="modal-footer">
+            <component :is="footerComponent" v-if="footerComponent" v-bind="footerProps" />
+            <slot v-else name="footer" />
           </footer>
-        </div>
+
+          <BaseModal
+            :close-confirmation-footer="closeConfirmationFooter"
+            :footer-component="closeConfirmationFooter || BaseModalConfirmationFooter"
+            :footer-props="resolvedConfirmationFooterProps"
+            :show="showExitConfirmation"
+            size="sm"
+            :title="closeConfirmationTitle"
+            @request-close="showExitConfirmation = false"
+          >
+            <div class="confirmation-content">
+              <p>{{ closeConfirmationMessage }}</p>
+            </div>
+          </BaseModal>
+        </dialog>
       </div>
     </Transition>
   </Teleport>
 </template>
 
-<script setup>
-/**
- * Primary responsibility: provides a robust, accessible modal dialog system 
- * with built-in scroll locking, keyboard dismissal, and flexible sizing.
- */
-import { watch, onUnmounted } from 'vue';
-import IconClose from '../icons/IconClose.vue';
-
-// Define configuration for appearance and visibility state.
-const props = defineProps({ 
-  title: { type: String, default: 'Modal Window' },
-  show: { type: Boolean, default: false },
-  // Controls the maximum width of the modal container.
-  size: { type: String, default: 'md' }
-});
-
-// Define events for state management and cleanup notifications.
-const emit = defineEmits(['request-close', 'closed']);
-
-/**
- * Forwards a request to the parent component to toggle the visibility state.
- */
-const handleRequestClose = () => emit('request-close');
-
-/**
- * Monitors keyboard events to provide standard escape-key dismissal logic.
- * @param {KeyboardEvent} e - The keyboard event object.
- */
-const handleKeyDown = (e) => {
-  // Only trigger dismissal if the escape key is pressed while the modal is active.
-  if (e.key === 'Escape' && props.show) handleRequestClose();
-};
-
-/**
- * Manage global side effects when the modal state changes.
- */
-watch(() => props.show, (isVisible) => {
-  if (isVisible) {
-    // Disable body scrolling to prevent layout shifting behind the modal.
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-  } else {
-    // Restore default scroll behavior and clean up event listeners.
-    document.body.style.overflow = '';
-    window.removeEventListener('keydown', handleKeyDown);
-  }
-}, { immediate: true });
-
-// Ensure global side effects are cleared if the component is destroyed.
-onUnmounted(() => { 
-  document.body.style.overflow = '';
-  window.removeEventListener('keydown', handleKeyDown);
-});
-</script>
-
 <style scoped>
 /* Layout: full-screen fixed container to center the modal dialog. */
 .modal-root {
-  position: fixed;
-  inset: 0;
-  display: flex;
   align-items: center;
+  display: flex;
+  inset: 0;
   justify-content: center;
-  /* Maintain position above standard content and navigation. */
-  z-index: var(--z-modal); 
   padding: var(--spacing-sm);
+  position: fixed;
+
+  /* Maintain position above standard content and navigation. */
+  z-index: var(--z-modal);
 }
 
 /* Overlay: dimmed background with light blurring to focus user attention. */
 .modal-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(1px);
+  background: rgb(15 23 42 / 50%);
+  inset: 0;
+  position: absolute;
   transition: opacity 0.15s ease-out;
 }
 
 /* Container: the physical card structure of the modal. */
 .modal-container {
-  position: relative;
   background: white;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 40%);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  transform-origin: center;
-  z-index: 1;
-  width: calc(100% - (var(--spacing-md) * 2));
+
   /* Constrain height to ensure the modal remains within the viewport on small screens. */
   max-height: min(45rem, 90vh);
+  position: relative;
+  transform-origin: center;
+  width: calc(100% - (var(--spacing-md) * 2));
+  z-index: 1;
+}
+
+/* Resets default user-agent styles for the native dialog element. */
+dialog.modal-container {
+  border: none;
+  color: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 /* Sizing Logic: max-width definitions for various modal sizes. */
-.size-sm .modal-container { max-width: 24rem; }
-.size-md .modal-container { max-width: 36rem; }
-.size-lg .modal-container { max-width: 54rem; }
+.size-sm .modal-container {
+  max-width: 24rem;
+}
+
+.size-md .modal-container {
+  max-width: 36rem;
+}
+
+.size-lg .modal-container {
+  max-width: 54rem;
+}
 
 /* Layout: responsiveness and padding adjustments for larger viewports. */
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
   .modal-root {
     padding: var(--spacing-sm) var(--spacing-sm);
   }
@@ -144,29 +317,29 @@ onUnmounted(() => {
 
 /* Header: layout and visual separation from the main body content. */
 .modal-header {
-  justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
+  justify-content: space-between;
 }
 
 .modal-title {
-  margin: 0;
+  color: var(--text-main);
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-main);
+  margin: 0;
 }
 
 /* Controls: dismissal button styling and interactive states. */
 .close-btn {
+  align-items: center;
   background: none;
   border: none;
-  padding: 0.5rem;
+  border-radius: var(--border-radius);
   color: var(--text-muted);
   cursor: pointer;
   display: flex;
-  align-items: center;
-  border-radius: var(--border-radius);
-  transition: all 0.15s ease;
   margin: -0.5rem;
+  padding: 0.5rem;
+  transition: all 0.15s ease;
 }
 
 .close-btn:hover {
@@ -175,24 +348,29 @@ onUnmounted(() => {
 }
 
 .close-btn :deep(svg) {
-  width: 1.25rem;
   height: 1.25rem;
+  width: 1.25rem;
 }
 
 /* Body: internal padding and scroll management for long content. */
 .modal-body {
-  padding: var(--spacing-md);
   flex: 1;
   overflow-y: auto;
+  padding: var(--spacing-md);
 }
 
 /* Footer: background and border logic to anchor actions at the bottom. */
 .modal-footer {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-top: 1px solid var(--border-color);
   background: var(--bg-app);
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
+  border-top: 1px solid var(--border-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.confirmation-content {
+  color: var(--text-main);
+  padding: 1rem 0;
 }
 
 /* Animation: complex transitions for opacity and scale to create a high-quality feel. */

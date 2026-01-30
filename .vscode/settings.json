@@ -1,0 +1,62 @@
+{
+  // --- Editor behaviour ---
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+
+  // --- SonarLint configuration ---
+  // SonarLint requires a Java 17+ JRE to run the language server.
+  // REPLACE the path below with your actual Java installation folder (e.g. run 'readlink -f /usr/bin/java | sed "s:bin/java::"')
+  "sonarlint.ls.javaHome": "/usr/lib/jvm/java-17-openjdk-amd64",
+
+  // --- ESLint configuration ---
+  // Ensure the extension uses the flat config system for the RotaDent project.
+  "eslint.useFlatConfig": true,
+
+  // Use auto mode to correctly resolve local plugins and rules regardless of folder nesting.
+  // This fixes path mismatches between the workspace root and the configuration file.
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  // Ensure these languages are validated and probed.
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
+  "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
+
+  // --- Vue and Volar strictness ---
+  // Disable hybrid mode to ensure full TypeScript strictness within templates.
+  "vue.server.hybridMode": false,
+
+  // Ensure the status bar shows you if ESLint is running or failed
+  "eslint.alwaysShowStatus": true,
+
+  // --- Stylelint strictness ---
+  // Tell Stylelint to validate Vue files to enforce CSS order and syntax.
+  "stylelint.validate": ["css", "scss", "vue"],
+
+  // Disable built-in validators to prevent duplicate or conflicting warnings.
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+
+  // --- Prettier integration ---
+  // Ensure Prettier respects the local project configuration.
+  "prettier.requireConfig": true,
+
+  // --- Visual feedback ---
+  // Error lens makes errors highly visible by highlighting the line background.
+  "errorLens.messageBackgroundMode": "message",
+  "errorLens.enabledDiagnosticLevels": ["error", "warning"],
+
+  // --- Formatting defaults ---
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
