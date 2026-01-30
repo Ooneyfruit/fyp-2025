@@ -1,40 +1,80 @@
+<script setup lang="ts">
+/**
+ * Navigation sidebar with enhanced touch interaction.
+ * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
+ */
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+import { useLayout } from '@/composables/useLayout';
+import { useSwipeAway } from '@/composables/useSwipeAway';
+import { type NavItem, useNavigation } from '@/features/navbar/navbarApi';
+
+const { isSidebarOpen, isMobile, closeSidebar } = useLayout();
+const { filteredMenuItems } = useNavigation();
+const router = useRouter();
+const route = useRoute();
+
+// Gesture logic is active only when the sidebar is visible on mobile.
+const isSwipeEnabled = computed(() => isMobile.value && isSidebarOpen.value);
+
+// Initialize generalised swipe logic to drive the sidebar animation.
+const { isSwiping, swipeTransform, handleTouchStart, handleTouchMove, handleTouchEnd } =
+  useSwipeAway({
+    threshold: 80,
+    onTrigger: closeSidebar,
+    enabled: isSwipeEnabled
+  });
+
+/**
+ * Handles navigation events and ensures menu closure on mobile.
+ * @param item - Navigation item metadata.
+ */
+const handleNavigation = (item: NavItem): void => {
+  if (isMobile.value) {
+    closeSidebar();
+  }
+  router.push(item.to);
+};
+</script>
+
 <template>
   <div>
     <Transition name="fade">
-      <div 
-        v-if="isSidebarOpen && isMobile" 
-        class="mobile-overlay" 
-        @click="closeSidebar"
-        @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
+      <div
+        v-if="isSidebarOpen && isMobile"
+        class="mobile-overlay"
+        @click="() => closeSidebar()"
         @touchend="handleTouchEnd"
-      ></div>
+        @touchmove="handleTouchMove"
+        @touchstart="handleTouchStart"
+      />
     </Transition>
 
-    <aside 
-      class="sidebar" 
-      :class="{ 'open': isSidebarOpen, 'is-swiping': isSwiping }"
+    <aside
+      class="sidebar"
+      :class="{ open: isSidebarOpen, 'is-swiping': isSwiping }"
       :style="swipeTransform"
-      @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
+      @touchmove="handleTouchMove"
+      @touchstart="handleTouchStart"
     >
       <nav class="sidebar-nav">
-        <a 
-          v-for="item in filteredMenuItems" 
-          :key="item.name"
-          href="#" 
+        <a
+          v-for="item in filteredMenuItems"
+          :key="item.label"
           class="nav-item"
-          :class="{ active: route.path === item.path }" 
-          @click.prevent="handleNavigation(item)" 
-          :title="(!isSidebarOpen && !isMobile) ? item.name : ''" 
+          :class="{ active: route.path === item.to }"
+          href="#"
+          :title="!isSidebarOpen && !isMobile ? item.label : ''"
+          @click.prevent="handleNavigation(item)"
         >
           <span class="icon">
             <component :is="item.icon" />
           </span>
-          
-          <span class="label" :class="{ 'visible': isSidebarOpen }">
-            {{ item.name }}
+
+          <span class="label" :class="{ visible: isSidebarOpen }">
+            {{ item.label }}
           </span>
         </a>
       </nav>
@@ -42,159 +82,103 @@
   </div>
 </template>
 
-<script setup>
-/**
- * Navigation sidebar with enhanced touch interaction.
- * Uses a proxy-event pattern to allow swiping from anywhere on the screen.
- */
-import { computed, markRaw } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useAuth } from '../../composables/useAuth';
-import { useLayout } from '../../composables/useLayout';
-import { useSwipeAway } from '../../composables/useSwipeAway';
-
-// Component icons.
-import IconCalendar from '../icons/IconCalendar.vue'; // Changed from IconHome
-import IconUsers from '../icons/IconUsers.vue';
-
-const MENU_CONFIG = [
-  { name: 'Rota', icon: markRaw(IconCalendar), path: '/', adminOnly: false },
-  { name: 'User Management', icon: markRaw(IconUsers), path: '/users', adminOnly: true },
-];
-
-const { isSidebarOpen, isMobile, closeSidebar } = useLayout();
-const { user } = useAuth();
-const router = useRouter();
-const route = useRoute();
-
-// Gesture logic is active only when the sidebar is visible on mobile.
-const isSwipeEnabled = computed(() => isMobile.value && isSidebarOpen.value);
-
-// Initialize generalized swipe logic to drive the sidebar animation.
-const { 
-  isSwiping, 
-  swipeTransform, 
-  handleTouchStart, 
-  handleTouchMove, 
-  handleTouchEnd 
-} = useSwipeAway({
-  threshold: 80,
-  onTrigger: closeSidebar,
-  enabled: isSwipeEnabled
-});
-
-const filteredMenuItems = computed(() => {
-  return MENU_CONFIG.filter(item => 
-    item.adminOnly ? user.value?.is_administrator : true
-  );
-});
-
-/**
- * Handles navigation events and ensures menu closure on mobile.
- * @param {Object} item - Navigation item metadata.
- */
-const handleNavigation = (item) => {
-  if (isMobile.value) {
-    closeSidebar();
-  }
-  router.push(item.path);
-};
-</script>
-
 <style scoped>
-/* Sidebar container with transition logic for state changes */
+/* Sidebar container with transition logic for state changes. */
 .sidebar {
-  top: var(--navbar-height); 
-  bottom: 0;
-  position: fixed;
-  left: 0;
   background: white;
   border-right: 0.0625rem solid var(--border-color);
-  z-index: var(--z-sidebar); 
+  bottom: 0;
+  left: 0;
   overflow-x: hidden;
+  position: fixed;
+  top: var(--navbar-height);
+  transition:
+    width 0.3s ease,
+    transform 0.3s ease;
   white-space: nowrap;
   width: var(--sidebar-slim-width);
-  transition: width 0.3s ease, transform 0.3s ease;
+  z-index: var(--z-sidebar);
 }
 
-/* Prevent transition conflicts during active manual swiping */
+/* Prevent transition conflicts during active manual swiping. */
 .sidebar.is-swiping {
   transition: none;
 }
 
-.sidebar.open { 
-  width: var(--sidebar-width); 
+.sidebar.open {
+  width: var(--sidebar-width);
 }
 
-.sidebar-nav { 
-  padding: var(--spacing-md) 0; 
+.sidebar-nav {
+  padding: var(--spacing-md) 0;
 }
 
 .nav-item {
-  display: flex;
   align-items: center;
-  padding-left: 1.5rem; 
-  text-decoration: none;
-  color: var(--text-muted);
-  font-weight: 500;
   border-left: 0.25rem solid transparent;
+  color: var(--text-muted);
+  display: flex;
   font-size: 1rem;
+  font-weight: 500;
   height: 3rem;
   line-height: 1;
+  padding-left: 1.5rem;
+  text-decoration: none;
 }
 
-.nav-item:hover { 
-  background-color: #f5f5f5; 
+.nav-item:hover {
+  background-color: #f5f5f5;
 }
 
-.nav-item.active { 
-  background-color: #e8f0fe; 
-  color: #1967d2; 
-  border-left-color: #1967d2; 
+.nav-item.active {
+  background-color: #e8f0fe;
+  border-left-color: #1967d2;
+  color: #1967d2;
 }
 
 .icon {
-  display: flex;
   align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  height: 1.5rem;
   justify-content: center;
   width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0; 
 }
 
 .label {
   margin-left: 0.75rem;
-  opacity: 0; 
+  opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
-.label.visible { 
-  opacity: 1; 
-  pointer-events: auto; 
+.label.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-/* Mobile positioning logic */
-@media (max-width: 48rem) {
+/* Mobile positioning logic. */
+@media (width <= 48rem) {
   .sidebar {
-    width: var(--sidebar-width);
     transform: translateX(-100%);
+    width: var(--sidebar-width);
   }
+
   .sidebar.open {
     transform: translateX(0);
   }
 }
 
-/* Overlay serves as the touch proxy for viewport-wide gestures */
+/* Overlay serves as the touch proxy for viewport-wide gestures. */
 .mobile-overlay {
+  backdrop-filter: blur(2px);
+  background: rgb(31 41 55 / 30%);
+  height: 100%;
+  left: 0;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(31, 41, 55, 0.3);
-  backdrop-filter: blur(2px);
-  z-index: var(--z-overlay);
   touch-action: none;
+  width: 100%;
+  z-index: var(--z-overlay);
 }
 </style>

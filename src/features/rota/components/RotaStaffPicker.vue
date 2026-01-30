@@ -1,30 +1,89 @@
+<script setup lang="ts">
+/**
+ * RotaStaffPicker: A component to search and select staff members for shifts.
+ * Displays recommended staff (matching the shift role) and others separately.
+ */
+import IconPlus from '@/components/icons/IconPlus.vue';
+
+/**
+ * Interface for staff members displayed in the picker.
+ * Defines only the fields required for display.
+ * Removing the index signature ([key: string]: unknown) ensures compatibility
+ * with stricter interfaces like MappedMember.
+ */
+export interface PickerStaffMember {
+  uid: string;
+  name: string;
+  roleName?: string;
+}
+
+// definedProps with defaults to resolve "require-default-prop" errors.
+withDefaults(
+  defineProps<{
+    searchQuery?: string;
+    isLoading?: boolean;
+    targetRoleName?: string;
+    recommended?: PickerStaffMember[];
+    others?: PickerStaffMember[];
+  }>(),
+  {
+    searchQuery: '',
+    isLoading: false,
+    targetRoleName: 'Role',
+    recommended: () => [],
+    others: () => []
+  }
+);
+
+// Explicit emit definitions for better type safety.
+const emit = defineEmits<{
+  (e: 'update:searchQuery', value: string): void;
+  (e: 'add', member: PickerStaffMember): void;
+}>();
+
+/**
+ * Handles input changes and explicitly casts the target to HTMLInputElement.
+ * This is cleaner and safer than casting inside the template.
+ * @param event - The input event from the search field.
+ */
+const handleSearchInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  emit('update:searchQuery', target.value);
+};
+
+/**
+ * Emits the add event for a selected staff member.
+ * @param member - The staff member selected by the user.
+ */
+const handleAdd = (member: PickerStaffMember) => {
+  emit('add', member);
+};
+</script>
+
 <template>
   <div class="picker-section">
     <h4 class="section-heading">Add Staff</h4>
-    
+
     <div class="filter-bar">
-      <input 
-        :value="searchQuery" 
-        @input="$emit('update:searchQuery', $event.target.value)"
-        type="text" 
-        placeholder="Search employees..." 
+      <input
         class="rd-input"
+        placeholder="Search employees..."
+        type="text"
+        :value="searchQuery"
+        @input="handleSearchInput"
       />
     </div>
 
-    <div v-if="isLoading" class="loading-indicator">
-      Loading practice members...
-    </div>
+    <div v-if="isLoading" class="loading-indicator">Loading practice members...</div>
 
     <div v-else class="available-list">
-      
       <div v-if="recommended.length > 0" class="group">
         <div class="group-label">Recommended ({{ targetRoleName }})</div>
-        <div 
-          v-for="member in recommended" 
+        <div
+          v-for="member in recommended"
           :key="member.uid"
           class="staff-card available"
-          @click="$emit('add', member)"
+          @click="handleAdd(member)"
         >
           <span class="staff-name">{{ member.name }}</span>
           <IconPlus class="add-icon" />
@@ -35,11 +94,12 @@
         <div class="group-label warning">
           {{ recommended.length === 0 ? 'All Staff' : 'Other Roles' }}
         </div>
-        <div 
-          v-for="member in others" 
+        <div
+          v-for="member in others"
           :key="member.uid"
           class="staff-card available warning-card"
-          @click="$emit('add', member)"
+          title="Click to add to shift"
+          @click="handleAdd(member)"
         >
           <div class="staff-info">
             <span class="staff-name">{{ member.name }}</span>
@@ -56,35 +116,21 @@
   </div>
 </template>
 
-<script setup>
-import IconPlus from '../../../components/icons/IconPlus.vue';
-
-defineProps({
-  searchQuery: String,
-  isLoading: Boolean,
-  targetRoleName: String,
-  recommended: Array, // Staff matching role
-  others: Array       // Staff not matching role
-});
-
-defineEmits(['update:searchQuery', 'add']);
-</script>
-
 <style scoped>
 .picker-section {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
   overflow: hidden; /* Contains scroll within this section */
 }
 
 .section-heading {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: var(--text-muted);
-  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
 }
 
 .filter-bar {
@@ -92,38 +138,38 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .rd-input {
-  width: 100%;
-  padding: 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   font-size: 0.95rem;
+  padding: 0.6rem;
+  width: 100%;
 }
 
 .available-list {
-  overflow-y: auto;
-  padding-right: 4px;
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .staff-card {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.75rem;
   background: white;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s;
 }
 
 .staff-card:hover {
-  border-color: #3b82f6;
   background: #f8fafc;
+  border-color: #3b82f6;
 }
 
 .staff-card.warning-card {
@@ -131,9 +177,9 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .staff-name {
+  color: var(--text-main);
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text-main);
 }
 
 .staff-info {
@@ -142,14 +188,15 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .staff-role-badge {
-  font-size: 0.7rem;
   color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 500;
 }
 
 .add-icon {
-  color: var(--text-light);
-  width: 1.25rem;
+  color: #000;
   height: 1.25rem;
+  width: 1.25rem;
 }
 
 .staff-card:hover .add-icon {
@@ -157,31 +204,31 @@ defineEmits(['update:searchQuery', 'add']);
 }
 
 .group-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-weight: 600;
   border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
   margin-bottom: 0.5rem;
   padding-bottom: 4px;
 }
 
 .group-label.warning {
-  color: #d97706;
   border-color: #fcd34d;
+  color: #d97706;
 }
 
 .loading-indicator {
-  text-align: center;
-  padding: 2rem;
   color: var(--text-muted);
   font-style: italic;
+  padding: 2rem;
+  text-align: center;
 }
 
 .empty-text {
-  text-align: center;
   color: var(--text-light);
-  font-style: italic;
   font-size: 0.9rem;
+  font-style: italic;
   padding: 1rem;
+  text-align: center;
 }
 </style>

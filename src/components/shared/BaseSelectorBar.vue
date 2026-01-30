@@ -1,45 +1,45 @@
-<template>
-  <div class="rd-selector-bar">
-    <slot />
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 /**
  * Primary responsibility: provides a flexible, equally-spaced container for navigation items.
  * Uses space-evenly to ensure uniform gaps between all child elements and container edges.
  */
 </script>
 
+<template>
+  <div class="rd-selector-bar">
+    <slot />
+  </div>
+</template>
+
 <style scoped>
-/* Layout: Standardised interactable bar styling */
+/* Layout: standardised interactive bar styling. */
 .rd-selector-bar {
-  display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  background-color: var(--bg-surface, #ffffff);
+  background-color: var(--bg-surface, #fff);
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 8px;
-  padding: var(--spacing-sm) var(--spacing-md);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  width: 100%;
-  min-height: 4.5rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  display: flex;
   gap: var(--spacing-xs);
+  justify-content: space-evenly;
+  min-height: 4.5rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  width: 100%;
 }
 
-/* Logic: Prevent children from stretching or shrinking unevenly */
+/* Logic: prevent children from stretching or shrinking unevenly. */
 :deep(> *) {
-  flex-shrink: 0;
-  display: flex;
   align-items: center;
+  display: flex;
+  flex-shrink: 0;
   justify-content: center;
 }
 
-/* Tablet: Tighten padding for narrower viewports */
-@media (max-width: 48rem) {
+/* Tablet: tighten padding for narrower viewports. */
+@media (width <= 48rem) {
   .rd-selector-bar {
-    padding: var(--spacing-xs) var(--spacing-sm);
     min-height: 4rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
 }
 </style>

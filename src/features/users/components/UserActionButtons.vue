@@ -1,22 +1,24 @@
+<script setup lang="ts">
+/**
+ * (needs description).
+ */
+import IconEdit from '@/components/icons/IconEdit.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
+
+defineEmits<(e: 'edit') => void>();
+</script>
+
 <template>
   <div class="user-actions">
-    <BaseButton 
-      label="Edit User" 
-      :icon="IconEdit" 
-      variant="secondary"
+    <BaseButton
+      :icon="IconEdit"
       icon-only
-      @click="$emit('edit')" 
+      label="Edit User"
+      variant="secondary"
+      @click="$emit('edit')"
     />
-    
-    </div>
+  </div>
 </template>
-
-<script setup>
-import BaseButton from '../../../components/shared/BaseButton.vue';
-import IconEdit from '../../../components/icons/IconEdit.vue';
-
-defineEmits(['edit']);
-</script>
 
 <style scoped>
 .user-actions {

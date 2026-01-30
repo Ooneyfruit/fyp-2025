@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "usernamehw.errorlens",
+    "streetsidesoftware.code-spell-checker",
+    "webpro.vscode-knip",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "stylelint.vscode-stylelint",
+    "SonarSource.sonarlint-vscode",
+    "vivaxy.vscode-conventional-commits"
+  ]
+}
