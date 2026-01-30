@@ -15,7 +15,7 @@ defineProps<{
 
 <template>
   <div class="footer-actions">
-    <BaseButton label="Cancel" variant="text" @click="onClose" />
+    <BaseButton label="Cancel" variant="secondary" @click="onClose" />
     <BaseButton :disabled="!hasChanges" :label="saveLabel" @click="onSave" />
   </div>
 </template>
