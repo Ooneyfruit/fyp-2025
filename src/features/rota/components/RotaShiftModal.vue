@@ -1,34 +1,80 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Rota shift management modal.
+ * Allows assigning or removing staff from a specific shift slot.
  */
 
-import { computed, ref, watch } from 'vue';
+import { type DocumentReference, Timestamp } from 'firebase/firestore';
+import { computed, markRaw, type PropType, ref, watch } from 'vue';
 
-import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
+import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
 
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
+import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
 import RotaStaffPicker from './RotaStaffPicker.vue';
 
+// --- Type Definitions ---
+
+interface RotaDay {
+  label: string;
+  date: string | Date;
+}
+
+interface MappedMember {
+  uid: string;
+  membershipId: string;
+  userRef: DocumentReference;
+  name: string;
+  // Changed from optional '?' to required to match PickerStaffMember
+  email: string;
+  roleName?: string;
+  // Added fields to satisfy PickerStaffMember type constraint
+  role: string;
+  status: 'active' | 'invited' | 'suspended';
+  activePracticeName: string;
+  is_administrator: boolean;
+}
+
+// Extension of Shift to handle UI-specific fields and temporary additions
+interface ExtendedShift extends Shift {
+  isTemp?: boolean;
+  originalMember?: MappedMember;
+}
+
 const props = defineProps({
-  show: Boolean,
-  role: { type: Object, default: () => ({ name: 'Unknown' }) },
-  surgery: { type: Object, default: () => ({ name: 'Unknown' }) },
-  date: { type: Object, default: () => ({ label: '' }) },
-  shifts: { type: Array, default: () => [] }
+  show: { type: Boolean, required: true },
+  role: {
+    type: Object as PropType<PracticeRole>,
+    default: () => ({ id: 'unknown', name: 'Unknown' })
+  },
+  surgery: {
+    type: Object as PropType<PracticeSurgery>,
+    default: () => ({ id: 'unknown', name: 'Unknown' })
+  },
+  date: {
+    type: Object as PropType<RotaDay>,
+    default: () => ({ label: '' })
+  },
+  shifts: {
+    type: Array as PropType<Shift[]>,
+    default: () => []
+  }
 });
 
-const emit = defineEmits(['request-close', 'save']);
+const emit = defineEmits<{
+  (e: 'request-close'): void;
+  (e: 'save', payload: { additions: MappedMember[]; removals: string[] }): void;
+}>();
 
 // --- Use Shared User Logic ---
 const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
 
 // --- Local State ---
 const searchQuery = ref('');
-const pendingAdds = ref([]);
-const pendingRemoves = ref([]);
+const pendingAdds = ref<MappedMember[]>([]);
+const pendingRemoves = ref<string[]>([]);
 
 watch(
   () => props.show,
@@ -46,48 +92,76 @@ const modalTitle = computed(
 );
 
 // --- Data Mapping ---
-const mappedMembers = computed(() => {
+const mappedMembers = computed<MappedMember[]>(() => {
   return practiceUsers.value.map((member) => ({
-    uid: member.profile.id,
+    uid: member.profile.id || '',
     membershipId: member.id,
     userRef: member.user,
     name: member.profile.name || 'Unknown Staff',
-    email: member.profile.email,
-    roleName: member.role
+    // Fallback to empty string to ensure strict string type
+    email: member.profile.email || '',
+    roleName: member.role,
+    // Explicitly mapping fields required by the PickerStaffMember interface
+    role: member.role,
+    status: (member.status as 'active' | 'invited' | 'suspended') || 'active',
+    activePracticeName: member.profile.activePracticeName || '',
+    is_administrator: member.profile.is_administrator || false
   }));
 });
+
+// --- Helper Functions ---
+
+/**
+ * Safely extracts a string ID from a user_id field that might be a string or a DocumentReference.
+ * Fixes runtime issues where legacy data might store a Ref instead of an ID.
+ */
+const getNormalizedUserId = (val: unknown): string | undefined => {
+  if (!val) return undefined;
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && 'id' in val) {
+    return (val as { id: string }).id;
+  }
+  return undefined;
+};
 
 // --- Computed Lists ---
 
 /**
- * Staff currently assigned (Props - Removals + Additions)
+ * Staff currently assigned (Props - Removals + Additions).
  * ENRICHED: Now looks up the role for existing shifts to detect exceptions.
  */
-const currentStaffList = computed(() => {
+const currentStaffList = computed<ExtendedShift[]>(() => {
   // 1. Process Existing Shifts
-  const existing = props.shifts
+  const existing: ExtendedShift[] = props.shifts
     .filter((s) => !pendingRemoves.value.includes(s.id))
     .map((s) => {
       // Robust ID check: s.user_id might be a string or a Firestore Reference object
-      const sUserId = s.user_id?.id || s.user_id;
+      const sUserId = getNormalizedUserId(s.user_id);
 
       // Find the member to get their current role
       const match = mappedMembers.value.find((m) => m.uid === sUserId);
 
       return {
         ...s,
+        // Ensure user_id is normalized to string for the UI
+        user_id: sUserId,
         // Attach the Role Name if found, otherwise undefined (or 'Unknown')
         roleName: match?.roleName
       };
     });
 
   // 2. Process Pending Additions
-  const newOnes = pendingAdds.value.map((m) => ({
+  const newOnes: ExtendedShift[] = pendingAdds.value.map((m) => ({
     id: `temp_${m.uid}`,
+    date: Timestamp.now(), // Placeholder date to satisfy Shift interface
+    user_id: m.uid,
     user_name: m.name,
     isTemp: true,
     originalMember: m,
-    roleName: m.roleName
+    roleName: m.roleName,
+    // Default Status flags for new temp shifts
+    is_resolved: false,
+    roster_status: 'draft'
   }));
 
   return [...existing, ...newOnes];
@@ -97,9 +171,8 @@ const availableStaffList = computed(() => {
   // Combine IDs from both sources to exclude them from the picker
   const currentIds = new Set(
     currentStaffList.value.map((s) => {
-      // For existing shifts, user_id is the reference/ID
-      // For temps, originalMember.uid is the ID
-      return s.user_id?.id || s.user_id || s.originalMember?.uid;
+      // For existing shifts, user_id is already normalized in currentStaffList
+      return s.user_id || s.originalMember?.uid;
     })
   );
 
@@ -128,13 +201,19 @@ const saveLabel = computed(() => {
 
 // --- Actions ---
 
-const stageAddition = (member) => {
+const stageAddition = (member: MappedMember) => {
   pendingAdds.value.push(member);
 };
 
-const markForRemoval = (shift) => {
-  if (shift.isTemp) {
-    pendingAdds.value = pendingAdds.value.filter((m) => m.uid !== shift.originalMember.uid);
+// Wrapper to satisfy TypeScript event contravariance.
+// The picker emits a generic StaffMember, but we know it's a MappedMember.
+const handleAddStaff = (member: unknown) => {
+  stageAddition(member as MappedMember);
+};
+
+const markForRemoval = (shift: ExtendedShift) => {
+  if (shift.isTemp && shift.originalMember) {
+    pendingAdds.value = pendingAdds.value.filter((m) => m.uid !== shift.originalMember!.uid);
   } else {
     pendingRemoves.value.push(shift.id);
   }
@@ -150,10 +229,26 @@ const saveChanges = () => {
 const handleClose = () => emit('request-close');
 
 const isLoading = computed(() => usersLoading.value);
+
+// --- Component Configuration ---
+const footerComponent = markRaw(RotaShiftModalFooter);
+const footerProps = computed(() => ({
+  hasChanges: hasChanges.value,
+  saveLabel: saveLabel.value,
+  onClose: handleClose,
+  onSave: saveChanges
+}));
 </script>
 
 <template>
-  <BaseModal :show="show" size="md" :title="modalTitle" @request-close="handleClose">
+  <BaseModal
+    :footer-component="footerComponent"
+    :footer-props="footerProps"
+    :show="show"
+    size="md"
+    :title="modalTitle"
+    @request-close="handleClose"
+  >
     <div class="modal-body-wrapper">
       <RotaAssignedStaff
         :staff="currentStaffList"
@@ -169,16 +264,9 @@ const isLoading = computed(() => usersLoading.value);
         :others="otherStaff"
         :recommended="recommendedStaff"
         :target-role-name="role.name"
-        @add="stageAddition"
+        @add="handleAddStaff"
       />
     </div>
-
-    <template #footer>
-      <div class="footer-actions">
-        <BaseButton label="Cancel" variant="text" @click="handleClose" />
-        <BaseButton :disabled="!hasChanges" :label="saveLabel" @click="saveChanges" />
-      </div>
-    </template>
   </BaseModal>
 </template>
 
@@ -196,12 +284,5 @@ const isLoading = computed(() => usersLoading.value);
   border: 0;
   border-top: 1px solid var(--border-color);
   margin: 0;
-}
-
-.footer-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: flex-end;
-  width: 100%;
 }
 </style>

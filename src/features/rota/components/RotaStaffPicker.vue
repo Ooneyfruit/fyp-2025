@@ -1,19 +1,59 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * RotaStaffPicker: A component to search and select staff members for shifts.
+ * Displays recommended staff (matching the shift role) and others separately.
  */
-
 import IconPlus from '@/components/icons/IconPlus.vue';
+import type { PracticeUser } from '@/features/users/userTypes';
 
-defineProps({
-  searchQuery: String,
-  isLoading: Boolean,
-  targetRoleName: String,
-  recommended: Array, // Staff matching role
-  others: Array // Staff not matching role
-});
+/**
+ * Extended user type to support the specific display needs of the picker.
+ * Adds 'roleName' which is used in the template but not present on the base PracticeUser.
+ */
+interface PickerStaffMember extends PracticeUser {
+  roleName?: string;
+}
 
-defineEmits(['update:searchQuery', 'add']);
+// definedProps with defaults to resolve "require-default-prop" errors.
+// Assigned to nothing (removed 'const props =') because props are not read in this script.
+withDefaults(
+  defineProps<{
+    searchQuery?: string;
+    isLoading?: boolean;
+    targetRoleName?: string;
+    recommended?: PickerStaffMember[];
+    others?: PickerStaffMember[];
+  }>(),
+  {
+    searchQuery: '',
+    isLoading: false,
+    targetRoleName: 'Role',
+    recommended: () => [],
+    others: () => []
+  }
+);
+
+// Explicit emit definitions for better type safety.
+const emit = defineEmits<{
+  (e: 'update:searchQuery', value: string): void;
+  (e: 'add', member: PickerStaffMember): void;
+}>();
+
+/**
+ * Handles input changes and explicitly casts the target to HTMLInputElement.
+ * This is cleaner and safer than casting inside the template.
+ */
+const handleSearchInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  emit('update:searchQuery', target.value);
+};
+
+/**
+ * Emits the add event for a selected staff member.
+ */
+const handleAdd = (member: PickerStaffMember) => {
+  emit('add', member);
+};
 </script>
 
 <template>
@@ -26,7 +66,7 @@ defineEmits(['update:searchQuery', 'add']);
         placeholder="Search employees..."
         type="text"
         :value="searchQuery"
-        @input="$emit('update:searchQuery', $event.target.value)"
+        @input="handleSearchInput"
       />
     </div>
 
@@ -39,7 +79,7 @@ defineEmits(['update:searchQuery', 'add']);
           v-for="member in recommended"
           :key="member.uid"
           class="staff-card available"
-          @click="$emit('add', member)"
+          @click="handleAdd(member)"
         >
           <span class="staff-name">{{ member.name }}</span>
           <IconPlus class="add-icon" />
@@ -54,7 +94,8 @@ defineEmits(['update:searchQuery', 'add']);
           v-for="member in others"
           :key="member.uid"
           class="staff-card available warning-card"
-          @click="$emit('add', member)"
+          title="Click to add to shift"
+          @click="handleAdd(member)"
         >
           <div class="staff-info">
             <span class="staff-name">{{ member.name }}</span>

@@ -3,32 +3,67 @@
  * Data Adapter for User Management.
  * Switches between Table and Card views based on available container width.
  */
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 import BaseCardList from '@/components/shared/BaseCardList.vue';
 import BaseTable from '@/components/shared/BaseTable.vue';
 import { useBreakpoints } from '@/composables/useBreakpoints';
+import type { FirestoreDate } from '@/features/users/userTypes';
 
 import UserActionButtons from './UserActionButtons.vue';
 import UserIdentity from './UserIdentity.vue';
 import UserStatusPills from './UserStatusPills.vue';
 
-const props = defineProps({ users: Array });
-defineEmits(['edit']);
+/**
+ * The breakpoint threshold in rem units for switching to mobile view.
+ */
+const MOBILE_BREAKPOINT_REM = 62;
 
-onMounted(() =>
-  console.log(`[UserDataViewAdapter] Mounted with ${props.users?.length || 0} users.`)
+/**
+ * The multiplier to convert seconds to milliseconds.
+ */
+const SECONDS_TO_MS = 1000;
+
+const props = withDefaults(
+  defineProps<{
+    users?: any[];
+  }>(),
+  {
+    users: () => []
+  }
 );
 
-const adapterRoot = ref(null);
+defineEmits(['edit']);
+
+const adapterRoot = ref<HTMLElement | null>(null);
 
 // Adjusted threshold to 62rem (approx 992px).
 // Increased to prevent the actions column from clipping before the switch to mobile view occurs.
-const { isMobile } = useBreakpoints(adapterRoot, 62);
+const { isMobile } = useBreakpoints(adapterRoot, MOBILE_BREAKPOINT_REM);
 
-const formatDate = (ts) => {
-  if (!ts) return null;
-  const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000 || ts);
+/**
+ * Formats a Firestore timestamp or date string into a readable GB date format.
+ *
+ * @param ts - The timestamp or date value to format.
+ * @returns The formatted date string or null if input is invalid.
+ */
+const formatDate = (ts: FirestoreDate): string | null => {
+  if (!ts) {
+    return null;
+  }
+
+  // Check if the object has a toDate method (Firestore Timestamp).
+  if (typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function') {
+    return ts
+      .toDate()
+      .toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  // Fallback for objects with seconds property or raw values.
+  const seconds = (ts as { seconds?: number }).seconds;
+  const timeValue = seconds ? seconds * SECONDS_TO_MS : (ts as string | number);
+  const d = new Date(timeValue);
+
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 

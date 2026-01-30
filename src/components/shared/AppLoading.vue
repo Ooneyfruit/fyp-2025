@@ -7,8 +7,18 @@ import { computed } from 'vue';
 
 import BaseSpinner from './BaseSpinner.vue';
 
-const props = defineProps({
-  fullScreen: { type: Boolean, default: false }
+interface Props {
+  fullScreen?: boolean;
+  /**
+   * The text to display next to the spinner.
+   * Can be overridden by the default slot.
+   */
+  text?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  fullScreen: false,
+  text: 'Syncing practice records...'
 });
 
 // Increase spinner dimensions for full-screen states to ensure visual prominence.
@@ -20,7 +30,7 @@ const spinnerSize = computed(() => (props.fullScreen ? '2rem' : '1.5rem'));
     <BaseSpinner :size="spinnerSize" />
 
     <span class="loading-text">
-      <slot>Syncing practice records...</slot>
+      <slot>{{ text }}</slot>
     </span>
   </output>
 </template>
