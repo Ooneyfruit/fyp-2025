@@ -43,6 +43,7 @@ export interface PracticeMembership {
   user: DocumentReference;
   practice: DocumentReference;
   role: string;
+  status?: 'active' | 'invited' | 'suspended'; // Added to fix TS error in RotaShiftModal
   start_date: FirestoreDate;
   end_date?: FirestoreDate;
   is_administrator?: boolean;

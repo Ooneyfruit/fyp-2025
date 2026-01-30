@@ -29,6 +29,19 @@ const globalProfileStore = ref<ProfileStore>({});
 const profileListeners = new Map<string, { unsub: Unsubscribe; count: number }>();
 
 /**
+ * A fallback profile object that satisfies the UserProfile interface.
+ * Used when data is still loading to prevent TypeScript union errors.
+ */
+const LOADING_PROFILE: UserProfile = {
+  uid: '',
+  email: '',
+  activePracticeName: '',
+  is_administrator: false,
+  name: 'Loading...',
+  role: 'Unknown'
+};
+
+/**
  * Increments the reference count and initializes a profile listener if needed.
  * @param userRef - The Firestore reference to the user document.
  */
@@ -135,7 +148,8 @@ const processSnapshotUpdates = (
 const resolveUserList = (list: PracticeMembership[]) => {
   return list
     .map((m) => {
-      const profileData = globalProfileStore.value[m.user.id] || { name: 'Loading...' };
+      // Use the strongly typed LOADING_PROFILE fallback
+      const profileData = globalProfileStore.value[m.user.id] || LOADING_PROFILE;
       return {
         ...m,
         profile: {
