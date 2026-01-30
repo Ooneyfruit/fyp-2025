@@ -19,7 +19,11 @@ import { computed, onUnmounted, ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
 import { useToast } from '@/composables/useToast';
-import { type PracticeMembership, type UserProfile } from '@/features/users/userTypes';
+import {
+  type PracticeMembership,
+  type PracticeUser,
+  type UserProfile
+} from '@/features/users/userTypes';
 import { db } from '@/services/firebase';
 
 // Define the shape of the global profile store
@@ -145,7 +149,7 @@ const processSnapshotUpdates = (
  * @param list - The list of raw practice memberships.
  * @returns The enriched and sorted user list.
  */
-const resolveUserList = (list: PracticeMembership[]) => {
+const resolveUserList = (list: PracticeMembership[]): PracticeUser[] => {
   return list
     .map((m) => {
       // Use the strongly typed LOADING_PROFILE fallback

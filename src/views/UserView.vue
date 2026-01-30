@@ -3,7 +3,7 @@
  * Administrative view for managing practice personnel.
  * Handles the display of the user list and coordinates creation/editing workflows.
  */
-import { type Ref, ref } from 'vue';
+import { ref } from 'vue';
 
 // Icons.
 import IconPlus from '@/components/icons/IconPlus.vue';
@@ -26,18 +26,11 @@ interface UserModalInstance {
   open: (user?: PracticeUser) => void;
 }
 
-/**
- * Interface for the JS usePracticeUsers composable.
- */
-interface UsePracticeUsersReturn {
-  users: Ref<PracticeUser[]>;
-  isLoading: Ref<boolean>;
-}
-
 // --- Logic and State ---
 
 // Logic: retrieves practice-specific users and loading state.
-const { users, isLoading } = usePracticeUsers() as UsePracticeUsersReturn;
+// No casting needed as usePracticeUsers now returns the correct PracticeUser type.
+const { users, isLoading } = usePracticeUsers();
 
 /**
  * Template reference for the shared user modal instance.

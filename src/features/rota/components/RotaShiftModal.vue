@@ -14,7 +14,7 @@ import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers'
 
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
 import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
-import RotaStaffPicker from './RotaStaffPicker.vue';
+import RotaStaffPicker, { type PickerStaffMember } from './RotaStaffPicker.vue';
 
 // --- Type Definitions ---
 
@@ -23,15 +23,17 @@ interface RotaDay {
   date: string | Date;
 }
 
+/**
+ * Represents a flattened view of a practice user for usage within the Rota Modal.
+ * Must satisfy the PickerStaffMember interface for compatibility with RotaStaffPicker.
+ */
 interface MappedMember {
   uid: string;
   membershipId: string;
   userRef: DocumentReference;
   name: string;
-  // Changed from optional '?' to required to match PickerStaffMember
   email: string;
   roleName?: string;
-  // Added fields to satisfy PickerStaffMember type constraint
   role: string;
   status: 'active' | 'invited' | 'suspended';
   activePracticeName: string;
@@ -97,14 +99,14 @@ const modalTitle = computed(
 // --- Data Mapping ---
 const mappedMembers = computed<MappedMember[]>(() => {
   return practiceUsers.value.map((member) => ({
+    // Access profile data from the nested 'profile' object
     uid: member.profile.id || '',
     membershipId: member.id,
     userRef: member.user,
     name: member.profile.name || 'Unknown Staff',
-    // Fallback to empty string to ensure strict string type
     email: member.profile.email || '',
+    // Map the membership role to both roleName (display) and role (logic)
     roleName: member.role,
-    // Explicitly mapping fields required by the PickerStaffMember interface
     role: member.role,
     status: (member.status as 'active' | 'invited' | 'suspended') || 'active',
     activePracticeName: member.profile.activePracticeName || '',
@@ -117,6 +119,7 @@ const mappedMembers = computed<MappedMember[]>(() => {
 /**
  * Safely extracts a string ID from a user_id field that might be a string or a DocumentReference.
  * Fixes runtime issues where legacy data might store a Ref instead of an ID.
+ * @param val - The user_id field from the shift object.
  */
 const getNormalizedUserId = (val: unknown): string | undefined => {
   if (!val) return undefined;
@@ -212,8 +215,9 @@ const stageAddition = (member: MappedMember) => {
 };
 
 // Wrapper to satisfy TypeScript event contravariance.
-// The picker emits a generic StaffMember, but we know it's a MappedMember.
-const handleAddStaff = (member: unknown) => {
+// The picker emits a generic PickerStaffMember, which we cast back to MappedMember.
+// This cast is safe because the picker only displays items we passed to it.
+const handleAddStaff = (member: PickerStaffMember) => {
   stageAddition(member as MappedMember);
 };
 

@@ -4,18 +4,20 @@
  * Displays recommended staff (matching the shift role) and others separately.
  */
 import IconPlus from '@/components/icons/IconPlus.vue';
-import type { PracticeUser } from '@/features/users/userTypes';
 
 /**
- * Extended user type to support the specific display needs of the picker.
- * Adds 'roleName' which is used in the template but not present on the base PracticeUser.
+ * Interface for staff members displayed in the picker.
+ * Defines only the fields required for display.
+ * Removing the index signature ([key: string]: unknown) ensures compatibility
+ * with stricter interfaces like MappedMember.
  */
-interface PickerStaffMember extends PracticeUser {
+export interface PickerStaffMember {
+  uid: string;
+  name: string;
   roleName?: string;
 }
 
 // definedProps with defaults to resolve "require-default-prop" errors.
-// Assigned to nothing (removed 'const props =') because props are not read in this script.
 withDefaults(
   defineProps<{
     searchQuery?: string;
@@ -42,6 +44,7 @@ const emit = defineEmits<{
 /**
  * Handles input changes and explicitly casts the target to HTMLInputElement.
  * This is cleaner and safer than casting inside the template.
+ * @param event - The input event from the search field.
  */
 const handleSearchInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -50,6 +53,7 @@ const handleSearchInput = (event: Event) => {
 
 /**
  * Emits the add event for a selected staff member.
+ * @param member - The staff member selected by the user.
  */
 const handleAdd = (member: PickerStaffMember) => {
   emit('add', member);
@@ -186,6 +190,7 @@ const handleAdd = (member: PickerStaffMember) => {
 .staff-role-badge {
   color: var(--text-muted);
   font-size: 0.7rem;
+  font-weight: 500;
 }
 
 .add-icon {

@@ -22,6 +22,7 @@ import { user as authUser } from '@/composables/useAuth';
 import { useToast } from '@/composables/useToast';
 import { type PracticeRole } from '@/features/rota/rotaTypes';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
+import { type UserProfile } from '@/features/users/userTypes';
 import { db } from '@/services/firebase';
 
 import UserModalAccess, { type UserAccessForm } from './UserModalAccess.vue';
@@ -93,13 +94,14 @@ const defaultForm = (): UserForm => ({
 const form = ref<UserForm>(defaultForm());
 
 // Logic: checks if the session user is editing their own record.
-const isSelf = computed(() => form.value.user_id === authUser.value?.uid);
+// Cast authUser to UserProfile to prevent potential inference issues.
+const isSelf = computed(() => form.value.user_id === (authUser.value as UserProfile)?.uid);
 
 // Logic: prevents lockout by checking if the user is the only administrator left.
 const isLastAdmin = computed(() => {
   const admins = users.value.filter((u) => u.is_administrator);
 
-  return admins.length <= 1 && admins.some((a) => a.uid === form.value.user_id);
+  return admins.length <= 1 && admins.some((a) => a.profile.id === form.value.user_id);
 });
 
 // Logic: triggers the 'Save changes' button activation state based on modifications.
