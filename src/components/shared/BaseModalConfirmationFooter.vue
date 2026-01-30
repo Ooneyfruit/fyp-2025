@@ -1,9 +1,5 @@
 <script setup lang="ts">
 /**
- * (needs description).
- */
-
-/**
  * Default footer for the BaseModal exit confirmation.
  * Provides standard 'Discard' and 'Keep Editing' actions.
  */

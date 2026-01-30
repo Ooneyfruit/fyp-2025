@@ -1,17 +1,13 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * High-level orchestration for the Rota navigation system.
+ * Delegates all control rendering to the responsive child components.
  */
 
 import AppPageHeaderGroup from '@/components/layout/AppPageHeaderGroup.vue';
 
 import RotaHeaderDesktop from './RotaHeaderDesktop.vue';
 import RotaHeaderMobile from './RotaHeaderMobile.vue';
-
-/**
- * High-level orchestration for the Rota navigation system.
- * Delegates all control rendering to the responsive child components.
- */
 
 defineProps({
   title: { type: String, default: 'Practice Rota' },

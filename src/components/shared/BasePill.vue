@@ -1,14 +1,10 @@
 <script setup>
 /**
- * (needs description).
- */
-
-import { computed } from 'vue';
-
-/**
  * Provides a standardized, functional wrapper for small status
  * indicators and categorization tags within the RotaDent design system.
  */
+
+import { computed } from 'vue';
 
 const props = defineProps({
   /**
