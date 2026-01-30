@@ -11,9 +11,9 @@ let openModalCount = 0;
 /**
  * Primary responsibility: Provides a robust, accessible modal dialog system.
  * Features:
- * - Stack-aware scroll locking (via shared module state)
- * - Keyboard dismissal
- * - Flexible sizing and footer injection
+ * - Stack-aware scroll locking (via shared module state).
+ * - Keyboard dismissal.
+ * - Flexible sizing and footer injection.
  */
 import { type Component, onUnmounted, watch } from 'vue';
 
@@ -27,7 +27,7 @@ const props = withDefaults(
     show?: boolean;
     /**
      * Controls the maximum width of the modal container.
-     * Options: 'sm' | 'md' | 'lg'
+     * Options: 'sm' | 'md' | 'lg'.
      */
     size?: string;
     /**
@@ -39,13 +39,19 @@ const props = withDefaults(
      * Props to pass to the footerComponent.
      */
     footerProps?: Record<string, unknown>;
+    /**
+     * Whether the modal should animate on initial render.
+     * Essential for modals that are conditionally rendered (v-if) in the parent.
+     */
+    appear?: boolean;
   }>(),
   {
     title: 'Modal Window',
     show: false,
     size: 'md',
     footerComponent: undefined,
-    footerProps: () => ({})
+    footerProps: () => ({}),
+    appear: true
   }
 );
 
@@ -73,7 +79,7 @@ let isLocked = false;
 const lockBody = () => {
   if (!isLocked) {
     openModalCount++;
-    // Only apply the style if this is the first modal opening
+    // Only apply the style if this is the first modal opening.
     if (openModalCount === 1) {
       document.body.style.overflow = 'hidden';
     }
@@ -85,7 +91,7 @@ const lockBody = () => {
 const unlockBody = () => {
   if (isLocked) {
     openModalCount--;
-    // Only restore scrolling if NO other modals are open
+    // Only restore scrolling if NO other modals are open.
     if (openModalCount === 0) {
       document.body.style.overflow = '';
     }
@@ -117,7 +123,7 @@ onUnmounted(() => {
 
 <template>
   <Teleport to="body">
-    <Transition name="rd-modal" @after-leave="$emit('closed')">
+    <Transition :appear="appear" name="rd-modal" @after-leave="$emit('closed')">
       <div v-if="show" class="modal-root" :class="[`size-${size}`]">
         <div class="modal-overlay" @click="handleRequestClose"></div>
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
- * Rota shift management modal.
- * Allows assigning or removing staff from a specific shift slot.
+ * Rota shift management modal. Allows assigning or removing staff from a specific shift slot.
  */
 
 import { type DocumentReference, Timestamp } from 'firebase/firestore';
@@ -40,11 +39,11 @@ interface MappedMember {
   is_administrator: boolean;
 }
 
-// Extension of Shift to handle UI-specific fields and temporary additions
+// Extension of Shift to handle UI-specific fields and temporary additions.
 interface ExtendedShift extends Shift {
   isTemp?: boolean;
   originalMember?: MappedMember;
-  // This roleName comes from the User Profile, distinct from Shift.role_name
+  // This roleName comes from the User Profile, distinct from Shift.role_name.
   roleName?: string;
 }
 
@@ -99,13 +98,13 @@ const modalTitle = computed(
 // --- Data Mapping ---
 const mappedMembers = computed<MappedMember[]>(() => {
   return practiceUsers.value.map((member) => ({
-    // Access profile data from the nested 'profile' object
+    // Access profile data from the nested 'profile' object.
     uid: member.profile.id || '',
     membershipId: member.id,
     userRef: member.user,
     name: member.profile.name || 'Unknown Staff',
     email: member.profile.email || '',
-    // Map the membership role to both roleName (display) and role (logic)
+    // Map the membership role to both roleName (display) and role (logic).
     roleName: member.role,
     role: member.role,
     status: (member.status as 'active' | 'invited' | 'suspended') || 'active',
@@ -119,9 +118,11 @@ const mappedMembers = computed<MappedMember[]>(() => {
 /**
  * Safely extracts a string ID from a user_id field that might be a string or a DocumentReference.
  * Fixes runtime issues where legacy data might store a Ref instead of an ID.
+ *
  * @param val - The user_id field from the shift object.
+ * @returns The normalised string ID or undefined.
  */
-const getNormalizedUserId = (val: unknown): string | undefined => {
+const getNormalisedUserId = (val: unknown): string | undefined => {
   if (!val) return undefined;
   if (typeof val === 'string') return val;
   if (typeof val === 'object' && 'id' in val) {
@@ -137,36 +138,36 @@ const getNormalizedUserId = (val: unknown): string | undefined => {
  * ENRICHED: Now looks up the role for existing shifts to detect exceptions.
  */
 const currentStaffList = computed<ExtendedShift[]>(() => {
-  // 1. Process Existing Shifts
+  // 1. Process Existing Shifts.
   const existing: ExtendedShift[] = props.shifts
     .filter((s) => !pendingRemoves.value.includes(s.id))
     .map((s) => {
-      // Robust ID check: s.user_id might be a string or a Firestore Reference object
-      const sUserId = getNormalizedUserId(s.user_id);
+      // Robust ID check: s.user_id might be a string or a Firestore Reference object.
+      const sUserId = getNormalisedUserId(s.user_id);
 
-      // Find the member to get their current role
+      // Find the member to get their current role.
       const match = mappedMembers.value.find((m) => m.uid === sUserId);
 
       return {
         ...s,
-        // Ensure user_id is normalized to string for the UI
+        // Ensure user_id is normalised to string for the UI.
         user_id: sUserId,
-        // Attach the Role Name if found, otherwise undefined (or 'Unknown')
-        // This is the CRITICAL field for RotaAssignedStaff to detect exceptions
+        // Attach the Role Name if found, otherwise undefined (or 'Unknown').
+        // This is the CRITICAL field for RotaAssignedStaff to detect exceptions.
         roleName: match?.roleName
       };
     });
 
-  // 2. Process Pending Additions
+  // 2. Process Pending Additions.
   const newOnes: ExtendedShift[] = pendingAdds.value.map((m) => ({
     id: `temp_${m.uid}`,
-    date: Timestamp.now(), // Placeholder date to satisfy Shift interface
+    date: Timestamp.now(), // Placeholder date to satisfy Shift interface.
     user_id: m.uid,
     user_name: m.name,
     isTemp: true,
     originalMember: m,
     roleName: m.roleName,
-    // Default Status flags for new temp shifts
+    // Default Status flags for new temp shifts.
     is_resolved: false,
     roster_status: 'draft'
   }));
@@ -175,10 +176,10 @@ const currentStaffList = computed<ExtendedShift[]>(() => {
 });
 
 const availableStaffList = computed(() => {
-  // Combine IDs from both sources to exclude them from the picker
+  // Combine IDs from both sources to exclude them from the picker.
   const currentIds = new Set(
     currentStaffList.value.map((s) => {
-      // For existing shifts, user_id is already normalized in currentStaffList
+      // For existing shifts, user_id is already normalised in currentStaffList.
       return s.user_id || s.originalMember?.uid;
     })
   );
@@ -192,12 +193,12 @@ const availableStaffList = computed(() => {
 });
 
 const recommendedStaff = computed(() => {
-  // Use shared logic to find matches
+  // Use shared logic to find matches.
   return availableStaffList.value.filter((m) => isRoleMatch(m.roleName, props.role?.name));
 });
 
 const otherStaff = computed(() => {
-  // Use shared logic to find non-matches
+  // Use shared logic to find non-matches.
   return availableStaffList.value.filter((m) => !isRoleMatch(m.roleName, props.role?.name));
 });
 
@@ -285,8 +286,16 @@ const footerProps = computed(() => ({
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-height: 70vh;
-  min-height: 500px;
+
+  /* * Intelligent calculation: 100dvh (dynamic viewport height) minus 18rem.
+   * This reserves roughly 18rem for the modal header, footer, and outer padding.
+   * On a typical 1080p screen, this results in approx 68-70vh.
+   * On smaller screens, it ensures the modal never pushes the header/footer off-canvas.
+   */
+  max-height: calc(100dvh - 18rem);
+
+  /* 500px converted to rem (500 / 16). */
+  min-height: 31.25rem;
   overflow: hidden;
 }
 
