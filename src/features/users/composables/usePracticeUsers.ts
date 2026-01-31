@@ -15,7 +15,7 @@ import {
   type Unsubscribe,
   where
 } from 'firebase/firestore';
-import { computed, onUnmounted, ref, watch } from 'vue';
+import { computed, markRaw, onUnmounted, ref, watch } from 'vue';
 
 import { user as authUser } from '@/composables/useAuth';
 import { useToast } from '@/composables/useToast';
@@ -64,7 +64,8 @@ const attachProfileListener = (userRef: DocumentReference) => {
     userRef,
     (pSnap: DocumentSnapshot) => {
       if (pSnap.exists()) {
-        globalProfileStore.value[uid] = pSnap.data() as UserProfile;
+        // Use markRaw to prevent Proxying of Firestore objects (DataCloneError Fix)
+        globalProfileStore.value[uid] = markRaw(pSnap.data() as UserProfile);
       }
     },
     (err: FirestoreError) => useToast().error(`Profile Error (${uid}): ${err.message}`)

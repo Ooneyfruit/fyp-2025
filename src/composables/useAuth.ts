@@ -19,7 +19,7 @@ import {
   type Unsubscribe,
   updateDoc
 } from 'firebase/firestore';
-import { type Ref, ref } from 'vue';
+import { markRaw, type Ref, ref } from 'vue';
 
 import { type UserProfile, UserProfileSchema } from '@/features/users/userTypes';
 import { auth, db } from '@/services/firebase';
@@ -142,15 +142,20 @@ const handleUserSnapshot = async (
     const parsedResult = UserProfileSchema.safeParse(mergedProfile);
 
     // Validate the merged profile and update the global user state.
-    user.value = parsedResult.success ? parsedResult.data : (mergedProfile as UserProfile);
+    // Use markRaw to prevent Vue from proxying Firestore references.
+    user.value = parsedResult.success
+      ? markRaw(parsedResult.data)
+      : markRaw(mergedProfile as UserProfile);
   } catch {
     // Fallback to basic profile if membership or practice data is inaccessible.
-    user.value = {
+    const fallback = {
       uid: firebaseUser.uid,
       ...userData,
       is_administrator: false,
       activePracticeName: 'Error'
     } as UserProfile;
+
+    user.value = markRaw(fallback);
   } finally {
     isAuthReady.value = true;
   }

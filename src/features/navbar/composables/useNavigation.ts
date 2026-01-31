@@ -5,6 +5,7 @@
 import { computed, markRaw } from 'vue';
 
 import IconCalendar from '@/components/icons/IconCalendar.vue';
+import IconSettings from '@/components/icons/IconSettings.vue';
 import IconUsers from '@/components/icons/IconUsers.vue';
 import { useAuth } from '@/composables/useAuth';
 import { type NavItem } from '@/features/navbar/navTypes';
@@ -22,7 +23,13 @@ export function useNavigation() {
    */
   const MENU_CONFIG: NavItem[] = [
     { label: 'Rota', icon: markRaw(IconCalendar), to: '/', requiresAdmin: false },
-    { label: 'User management', icon: markRaw(IconUsers), to: '/users', requiresAdmin: true }
+    { label: 'User management', icon: markRaw(IconUsers), to: '/users', requiresAdmin: true },
+    {
+      label: 'Practice Settings',
+      icon: markRaw(IconSettings),
+      to: '/settings',
+      requiresAdmin: true
+    }
   ];
 
   const filteredMenuItems = computed(() => {
