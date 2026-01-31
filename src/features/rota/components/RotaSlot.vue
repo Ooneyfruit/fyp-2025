@@ -22,6 +22,14 @@ const props = defineProps({
     type: String as PropType<string | null>,
     default: null
   },
+  /**
+   * The human-readable name of the role.
+   * REQUIRED for consistent colouring across Rota and User views.
+   */
+  roleName: {
+    type: String as PropType<string | null>,
+    default: null
+  },
   isWeekend: { type: Boolean, default: false },
   isToday: { type: Boolean, default: false },
   isBeforeToday: { type: Boolean, default: false }
@@ -33,7 +41,8 @@ const { getRoleColor } = useRotaColors();
 
 const hasData = computed(() => props.shifts.length > 0);
 
-const colors = computed(() => getRoleColor(props.roleId || ''));
+// Use Role Name as the key if available, matching the User List logic.
+const colors = computed(() => getRoleColor(props.roleName || props.roleId || ''));
 
 const pillStyles = computed(() => ({
   backgroundColor: colors.value.bg,

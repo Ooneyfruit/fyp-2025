@@ -13,6 +13,7 @@ import AppPageContainer from '@/components/layout/AppPageContainer.vue';
 import AppPageHeaderGroup from '@/components/layout/AppPageHeaderGroup.vue';
 import AppLoading from '@/components/shared/AppLoading.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
+import { useAdminAccess } from '@/composables/useAdminAccess';
 // Feature API.
 import { usePracticeUsers, UserDataViewAdapter, UserModal } from '@/features/users/usersApi';
 import { type PracticeUser } from '@/features/users/userTypes';
@@ -28,8 +29,10 @@ interface UserModalInstance {
 
 // --- Logic and State ---
 
+// Enforce admin privileges for this view.
+useAdminAccess();
+
 // Logic: retrieves practice-specific users and loading state.
-// No casting needed as usePracticeUsers now returns the correct PracticeUser type.
 const { users, isLoading } = usePracticeUsers();
 
 /**

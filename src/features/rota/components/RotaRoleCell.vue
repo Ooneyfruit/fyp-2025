@@ -34,8 +34,8 @@ const toSentenceCase = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-const getRoleBadgeStyle = (roleId: string) => {
-  const c = getRoleColor(roleId);
+const getRoleBadgeStyle = (roleName: string) => {
+  const c = getRoleColor(roleName);
   return {
     backgroundColor: c.bg,
     color: c.accent,
@@ -46,7 +46,7 @@ const getRoleBadgeStyle = (roleId: string) => {
 
 <template>
   <div class="header-col-inner">
-    <div v-if="row._isGroupStart" class="role-title" :style="getRoleBadgeStyle(row.role.id)">
+    <div v-if="row._isGroupStart" class="role-title" :style="getRoleBadgeStyle(row.role.name)">
       {{ toSentenceCase(row.role.name) }}
     </div>
     <div class="surgery-subtitle">

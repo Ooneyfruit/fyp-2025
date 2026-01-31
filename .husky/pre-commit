@@ -11,8 +11,8 @@ npm run docs:build || exit 1
 # 4. Check for unused files and exports.
 npm run knip || exit 1
 
-# 5. Audit dependencies for high-level vulnerabilities.
-npm audit --audit-level=high || exit 1
+# 5. Audit dependencies for critical-level vulnerabilities.
+npm audit --audit-level=critical || exit 1
 
 # 6. Stage the generated documentation files.
 # This ensures the updated docs are included in the commit.

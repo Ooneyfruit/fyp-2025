@@ -1,5 +1,5 @@
 /**
- * (needs description).
+ * Firebase project configuration.
  */
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
@@ -9,9 +9,6 @@ import {
   persistentMultipleTabManager
 } from 'firebase/firestore';
 
-/**
- * Firebase project configuration.
- */
 const firebaseConfig = {
   apiKey: 'AIzaSyA8FOAF73dNCrLlIMB_2pMQXHFSAEXFLEQ',
   authDomain: 'fyp-2025-52340.firebaseapp.com',
