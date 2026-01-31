@@ -5,11 +5,11 @@
 import {
   collection,
   type DocumentReference,
-  getDoc,
-  getDocs,
-  type QueryDocumentSnapshot
+  onSnapshot,
+  type QueryDocumentSnapshot,
+  type Unsubscribe
 } from 'firebase/firestore';
-import { computed, markRaw, type Ref, ref, watch } from 'vue';
+import { computed, markRaw, onUnmounted, type Ref, ref, watch } from 'vue';
 
 import { useAuth } from '@/composables/useAuth';
 import {
@@ -38,95 +38,95 @@ const mapStaffConfig = (docSnap: QueryDocumentSnapshot): MinimumStaffConfig => {
   } as MinimumStaffConfig;
 };
 
-/**
- * Encapsulates the async fetching logic to reduce composable complexity.
- */
-const performFetch = async (
-  practiceRef: DocumentReference,
-  state: {
-    details: Ref<PracticeDetails>;
-    surgeries: Ref<SurgeryConfig[]>;
-    roles: Ref<PracticeRoleConfig[]>;
-    minStaff: Ref<MinimumStaffConfig[]>;
-  }
-) => {
-  const practiceSnap = await getDoc(practiceRef);
-  if (practiceSnap.exists()) {
-    const data = practiceSnap.data();
-    state.details.value = {
-      name: data.name || 'Unknown Practice',
-      address: data.address || ''
-    };
-  }
-
-  const [surgerySnap, roleSnap, staffSnap] = await Promise.all([
-    getDocs(collection(practiceRef, 'surgeries')),
-    getDocs(collection(practiceRef, 'roles')),
-    getDocs(collection(practiceRef, 'minimum_operating_staff'))
-  ]);
-
-  state.surgeries.value = surgerySnap.docs.map(
-    (d) => markRaw({ id: d.id, ...d.data() }) as SurgeryConfig
-  );
-  state.roles.value = roleSnap.docs.map(
-    (d) => markRaw({ id: d.id, ...d.data() }) as PracticeRoleConfig
-  );
-
-  // Wrap callback to satisfy unicorn/no-array-callback-reference
-  state.minStaff.value = staffSnap.docs.map((d) => markRaw(mapStaffConfig(d)));
-};
+interface SettingsState {
+  details: Ref<PracticeDetails>;
+  surgeries: Ref<SurgeryConfig[]>;
+  roles: Ref<PracticeRoleConfig[]>;
+  minStaff: Ref<MinimumStaffConfig[]>;
+}
 
 /**
- * Pure function to compute the enriched grid data.
+ * Initializes all real-time listeners for the practice.
  */
-const computeEnrichedSurgeries = (
-  surgeries: SurgeryConfig[],
-  roles: PracticeRoleConfig[],
-  minStaff: MinimumStaffConfig[]
-) => {
-  return surgeries.map((surgery) => {
-    const row: Record<string, unknown> = { ...surgery };
-    for (const role of roles) {
-      const match = minStaff.find((ms) => ms.surgery_id === surgery.id && ms.role_id === role.id);
-      row[`role_${role.id}`] = match ? match.staff_count : 0;
+const startListeners = (pRef: DocumentReference, state: SettingsState): Unsubscribe[] => {
+  const subs: Unsubscribe[] = [];
+
+  const detailsSub = onSnapshot(pRef, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      state.details.value = {
+        name: data.name || 'Unknown Practice',
+        address: data.address || ''
+      };
     }
-    return row;
   });
+
+  const surgeriesSub = onSnapshot(collection(pRef, 'surgeries'), (snap) => {
+    state.surgeries.value = snap.docs.map(
+      (d) => markRaw({ id: d.id, ...d.data() }) as SurgeryConfig
+    );
+  });
+
+  const rolesSub = onSnapshot(collection(pRef, 'roles'), (snap) => {
+    state.roles.value = snap.docs.map(
+      (d) => markRaw({ id: d.id, ...d.data() }) as PracticeRoleConfig
+    );
+  });
+
+  const staffSub = onSnapshot(collection(pRef, 'minimum_operating_staff'), (snap) => {
+    state.minStaff.value = snap.docs.map((d) => markRaw(mapStaffConfig(d)));
+  });
+
+  // Consolidated push to satisfy unicorn/no-array-push-push
+  subs.push(detailsSub, surgeriesSub, rolesSub, staffSub);
+
+  return subs;
 };
 
 // --- Composable ---
 
-/**
- * Composable to manage the state and data fetching for the settings view.
- * @returns Reactive state objects for practice details, surgeries, and roles.
- */
 export function usePracticeSettings() {
   const { user } = useAuth();
   const isLoading = ref(true);
+  const listeners: Unsubscribe[] = [];
+
   const details = ref<PracticeDetails>({ name: '', address: '' });
   const surgeries = ref<SurgeryConfig[]>([]);
   const roles = ref<PracticeRoleConfig[]>([]);
   const minStaff = ref<MinimumStaffConfig[]>([]);
 
-  const enrichedSurgeries = computed(() =>
-    computeEnrichedSurgeries(surgeries.value, roles.value, minStaff.value)
-  );
-
   watch(
     () => user.value?.practiceRef,
-    async (newRef) => {
-      if (!newRef) return;
-      isLoading.value = true;
-      try {
-        await performFetch(newRef, { details, surgeries, roles, minStaff });
-      } catch {
-        // Silently fail in production.
-      } finally {
+    (newRef) => {
+      for (const unsub of listeners) unsub();
+      listeners.length = 0;
+
+      if (newRef) {
+        isLoading.value = true;
+        const newSubs = startListeners(newRef, { details, surgeries, roles, minStaff });
+        listeners.push(...newSubs);
         isLoading.value = false;
       }
     },
     { immediate: true }
   );
+
+  onUnmounted(() => {
+    for (const unsub of listeners) unsub();
+  });
+
+  const enrichedSurgeries = computed(() => {
+    return surgeries.value.map((surgery) => {
+      const row: Record<string, unknown> = { ...surgery };
+      for (const role of roles.value) {
+        const match = minStaff.value.find(
+          (ms) => ms.surgery_id === surgery.id && ms.role_id === role.id
+        );
+        row[`role_${role.id}`] = match ? match.staff_count : 0;
+      }
+      return row;
+    });
+  });
 
   return { isLoading, details, roles, surgeries, enrichedSurgeries };
 }
