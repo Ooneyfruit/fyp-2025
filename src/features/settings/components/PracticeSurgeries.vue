@@ -1,14 +1,18 @@
 <script setup lang="ts">
 /**
- * Component to display surgery schedules and staffing requirements.
- * Dynamically generates table headers and assigns cell components.
+ * (needs description).
  */
-import { computed, markRaw } from 'vue';
 
+import { computed, markRaw, ref } from 'vue';
+
+import IconPlus from '@/components/icons/IconPlus.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseTable, { type TableHeader } from '@/components/shared/BaseTable.vue';
+import SurgeryActionCell from '@/features/settings/components/cells/SurgeryActionCell.vue';
 import SurgeryDayCell from '@/features/settings/components/cells/SurgeryDayCell.vue';
 import SurgeryStaffCell from '@/features/settings/components/cells/SurgeryStaffCell.vue';
 import SurgeryTimeCell from '@/features/settings/components/cells/SurgeryTimeCell.vue';
+import PracticeSurgeryModal from '@/features/settings/components/modals/PracticeSurgeryModal.vue';
 import { type PracticeRoleConfig } from '@/features/settings/settingsTypes';
 
 const props = defineProps<{
@@ -19,7 +23,19 @@ const props = defineProps<{
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SUBSTRING_LENGTH = 3;
 
-// Construct headers with assigned cell components.
+const isModalOpen = ref(false);
+const selectedSurgery = ref<Record<string, unknown> | null>(null);
+
+const openAddModal = () => {
+  selectedSurgery.value = null;
+  isModalOpen.value = true;
+};
+
+const handleEdit = (item: Record<string, unknown>) => {
+  selectedSurgery.value = item;
+  isModalOpen.value = true;
+};
+
 const headers = computed<TableHeader[]>(() => {
   const base: TableHeader[] = [
     { key: 'name', label: 'Name', width: '150px' },
@@ -38,7 +54,7 @@ const headers = computed<TableHeader[]>(() => {
   ];
 
   const dayHeaders: TableHeader[] = DAYS.map((d) => ({
-    key: `day_${d}`, // Key used by SurgeryDayCell to identify the day
+    key: `day_${d}`,
     label: d.slice(0, Math.max(0, SUBSTRING_LENGTH)),
     width: '50px',
     align: 'center',
@@ -46,21 +62,41 @@ const headers = computed<TableHeader[]>(() => {
   }));
 
   const roleHeaders: TableHeader[] = props.roles.map((r) => ({
-    key: `role_${r.id}`, // Key maps to the enriched data property
+    key: `role_${r.id}`,
     label: r.name,
     align: 'center',
-    width: '100px',
+    width: '80px',
     cellComponent: markRaw(SurgeryStaffCell)
   }));
 
-  return [...base, ...dayHeaders, ...roleHeaders];
+  const actionHeader: TableHeader = {
+    key: 'actions',
+    label: '',
+    width: '60px',
+    align: 'center',
+    cellComponent: markRaw(SurgeryActionCell),
+    meta: { onEdit: handleEdit }
+  };
+
+  return [...base, ...dayHeaders, ...roleHeaders, actionHeader];
 });
 </script>
 
 <template>
   <div class="surgeries-section">
-    <h3>Surgeries & Requirements</h3>
+    <div class="section-header">
+      <h3>Surgeries & Requirements</h3>
+      <BaseButton :icon="IconPlus" label="Add Surgery" variant="primary" @click="openAddModal" />
+    </div>
+
     <BaseTable :headers="headers" :items="items" :vertical-lines="true" />
+
+    <PracticeSurgeryModal
+      :all-roles="roles"
+      :show="isModalOpen"
+      :surgery-to-edit="selectedSurgery"
+      @close="isModalOpen = false"
+    />
   </div>
 </template>
 
@@ -68,7 +104,20 @@ const headers = computed<TableHeader[]>(() => {
 .surgeries-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   overflow-x: auto;
+}
+
+.section-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+h3 {
+  color: var(--text-main);
+  font-size: 1.1rem;
+  margin: 0;
 }
 </style>

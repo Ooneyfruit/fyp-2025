@@ -213,7 +213,7 @@ export function useAuth(): AuthInterface {
     user,
     isAuthReady,
     // Triggers the Google OAuth popup flow.
-    login: () => signInWithPopup(auth, provider),
+    login: async () => await signInWithPopup(auth, provider),
     // Terminates the session and cleans up active listeners.
     logout: async () => {
       profileListener?.();
