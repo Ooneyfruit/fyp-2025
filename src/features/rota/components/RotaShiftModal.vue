@@ -1,15 +1,23 @@
 <script setup lang="ts">
 /**
  * Rota shift management modal. Allows assigning or removing staff from a specific shift slot.
+ * Now manages its own visibility and data state via useModal to fix animation lifecycle bugs.
  */
 
-import { type DocumentReference, Timestamp } from 'firebase/firestore';
-import { computed, markRaw, type PropType, ref, watch } from 'vue';
+import { doc, type DocumentReference, Timestamp } from 'firebase/firestore';
+import { computed, markRaw, ref } from 'vue';
 
 import BaseModal from '@/components/shared/BaseModal.vue';
+import BaseModalConfirmation from '@/components/shared/BaseModalConfirmation.vue';
+import { useAuth } from '@/composables/useAuth';
+import { useModal } from '@/composables/useModal';
+import { useToast } from '@/composables/useToast';
+import { type RotaDay } from '@/features/rota/composables/useRotaDates';
 import { isRoleMatch } from '@/features/rota/composables/useRotaRoleMatch';
+import { createShift, deleteShift } from '@/features/rota/rotaApi';
 import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
 import { usePracticeUsers } from '@/features/users/composables/usePracticeUsers';
+import { db } from '@/services/firebase';
 
 import RotaAssignedStaff from './RotaAssignedStaff.vue';
 import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
@@ -17,15 +25,13 @@ import RotaStaffPicker, { type PickerStaffMember } from './RotaStaffPicker.vue';
 
 // --- Type Definitions ---
 
-interface RotaDay {
-  label: string;
-  date: string | Date;
+export interface RotaShiftModalData {
+  role: PracticeRole;
+  surgery: PracticeSurgery;
+  date: RotaDay;
+  shifts: Shift[];
 }
 
-/**
- * Represents a flattened view of a practice user for usage within the Rota Modal.
- * Must satisfy the PickerStaffMember interface for compatibility with RotaStaffPicker.
- */
 interface MappedMember {
   uid: string;
   membershipId: string;
@@ -39,72 +45,56 @@ interface MappedMember {
   is_administrator: boolean;
 }
 
-// Extension of Shift to handle UI-specific fields and temporary additions.
 interface ExtendedShift extends Shift {
   isTemp?: boolean;
   originalMember?: MappedMember;
-  // This roleName comes from the User Profile, distinct from Shift.role_name.
   roleName?: string;
 }
 
-const props = defineProps({
-  show: { type: Boolean, required: true },
-  role: {
-    type: Object as PropType<PracticeRole>,
-    default: () => ({ id: 'unknown', name: 'Unknown' })
-  },
-  surgery: {
-    type: Object as PropType<PracticeSurgery>,
-    default: () => ({ id: 'unknown', name: 'Unknown' })
-  },
-  date: {
-    type: Object as PropType<RotaDay>,
-    default: () => ({ label: '' })
-  },
-  shifts: {
-    type: Array as PropType<Shift[]>,
-    default: () => []
-  }
-});
-
 const emit = defineEmits<{
-  (e: 'request-close'): void;
-  (e: 'save', payload: { additions: MappedMember[]; removals: string[] }): void;
+  saved: [];
 }>();
 
-// --- Use Shared User Logic ---
+// --- Composables ---
+const { user: authUser } = useAuth();
+const { showToast } = useToast();
 const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
+const { isVisible, data: modalData, open, close } = useModal<RotaShiftModalData>();
 
 // --- Local State ---
 const searchQuery = ref('');
 const pendingAdds = ref<MappedMember[]>([]);
 const pendingRemoves = ref<string[]>([]);
+const saving = ref(false);
 
-watch(
-  () => props.show,
-  (isOpen) => {
-    if (isOpen) {
-      pendingAdds.value = [];
-      pendingRemoves.value = [];
-      searchQuery.value = '';
-    }
-  }
+const handleOpen = (payload?: RotaShiftModalData) => {
+  pendingAdds.value = [];
+  pendingRemoves.value = [];
+  searchQuery.value = '';
+  open(payload);
+};
+
+defineExpose({ open: handleOpen, close });
+
+// --- Computed Data ---
+const role = computed(() => modalData.value?.role || { id: 'unknown', name: 'Unknown' });
+const surgery = computed(() => modalData.value?.surgery || { id: 'unknown', name: 'Unknown' });
+const date = computed(
+  () => modalData.value?.date || { label: '', date: '', iso: '', isToday: false, key: '' }
 );
-
+const sourceShifts = computed(() => modalData.value?.shifts || []);
 const modalTitle = computed(
-  () => `${props.role?.name} - ${props.surgery?.name} (${props.date?.label})`
+  () => `${role.value.name} - ${surgery.value.name} (${date.value.label})`
 );
 
 // --- Data Mapping ---
 const mappedMembers = computed<MappedMember[]>(() => {
   return practiceUsers.value.map((member) => ({
-    // Access profile data from the nested 'profile' object.
     uid: member.profile.id || '',
     membershipId: member.id,
     userRef: member.user,
     name: member.profile.name || 'Unknown Staff',
     email: member.profile.email || '',
-    // Map the membership role to both roleName (display) and role (logic).
     roleName: member.role,
     role: member.role,
     status: (member.status as 'active' | 'invited' | 'suspended') || 'active',
@@ -113,61 +103,30 @@ const mappedMembers = computed<MappedMember[]>(() => {
   }));
 });
 
-// --- Helper Functions ---
-
-/**
- * Safely extracts a string ID from a user_id field that might be a string or a DocumentReference.
- * Fixes runtime issues where legacy data might store a Ref instead of an ID.
- *
- * @param val - The user_id field from the shift object.
- * @returns The normalised string ID or undefined.
- */
 const getNormalisedUserId = (val: unknown): string | undefined => {
   if (!val) return undefined;
   if (typeof val === 'string') return val;
-  if (typeof val === 'object' && 'id' in val) {
-    return (val as { id: string }).id;
-  }
+  if (typeof val === 'object' && 'id' in val) return (val as { id: string }).id;
   return undefined;
 };
 
-// --- Computed Lists ---
-
-/**
- * Staff currently assigned (Props - Removals + Additions).
- * ENRICHED: Now looks up the role for existing shifts to detect exceptions.
- */
 const currentStaffList = computed<ExtendedShift[]>(() => {
-  // 1. Process Existing Shifts.
-  const existing: ExtendedShift[] = props.shifts
+  const existing: ExtendedShift[] = sourceShifts.value
     .filter((s) => !pendingRemoves.value.includes(s.id))
     .map((s) => {
-      // Robust ID check: s.user_id might be a string or a Firestore Reference object.
       const sUserId = getNormalisedUserId(s.user_id);
-
-      // Find the member to get their current role.
       const match = mappedMembers.value.find((m) => m.uid === sUserId);
-
-      return {
-        ...s,
-        // Ensure user_id is normalised to string for the UI.
-        user_id: sUserId,
-        // Attach the Role Name if found, otherwise undefined (or 'Unknown').
-        // This is the CRITICAL field for RotaAssignedStaff to detect exceptions.
-        roleName: match?.roleName
-      };
+      return { ...s, user_id: sUserId, roleName: match?.roleName };
     });
 
-  // 2. Process Pending Additions.
   const newOnes: ExtendedShift[] = pendingAdds.value.map((m) => ({
     id: `temp_${m.uid}`,
-    date: Timestamp.now(), // Placeholder date to satisfy Shift interface.
+    date: Timestamp.now(),
     user_id: m.uid,
     user_name: m.name,
     isTemp: true,
     originalMember: m,
     roleName: m.roleName,
-    // Default Status flags for new temp shifts.
     is_resolved: false,
     roster_status: 'draft'
   }));
@@ -176,32 +135,22 @@ const currentStaffList = computed<ExtendedShift[]>(() => {
 });
 
 const availableStaffList = computed(() => {
-  // Combine IDs from both sources to exclude them from the picker.
-  const currentIds = new Set(
-    currentStaffList.value.map((s) => {
-      // For existing shifts, user_id is already normalised in currentStaffList.
-      return s.user_id || s.originalMember?.uid;
-    })
-  );
-
+  const currentIds = new Set(currentStaffList.value.map((s) => s.user_id || s.originalMember?.uid));
   const query = searchQuery.value.toLowerCase();
-
   return mappedMembers.value.filter((m) => {
     if (currentIds.has(m.uid)) return false;
     return m.name.toLowerCase().includes(query);
   });
 });
 
-const recommendedStaff = computed(() => {
-  // Use shared logic to find matches.
-  return availableStaffList.value.filter((m) => isRoleMatch(m.roleName, props.role?.name));
-});
+const recommendedStaff = computed(() =>
+  availableStaffList.value.filter((m) => isRoleMatch(m.roleName, role.value.name))
+);
+const otherStaff = computed(() =>
+  availableStaffList.value.filter((m) => !isRoleMatch(m.roleName, role.value.name))
+);
 
-const otherStaff = computed(() => {
-  // Use shared logic to find non-matches.
-  return availableStaffList.value.filter((m) => !isRoleMatch(m.roleName, props.role?.name));
-});
-
+// --- Change Detection Logic ---
 const hasChanges = computed(() => pendingAdds.value.length > 0 || pendingRemoves.value.length > 0);
 
 const saveLabel = computed(() => {
@@ -210,16 +159,8 @@ const saveLabel = computed(() => {
 });
 
 // --- Actions ---
-
-const stageAddition = (member: MappedMember) => {
-  pendingAdds.value.push(member);
-};
-
-// Wrapper to satisfy TypeScript event contravariance.
-// The picker emits a generic PickerStaffMember, which we cast back to MappedMember.
-// This cast is safe because the picker only displays items we passed to it.
 const handleAddStaff = (member: PickerStaffMember) => {
-  stageAddition(member as MappedMember);
+  pendingAdds.value.push(member as MappedMember);
 };
 
 const markForRemoval = (shift: ExtendedShift) => {
@@ -230,35 +171,81 @@ const markForRemoval = (shift: ExtendedShift) => {
   }
 };
 
-const saveChanges = () => {
-  emit('save', {
-    additions: pendingAdds.value,
-    removals: pendingRemoves.value
-  });
+const saveChanges = async () => {
+  if (!hasChanges.value) {
+    close();
+    return;
+  }
+  if (!authUser.value?.practiceRef) {
+    showToast('No active practice found.');
+    return;
+  }
+
+  saving.value = true;
+  const practiceId = authUser.value.practiceRef.id;
+
+  try {
+    await Promise.all(pendingRemoves.value.map((id) => deleteShift(id)));
+    await Promise.all(
+      pendingAdds.value.map((member) => {
+        const roleRef = doc(db, `practices/${practiceId}/roles`, role.value.id);
+        const surgeryRef = doc(db, `practices/${practiceId}/surgeries`, surgery.value.id);
+        return createShift({
+          date: date.value.iso,
+          user_id: member.uid,
+          user_name: member.name,
+          role_id: roleRef,
+          role_name: role.value.name,
+          surgery_id: surgeryRef,
+          surgery_name: surgery.value.name
+        });
+      })
+    );
+    showToast('Shift updates saved.');
+    emit('saved');
+    pendingAdds.value = [];
+    pendingRemoves.value = [];
+    close();
+  } catch {
+    showToast('Failed to save changes.');
+  } finally {
+    saving.value = false;
+  }
 };
 
-const handleClose = () => emit('request-close');
-
-const isLoading = computed(() => usersLoading.value);
-
-// --- Component Configuration ---
+// --- Footer Configurations ---
 const footerComponent = markRaw(RotaShiftModalFooter);
 const footerProps = computed(() => ({
   hasChanges: hasChanges.value,
   saveLabel: saveLabel.value,
-  onClose: handleClose,
-  onSave: saveChanges
+  onClose: close,
+  onSave: saveChanges,
+  loading: saving.value
+}));
+
+const confirmationFooter = markRaw(BaseModalConfirmation);
+const confirmationFooterProps = computed(() => ({
+  onSave: saveChanges,
+  loading: saving.value,
+  // We use the same dynamic label for consistency
+  saveLabel: saveLabel.value,
+  discardLabel: 'Discard Changes'
 }));
 </script>
 
 <template>
   <BaseModal
+    :close-confirmation-footer="confirmationFooter"
+    :close-confirmation-footer-props="confirmationFooterProps"
+    close-confirmation-message="You have unsaved changes to this shift. What would you like to do?"
+    close-confirmation-title="Unsaved Changes"
     :footer-component="footerComponent"
     :footer-props="footerProps"
-    :show="show"
+    :prevent-close="hasChanges"
+    :show="isVisible"
     size="md"
     :title="modalTitle"
-    @request-close="handleClose"
+    @request-close="close"
   >
     <div class="modal-body-wrapper">
       <RotaAssignedStaff
@@ -266,12 +253,10 @@ const footerProps = computed(() => ({
         :target-role-name="role.name"
         @remove="markForRemoval"
       />
-
       <hr class="divider" />
-
       <RotaStaffPicker
         v-model:search-query="searchQuery"
-        :is-loading="isLoading"
+        :is-loading="usersLoading"
         :others="otherStaff"
         :recommended="recommendedStaff"
         :target-role-name="role.name"
@@ -286,15 +271,7 @@ const footerProps = computed(() => ({
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-
-  /* * Intelligent calculation: 100dvh (dynamic viewport height) minus 18rem.
-   * This reserves roughly 18rem for the modal header, footer, and outer padding.
-   * On a typical 1080p screen, this results in approx 68-70vh.
-   * On smaller screens, it ensures the modal never pushes the header/footer off-canvas.
-   */
   max-height: calc(100dvh - 18rem);
-
-  /* 500px converted to rem (500 / 16). */
   min-height: 31.25rem;
   overflow: hidden;
 }

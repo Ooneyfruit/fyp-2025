@@ -46,8 +46,8 @@ const handleNavigation = (item: NavItem): void => {
         class="mobile-overlay"
         @click="() => closeSidebar()"
         @touchend="handleTouchEnd"
-        @touchmove="handleTouchMove"
-        @touchstart="handleTouchStart"
+        @touchmove.passive="handleTouchMove"
+        @touchstart.passive="handleTouchStart"
       />
     </Transition>
 
@@ -56,8 +56,8 @@ const handleNavigation = (item: NavItem): void => {
       :class="{ open: isSidebarOpen, 'is-swiping': isSwiping }"
       :style="swipeTransform"
       @touchend="handleTouchEnd"
-      @touchmove="handleTouchMove"
-      @touchstart="handleTouchStart"
+      @touchmove.passive="handleTouchMove"
+      @touchstart.passive="handleTouchStart"
     >
       <nav class="sidebar-nav">
         <a
