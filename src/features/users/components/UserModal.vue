@@ -135,7 +135,9 @@ onMounted(async () => {
     const practiceId = authUser.value?.practiceRef?.id;
     if (practiceId) {
       const snap = await getDocs(collection(db, 'practices', practiceId, 'roles'));
-      rolesList.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as PracticeRole);
+      rolesList.value = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }) as PracticeRole)
+        .filter((r) => !r.is_deleted);
     }
   } finally {
     loadingRoles.value = false;

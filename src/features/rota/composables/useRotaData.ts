@@ -73,7 +73,7 @@ export function useRotaData(userRef: Ref<Nullable<UserProfile>>) {
         fetchShifts(pId)
       ]);
 
-      practiceRoles.value = roles;
+      practiceRoles.value = roles.filter((r) => !r.is_deleted);
       practiceSurgeries.value = surgeries.filter((s) => !s.is_deleted);
       rawShifts.value = shifts;
       prefillRegistry(roles);

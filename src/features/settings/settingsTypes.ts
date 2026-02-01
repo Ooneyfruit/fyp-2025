@@ -16,6 +16,8 @@ export interface PracticeRoleConfig {
   icon_id?: string;
   /** Index of the colour in the shared ROLE_PALETTE */
   color_index?: number;
+  /** Flag indicating if the role has been soft-deleted */
+  is_deleted?: boolean;
 }
 
 /**

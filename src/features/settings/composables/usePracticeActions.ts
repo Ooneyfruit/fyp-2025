@@ -133,8 +133,12 @@ const executeSaveRole = async (pRef: DocumentReference, role: PracticeRoleConfig
   }
 };
 
-const executeToggleArchive = async (pRef: DocumentReference, id: string, state: boolean) => {
+const executeToggleSurgeryArchive = async (pRef: DocumentReference, id: string, state: boolean) => {
   await updateDoc(doc(pRef, 'surgeries', id), { is_deleted: state });
+};
+
+const executeToggleRoleArchive = async (pRef: DocumentReference, id: string, state: boolean) => {
+  await updateDoc(doc(pRef, 'roles', id), { is_deleted: state });
 };
 
 // --- Composable ---
@@ -176,12 +180,21 @@ export function usePracticeActions() {
 
   const toggleSurgeryArchive = async (id: string, isDeleted: boolean) => {
     try {
-      await executeToggleArchive(getPracticeRef(user), id, isDeleted);
+      await executeToggleSurgeryArchive(getPracticeRef(user), id, isDeleted);
       success(isDeleted ? 'Surgery archived.' : 'Surgery restored.');
     } catch {
       notifyError('Failed to update surgery status.');
     }
   };
 
-  return { updateDetails, saveRole, saveSurgery, toggleSurgeryArchive };
+  const toggleRoleArchive = async (id: string, isDeleted: boolean) => {
+    try {
+      await executeToggleRoleArchive(getPracticeRef(user), id, isDeleted);
+      success(isDeleted ? 'Role archived.' : 'Role restored.');
+    } catch {
+      notifyError('Failed to update role status.');
+    }
+  };
+
+  return { updateDetails, saveRole, saveSurgery, toggleSurgeryArchive, toggleRoleArchive };
 }
