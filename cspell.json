@@ -12,6 +12,7 @@
     "firestore",
     "knip",
     "maskable",
+    "Millis",
     "njsproj",
     "ntvs",
     "pinia",

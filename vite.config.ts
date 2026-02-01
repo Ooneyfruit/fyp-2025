@@ -157,12 +157,25 @@ export default defineConfig(({ mode }) => {
 
     /**
      * Vitest configuration.
-     * Sets up the happy-dom environment for component testing.
+     * Sets up the happy-dom environment for component testing and configures the coverage reporter.
      */
     test: {
       environment: 'happy-dom',
       globals: true,
-      include: ['src/**/*.{test,spec}.{js,ts,vue}']
+      include: ['src/**/*.{test,spec}.{js,ts,vue}'],
+      setupFiles: ['src/test/setup.ts'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html'],
+        // Explicitly include source files to ensure files with 0% coverage are reported.
+        include: ['src/**/*.{js,ts,vue}'],
+        exclude: [
+          'src/**/*.{test,spec}.{js,ts,vue}',
+          'src/**/*.d.ts',
+          'src/main.ts', // Entry point is hard to test in unit context
+          'src/types/**' // Types don't contain runtime logic
+        ]
+      }
     }
   };
 });

@@ -1,6 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": ["src/main.ts", "vite.config.ts", "eslint.config.mjs"],
   "project": ["src/**/*.{js,ts,vue}"],
   "ignore": [
     "node_modules/**",
@@ -15,15 +14,8 @@
     "src/features/rota/rotaTypes.ts",
     "src/features/rota/composables/useRotaDates.ts"
   ],
-  "ignoreBinaries": ["vue-tsc"],
-  "ignoreDependencies": [
-    "@commitlint/cli",
-    "firebase-admin",
-    "typescript-eslint",
-    "@vue/tsconfig",
-    "@tsconfig/node22",
-    "@types/node"
-  ],
+  "ignoreBinaries": [],
+  "ignoreDependencies": ["@commitlint/cli", "firebase-admin"],
   "paths": {
     "@/*": ["src/*"]
   }
