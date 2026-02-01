@@ -16,10 +16,10 @@ import SurgeryStaffCell from '@/features/settings/components/cells/SurgeryStaffC
 import SurgeryTimeCell from '@/features/settings/components/cells/SurgeryTimeCell.vue';
 import PracticeSurgeryModal from '@/features/settings/components/modals/PracticeSurgeryModal.vue';
 import { usePracticeActions } from '@/features/settings/composables/usePracticeActions';
-import { type PracticeRoleConfig } from '@/features/settings/settingsTypes';
+import { type PracticeRoleConfig, type SurgeryConfig } from '@/features/settings/settingsTypes';
 
 const props = defineProps<{
-  items: Record<string, unknown>[];
+  items: SurgeryConfig[];
   roles: PracticeRoleConfig[];
 }>();
 
@@ -30,10 +30,15 @@ const SUBSTRING_LENGTH = 3;
 
 const showArchived = ref(false);
 const isModalOpen = ref(false);
-const selectedSurgery = ref<Record<string, unknown> | null>(null);
+const selectedSurgery = ref<SurgeryConfig | null>(null);
 
 const displayedItems = computed(() => {
-  return props.items.filter((item) => !!item.is_deleted === showArchived.value);
+  return (
+    props.items
+      .filter((item) => !!item.is_deleted === showArchived.value)
+      // Cast to Record to satisfy BaseTable requirements (Interface vs Index Signature)
+      .map((item) => item as unknown as Record<string, unknown>)
+  );
 });
 
 // Comparator for Start Time sorting
@@ -49,7 +54,7 @@ const openAddModal = () => {
 };
 
 const handleEdit = (item: Record<string, unknown>) => {
-  selectedSurgery.value = item;
+  selectedSurgery.value = item as unknown as SurgeryConfig;
   isModalOpen.value = true;
 };
 

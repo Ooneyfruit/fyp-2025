@@ -7,6 +7,7 @@ import {
   deleteField,
   doc,
   type DocumentReference,
+  type FieldValue,
   getDocs,
   query,
   type QueryDocumentSnapshot,
@@ -110,7 +111,10 @@ const executeSaveRole = async (pRef: DocumentReference, role: PracticeRoleConfig
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, ...data } = role;
 
-  const payload: Record<string, unknown> = { ...data };
+  // Use explicit type to satisfy UpdateData requirements and linter
+  const payload: Record<string, string | number | boolean | null | undefined | FieldValue> = {
+    ...data
+  };
 
   if (payload.color_index === undefined || payload.color_index === null) {
     if (role.id) {

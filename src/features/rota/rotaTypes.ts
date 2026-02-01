@@ -25,6 +25,9 @@ export interface Shift {
   role_id: DocumentReference;
   surgery_id: DocumentReference;
   staff_member_id?: DocumentReference;
+  // Denormalized fields for UI/Performance
+  user_id?: string;
+  user_name?: string;
   notes?: string;
   start_time?: string;
   end_time?: string;
@@ -37,6 +40,11 @@ export interface ShiftInput {
   role_id: DocumentReference;
   surgery_id: DocumentReference;
   staff_member_id?: DocumentReference;
+  // Denormalized fields
+  user_id?: string;
+  user_name?: string;
+  role_name?: string;
+  surgery_name?: string;
   notes?: string;
   start_time?: string;
   end_time?: string;
