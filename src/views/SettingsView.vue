@@ -16,6 +16,7 @@ import PracticeDetails from '@/features/settings/components/PracticeDetails.vue'
 import PracticeRoles from '@/features/settings/components/PracticeRoles.vue';
 import PracticeSurgeries from '@/features/settings/components/PracticeSurgeries.vue';
 import { usePracticeSettings } from '@/features/settings/composables/usePracticeSettings';
+import type { SurgeryConfig } from '@/features/settings/settingsTypes';
 
 const { user } = useAuth();
 const router = useRouter();
@@ -54,7 +55,7 @@ watch(
         <PracticeDetails :details="details" />
       </section>
 
-      <PracticeSurgeries :items="enrichedSurgeries" :roles="roles" />
+      <PracticeSurgeries :items="enrichedSurgeries as unknown as SurgeryConfig[]" :roles="roles" />
 
       <PracticeRoles :roles="roles" />
     </div>

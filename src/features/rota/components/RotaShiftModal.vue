@@ -119,11 +119,18 @@ const currentStaffList = computed<ExtendedShift[]>(() => {
       return { ...s, user_id: sUserId, roleName: match?.roleName };
     });
 
+  // Prepare references for temp shifts
+  const practiceRef = authUser.value?.practiceRef;
+  const dummyRef = {} as DocumentReference; // Fallback if no practice context
+
   const newOnes: ExtendedShift[] = pendingAdds.value.map((m) => ({
     id: `temp_${m.uid}`,
     date: Timestamp.now(),
     user_id: m.uid,
     user_name: m.name,
+    // Construct proper references to satisfy Shift interface
+    role_id: practiceRef ? doc(practiceRef, 'roles', role.value.id) : dummyRef,
+    surgery_id: practiceRef ? doc(practiceRef, 'surgeries', surgery.value.id) : dummyRef,
     isTemp: true,
     originalMember: m,
     roleName: m.roleName,
