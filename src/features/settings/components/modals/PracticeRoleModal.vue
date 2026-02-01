@@ -13,6 +13,7 @@ import BaseModalFooter from '@/components/shared/BaseModalFooter.vue';
 import BaseSelect from '@/components/shared/BaseSelect.vue';
 import { ROLE_PALETTE } from '@/features/rota/composables/useRotaColors';
 import { usePracticeActions } from '@/features/settings/composables/usePracticeActions';
+import { ROLE_ICONS } from '@/features/settings/composables/useRoleIcons';
 import { type PracticeRoleConfig } from '@/features/settings/settingsTypes';
 
 const props = defineProps<{
@@ -37,7 +38,7 @@ const form = reactive<PracticeRoleConfig>({
   id: '',
   name: '',
   type: 'Practitioner',
-  icon_url: '',
+  icon_id: undefined,
   color_index: undefined
 });
 
@@ -51,13 +52,13 @@ watch(
       form.id = role.id;
       form.name = role.name;
       form.type = role.type;
-      form.icon_url = role.icon_url || '';
+      form.icon_id = role.icon_id || undefined;
       form.color_index = role.color_index;
     } else {
       form.id = '';
       form.name = '';
       form.type = 'Practitioner';
-      form.icon_url = '';
+      form.icon_id = undefined;
       form.color_index = undefined;
     }
     initialJson.value = JSON.stringify(form);
@@ -67,7 +68,9 @@ watch(
 
 const handleSubmit = async () => {
   isSubmitting.value = true;
-  await saveRole({ ...form });
+  // Convert undefined back to null if 'No Icon' was selected for the payload.
+  const payload = { ...form, icon_id: form.icon_id || null };
+  await saveRole(payload as PracticeRoleConfig);
   isSubmitting.value = false;
   emit('close');
 };
@@ -111,7 +114,37 @@ const footerProps = computed(() => ({
         </div>
 
         <div class="rd-field">
-          <fieldset class="color-fieldset">
+          <fieldset class="selection-fieldset">
+            <legend class="rd-field-label">Role Icon</legend>
+            <div class="icon-grid">
+              <div v-for="icon in ROLE_ICONS" :key="icon.id ?? 'none'" class="icon-option-wrapper">
+                <input
+                  :id="`icon-${icon.id ?? 'none'}`"
+                  v-model="form.icon_id"
+                  class="sr-only"
+                  name="roleIcon"
+                  type="radio"
+                  :value="icon.id === null ? undefined : icon.id"
+                />
+                <label
+                  class="icon-selection-tile"
+                  :class="{
+                    active: form.icon_id === icon.id || (icon.id === null && !form.icon_id),
+                    'no-icon-tile': icon.id === null
+                  }"
+                  :for="`icon-${icon.id ?? 'none'}`"
+                  :title="icon.label"
+                >
+                  <component :is="icon.component" class="role-svg" />
+                  <span class="sr-only">{{ icon.label }}</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="rd-field">
+          <fieldset class="selection-fieldset">
             <legend class="rd-field-label">Theme Colour</legend>
             <div class="color-grid">
               <div class="color-option-wrapper">
@@ -148,19 +181,13 @@ const footerProps = computed(() => ({
                   :class="{ active: form.color_index === index }"
                   :for="`color-${index}`"
                   :style="{ backgroundColor: color.bg, borderColor: color.accent }"
-                  :title="`Color ${index + 1}`"
+                  :title="`Colour ${index + 1}`"
                 >
-                  <span class="sr-only">Color {{ index + 1 }}</span>
+                  <span class="sr-only">Colour {{ index + 1 }}</span>
                 </label>
               </div>
             </div>
           </fieldset>
-        </div>
-
-        <div class="rd-field">
-          <label class="rd-field-label" for="role-icon">Icon URL</label>
-          <BaseInput id="role-icon" v-model="form.icon_url" placeholder="https://..." />
-          <p class="help-text">Enter a valid image URL for the role avatar.</p>
         </div>
       </div>
     </form>
@@ -168,28 +195,53 @@ const footerProps = computed(() => ({
 </template>
 
 <style scoped>
-.help-text {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-}
-
-/* Reset fieldset styling */
-.color-fieldset {
+.selection-fieldset {
   border: none;
   margin: 0;
   min-width: 0;
   padding: 0;
 }
 
+.icon-grid,
 .color-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.6rem;
   margin-top: 0.5rem;
 }
 
+.icon-option-wrapper,
 .color-option-wrapper {
   display: flex;
+}
+
+.icon-selection-tile {
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  height: 3rem;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  width: 3rem;
+}
+
+.icon-selection-tile:hover {
+  border-color: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.no-icon-tile {
+  background-color: var(--bg-app);
+  opacity: 0.6;
+}
+
+.role-svg {
+  color: var(--text-main);
+  height: 1.25rem;
+  width: 1.25rem;
 }
 
 .color-swatch {
@@ -198,10 +250,10 @@ const footerProps = computed(() => ({
   border-radius: 50%;
   cursor: pointer;
   display: flex;
-  height: 2rem;
+  height: 2.25rem;
   justify-content: center;
   transition: transform 0.1s;
-  width: 2rem;
+  width: 2.25rem;
 }
 
 .auto-swatch {
@@ -211,15 +263,22 @@ const footerProps = computed(() => ({
 }
 
 .auto-icon {
-  height: 1rem;
-  width: 1rem;
+  height: 1.1rem;
+  width: 1.1rem;
 }
 
-.color-swatch:hover {
-  transform: scale(1.1);
+/* Selection States */
+input:checked + .icon-selection-tile {
+  background-color: var(--color-primary-faint);
+  border-color: var(--color-primary);
+  border-width: 2px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
 }
 
-/* Explicitly target the label class when associated input is checked */
+input:checked + .icon-selection-tile .role-svg {
+  color: var(--color-primary);
+}
+
 input:checked + .color-swatch {
   border-color: var(--color-primary);
   box-shadow:

@@ -12,8 +12,9 @@ export interface PracticeRoleConfig {
   id: string;
   name: string;
   type: string;
-  icon_url?: string;
-  /** Index of the color in the shared ROLE_PALETTE */
+  /** The unique identifier for the chosen SVG icon */
+  icon_id?: string;
+  /** Index of the colour in the shared ROLE_PALETTE */
   color_index?: number;
 }
 

@@ -1,31 +1,51 @@
 <script setup lang="ts">
 /**
- * Renders the role icon or a placeholder if missing.
+ * Renders the chosen role icon SVG or a placeholder if missing.
  */
-import { type TableHeader } from '@/components/shared/BaseTable.vue';
+import { computed } from 'vue';
 
-defineProps<{
+import { type TableHeader } from '@/components/shared/BaseTable.vue';
+import { getRoleIcon } from '@/features/settings/composables/useRoleIcons';
+
+const props = defineProps<{
   item: Record<string, unknown>;
   header: TableHeader;
 }>();
+
+/**
+ * Resolves the SVG component based on the stored icon ID.
+ */
+const iconComponent = computed(() => {
+  const iconId = props.item.icon_id as string | undefined | null;
+  return getRoleIcon(iconId);
+});
 </script>
 
 <template>
   <div class="icon-wrapper">
-    <img v-if="item.icon_url" alt="Role Icon" class="role-icon" :src="item.icon_url as string" />
-    <span v-else class="no-icon">&mdash;</span>
+    <component :is="iconComponent" v-if="iconComponent" class="role-icon-svg" />
+    <span v-else aria-hidden="true" class="no-icon-placeholder">&mdash;</span>
   </div>
 </template>
 
 <style scoped>
-.role-icon {
-  border-radius: 50%;
+.icon-wrapper {
+  align-items: center;
+  display: flex;
   height: 2rem;
-  object-fit: cover;
+  justify-content: center;
   width: 2rem;
 }
 
-.no-icon {
+.role-icon-svg {
+  color: var(--text-main);
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.no-icon-placeholder {
   color: var(--text-muted);
+  font-weight: 300;
+  opacity: 0.5;
 }
 </style>
