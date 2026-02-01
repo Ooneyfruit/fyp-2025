@@ -12,21 +12,11 @@ export interface TableHeader {
   width?: string;
   align?: 'left' | 'center' | 'right';
   headerClass?: string;
-  /**
-   * Optional component to render for this cell instead of using a slot or default text.
-   * Useful for avoiding nested templates in parent components.
-   */
+  cellClass?: string;
   cellComponent?: Component;
-  /**
-   * Optional metadata to pass to the cell component (e.g., column-specific data).
-   */
   meta?: unknown;
 }
 
-/**
- * Defines the structure of an item after it has been processed with grouping metadata.
- * Extends Record to allow indexing while maintaining known boolean flags.
- */
 type EnrichedItem = Record<string, unknown> & {
   _isGroupStart: boolean;
   _isGroupEnd: boolean;
@@ -38,31 +28,22 @@ interface Props {
   items: Record<string, unknown>[];
   rowClass?: (item: Record<string, unknown>) => string | string[];
   verticalLines?: boolean;
-  /**
-   * Dot-notation path to the property used for grouping rows.
-   * Example: "role.id".
-   */
   groupBy?: string | null;
-  /**
-   * Optional component to render when there are no records.
-   */
   emptyComponent?: Component;
+  /**
+   * Optional comparison function to sort the items before rendering.
+   */
+  sortFunction?: (a: Record<string, unknown>, b: Record<string, unknown>) => number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   rowClass: () => [],
   verticalLines: false,
   groupBy: null,
-  emptyComponent: undefined
+  emptyComponent: undefined,
+  sortFunction: undefined
 });
 
-/**
- * Safely retrieves a nested value from an object using a dot-notation string path.
- * This approach avoids using reduce to comply with the project's readability standards.
- * @param obj - The object to search within.
- * @param path - The dot-separated property path.
- * @returns The value found at the specified path, or null if the path is invalid.
- */
 const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => {
   let current: unknown = obj;
   const parts = path.split('.');
@@ -80,11 +61,13 @@ const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => 
 
 /**
  * Enriches the input items with grouping metadata based on the 'groupBy' property.
- * This allows the template to apply specific styles to the start and end of groups.
  */
 const enrichedItems = computed<EnrichedItem[]>(() => {
+  // Apply sorting if provided
+  const sourceItems = props.sortFunction ? [...props.items].sort(props.sortFunction) : props.items;
+
   if (!props.groupBy) {
-    return props.items.map((item) => ({
+    return sourceItems.map((item) => ({
       ...item,
       _isGroupStart: false,
       _isGroupEnd: false,
@@ -93,7 +76,7 @@ const enrichedItems = computed<EnrichedItem[]>(() => {
   }
 
   const groupPath = props.groupBy;
-  return props.items.map((item, index, arr): EnrichedItem => {
+  return sourceItems.map((item, index, arr): EnrichedItem => {
     const currentGroup = getNestedValue(item, groupPath);
     const prevGroup = index > 0 ? getNestedValue(arr[index - 1], groupPath) : null;
     const nextGroup = index < arr.length - 1 ? getNestedValue(arr[index + 1], groupPath) : null;
@@ -155,7 +138,7 @@ const getRowClasses = (item: Record<string, unknown>) => {
             v-for="col in headers"
             :key="col.key"
             class="cell body-cell"
-            :class="[`align-${col.align || 'left'}`]"
+            :class="[`align-${col.align || 'left'}`, col.cellClass]"
           >
             <component
               :is="col.cellComponent"
@@ -184,8 +167,8 @@ const getRowClasses = (item: Record<string, unknown>) => {
 
 <style scoped>
 .base-table-wrapper {
-  background: transparent; /* Wrapper shouldn't have bg, allows spacing to show. */
-  border: none; /* Override standard card border. */
+  background: transparent;
+  border: none;
   box-shadow: none;
   overflow-x: auto;
 }
@@ -196,14 +179,12 @@ const getRowClasses = (item: Record<string, unknown>) => {
   width: 100%;
 }
 
-/* Base cell styling. */
 .cell {
   align-items: center;
   display: flex;
   padding: var(--spacing-sm) var(--spacing-md);
 }
 
-/* --- Header styling --- */
 .table-header-group {
   display: contents;
 }
@@ -223,10 +204,9 @@ const getRowClasses = (item: Record<string, unknown>) => {
   position: sticky;
   text-transform: uppercase;
   top: 0;
-  z-index: 20; /* Ensure headers stay above content. */
+  z-index: 20;
 }
 
-/* --- Body styling --- */
 .table-body-group {
   display: contents;
 }
@@ -240,16 +220,13 @@ const getRowClasses = (item: Record<string, unknown>) => {
   color: var(--text-main);
   font-size: 0.9375rem;
   min-height: 5.5rem;
-  position: relative; /* Context for children. */
+  position: relative;
   z-index: 1;
 }
 
-/* --- Grouping & spacing logic --- */
-
-/* 1. Base group row styles. */
 .table-row.group-start .body-cell {
   border-top: 1px solid var(--border-color);
-  margin-top: 1rem; /* The visual gap between groups. */
+  margin-top: 1rem;
 }
 
 .table-row.group-end .body-cell {
@@ -258,10 +235,9 @@ const getRowClasses = (item: Record<string, unknown>) => {
 
 .table-row.group-middle .body-cell,
 .table-row.group-start .body-cell {
-  border-bottom: 1px solid #f8fafc; /* Very subtle divider inside group. */
+  border-bottom: 1px solid #f8fafc;
 }
 
-/* 2. Top rounded corners for the group. */
 .table-row.group-start .body-cell:first-child {
   border-top-left-radius: 8px;
 }
@@ -270,7 +246,6 @@ const getRowClasses = (item: Record<string, unknown>) => {
   border-top-right-radius: 8px;
 }
 
-/* 3. Bottom rounded corners for the group. */
 .table-row.group-end .body-cell:first-child {
   border-bottom-left-radius: 8px;
 }
@@ -279,13 +254,11 @@ const getRowClasses = (item: Record<string, unknown>) => {
   border-bottom-right-radius: 8px;
 }
 
-/* --- Vertical lines --- */
 .base-table.has-vertical-lines .header-cell:not(:last-child),
 .base-table.has-vertical-lines .body-cell:not(:last-child) {
   border-right: 1px solid #f1f5f9;
 }
 
-/* Alignment utilities. */
 .align-left {
   justify-content: flex-start;
   text-align: left;

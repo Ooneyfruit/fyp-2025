@@ -13,6 +13,8 @@ export interface PracticeRoleConfig {
   name: string;
   type: string;
   icon_url?: string;
+  /** Index of the color in the shared ROLE_PALETTE */
+  color_index?: number;
 }
 
 /**
@@ -24,6 +26,7 @@ export interface SurgeryConfig {
   days_of_operation: string[];
   start_time: Timestamp;
   end_time: Timestamp;
+  is_deleted?: boolean;
 }
 
 /**
@@ -31,7 +34,7 @@ export interface SurgeryConfig {
  */
 export interface MinimumStaffConfig {
   id: string;
-  surgery_id: unknown; // loose typing to handle reference vs string during fetch
+  surgery_id: unknown;
   role_id: unknown;
   staff_count: number;
 }

@@ -9,6 +9,7 @@ import IconPlus from '@/components/icons/IconPlus.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseTable, { type TableHeader } from '@/components/shared/BaseTable.vue';
 import RoleActionCell from '@/features/settings/components/cells/RoleActionCell.vue';
+import RoleColorCell from '@/features/settings/components/cells/RoleColorCell.vue';
 import RoleIconCell from '@/features/settings/components/cells/RoleIconCell.vue';
 import PracticeRoleModal from '@/features/settings/components/modals/PracticeRoleModal.vue';
 import { type PracticeRoleConfig } from '@/features/settings/settingsTypes';
@@ -33,6 +34,13 @@ const handleEdit = (item: PracticeRoleConfig) => {
 const headers: TableHeader[] = [
   { key: 'name', label: 'Role Name' },
   { key: 'type', label: 'Classification' },
+  {
+    key: 'color',
+    label: 'Colour',
+    align: 'center',
+    width: '100px',
+    cellComponent: markRaw(RoleColorCell)
+  },
   {
     key: 'icon',
     label: 'Icon',
