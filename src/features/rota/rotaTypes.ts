@@ -1,5 +1,6 @@
 /**
- * (needs description).
+ * Domain models and validation schemas for the Rota feature.
+ * Defines the structure for roles, surgeries, and shifts.
  */
 
 import { type DocumentReference, type Timestamp } from 'firebase/firestore';
@@ -11,6 +12,7 @@ export interface PracticeRole {
   id: string;
   name: string;
   color_index?: number;
+  icon_id?: string;
 }
 
 export interface PracticeSurgery {
@@ -55,7 +57,8 @@ export interface ShiftInput {
 export const PracticeRoleSchema = z.object({
   id: z.string(),
   name: z.string(),
-  color_index: z.number().optional()
+  color_index: z.number().optional(),
+  icon_id: z.string().optional()
 });
 
 export const PracticeSurgerySchema = z.object({

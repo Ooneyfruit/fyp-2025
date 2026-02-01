@@ -59,7 +59,8 @@ const tableHeaders = computed(() => {
       key: 'header_col',
       label: 'Role / Surgery',
       // Using minmax(0, X) is critical here to allow column shrinking.
-      width: 'minmax(0, 9.2rem)',
+      // Increased from 9.2rem to 12rem to accommodate longer role names.
+      width: 'minmax(0, 10rem)',
       align: 'left' as const,
       cellComponent: markRaw(RotaRoleCell)
     },
