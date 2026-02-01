@@ -30,7 +30,8 @@ export const fetchPracticeRoles = async (practiceId: string): Promise<PracticeRo
       id: d.id,
       name: d.data().name as string,
       color_index: d.data().color_index as number | undefined,
-      icon_id: d.data().icon_id as string | undefined
+      icon_id: d.data().icon_id as string | undefined,
+      is_deleted: !!d.data().is_deleted
     }));
   } catch {
     return [];

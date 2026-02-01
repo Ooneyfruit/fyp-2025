@@ -1,37 +1,55 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Renders a list of practice roles with management capabilities.
+ * Supports adding, editing, and restoring archived roles.
  */
 
-import { markRaw, ref } from 'vue';
+import { computed, markRaw, ref } from 'vue';
 
 import IconPlus from '@/components/icons/IconPlus.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseTable, { type TableHeader } from '@/components/shared/BaseTable.vue';
+import BaseToggle from '@/components/shared/BaseToggle.vue';
 import RoleActionCell from '@/features/settings/components/cells/RoleActionCell.vue';
 import RoleColorCell from '@/features/settings/components/cells/RoleColorCell.vue';
 import RoleIconCell from '@/features/settings/components/cells/RoleIconCell.vue';
 import PracticeRoleModal from '@/features/settings/components/modals/PracticeRoleModal.vue';
+import { usePracticeActions } from '@/features/settings/composables/usePracticeActions';
 import { type PracticeRoleConfig } from '@/features/settings/settingsTypes';
 
-defineProps<{
+const props = defineProps<{
   roles: PracticeRoleConfig[];
 }>();
 
+const { toggleRoleArchive } = usePracticeActions();
+
+const showArchived = ref(false);
 const isModalOpen = ref(false);
 const selectedRole = ref<PracticeRoleConfig | null>(null);
+
+const displayedItems = computed(() => {
+  return props.roles
+    .filter((item) => !!item.is_deleted === showArchived.value)
+    .map((item) => item as unknown as Record<string, unknown>);
+});
 
 const openAddModal = () => {
   selectedRole.value = null;
   isModalOpen.value = true;
 };
 
-const handleEdit = (item: PracticeRoleConfig) => {
-  selectedRole.value = item;
+const handleEdit = (item: Record<string, unknown>) => {
+  selectedRole.value = item as unknown as PracticeRoleConfig;
   isModalOpen.value = true;
 };
 
-const headers: TableHeader[] = [
+const handleRestore = async (item: Record<string, unknown>) => {
+  if (item.id) {
+    await toggleRoleArchive(item.id as string, false);
+  }
+};
+
+const headers = computed<TableHeader[]>(() => [
   { key: 'name', label: 'Role Name' },
   { key: 'type', label: 'Classification' },
   {
@@ -51,22 +69,37 @@ const headers: TableHeader[] = [
   {
     key: 'actions',
     label: '',
-    width: '60px',
+    width: '80px',
     align: 'center',
     cellComponent: markRaw(RoleActionCell),
-    meta: { onEdit: handleEdit }
+    meta: {
+      onEdit: handleEdit,
+      onRestore: handleRestore
+    }
   }
-];
+]);
 </script>
 
 <template>
   <div class="roles-section">
     <div class="section-header">
-      <h3>Practice Roles</h3>
-      <BaseButton :icon="IconPlus" label="Add Role" variant="primary" @click="openAddModal" />
+      <div class="header-left">
+        <h3>Practice Roles</h3>
+        <div class="archive-toggle">
+          <BaseToggle v-model="showArchived" label="Show Archived" />
+          <span class="toggle-text">Show Archived</span>
+        </div>
+      </div>
+      <BaseButton
+        v-if="!showArchived"
+        :icon="IconPlus"
+        label="Add Role"
+        variant="primary"
+        @click="openAddModal"
+      />
     </div>
 
-    <BaseTable :headers="headers" :items="roles as any" />
+    <BaseTable :headers="headers" :items="displayedItems" />
 
     <PracticeRoleModal
       :role-to-edit="selectedRole"
@@ -88,6 +121,23 @@ const headers: TableHeader[] = [
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
+}
+
+.header-left {
+  align-items: center;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.archive-toggle {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggle-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 
 h3 {

@@ -7,6 +7,7 @@
 import { computed, markRaw, reactive, ref, watch } from 'vue';
 
 import IconMagicWand from '@/components/icons/IconMagicWand.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseInput from '@/components/shared/BaseInput.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
 import BaseModalFooter from '@/components/shared/BaseModalFooter.vue';
@@ -23,7 +24,7 @@ const props = defineProps<{
 
 const emit = defineEmits<(e: 'close') => void>();
 
-const { saveRole } = usePracticeActions();
+const { saveRole, toggleRoleArchive } = usePracticeActions();
 
 const ROLE_TYPES = [
   { value: 'Practitioner', label: 'Practitioner' },
@@ -32,6 +33,7 @@ const ROLE_TYPES = [
 ];
 
 const isSubmitting = ref(false);
+const isConfirmDeleteOpen = ref(false);
 const initialJson = ref('');
 
 const form = reactive<PracticeRoleConfig>({
@@ -43,6 +45,7 @@ const form = reactive<PracticeRoleConfig>({
 });
 
 const isEditMode = computed(() => !!props.roleToEdit);
+const isDeleted = computed(() => !!props.roleToEdit?.is_deleted);
 const isDirty = computed(() => JSON.stringify(form) !== initialJson.value);
 
 watch(
@@ -66,6 +69,13 @@ watch(
   { immediate: true }
 );
 
+watch(
+  () => props.show,
+  (val) => {
+    if (val) isConfirmDeleteOpen.value = false;
+  }
+);
+
 const handleSubmit = async () => {
   isSubmitting.value = true;
   // Convert undefined back to null if 'No Icon' was selected for the payload.
@@ -75,11 +85,35 @@ const handleSubmit = async () => {
   emit('close');
 };
 
+const handleArchiveToggle = async () => {
+  if (!form.id) return;
+  if (isDeleted.value) {
+    await toggleRoleArchive(form.id, false);
+    emit('close');
+  } else {
+    isConfirmDeleteOpen.value = true;
+  }
+};
+
+const confirmDelete = async () => {
+  await toggleRoleArchive(form.id, true);
+  isConfirmDeleteOpen.value = false;
+  emit('close');
+};
+
 const footerProps = computed(() => ({
   confirmLabel: isEditMode.value ? 'Update Role' : 'Create Role',
   loading: isSubmitting.value,
   onCancel: () => emit('close'),
   onConfirm: handleSubmit
+}));
+
+const archiveFooterProps = computed(() => ({
+  confirmLabel: 'Yes, Archive',
+  confirmVariant: 'danger',
+  cancelLabel: 'Cancel',
+  onCancel: () => (isConfirmDeleteOpen.value = false),
+  onConfirm: confirmDelete
 }));
 </script>
 
@@ -190,7 +224,35 @@ const footerProps = computed(() => ({
           </fieldset>
         </div>
       </div>
+
+      <div v-if="isEditMode" class="rd-danger-zone">
+        <h4 class="rd-section-header" style="color: var(--color-danger)">Danger Zone</h4>
+        <div class="danger-actions">
+          <p v-if="!isDeleted" class="danger-text">
+            Archiving removes this role from the practice configuration.
+          </p>
+          <p v-else class="danger-text">Restore this role to make it active again.</p>
+
+          <BaseButton
+            :label="isDeleted ? 'Restore Role' : 'Archive Role'"
+            type="button"
+            :variant="isDeleted ? 'secondary' : 'danger'"
+            @click="handleArchiveToggle"
+          />
+        </div>
+      </div>
     </form>
+
+    <BaseModal
+      :footer-component="markRaw(BaseModalFooter)"
+      :footer-props="archiveFooterProps"
+      :show="isConfirmDeleteOpen"
+      size="sm"
+      title="Confirm Archive"
+      @request-close="isConfirmDeleteOpen = false"
+    >
+      <p>Are you sure you want to archive this role?</p>
+    </BaseModal>
   </BaseModal>
 </template>
 
@@ -284,6 +346,18 @@ input:checked + .color-swatch {
   box-shadow:
     0 0 0 2px white,
     0 0 0 4px var(--color-primary);
+}
+
+.danger-actions {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.danger-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
 }
 
 .sr-only {

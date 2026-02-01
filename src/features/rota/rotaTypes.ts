@@ -13,6 +13,7 @@ export interface PracticeRole {
   name: string;
   color_index?: number;
   icon_id?: string;
+  is_deleted?: boolean;
 }
 
 export interface PracticeSurgery {
@@ -58,7 +59,8 @@ export const PracticeRoleSchema = z.object({
   id: z.string(),
   name: z.string(),
   color_index: z.number().optional(),
-  icon_id: z.string().optional()
+  icon_id: z.string().optional(),
+  is_deleted: z.boolean().optional()
 });
 
 export const PracticeSurgerySchema = z.object({
