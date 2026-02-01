@@ -52,11 +52,16 @@ const pillStyles = computed(() => ({
 
 /**
  * Extracts the initials from a full name string.
+ * Ignores 'Dr' or 'Dr.' prefixes.
  * @param name - The full name of the staff member.
  */
 const getInitials = (name: string | undefined): string => {
   if (!name) return '??';
-  return name
+
+  // Remove 'Dr.' or 'Dr' prefix (case-insensitive) followed by space
+  const cleanName = name.replace(/^\s*dr\.?\s+/i, '');
+
+  return cleanName
     .split(' ')
     .map((n: string) => n[0])
     .join('')

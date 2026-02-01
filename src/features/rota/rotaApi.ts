@@ -29,7 +29,8 @@ export const fetchPracticeRoles = async (practiceId: string): Promise<PracticeRo
     return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({
       id: d.id,
       name: d.data().name as string,
-      color_index: d.data().color_index as number | undefined
+      color_index: d.data().color_index as number | undefined,
+      icon_id: d.data().icon_id as string | undefined
     }));
   } catch {
     return [];
