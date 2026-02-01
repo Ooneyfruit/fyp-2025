@@ -13,6 +13,7 @@ import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
 import pluginSonar from 'eslint-plugin-sonarjs';
 import pluginTsdoc from 'eslint-plugin-tsdoc';
 import pluginUnicorn from 'eslint-plugin-unicorn';
+import pluginVitest from 'eslint-plugin-vitest';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -135,6 +136,7 @@ export default [
       'sonarjs/cognitive-complexity': ['error', COGNITIVE_COMPLEXITY_LIMIT],
 
       // --- Vue specifics ---
+      // FIXED: Rule expects the casing string directly as the second argument
       'vue/component-name-in-template-casing': ['error', 'PascalCase'],
       'vue/attributes-order': ['error', { alphabetical: true }],
       'vue/require-default-prop': 'error',
@@ -179,6 +181,24 @@ export default [
       'rotadent/enforce-file-header': 'error',
       'rotadent/no-nested-template': 'warn',
       'rotadent/prefer-alias': 'error'
+    }
+  },
+
+  // 7. Testing specific configuration (Vitest).
+  {
+    files: ['**/*.{test,spec}.{js,ts,vue}'],
+    plugins: {
+      vitest: pluginVitest
+    },
+    rules: {
+      ...pluginVitest.configs.recommended.rules,
+      'vitest/expect-expect': 'error', // Ensures no tests are empty assertions.
+      'vitest/no-disabled-tests': 'warn', // Discourage committing .skip
+      'vitest/consistent-test-it': ['error', { fn: 'it' }], // Enforce 'it' over 'test' for consistency.
+      // Relax complexity rules for tests, as setup code can be verbose.
+      'max-lines-per-function': 'off',
+      'sonarjs/cognitive-complexity': 'off',
+      'no-magic-numbers': 'off'
     }
   },
 
