@@ -1,14 +1,14 @@
 /**
  * Manages colour logic for the application.
- * Implements a Singleton, Persistent, and Deterministic strategy for Role colours.
- *
- * Architecture:
- * 1. Singleton: State is defined in module scope, shared by all importers.
- * 2. Persistent: Syncs with 'rd-rota-role-colors' in localStorage.
- * 3. Name-Based: Uses role NAME as the universal key to bridge Rota and User domains.
+ * Strategy:
+ * 1. Overrides (from Firestore) take absolute precedence.
+ * 2. Automatic assignments use deterministic hashing (Name -\> Index).
+ * 3. Collisions (with overrides or other automatics) trigger linear probing.
  */
 
 import { reactive, watch } from 'vue';
+
+import type { PracticeRole } from '@/features/rota/rotaTypes';
 
 interface RoleColor {
   bg: string;
@@ -17,114 +17,154 @@ interface RoleColor {
 
 const STORAGE_KEY = 'rd-rota-role-colors';
 const DEFAULT_PALETTE_INDEX = 7;
+const HASH_BIT_SHIFT = 5;
+const PALETTE_SIZE = 8;
 
-/**
- * A curated palette of accessible, distinct tones.
- */
-const ROLE_PALETTE: RoleColor[] = [
-  { bg: '#e2e8f0', accent: '#334155' }, // Slate
-  { bg: '#f3e8ff', accent: '#7e22ce' }, // Purple
-  { bg: '#ffe4e6', accent: '#a03f58' }, // Rose
-  { bg: '#e0f2fe', accent: '#0369a1' }, // Sky Blue
-  { bg: '#ffedd5', accent: '#c2410c' }, // Orange
-  { bg: '#dcfce7', accent: '#15803d' }, // Green
-  { bg: '#fef08a', accent: '#854d0e' }, // Yellow
-  { bg: '#fae8ff', accent: '#a21caf' } // Fuchsia
+export const ROLE_PALETTE: RoleColor[] = [
+  { bg: '#e2e8f0', accent: '#334155' }, // 0: Slate
+  { bg: '#f3e8ff', accent: '#7e22ce' }, // 1: Purple
+  { bg: '#ffe4e6', accent: '#a03f58' }, // 2: Rose
+  { bg: '#e0f2fe', accent: '#0369a1' }, // 3: Sky Blue
+  { bg: '#ffedd5', accent: '#c2410c' }, // 4: Orange
+  { bg: '#dcfce7', accent: '#15803d' }, // 5: Green
+  { bg: '#fef08a', accent: '#854d0e' }, // 6: Yellow
+  { bg: '#fae8ff', accent: '#a21caf' } // 7: Fuchsia
 ];
 
-// --- Singleton State ---
-// Defined outside the function to ensure all components share the same memory reference.
+// Singleton State
 const globalState = reactive<{
-  registry: Record<string, number>;
+  autoRegistry: Record<string, number>;
+  overrides: Record<string, number>;
   isInitialized: boolean;
 }>({
-  registry: {},
+  autoRegistry: {},
+  overrides: {},
   isInitialized: false
 });
 
-/**
- * Internal: Loads registry from LocalStorage.
- * Safe to call multiple times; only runs once per app lifecycle.
- */
 const ensureInitialized = () => {
   if (globalState.isInitialized) return;
-
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw);
-      Object.assign(globalState.registry, parsed);
+      Object.assign(globalState.autoRegistry, JSON.parse(raw));
     }
   } catch {
-    // Silent failure: LocalStorage is likely unavailable or corrupt.
-    // We fall back to the empty in-memory registry.
+    // Silent fail
   } finally {
     globalState.isInitialized = true;
   }
 };
 
-/**
- * Internal: Saves registry to LocalStorage.
- * Triggered automatically by the watcher.
- */
-const persistState = () => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(globalState.registry));
-  } catch {
-    // Silent failure: Quota exceeded or storage restricted.
-    // Data remains consistent in memory for the session.
+watch(
+  () => globalState.autoRegistry,
+  (val) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(val));
+    } catch {
+      // Quota exceeded
+    }
+  },
+  { deep: true }
+);
+
+const hashStringToIndex = (str: string): number => {
+  let hash = 0;
+  for (const char of str) {
+    const code = char.codePointAt(0) || 0;
+    hash = code + ((hash << HASH_BIT_SHIFT) - hash);
   }
+  return Math.abs(hash) % PALETTE_SIZE;
 };
 
-// Set up persistence watcher immediately
-watch(() => globalState.registry, persistState, { deep: true });
-
 /**
- * Determines the next available color index.
- * Priority:
- * 1. First index strictly NOT in use.
- * 2. If all used, cycle using modulo (Keys Count % Palette Size).
+ * Checks if an index is available for assignment.
  */
-const assignColorIndex = (): number => {
-  const usedIndices = new Set(Object.values(globalState.registry));
-
-  // 1. Search for holes in the usage
-  for (let i = 0; i < ROLE_PALETTE.length; i++) {
-    if (!usedIndices.has(i)) {
-      return i;
-    }
+const isIndexAvailable = (idx: number, currentKey: string): boolean => {
+  // 1. Hard Block: Is this index used by ANY override?
+  for (const overrideIdx of Object.values(globalState.overrides)) {
+    if (overrideIdx === idx) return false;
   }
 
-  // 2. Fallback to cycling
-  return Object.keys(globalState.registry).length % ROLE_PALETTE.length;
+  // 2. Soft Block: Is this index used by another role's auto-assignment?
+  for (const [key, val] of Object.entries(globalState.autoRegistry)) {
+    if (key !== currentKey && val === idx) return false;
+  }
+
+  return true;
+};
+
+/**
+ * Finds the next safe index using linear probing.
+ */
+const findSafeIndex = (preferred: number, key: string): number => {
+  let idx = preferred;
+  for (let i = 0; i < PALETTE_SIZE; i++) {
+    if (isIndexAvailable(idx, key)) return idx;
+    idx = (idx + 1) % PALETTE_SIZE;
+  }
+  return preferred; // Saturation fallback
 };
 
 /**
  * Retrieves the colour for a role.
- * Automatically assigns and persists a new colour if the role is unknown.
- *
- * @param roleKey - The role name (e.g., "Dentist").
  */
 const getRoleColor = (roleKey?: string): RoleColor => {
   if (!roleKey) return ROLE_PALETTE[DEFAULT_PALETTE_INDEX];
 
   ensureInitialized();
-
   const key = roleKey.trim().toLowerCase();
 
-  // Return existing
-  if (globalState.registry[key] !== undefined) {
-    const idx = globalState.registry[key];
-    return ROLE_PALETTE[idx] || ROLE_PALETTE[DEFAULT_PALETTE_INDEX];
+  // 1. Check Overrides (Highest Priority)
+  const overrideIdx = globalState.overrides[key];
+  if (overrideIdx !== undefined) {
+    return ROLE_PALETTE[overrideIdx];
   }
 
-  // Assign new
-  const newIdx = assignColorIndex();
-  globalState.registry[key] = newIdx; // Triggers watch -> persistState
+  // 2. Check Existing Auto-Assignment
+  const autoIdx = globalState.autoRegistry[key];
+  if (autoIdx !== undefined && isIndexAvailable(autoIdx, key)) {
+    return ROLE_PALETTE[autoIdx];
+  }
 
-  return ROLE_PALETTE[newIdx];
+  // 3. Assign New
+  const preferred = hashStringToIndex(key);
+  const safeIdx = findSafeIndex(preferred, key);
+
+  globalState.autoRegistry[key] = safeIdx;
+  return ROLE_PALETTE[safeIdx];
+};
+
+/**
+ * Syncs local state with backend overrides.
+ */
+const prefillRegistry = (roles: PracticeRole[]) => {
+  ensureInitialized();
+
+  // Reset overrides
+  for (const key of Object.keys(globalState.overrides)) {
+    delete globalState.overrides[key];
+  }
+
+  const forbiddenIndices = new Set<number>();
+
+  // Apply new overrides
+  for (const role of roles) {
+    if (role.color_index !== undefined && role.color_index !== null) {
+      const key = role.name.trim().toLowerCase();
+      globalState.overrides[key] = role.color_index;
+      forbiddenIndices.add(role.color_index);
+    }
+  }
+
+  // Purge any auto-assignments that conflict with overrides
+  for (const [key, idx] of Object.entries(globalState.autoRegistry)) {
+    if (forbiddenIndices.has(idx)) {
+      delete globalState.autoRegistry[key];
+    }
+  }
 };
 
 export function useRotaColors() {
-  return { getRoleColor };
+  return { getRoleColor, prefillRegistry, ROLE_PALETTE };
 }

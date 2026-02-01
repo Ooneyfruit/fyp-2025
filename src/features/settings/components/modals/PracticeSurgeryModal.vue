@@ -8,6 +8,7 @@ import { computed, markRaw, reactive, ref, watch } from 'vue';
 
 import IconChevronDown from '@/components/icons/IconChevronDown.vue';
 import IconChevronUp from '@/components/icons/IconChevronUp.vue';
+import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseInput from '@/components/shared/BaseInput.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
 import BaseModalFooter from '@/components/shared/BaseModalFooter.vue';
@@ -17,14 +18,13 @@ import { type PracticeRoleConfig, type SurgeryConfig } from '@/features/settings
 
 const props = defineProps<{
   show: boolean;
-  surgeryToEdit?: Record<string, unknown> | null;
+  surgeryToEdit?: SurgeryConfig | null;
   allRoles: PracticeRoleConfig[];
 }>();
 
-// Updated syntax to satisfy SonarLint (S6598)
 const emit = defineEmits<(e: 'close') => void>();
 
-const { saveSurgery } = usePracticeActions();
+const { saveSurgery, toggleSurgeryArchive } = usePracticeActions();
 const { error: notifyError } = useToast();
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -32,6 +32,7 @@ const MS_PER_SEC = 1000;
 
 const isSubmitting = ref(false);
 const initialFingerprint = ref('');
+const isConfirmDeleteOpen = ref(false);
 
 const form = reactive({
   id: '',
@@ -42,37 +43,37 @@ const form = reactive({
   staffCounts: {} as Record<string, number>
 });
 
-const toTimestamp = (timeStr: string): Timestamp => {
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return Timestamp.fromDate(date);
+const toTimestamp = (timeStr: string) => {
+  const [h, m] = timeStr.split(':').map(Number);
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return Timestamp.fromDate(d);
 };
 
-const fromTimestamp = (ts: unknown): string => {
+const fromTimestamp = (ts: unknown) => {
   if (ts && typeof ts === 'object' && 'seconds' in ts) {
-    const date = new Date((ts as Timestamp).seconds * MS_PER_SEC);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const d = new Date((ts as Timestamp).seconds * MS_PER_SEC);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   }
   return '09:00';
 };
 
-const generateFingerprint = (data: typeof form) => JSON.stringify(data);
-
 const isEditMode = computed(() => !!props.surgeryToEdit);
-const isDirty = computed(() => generateFingerprint(form) !== initialFingerprint.value);
+const isDeleted = computed(() => !!props.surgeryToEdit?.is_deleted);
+const isDirty = computed(() => JSON.stringify(form) !== initialFingerprint.value);
 
-const populateForm = (surgery: Record<string, unknown>) => {
-  form.id = (surgery.id as string) || '';
-  form.name = (surgery.name as string) || '';
+const populateForm = (surgery: SurgeryConfig) => {
+  form.id = surgery.id || '';
+  form.name = surgery.name || '';
   form.startTime = fromTimestamp(surgery.start_time);
   form.endTime = fromTimestamp(surgery.end_time);
-  form.days = (surgery.days_of_operation as string[]) || [];
+  form.days = surgery.days_of_operation || [];
 
   form.staffCounts = {};
+  const dynamicSurgery = surgery as unknown as Record<string, number>;
   for (const role of props.allRoles) {
     const key = `role_${role.id}`;
-    form.staffCounts[role.id] = (key in surgery ? surgery[key] : 0) as number;
+    form.staffCounts[role.id] = key in dynamicSurgery ? dynamicSurgery[key] : 0;
   }
 };
 
@@ -86,19 +87,26 @@ const resetForm = () => {
   for (const r of props.allRoles) form.staffCounts[r.id] = 0;
 };
 
+const syncFormState = () => {
+  if (props.surgeryToEdit) populateForm(props.surgeryToEdit);
+  else resetForm();
+  initialFingerprint.value = JSON.stringify(form);
+};
+
 watch(
-  () => props.surgeryToEdit,
-  (newVal) => {
-    if (newVal) populateForm(newVal);
-    else resetForm();
-    initialFingerprint.value = generateFingerprint(form);
-  },
-  { immediate: true }
+  () => props.show,
+  (isOpen) => {
+    if (isOpen) {
+      syncFormState();
+      isConfirmDeleteOpen.value = false;
+    }
+  }
 );
 
+watch(() => props.surgeryToEdit, syncFormState);
+
 const adjustCount = (roleId: string, delta: number) => {
-  const current = form.staffCounts[roleId] || 0;
-  const next = current + delta;
+  const next = (form.staffCounts[roleId] || 0) + delta;
   if (next >= 0) form.staffCounts[roleId] = next;
 };
 
@@ -107,18 +115,36 @@ const handleSubmit = async () => {
     notifyError('Start time must be earlier than end time.');
     return;
   }
-
   isSubmitting.value = true;
-  const surgeryData: SurgeryConfig = {
-    id: form.id,
-    name: form.name,
-    days_of_operation: form.days,
-    start_time: toTimestamp(form.startTime),
-    end_time: toTimestamp(form.endTime)
-  };
+  await saveSurgery(
+    {
+      id: form.id,
+      name: form.name,
+      days_of_operation: form.days,
+      start_time: toTimestamp(form.startTime),
+      end_time: toTimestamp(form.endTime)
+    },
+    form.staffCounts,
+    props.allRoles
+  );
 
-  await saveSurgery(surgeryData, form.staffCounts, props.allRoles);
   isSubmitting.value = false;
+  emit('close');
+};
+
+const handleArchiveToggle = async () => {
+  if (!form.id) return;
+  if (isDeleted.value) {
+    await toggleSurgeryArchive(form.id, false);
+    emit('close');
+  } else {
+    isConfirmDeleteOpen.value = true;
+  }
+};
+
+const confirmDelete = async () => {
+  await toggleSurgeryArchive(form.id, true);
+  isConfirmDeleteOpen.value = false;
   emit('close');
 };
 
@@ -127,6 +153,16 @@ const footerProps = computed(() => ({
   loading: isSubmitting.value,
   onCancel: () => emit('close'),
   onConfirm: handleSubmit
+}));
+
+// We define this configuration object for the nested confirmation modal
+// Using BaseModalFooter ensures consistent button styling
+const archiveFooterProps = computed(() => ({
+  confirmLabel: 'Yes, Archive',
+  confirmVariant: 'danger',
+  cancelLabel: 'Cancel',
+  onCancel: () => (isConfirmDeleteOpen.value = false),
+  onConfirm: confirmDelete
 }));
 </script>
 
@@ -144,7 +180,7 @@ const footerProps = computed(() => ({
         <h4 class="rd-section-header">General Information</h4>
         <div class="rd-field">
           <label class="rd-field-label" for="s-name">Surgery Name</label>
-          <BaseInput id="s-name" v-model="form.name" placeholder="e.g. Surgery 1" required />
+          <BaseInput id="s-name" v-model="form.name" required />
         </div>
         <div class="rd-form-grid">
           <div class="rd-field">
@@ -178,9 +214,7 @@ const footerProps = computed(() => ({
                 <IconChevronDown class="icon-small" />
               </button>
               <input
-                :id="`role-count-${role.id}`"
                 v-model.number="form.staffCounts[role.id]"
-                aria-label="Staff count"
                 class="step-input"
                 min="0"
                 type="number"
@@ -192,7 +226,35 @@ const footerProps = computed(() => ({
           </div>
         </div>
       </div>
+
+      <div v-if="isEditMode" class="rd-danger-zone">
+        <h4 class="rd-section-header" style="color: var(--color-danger)">Danger Zone</h4>
+        <div class="danger-actions">
+          <p v-if="!isDeleted" class="danger-text">
+            Archiving removes this surgery from the rota view.
+          </p>
+          <p v-else class="danger-text">Restore this surgery to make it active again.</p>
+
+          <BaseButton
+            :label="isDeleted ? 'Restore Surgery' : 'Archive Surgery'"
+            type="button"
+            :variant="isDeleted ? 'secondary' : 'danger'"
+            @click="handleArchiveToggle"
+          />
+        </div>
+      </div>
     </form>
+
+    <BaseModal
+      :footer-component="markRaw(BaseModalFooter)"
+      :footer-props="archiveFooterProps"
+      :show="isConfirmDeleteOpen"
+      size="sm"
+      title="Confirm Archive"
+      @request-close="isConfirmDeleteOpen = false"
+    >
+      <p>Are you sure you want to archive this surgery? It will no longer appear on the rota.</p>
+    </BaseModal>
   </BaseModal>
 </template>
 
@@ -274,5 +336,17 @@ const footerProps = computed(() => ({
 .icon-small {
   height: 1rem;
   width: 1rem;
+}
+
+.danger-actions {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.danger-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
 }
 </style>

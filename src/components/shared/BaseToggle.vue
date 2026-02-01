@@ -1,36 +1,24 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Primitive checkbox switch component.
- * Primary responsibility: provides a visual sliding toggle and propagates state to the native input.
+ * (needs description).
  */
+
 import { useId } from 'vue';
 
-defineProps({
-  modelValue: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  label: { type: String, default: 'Toggle' }
-});
+defineProps<{
+  modelValue?: boolean;
+  disabled?: boolean;
+  label?: string;
+}>();
 
-const emit = defineEmits(['update:modelValue']);
+// Fixed definition to satisfy SonarLint
+const emit = defineEmits<(e: 'update:modelValue', checked: boolean) => void>();
 
-/**
- * Generates a unique, stable identifier for this component instance.
- * Logic: uses the native Vue 3.5 useId hook to ensure accessibility and avoid pseudorandom security flags.
- */
 const elementId = useId();
 
-/**
- * Handles the change event triggered by the native checkbox.
- * Logic: safely casts the event target to an HTMLInputElement to satisfy strict type safety requirements.
- * @param event - The native DOM change event.
- */
-function handleChange(event) {
-  const target = event.target;
-
-  // Verify that the target is an input element before accessing the checked property.
-  if (target instanceof HTMLInputElement) {
-    emit('update:modelValue', target.checked);
-  }
+function handleChange(event: Event) {
+  const target = event.target as HTMLInputElement;
+  emit('update:modelValue', target.checked);
 }
 </script>
 
@@ -46,16 +34,12 @@ function handleChange(event) {
     />
     <label class="rd-toggle" :for="elementId">
       <span class="rd-toggle-slider" />
-      <span class="sr-only">{{ label }}</span>
+      <span class="sr-only">{{ label || 'Toggle' }}</span>
     </label>
   </div>
 </template>
 
 <style scoped>
-/**
- * Logic: functional styles for the toggle are handled centrally in main.css.
- * The rd-toggle-wrapper ensures the input and label are contained together for layout stability.
- */
 .rd-toggle-wrapper {
   align-items: center;
   display: inline-flex;
@@ -71,5 +55,13 @@ function handleChange(event) {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+.rd-toggle-input:checked + .rd-toggle .rd-toggle-slider {
+  background-color: var(--color-primary);
+}
+
+.rd-toggle-input:checked + .rd-toggle .rd-toggle-slider::before {
+  transform: translateX(1rem);
 }
 </style>
