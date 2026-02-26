@@ -120,7 +120,7 @@ const formatMonthYear = (d: Date): string =>
  */
 const formatViewLabel = (days: RotaDay[]): string => {
   if (days.length === 0) return '';
-  const start = formatMonthYear(days[0].dateObj);
+  const start = formatMonthYear(days[0]!.dateObj);
   const endObj = days.at(-1)?.dateObj;
   // If the period spans two months, show both labels. Otherwise, show one.
   const end = endObj ? formatMonthYear(endObj) : start;
@@ -135,11 +135,11 @@ const formatViewLabel = (days: RotaDay[]): string => {
  */
 const generateRotaDays = (start: Date, count: number): RotaDay[] => {
   const today = getMidnightDate();
-  const todayStr = today.toISOString().split('T')[0];
+  const todayStr = today.toISOString().split('T')[0]!;
 
   return Array.from({ length: count }, (_, i) => {
     const d = createShiftedDate(start, i);
-    const iso = d.toISOString().split('T')[0];
+    const iso = d.toISOString().split('T')[0]!;
     return {
       key: iso,
       iso,

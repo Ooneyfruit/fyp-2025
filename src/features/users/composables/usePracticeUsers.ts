@@ -163,9 +163,9 @@ const resolveUserList = (list: PracticeMembership[]): PracticeUser[] => {
         }
       };
     })
-    .sort((a, b) => {
-      const nameA = a.profile.name || '';
-      const nameB = b.profile.name || '';
+    .toSorted((a, b) => {
+      const nameA = a.profile.name ?? '';
+      const nameB = b.profile.name ?? '';
       return nameA.localeCompare(nameB);
     });
 };

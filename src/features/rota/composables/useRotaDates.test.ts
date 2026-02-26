@@ -65,8 +65,9 @@ describe('useRotaDates', () => {
     const { visibleDays } = useRotaDates(mockBreakpoints);
 
     const firstDay = visibleDays.value[0];
+    expect(firstDay).toBeDefined();
     // Keys must be YYYY-MM-DD
-    expect(firstDay.key).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(firstDay!.key).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
   it('adjusts view based on mobile breakpoint', () => {

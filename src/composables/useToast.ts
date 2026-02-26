@@ -26,7 +26,7 @@ interface ToastOptions {
 /**
  * Interface representing the reactive state and methods for toast management.
  */
-export interface UseToastReturn {
+interface UseToastReturn {
   message: Ref<string>;
   isVisible: Ref<boolean>;
   actionLabel: Ref<string | null>;

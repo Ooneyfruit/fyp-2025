@@ -15,10 +15,8 @@ npm audit --audit-level=critical || exit 1
 
 # Build the documentation using TypeDoc.
 # This generates the HTML files in docs/gen.
-#npm run docs:build || exit 1
-
-
+npm run docs:build || exit 1
 
 # Stage the generated documentation files.
 # This ensures the updated docs are included in the commit.
-#git add docs/gen
+git add docs/gen

@@ -1,0 +1,51 @@
+# This workflow automatically generates and commits documentation.
+# It ensures docs/gen is always up-to-date in pull requests.
+
+name: Documentation Generator
+
+on:
+  pull_request:
+    paths:
+      # Only run when source files or config change.
+      - 'src/**'
+      - 'typedoc.json'
+      - 'package.json'
+
+permissions:
+  # Grant permission to commit back to the repository.
+  contents: write
+
+jobs:
+  build-and-commit-docs:
+    name: Build and Commit Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Checkout the PR branch specifically to allow committing.
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        # Use npm ci for a clean, deterministic install.
+        run: npm ci
+
+      - name: Generate documentation
+        # Runs the standard build script from package.json.
+        run: npm run docs:build
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'docs: update generated documentation'
+          # Only commit changes within the output directory.
+          file_pattern: 'docs/gen/**'
+          # Fail the action if the commit fails (optional safety).
+          skip_dirty_check: false

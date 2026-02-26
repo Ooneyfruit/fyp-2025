@@ -9,7 +9,7 @@ import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaT
 import type { UserProfile } from '@/features/users/userTypes';
 import type { Nullable } from '@/types/generic';
 
-export interface RotaRow {
+interface RotaRow {
   [key: string]: unknown;
   id: string;
   role: PracticeRole;
@@ -30,7 +30,7 @@ const getShiftIsoDate = (dateVal: unknown): string | null => {
 
   if (Number.isNaN(dateObj.getTime())) return null;
 
-  return dateObj.toISOString().split('T')[0];
+  return dateObj.toISOString().split('T')[0]!;
 };
 
 const isSameId = (ref: unknown, id: string): boolean => {

@@ -62,12 +62,12 @@ describe('useRotaData', () => {
     // Assert: Flattened rows (the grid structure) should be generated
     // 1 Role * 1 Surgery = 1 Row
     expect(flattenedRows.value).toHaveLength(1);
-    expect(flattenedRows.value[0].id).toBe('role_1_surgery_1');
+    expect(flattenedRows.value[0]!.id).toBe('role_1_surgery_1');
 
     // Assert: Shifts should be retrievable via the helper
     const shifts = getShiftsForSlot('role_1', 'surgery_1', '2025-01-01');
     expect(shifts).toHaveLength(1);
-    expect(shifts[0].id).toBe('shift_1');
+    expect(shifts[0]!.id).toBe('shift_1');
   });
 
   it('handles API errors gracefully (Resilience)', async () => {

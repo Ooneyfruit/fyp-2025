@@ -130,12 +130,13 @@ const generateGrid = (hash: number): GridCellData[][] => {
   );
 
   for (let y = 0; y < GRID_SIZE; y++) {
+    const row = grid[y]!;
     for (let x = 0; x < GRID_SIZE; x++) {
       // Mirroring logic: Columns 3 and 4 mirror 1 and 0.
       const sourceX = x > PIVOT_INDEX ? GRID_SIZE - 1 - x : x;
       const cellId = y * UNIQUE_COLS + sourceX;
       const val = (hash >> cellId) & ENTROPY_MASK;
-      grid[y][x] = getShapeData(val);
+      row[x] = getShapeData(val);
     }
   }
   return grid;
@@ -158,8 +159,8 @@ const getMergeWidth = (
   let width = 1;
   while (
     x + width < GRID_SIZE &&
-    grid[y][x + width].type === ShapeType.FullRect &&
-    !visited[y][x + width]
+    grid[y]?.[x + width]?.type === ShapeType.FullRect &&
+    !visited[y]?.[x + width]
   ) {
     width++;
   }
@@ -190,7 +191,7 @@ const canExtendHeight = (
   }
 
   for (let k = 0; k < width; k++) {
-    if (grid[checkY][x + k].type !== ShapeType.FullRect || visited[checkY][x + k]) {
+    if (grid[checkY]?.[x + k]?.type !== ShapeType.FullRect || visited[checkY]?.[x + k]) {
       return false;
     }
   }
@@ -237,7 +238,10 @@ const markVisited = (
 ): void => {
   for (let dy = 0; dy < height; dy++) {
     for (let dx = 0; dx < width; dx++) {
-      visited[y + dy][x + dx] = true;
+      const row = visited[y + dy];
+      if (row) {
+        row[x + dx] = true;
+      }
     }
   }
 };
@@ -304,35 +308,32 @@ const transformPoint = (p: Point, angleDeg: number, x: number, y: number): Point
  * @returns The SVG path string.
  */
 const getStandardShapePath = (x: number, y: number, cell: GridCellData): string => {
-  if (cell.type === ShapeType.SmallRect) {
-    const rx = rnd(x + SMALL_RECT_INSET);
-    const ry = rnd(y + SMALL_RECT_INSET);
-    const s = rnd(SMALL_RECT_SIZE);
-    return `M${rx},${ry} h${s} v${s} h-${s} Z `;
-  }
-
-  if (cell.type === ShapeType.Circle) {
-    const cx = rnd(x + HALF_CELL);
-    const cy = rnd(y + HALF_CELL);
-    const r = rnd(HALF_CELL);
-    // Draw two semicircles
-    return `M${cx - r},${cy} A${r},${r} 0 1,0 ${cx + r},${cy} A${r},${r} 0 1,0 ${cx - r},${cy} Z `;
-  }
-
-  if (cell.type === ShapeType.Triangle) {
-    const points: Point[] = [
-      { x: 0, y: 0 },
-      { x: 1, y: 0 },
-      { x: 0, y: 1 }
-    ];
-
-    const tp = points.map((p) => transformPoint(p, cell.rotation, x, y));
-
-    if (tp.length === TRIANGLE_VERTICES) {
-      return `M${rnd(tp[0].x)},${rnd(tp[0].y)} L${rnd(tp[1].x)},${rnd(tp[1].y)} L${rnd(tp[2].x)},${rnd(tp[2].y)} Z `;
+  switch (cell.type) {
+    case ShapeType.SmallRect: {
+      const rx = rnd(x + SMALL_RECT_INSET);
+      const ry = rnd(y + SMALL_RECT_INSET);
+      const s = rnd(SMALL_RECT_SIZE);
+      return `M${rx},${ry} h${s} v${s} h-${s} Z `;
+    }
+    case ShapeType.Circle: {
+      const cx = rnd(x + HALF_CELL);
+      const cy = rnd(y + HALF_CELL);
+      const r = rnd(HALF_CELL);
+      // Draw two semicircles
+      return `M${cx - r},${cy} A${r},${r} 0 1,0 ${cx + r},${cy} A${r},${r} 0 1,0 ${cx - r},${cy} Z `;
+    }
+    case ShapeType.Triangle: {
+      const points: Point[] = [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 0, y: 1 }
+      ];
+      const tp = points.map((p) => transformPoint(p, cell.rotation, x, y));
+      if (tp.length !== TRIANGLE_VERTICES) break;
+      const [p1, p2, p3] = tp;
+      return `M${rnd(p1!.x)},${rnd(p1!.y)} L${rnd(p2!.x)},${rnd(p2!.y)} L${rnd(p3!.x)},${rnd(p3!.y)} Z `;
     }
   }
-
   return '';
 };
 
@@ -351,14 +352,14 @@ const processCell = (
   grid: GridCellData[][],
   visited: boolean[][]
 ): string => {
-  if (visited[y][x]) {
+  if (visited[y]?.[x]) {
     return '';
   }
 
-  const cell = grid[y][x];
+  const cell = grid[y]?.[x];
 
-  if (cell.type === ShapeType.None) {
-    visited[y][x] = true;
+  if (!cell || cell.type === ShapeType.None) {
+    markVisited(x, y, 1, 1, visited);
     return '';
   }
 
@@ -366,19 +367,17 @@ const processCell = (
     return getMergedRectPath(x, y, grid, visited);
   }
 
-  visited[y][x] = true;
+  markVisited(x, y, 1, 1, visited);
   return getStandardShapePath(x, y, cell);
 };
 
 /**
- * Generates the flattened SVG Path Data string for the entire grid.
+ * Generates the flattened SVG Path Data string from a grid model.
  * Implements "Greedy Meshing" to optimize rendering performance and visual quality.
+ * @param grid - The grid data structure to process.
+ * @returns The final SVG path data string.
  */
-const combinedPath = computed(() => {
-  const h = generateHash(props.seed);
-  const grid = generateGrid(h);
-
-  // Explicitly type the iterator return to satisfy TypeScript assignment
+const generatePathFromGrid = (grid: GridCellData[][]): string => {
   const visited: boolean[][] = Array.from({ length: GRID_SIZE }, (): boolean[] =>
     Array.from({ length: GRID_SIZE }, () => false)
   );
@@ -392,6 +391,16 @@ const combinedPath = computed(() => {
   }
 
   return d;
+};
+
+/**
+ * Generates the flattened SVG Path Data string for the entire grid.
+ * This is a computed property that reacts to changes in the seed.
+ */
+const combinedPath = computed(() => {
+  const h = generateHash(props.seed);
+  const grid = generateGrid(h);
+  return generatePathFromGrid(grid);
 });
 </script>
 

@@ -44,7 +44,9 @@ const form = reactive({
 });
 
 const toTimestamp = (timeStr: string) => {
-  const [h, m] = timeStr.split(':').map(Number);
+  const parts = timeStr.split(':');
+  const h = Number.parseInt(parts[0] || '0', 10);
+  const m = Number.parseInt(parts[1] || '0', 10);
   const d = new Date();
   d.setHours(h, m, 0, 0);
   return Timestamp.fromDate(d);
@@ -70,10 +72,10 @@ const populateForm = (surgery: SurgeryConfig) => {
   form.days = surgery.days_of_operation || [];
 
   form.staffCounts = {};
-  const dynamicSurgery = surgery as unknown as Record<string, number>;
+  const dynamicSurgery = surgery as unknown as Record<string, number | undefined>;
   for (const role of props.allRoles) {
     const key = `role_${role.id}`;
-    form.staffCounts[role.id] = key in dynamicSurgery ? dynamicSurgery[key] : 0;
+    form.staffCounts[role.id] = dynamicSurgery[key] ?? 0;
   }
 };
 
