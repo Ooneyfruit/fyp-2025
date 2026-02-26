@@ -44,7 +44,10 @@ const props = withDefaults(defineProps<Props>(), {
   sortFunction: undefined
 });
 
-const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => {
+const getNestedValue = (obj: Record<string, unknown> | null | undefined, path: string): unknown => {
+  if (!obj) {
+    return null;
+  }
   let current: unknown = obj;
   const parts = path.split('.');
 
@@ -64,7 +67,7 @@ const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => 
  */
 const enrichedItems = computed<EnrichedItem[]>(() => {
   // Apply sorting if provided
-  const sourceItems = props.sortFunction ? [...props.items].sort(props.sortFunction) : props.items;
+  const sourceItems = props.sortFunction ? props.items.toSorted(props.sortFunction) : props.items;
 
   if (!props.groupBy) {
     return sourceItems.map((item) => ({
@@ -78,8 +81,8 @@ const enrichedItems = computed<EnrichedItem[]>(() => {
   const groupPath = props.groupBy;
   return sourceItems.map((item, index, arr): EnrichedItem => {
     const currentGroup = getNestedValue(item, groupPath);
-    const prevGroup = index > 0 ? getNestedValue(arr[index - 1], groupPath) : null;
-    const nextGroup = index < arr.length - 1 ? getNestedValue(arr[index + 1], groupPath) : null;
+    const prevGroup = getNestedValue(arr[index - 1], groupPath);
+    const nextGroup = getNestedValue(arr[index + 1], groupPath);
 
     return {
       ...item,

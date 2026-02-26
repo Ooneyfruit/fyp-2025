@@ -43,7 +43,7 @@ const { flattenedRows, loadData, getShiftsForSlot } = useRotaData(user);
 // 3. Computed Props for UI
 const dateRangeLabel = computed(() => {
   if (visibleDays.value.length === 0) return '';
-  const start = visibleDays.value[0].label;
+  const start = visibleDays.value[0]!.label;
   const end = visibleDays.value.at(-1)?.label ?? '';
   return `${start} - ${end}`;
 });

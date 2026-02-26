@@ -12,6 +12,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "target": "esnext",
+    "lib": ["esnext", "dom", "dom.iterable"],
     "strict": true,
     "noEmit": true
   }

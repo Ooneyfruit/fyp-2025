@@ -1,0 +1,48 @@
+# Configuration for Gemini Code Assist, tailored for a world-class software engineering assistant.
+# This configuration is designed to enforce high standards of code quality and provide comprehensive feedback.
+
+# Disables fun features like poems in PR summaries to maintain a professional tone.
+have_fun: false
+
+# Configuration for persistent memory to improve response quality over time by understanding repository history.
+memory_config:
+  # Enables persistent memory.
+  disabled: false
+
+# Configuration for code reviews.
+code_review:
+  # Ensures code reviews are active.
+  disable: false
+  # Sets the minimum severity for comments to 'LOW' to catch all potential issues, from critical to minor.
+  # This promotes a very high standard of code quality.
+  comment_severity_threshold: LOW
+  # Allows for an unlimited number of review comments to ensure all issues are addressed.
+  max_review_comments: -1
+
+# Configuration for actions on pull request opening.
+pull_request_opened:
+  # Does not post a help message on PR open to reduce noise.
+  help: false
+  # Posts a summary of the pull request changes, which is helpful for reviewers.
+  summary: true
+  # Automatically performs a code review on pull request creation.
+  code_review: true
+  # Enables functionality on draft pull requests for early feedback.
+  include_drafts: true
+
+# A list of glob patterns for files and directories that Gemini Code Assist should ignore.
+# This focuses the analysis on relevant source code and avoids generated or dependency files.
+ignore_patterns:
+  - 'public/**'
+  - 'node_modules/**'
+  - 'dist/**'
+  - 'build/**'
+  - 'out/**'
+  - '*.log'
+  - 'package-lock.json'
+  - 'yarn.lock'
+  - 'pnpm-lock.yaml'
+  - '.vscode/**'
+  - '.idea/**'
+  - 'coverage/**'
+  - '.DS_Store'

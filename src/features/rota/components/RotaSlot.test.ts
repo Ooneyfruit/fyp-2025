@@ -3,7 +3,10 @@
  * verifies visual states (weekend, past, filled) and interaction events.
  */
 import { mount } from '@vue/test-utils';
+import type { DocumentData, DocumentReference } from 'firebase/firestore';
 import { describe, expect, it } from 'vitest';
+
+import type { Shift } from '@/features/rota/rotaTypes';
 
 import RotaSlot from './RotaSlot.vue';
 
@@ -26,22 +29,21 @@ describe('RotaSlot.vue', () => {
   });
 
   it('renders shift pills when data is provided', () => {
-    const shifts = [
+    const shifts: Shift[] = [
       {
         id: '1',
         user_name: 'John Doe',
-        start: '',
-        end: '',
-        roleId: 'dentist',
-        surgeryId: '1',
-        date: '2025-01-01'
+        role_id: { id: 'dentist' } as DocumentReference<DocumentData>,
+        surgery_id: { id: '1' } as DocumentReference<DocumentData>,
+        date: '2025-01-01',
+        is_resolved: false,
+        roster_status: 'published'
       }
     ];
 
     const wrapper = mount(RotaSlot, {
       props: {
         ...defaultProps,
-        // @ts-expect-error - Partial shift object for testing
         shifts
       }
     });

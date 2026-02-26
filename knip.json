@@ -12,7 +12,9 @@
     "src/types/generic.ts",
     "src/features/users/userTypes.ts",
     "src/features/rota/rotaTypes.ts",
-    "src/features/rota/composables/useRotaDates.ts"
+    "src/features/rota/composables/useRotaDates.ts",
+    "GEMINI.md",
+    ".gemini/config.yaml"
   ],
   "ignoreBinaries": [],
   "ignoreDependencies": ["@commitlint/cli", "firebase-admin"],

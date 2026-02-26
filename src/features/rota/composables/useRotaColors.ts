@@ -110,7 +110,8 @@ const findSafeIndex = (preferred: number, key: string): number => {
  * Retrieves the colour for a role.
  */
 const getRoleColor = (roleKey?: string): RoleColor => {
-  if (!roleKey) return ROLE_PALETTE[DEFAULT_PALETTE_INDEX];
+  const defaultColor = ROLE_PALETTE[DEFAULT_PALETTE_INDEX]!;
+  if (!roleKey) return defaultColor;
 
   ensureInitialized();
   const key = roleKey.trim().toLowerCase();
@@ -118,13 +119,13 @@ const getRoleColor = (roleKey?: string): RoleColor => {
   // 1. Check Overrides (Highest Priority)
   const overrideIdx = globalState.overrides[key];
   if (overrideIdx !== undefined) {
-    return ROLE_PALETTE[overrideIdx];
+    return ROLE_PALETTE[overrideIdx] || defaultColor;
   }
 
   // 2. Check Existing Auto-Assignment
   const autoIdx = globalState.autoRegistry[key];
   if (autoIdx !== undefined && isIndexAvailable(autoIdx, key)) {
-    return ROLE_PALETTE[autoIdx];
+    return ROLE_PALETTE[autoIdx] || defaultColor;
   }
 
   // 3. Assign New
@@ -132,7 +133,7 @@ const getRoleColor = (roleKey?: string): RoleColor => {
   const safeIdx = findSafeIndex(preferred, key);
 
   globalState.autoRegistry[key] = safeIdx;
-  return ROLE_PALETTE[safeIdx];
+  return ROLE_PALETTE[safeIdx] || defaultColor;
 };
 
 /**

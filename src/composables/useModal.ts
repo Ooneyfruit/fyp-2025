@@ -4,7 +4,7 @@
  */
 import { readonly, type Ref, ref } from 'vue';
 
-export interface UseModalReturn<T> {
+interface UseModalReturn<T> {
   isVisible: Ref<boolean>;
   data: Ref<T | null>;
   open: (payload?: T) => void;

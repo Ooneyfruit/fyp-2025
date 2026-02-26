@@ -44,6 +44,11 @@
   // Ensure Prettier respects the local project configuration.
   "prettier.requireConfig": true,
 
+  // --- TypeScript configuration ---
+  // Force VSCode to use the project's TypeScript version for consistency.
+  // This prevents discrepancies between the editor's error checking and the pre-commit hooks.
+  "typescript.tsdk": "node_modules/typescript/lib",
+
   // --- Visual feedback ---
   // Error lens makes errors highly visible by highlighting the line background.
   "errorLens.messageBackgroundMode": "message",

@@ -21,7 +21,6 @@ export default defineComponent({
   props: {
     users: {
       type: Array as PropType<PracticeUserRow[]>,
-      required: true,
       default: () => []
     }
   },
