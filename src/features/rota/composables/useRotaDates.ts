@@ -1,5 +1,11 @@
 /**
- * (needs description).
+ * Composable for managing date logic and state for the rota view.
+ *
+ * This composable handles the complex date manipulation required for the
+ * rota grid, including calculating the start of the week, handling month
+ * and period transitions, and generating arrays of date objects for the UI.
+ * It also manages persistence of the current view date in local storage
+ * and adjusts the view automatically based on mobile/desktop breakpoints.
  */
 
 import { computed, type ComputedRef, ref, watch } from 'vue';
@@ -29,6 +35,7 @@ export interface UseRotaDatesReturn {
   changePeriod: (direction: number) => void;
   changeDay: (direction: number) => void;
   goToToday: () => void;
+  jumpToDate: (date: Date) => void;
   jumpMonth: (months: number) => void;
 }
 
@@ -41,6 +48,7 @@ const MONDAY_INDEX = 1;
 const SUNDAY_TO_MONDAY_OFFSET = -6;
 const MIDNIGHT = 0;
 const MONTH_START = 1;
+const PAD_LENGTH = 2;
 
 /**
  * Returns a new Date object set to midnight of the provided date or now.
@@ -128,6 +136,19 @@ const formatViewLabel = (days: RotaDay[]): string => {
 };
 
 /**
+ * Formats a date into a local ISO string (YYYY-MM-DD).
+ * Avoids timezone offsets causing the wrong day to be returned.
+ * @param d - The date to format.
+ * @returns The formatted ISO string.
+ */
+const toLocalISOString = (d: Date): string => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(PAD_LENGTH, '0');
+  const day = String(d.getDate()).padStart(PAD_LENGTH, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
  * Generates an array of rota days based on the start date and count.
  * @param start - The first date of the range.
  * @param count - The number of days to generate.
@@ -135,11 +156,11 @@ const formatViewLabel = (days: RotaDay[]): string => {
  */
 const generateRotaDays = (start: Date, count: number): RotaDay[] => {
   const today = getMidnightDate();
-  const todayStr = today.toISOString().split('T')[0]!;
+  const todayStr = toLocalISOString(today);
 
   return Array.from({ length: count }, (_, i) => {
     const d = createShiftedDate(start, i);
-    const iso = d.toISOString().split('T')[0]!;
+    const iso = toLocalISOString(d);
     return {
       key: iso,
       iso,
@@ -228,6 +249,13 @@ export function useRotaDates(breakpoints: UseBreakpointsReturn): UseRotaDatesRet
     anchorDate.value = getMidnightDate();
   };
 
+  const jumpToDate = (date: Date): void => {
+    // Ensure we have a valid date object and strip time information
+    if (date instanceof Date && !Number.isNaN(date.getTime())) {
+      anchorDate.value = getMidnightDate(date);
+    }
+  };
+
   const jumpMonth = (months: number): void => {
     anchorDate.value = calculateMonthJump(anchorDate.value, months);
   };
@@ -239,6 +267,7 @@ export function useRotaDates(breakpoints: UseBreakpointsReturn): UseRotaDatesRet
     changePeriod,
     changeDay,
     goToToday,
+    jumpToDate,
     jumpMonth
   };
 }

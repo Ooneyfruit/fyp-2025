@@ -1,6 +1,12 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Modal component for creating and editing practice surgery configurations.
+ *
+ * This complex form allows administrators to define the general information
+ * of a surgery (name, start/end times), its days of operation, and the
+ * minimum staff requirements for each practice role. It supports both
+ * creation of new surgeries and editing of existing ones, and includes
+ * a "Danger Zone" for archiving or restoring surgeries.
  */
 
 import { Timestamp } from 'firebase/firestore';

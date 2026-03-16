@@ -34,8 +34,16 @@ const { user } = useAuth();
 const breakpoints = useBreakpoints(ref(document.body), RESIZE_DEBOUNCE_MS);
 
 // 1. Date Management (includes new responsive logic)
-const { visibleDays, monthLabel, changePeriod, changeDay, goToToday, jumpMonth } =
-  useRotaDates(breakpoints);
+const {
+  visibleDays,
+  monthLabel,
+  changePeriod,
+  changeDay,
+  goToToday,
+  jumpToDate,
+  jumpMonth,
+  currentStartDate
+} = useRotaDates(breakpoints);
 
 // 2. Data Management
 const { flattenedRows, loadData, getShiftsForSlot } = useRotaData(user);
@@ -79,10 +87,12 @@ watch(() => user.value?.practiceRef?.id, loadData, { immediate: true });
 <template>
   <AppPageContainer fluid>
     <RotaHeader
+      :current-date="currentStartDate"
       :date-range-label="dateRangeLabel"
       :is-mobile="breakpoints.isMobile.value"
       :month-label="monthLabel"
       :show-today-button="!isCurrentWeek"
+      @jump-to-date="jumpToDate"
       @jump-today="goToToday"
       @navigate-day="changeDay"
       @navigate-month="jumpMonth"

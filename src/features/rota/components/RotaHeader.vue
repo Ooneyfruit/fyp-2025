@@ -14,10 +14,22 @@ defineProps({
   monthLabel: { type: String, default: '' },
   dateRangeLabel: { type: String, default: '' },
   showTodayButton: { type: Boolean, default: false },
-  isMobile: { type: Boolean, default: false }
+  isMobile: { type: Boolean, default: false },
+  // The current date is needed for the mobile date picker initial state.
+  currentDate: { type: Date, default: () => new Date() }
 });
 
-defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today']);
+const emit = defineEmits([
+  'navigate-month',
+  'navigate-period',
+  'navigate-day',
+  'jump-today',
+  'jump-to-date'
+]);
+
+const handleJumpToDate = (date: Date) => {
+  emit('jump-to-date', date);
+};
 </script>
 
 <template>
@@ -27,13 +39,13 @@ defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today'])
     <div class="rota-nav-wrapper">
       <RotaHeaderMobile
         v-if="isMobile"
+        :current-date="currentDate"
         :date-range-label="dateRangeLabel"
         :month-label="monthLabel"
         :show-today-button="showTodayButton"
+        @jump-to-date="handleJumpToDate"
         @jump-today="$emit('jump-today')"
         @navigate-day="$emit('navigate-day', $event)"
-        @navigate-month="$emit('navigate-month', $event)"
-        @navigate-period="$emit('navigate-period', $event)"
       />
 
       <RotaHeaderDesktop

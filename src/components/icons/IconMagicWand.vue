@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Icon representing automatic or magic actions.
+ * Icon representing automatic.
  */
 </script>
 

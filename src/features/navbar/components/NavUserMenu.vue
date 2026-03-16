@@ -118,5 +118,6 @@ const handleLogout = async () => {
 .mobile-layout {
   align-items: center;
   display: flex;
+  padding-right: var(--spacing-md);
 }
 </style>

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Table cell component for surgery actions (edit/restore).
+ *
+ * Rendered within the surgeries data table, this component displays
+ * context-sensitive action buttons based on the surgery's status.
+ * If the surgery is active, it shows an "Edit" button. If it's archived
+ * (deleted), it shows a "Restore" button. Actions are delegated to
+ * callbacks provided via the table header metadata.
  */
 
 import { computed } from 'vue';

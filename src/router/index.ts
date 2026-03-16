@@ -45,6 +45,14 @@ const routes = [
   {
     path: '/repair',
     component: () => import('@/views/AdminRepairView.vue')
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/NotFoundView.vue')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
   }
 ];
 

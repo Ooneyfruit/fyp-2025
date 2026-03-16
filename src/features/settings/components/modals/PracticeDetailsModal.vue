@@ -1,6 +1,11 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Modal component for editing general practice details like name and address.
+ *
+ * This component takes an initial data object and provides a simple form
+ * with basic validation to update the practice's core information.
+ * It uses a reactive form state and checks for dirtiness to prevent
+ * accidental closures when unsaved changes exist.
  */
 
 import { computed, markRaw, reactive, ref, watch } from 'vue';

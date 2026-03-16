@@ -1,6 +1,11 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Table cell component displaying a color swatch for a practice role.
+ *
+ * Used in the roles configuration table, this component conditionally
+ * renders a circular color swatch if the role has a custom color assigned.
+ * It integrates with the `useRotaColors` composable to retrieve the
+ * appropriate background and border colors based on the role's name or index.
  */
 
 import { computed } from 'vue';

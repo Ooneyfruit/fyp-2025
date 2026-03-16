@@ -1,6 +1,12 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Component for managing and displaying the list of practice surgeries.
+ *
+ * This is the main view for the surgeries configuration section. It renders
+ * a data table (BaseTable) listing all surgeries, along with their operating
+ * hours, days, and staffing requirements. It provides a toggle to view
+ * archived surgeries and integrates the PracticeSurgeryModal for adding
+ * and editing entries.
  */
 
 import { type Timestamp } from 'firebase/firestore';

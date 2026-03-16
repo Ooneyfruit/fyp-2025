@@ -4,11 +4,19 @@
  */
 import { ref, watch } from 'vue';
 
-const MOBILE_BREAKPOINT = 768;
+const MOBILE_BREAKPOINT_REM = 48; // 768px threshold matching CSS media queries
+const BASE_FONT_SIZE_PX = 16;
+
+// Native matchMedia perfectly aligns JS breakpoints with CSS max-width queries
+const getMediaString = () => `(max-width: ${MOBILE_BREAKPOINT_REM}rem)`;
 
 // Initial state helpers for immediate application.
-const getInitialMobileState = () =>
-  typeof globalThis === 'undefined' ? false : window.innerWidth < MOBILE_BREAKPOINT;
+const getInitialMobileState = () => {
+  if (typeof globalThis === 'undefined') return false;
+  return globalThis.matchMedia
+    ? globalThis.matchMedia(getMediaString()).matches
+    : globalThis.innerWidth <= MOBILE_BREAKPOINT_REM * BASE_FONT_SIZE_PX;
+};
 const getInitialPreference = () =>
   typeof globalThis === 'undefined' ? false : localStorage.getItem('isSidebarOpen') === 'true';
 
@@ -19,7 +27,7 @@ const canAnimate = ref(false);
 // Memory: tracks the intended desktop state when returning from mobile view.
 const desktopPreference = ref(getInitialPreference());
 
-// Constants to satisfy the no-magic-numbers rule.
+// Constants.
 const IDLE_CALLBACK_FALLBACK_MS = 50;
 const MIN_TIME_REMAINING_MS = 10;
 const BUSY_RETRY_DELAY_MS = 200;
@@ -94,17 +102,23 @@ export function initLayoutStabilisation() {
 const updateLayoutState = () => {
   if (typeof globalThis === 'undefined') return;
 
-  const wasMobile = isMobile.value;
-  isMobile.value = window.innerWidth < MOBILE_BREAKPOINT;
+  // Buffer within rAF to allow the browser to complete layout sublimation reliably
+  globalThis.requestAnimationFrame(() => {
+    const wasMobile = isMobile.value;
 
-  if (isMobile.value && !wasMobile) {
-    desktopPreference.value = isSidebarOpen.value;
-    isSidebarOpen.value = false;
-  }
+    isMobile.value = globalThis.matchMedia
+      ? globalThis.matchMedia(getMediaString()).matches
+      : globalThis.innerWidth <= MOBILE_BREAKPOINT_REM * BASE_FONT_SIZE_PX;
 
-  if (!isMobile.value && wasMobile) {
-    isSidebarOpen.value = desktopPreference.value;
-  }
+    if (isMobile.value && !wasMobile) {
+      desktopPreference.value = isSidebarOpen.value;
+      isSidebarOpen.value = false;
+    }
+
+    if (!isMobile.value && wasMobile) {
+      isSidebarOpen.value = desktopPreference.value;
+    }
+  });
 };
 
 // Global reactive synchronisation for document-level classes.

@@ -1,167 +1,122 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Rota navigation controls for mobile viewports.
+ * Provides single-day stepping and a full month/year picker.
  */
 
-import { computed } from 'vue';
+import { ref } from 'vue';
 
-import IconChevronDoubleLeft from '@/components/icons/IconChevronDoubleLeft.vue';
-import IconChevronDoubleRight from '@/components/icons/IconChevronDoubleRight.vue';
+import IconCalendar from '@/components/icons/IconCalendar.vue';
 import IconChevronLeft from '@/components/icons/IconChevronLeft.vue';
 import IconChevronRight from '@/components/icons/IconChevronRight.vue';
 import BaseButton from '@/components/shared/BaseButton.vue';
-import BaseSelectorBar from '@/components/shared/BaseSelectorBar.vue';
+import RotaDatePicker from '@/features/rota/RotaDatePicker.vue';
 
 const props = defineProps({
   dateRangeLabel: { type: String, required: true },
   monthLabel: { type: String, required: true },
-  showTodayButton: { type: Boolean, default: false }
+  showTodayButton: { type: Boolean, default: false },
+  currentDate: { type: Date, default: () => new Date() }
 });
 
-defineEmits(['navigate-month', 'navigate-period', 'navigate-day', 'jump-today']);
+const emit = defineEmits(['navigate-day', 'jump-today', 'jump-to-date']);
 
-const monthLabelShort = computed(() => {
-  return props.monthLabel
-    .replace('January', 'Jan')
-    .replace('February', 'Feb')
-    .replace('March', 'Mar')
-    .replace('April', 'Apr')
-    .replace('August', 'Aug')
-    .replace('September', 'Sep')
-    .replace('October', 'Oct')
-    .replace('November', 'Nov')
-    .replace('December', 'Dec')
-    .replaceAll(' 20', " '");
-});
+/**
+ * Template reference for the RotaDatePicker component.
+ */
+const datePicker = ref<InstanceType<typeof RotaDatePicker> | null>(null);
+
+const handleDateUpdate = (date: Date) => {
+  emit('jump-to-date', date);
+};
 </script>
 
 <template>
-  <BaseSelectorBar>
+  <div class="mobile-nav-bar">
     <BaseButton
-      class="dense-btn"
-      :icon="IconChevronDoubleLeft"
-      title="Back Month"
-      variant="ghost"
-      @click="$emit('navigate-month', -1)"
-      >M</BaseButton
-    >
-
-    <BaseButton
-      class="dense-btn"
       :icon="IconChevronLeft"
-      title="Back 3 Days"
+      title="Back 1 Day"
       variant="ghost"
-      @click="$emit('navigate-period', -1)"
-      >3D</BaseButton
-    >
-
-    <BaseButton
-      class="dense-btn"
-      :icon="IconChevronLeft"
-      title="Back Day"
-      variant="outline"
       @click="$emit('navigate-day', -1)"
-      >D</BaseButton
+      >1d</BaseButton
     >
 
-    <div class="date-info-mobile">
-      <span class="month-mobile">{{ monthLabelShort }}</span>
-      <span class="range-mobile">{{ dateRangeLabel }}</span>
-
-      <button v-if="showTodayButton" class="today-link-mobile" @click="$emit('jump-today')">
-        Today
-      </button>
+    <div class="date-picker-wrapper">
+      <span class="month-label">{{ monthLabel }}</span>
+      <BaseButton
+        class="date-picker-trigger"
+        :icon="IconCalendar"
+        :label="dateRangeLabel"
+        variant="primary"
+        @click="datePicker?.open()"
+      />
     </div>
 
     <BaseButton
-      class="dense-btn"
       :icon="IconChevronRight"
       icon-position="right"
-      title="Forward Day"
-      variant="outline"
+      title="Forward 1 Day"
+      variant="ghost"
       @click="$emit('navigate-day', 1)"
-      >D</BaseButton
+      >1d</BaseButton
     >
 
-    <BaseButton
-      class="dense-btn"
-      :icon="IconChevronRight"
-      icon-position="right"
-      title="Forward 3 Days"
-      variant="ghost"
-      @click="$emit('navigate-period', 1)"
-      >3D</BaseButton
+    <button
+      v-if="showTodayButton"
+      class="today-link-mobile"
+      type="button"
+      @click.stop="$emit('jump-today')"
     >
+      Today
+    </button>
 
-    <BaseButton
-      class="dense-btn"
-      :icon="IconChevronDoubleRight"
-      icon-position="right"
-      title="Forward Month"
-      variant="ghost"
-      @click="$emit('navigate-month', 1)"
-      >M</BaseButton
-    >
-  </BaseSelectorBar>
+    <RotaDatePicker
+      ref="datePicker"
+      :current-date="props.currentDate"
+      @update:date="handleDateUpdate"
+    />
+  </div>
 </template>
 
 <style scoped>
-.date-info-mobile {
+.mobile-nav-bar {
+  align-items: flex-end;
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: space-between;
+  margin-bottom: 1.5rem; /* Reserve space for the 'Today' button below */
+  position: relative; /* For absolute positioning of today link */
+}
+
+.date-picker-wrapper {
   align-items: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-
-  /* Min-width stabilizes the layout so buttons don't jump */
-  min-width: 6.5rem;
+  flex-grow: 1;
+  gap: 0.25rem;
 }
 
-.range-mobile {
-  color: var(--text-main);
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.month-mobile {
-  color: var(--text-muted);
-  font-size: 0.7rem;
+.month-label {
+  color: var(--text-main, #374151);
+  font-size: 0.85rem;
   font-weight: 600;
-  white-space: nowrap;
+}
+
+.date-picker-trigger {
+  width: 100%;
 }
 
 .today-link-mobile {
   background: none;
   border: none;
+  bottom: -1.5rem; /* Position below the nav bar */
   color: var(--primary-color);
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 700;
-  margin-top: 2px;
-  padding: 0;
-  text-decoration: underline;
-}
-
-.dense-btn {
-  font-weight: 700;
-  gap: 4px;
-  height: 2.25rem;
-  min-width: 2rem;
-  padding: 0 4px;
-}
-
-/* Fix: Reset BaseButton internal transforms to force pure flex centering */
-.dense-btn :deep(.icon-frame),
-.dense-btn :deep(.button-label) {
-  line-height: 1;
-  transform: none;
-}
-
-.dense-btn :deep(.icon-frame) {
-  align-items: center;
-  display: flex;
-  height: 0.9rem;
-  justify-content: center;
-  width: 0.9rem;
+  left: 50%;
+  padding: 2px;
+  position: absolute;
+  transform: translateX(-50%);
 }
 </style>
