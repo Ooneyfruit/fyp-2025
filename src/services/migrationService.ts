@@ -1,5 +1,11 @@
 /**
- * (needs description).
+ * Service for handling Firestore database migrations and repairs.
+ *
+ * This service provides utilities to iterate through Firestore collections
+ * and apply necessary data transformations. It is currently configured to
+ * handle a specific migration for `practice_users` documents, converting
+ * random auto-generated IDs to deterministic IDs based on the user and practice IDs.
+ * The service maintains reactive logs and loading states to be consumed by UI components.
  */
 
 import {

@@ -39,29 +39,58 @@ export function useBreakpoints(
   // Internal observer instance for tracking resize events.
   let observer: ResizeObserver | null = null;
 
+  const evaluateBreakpoints = (element: HTMLElement) => {
+    // Use window.innerWidth if the target is the root document body/html.
+    // This ensures JS breakpoints perfectly align with CSS media queries
+    // which evaluate viewport width including the scrollbars.
+    const isViewport = element === document.body || element === document.documentElement;
+    const widthPx = isViewport ? window.innerWidth : element.getBoundingClientRect().width;
+
+    const widthRem = widthPx / getRemValue();
+
+    // CSS media queries typically use inclusive <= for max-width.
+    isMobile.value = widthRem <= threshold;
+  };
+
+  const handleResize = () => {
+    if (targetRef.value) {
+      evaluateBreakpoints(targetRef.value);
+    }
+  };
+
   onMounted(() => {
+    if (targetRef.value) {
+      evaluateBreakpoints(targetRef.value); // Initial evaluation
+    }
+
     // Only initialise ResizeObserver in a browser environment.
     if (typeof ResizeObserver !== 'undefined') {
       observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          // Prefer borderBoxSize to include padding in the width calculation for accuracy.
-          const boxSize = entry.borderBoxSize?.[0];
-          const widthPx = boxSize ? boxSize.inlineSize : entry.contentRect.width;
-          const widthRem = widthPx / getRemValue();
-
-          isMobile.value = widthRem < threshold;
-        }
+        // requestAnimationFrame guards against "ResizeObserver loop limit exceeded"
+        // errors during sudden layout shifts.
+        globalThis.requestAnimationFrame(() => {
+          for (const entry of entries) {
+            evaluateBreakpoints(entry.target as HTMLElement);
+          }
+        });
       });
     }
 
     if (targetRef.value && observer) {
       observer.observe(targetRef.value);
     }
+
+    if (globalThis.window !== undefined) {
+      window.addEventListener('resize', handleResize, { passive: true });
+    }
   });
 
   onUnmounted(() => {
     if (observer) {
       observer.disconnect();
+    }
+    if (globalThis.window !== undefined) {
+      window.removeEventListener('resize', handleResize);
     }
   });
 

@@ -28,16 +28,16 @@ interface PillConfig {
  */
 const getContractConfig = (m: PracticeUser): PillConfig => {
   if (m.status === 'invited') {
-    return { label: 'Invited', variant: 'warning' };
+    return { label: 'Invited', variant: 'muted' };
   }
 
   const isEmployee = m.is_employee ?? true;
 
   if (isEmployee) {
-    return { label: 'Employee', variant: 'success' };
+    return { label: 'Employee', variant: 'muted' };
   }
 
-  return { label: 'Contractor', variant: 'warning' };
+  return { label: 'Contractor', variant: 'muted' };
 };
 
 /**
@@ -59,7 +59,7 @@ const typeMappers: Record<string, (m: PracticeUser) => PillConfig> = {
   },
   admin: (m) => ({
     label: m.is_administrator ? 'Admin' : 'User',
-    variant: m.is_administrator ? 'admin' : 'muted'
+    variant: 'muted'
   }),
   contract: getContractConfig
 };

@@ -23,7 +23,7 @@ export function useNavigation() {
    */
   const MENU_CONFIG: NavItem[] = [
     { label: 'Rota', icon: markRaw(IconCalendar), to: '/', requiresAdmin: false },
-    { label: 'User management', icon: markRaw(IconUsers), to: '/users', requiresAdmin: true },
+    { label: 'User Management', icon: markRaw(IconUsers), to: '/users', requiresAdmin: true },
     {
       label: 'Practice Settings',
       icon: markRaw(IconSettings),

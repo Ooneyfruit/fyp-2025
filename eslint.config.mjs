@@ -77,7 +77,7 @@ export default [
   ...pluginVue.configs['flat/recommended'],
   pluginPromise.configs['flat/recommended'],
   pluginSonar.configs.recommended,
-  pluginUnicorn.configs['flat/recommended'],
+  pluginUnicorn.configs.recommended,
 
   // 4. Vue & TypeScript Parser Configuration.
   {

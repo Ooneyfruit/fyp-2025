@@ -1,6 +1,11 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * Desktop header component for the rota view, providing navigation controls.
+ *
+ * This component renders the top navigation bar for the rota on desktop
+ * resolutions. It includes buttons for moving forward and backward by
+ * weeks or months, and displays the current date range and month labels.
+ * It communicates with the parent component by emitting navigation events.
  */
 
 import IconChevronDoubleLeft from '@/components/icons/IconChevronDoubleLeft.vue';

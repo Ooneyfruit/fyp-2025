@@ -1,6 +1,11 @@
 <script setup lang="ts">
 /**
- * (needs description).
+ * A reusable toggle switch component.
+ *
+ * This component provides a customizable styled checkbox that looks like a
+ * toggle switch (slider). It supports `v-model` binding for two-way data
+ * synchronization and can be disabled. It automatically generates a unique
+ * ID to link the `<input>` with its `<label>` for accessibility.
  */
 
 import { useId } from 'vue';

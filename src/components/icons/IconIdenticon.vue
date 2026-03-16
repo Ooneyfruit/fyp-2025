@@ -23,7 +23,7 @@ const SHAPE_TRI_LIMIT = 14;
 const TRIANGLE_ROTATION_BASE = 11;
 const TRIANGLE_ROTATION_STEP = 90;
 
-// Geometry constants to avoid magic numbers.
+// Geometry constants.
 const HALF_CELL = 0.5;
 const HALF_TURN_DEGREES = 180;
 const SMALL_RECT_INSET = 0.2;
