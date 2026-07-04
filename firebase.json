@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    "site": "fyp-2025-52340",
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "headers": [
