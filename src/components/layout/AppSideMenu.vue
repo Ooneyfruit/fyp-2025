@@ -18,7 +18,7 @@ const route = useRoute();
 // Gesture logic is active only when the sidebar is visible on mobile.
 const isSwipeEnabled = computed(() => isMobile.value && isSidebarOpen.value);
 
-// Initialize generalised swipe logic to drive the sidebar animation.
+// Initialise generalised swipe logic to drive the sidebar animation.
 const { isSwiping, swipeTransform, handleTouchStart, handleTouchMove, handleTouchEnd } =
   useSwipeAway({
     threshold: 80,
@@ -86,7 +86,7 @@ const handleNavigation = (item: NavItem): void => {
 /* Sidebar container with transition logic for state changes. */
 .sidebar {
   background: white;
-  border-right: 0.0625rem solid var(--border-color);
+  border-right: 0.0625rem solid var(--border-colour);
   bottom: 0;
   left: 0;
   overflow-x: hidden;

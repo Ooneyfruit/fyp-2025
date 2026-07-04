@@ -109,7 +109,7 @@ const onDayClick = (date: Date | null) => {
 
 /* Use a dot or underline to indicate 'Today' without conflicting with selection */
 .day-cell.is-today::after {
-  background-color: var(--primary-color, #3b82f6);
+  background-color: var(--primary-colour, #3b82f6);
   border-radius: 50%;
   bottom: 2px;
   content: '';

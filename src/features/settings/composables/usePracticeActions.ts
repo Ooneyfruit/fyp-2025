@@ -7,7 +7,6 @@ import {
   deleteField,
   doc,
   type DocumentReference,
-  type FieldValue,
   getDocs,
   query,
   type QueryDocumentSnapshot,
@@ -27,7 +26,7 @@ import {
 } from '@/features/settings/settingsTypes';
 import { db } from '@/services/firebase';
 
-// --- Helpers (Module Scope) ---
+// Helpers (Module Scope)
 
 const getPracticeRef = (user: AuthInterface['user']): DocumentReference => {
   if (!user.value?.practiceRef) throw new Error('No active practice found');
@@ -98,8 +97,9 @@ const executeSaveSurgery = async (
   const surgeriesCol = collection(pRef, 'surgeries');
   const docRef = surgery.id ? doc(surgeriesCol, surgery.id) : doc(surgeriesCol);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, ...data } = surgery;
+  // Create a mutable copy and remove the 'id' field to prevent it from being written to the document body.
+  const data: Record<string, unknown> = { ...surgery };
+  delete data.id;
 
   await setDoc(docRef, data, { merge: true });
   const batch = await syncStaffForSurgery(pRef, docRef.id, surgery.name, staffCounts, allRoles);
@@ -108,19 +108,16 @@ const executeSaveSurgery = async (
 
 const executeSaveRole = async (pRef: DocumentReference, role: PracticeRoleConfig) => {
   const col = collection(pRef, 'roles');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, ...data } = role;
 
-  // Use explicit type to satisfy UpdateData requirements and linter
-  const payload: Record<string, string | number | boolean | null | undefined | FieldValue> = {
-    ...data
-  };
+  // Create a mutable payload and remove the 'id' field.
+  const payload: Record<string, unknown> = { ...role };
+  delete payload.id;
 
-  if (payload.color_index === undefined || payload.color_index === null) {
+  if (payload.colour_index === undefined || payload.colour_index === null) {
     if (role.id) {
-      payload.color_index = deleteField();
+      payload.colour_index = deleteField();
     } else {
-      delete payload.color_index;
+      delete payload.colour_index;
     }
   }
 
@@ -141,7 +138,7 @@ const executeToggleRoleArchive = async (pRef: DocumentReference, id: string, sta
   await updateDoc(doc(pRef, 'roles', id), { is_deleted: state });
 };
 
-// --- Composable ---
+// Composable
 
 export function usePracticeActions() {
   const { user } = useAuth();

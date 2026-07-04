@@ -14,7 +14,7 @@ import { useLayout } from '@/composables/useLayout';
 import NavUserDropdown from './NavUserDropdown.vue';
 import NavUserTrigger from './NavUserTrigger.vue';
 
-// --- Type Definitions ---
+// Type Definitions
 // Define local interface for the injected modal to ensure type safety
 interface UserModalInstance {
   open: (userData: unknown) => void;
@@ -24,7 +24,7 @@ interface UseLayoutReturn {
   isMobile: Ref<boolean>;
 }
 
-// --- Logic ---
+// Logic
 
 const { user, logout } = useAuth();
 

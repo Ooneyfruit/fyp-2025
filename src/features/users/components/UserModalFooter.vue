@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
  * Footer actions for the User Management Modal.
- * Extracted to avoid nested template issues and allow proper BaseModal composition.
  */
 import BaseButton from '@/components/shared/BaseButton.vue';
 

@@ -15,7 +15,7 @@ import { useToast } from '@/composables/useToast';
 // Shared layout and UI components.
 import { NavBar } from '@/features/navbar/navbarApi';
 
-// --- Interfaces for JS Composables ---
+// Interfaces for JS Composables
 
 interface UseLayoutReturn {
   isSidebarOpen: Ref<boolean>;
@@ -28,7 +28,7 @@ interface UseToastReturn {
   showToast: (message: string, options?: object) => void;
 }
 
-// --- Logic & State ---
+// Logic & State
 
 const { isSidebarOpen, isMobile, canAnimate, toggleSidebar } = useLayout() as UseLayoutReturn;
 const { showToast } = useToast() as UseToastReturn;
@@ -97,12 +97,6 @@ onMounted(() => {
 .app-layout {
   min-height: 100vh;
 }
-
-/* Sidebar context: spacing rules for the main content area.
-  Note: .is-mobile must come BEFORE the desktop overrides to satisfy specificity order
-  in some linting configurations, though specificity itself dictates application.
-  Here we order them to ensure no-descending-specificity compliance.
-*/
 
 .is-mobile .main-content {
   margin-left: 0;

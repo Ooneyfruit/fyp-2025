@@ -1,3 +1,11 @@
+<script lang="ts">
+/**
+ * (needs description).
+ */
+
+const defaultIsRequirementUnmet = () => false;
+</script>
+
 <script setup lang="ts">
 /**
  * Rota grid component for displaying shifts in a tabular format on desktop.
@@ -8,19 +16,11 @@ import { computed, markRaw, type PropType, provide } from 'vue';
 
 import BaseTable from '@/components/shared/BaseTable.vue';
 import type { RotaDay } from '@/features/rota/composables/useRotaDates';
-import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
+import type { RotaRow, Shift } from '@/features/rota/rotaTypes';
 
 import RotaDayCell from './RotaDayCell.vue';
 import RotaLoading from './RotaLoading.vue';
 import RotaRoleCell from './RotaRoleCell.vue';
-
-interface RotaRow {
-  [key: string]: unknown;
-  id: string;
-  role: PracticeRole;
-  surgery: PracticeSurgery;
-  _isGroupStart?: boolean;
-}
 
 const props = defineProps({
   days: {
@@ -34,12 +34,17 @@ const props = defineProps({
   getShifts: {
     type: Function as PropType<(roleId: string, surgeryId: string, dateIso: string) => Shift[]>,
     required: true
+  },
+  isRequirementUnmet: {
+    type: Function as PropType<(roleId: string, surgeryId: string, day: RotaDay) => boolean>,
+    default: () => defaultIsRequirementUnmet
   }
 });
 
 const emit = defineEmits(['slot-click']);
 
 provide('getShifts', props.getShifts);
+provide('isRequirementUnmet', props.isRequirementUnmet);
 provide('onGridClick', (payload: { rowItem: unknown; day: RotaDay }) => {
   emit('slot-click', payload);
 });

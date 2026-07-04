@@ -8,9 +8,10 @@
   },
 
   // --- SonarLint configuration ---
-  // SonarLint requires a Java 17+ JRE to run the language server.
-  // REPLACE the path below with your actual Java installation folder (e.g. run 'readlink -f /usr/bin/java | sed "s:bin/java::"')
-  "sonarlint.ls.javaHome": "/usr/lib/jvm/java-17-openjdk-amd64",
+  // SonarLint requires a Java 21+ JRE to run the language server.
+  // Set this to your local Windows Java 21 installation path if it is not auto-detected on your PATH.
+  // Example: "C:\\Program Files\\Java\\jdk-21"
+  "sonarlint.ls.javaHome": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot",
 
   // --- ESLint configuration ---
   // Ensure the extension uses the flat config system for the RotaDent project.
@@ -63,5 +64,6 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "cSpell.words": ["temurin"]
 }

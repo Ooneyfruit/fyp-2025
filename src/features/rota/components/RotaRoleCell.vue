@@ -6,7 +6,7 @@
 import { computed } from 'vue';
 
 import type { TableHeader } from '@/components/shared/BaseTable.vue';
-import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+import { useRotaColours } from '@/features/rota/composables/useRotaColours';
 import type { PracticeRole, PracticeSurgery } from '@/features/rota/rotaTypes';
 import { getRoleIcon } from '@/features/settings/composables/useRoleIcons';
 
@@ -23,11 +23,8 @@ const props = defineProps<{
   header?: TableHeader;
 }>();
 
-const { getRoleColor } = useRotaColors();
+const { getRoleColour } = useRotaColours();
 
-/**
- * Casts the generic item to our specific RotaRow type.
- */
 const row = computed(() => props.item as RotaRow);
 
 const toTitleCase = (str: string): string => {
@@ -40,7 +37,7 @@ const toTitleCase = (str: string): string => {
 };
 
 const getRoleBadgeStyle = (roleName: string) => {
-  const c = getRoleColor(roleName);
+  const c = getRoleColour(roleName);
   return {
     backgroundColor: c.bg,
     color: c.accent,
@@ -95,8 +92,6 @@ const roleIcon = computed(() => {
   /* Ensure the badge itself doesn't exceed the container width */
   max-width: 100%;
   padding: 3px 6px;
-
-  /* Removed letter-spacing to fix kerning issues */
 }
 
 .role-icon {
@@ -108,7 +103,6 @@ const roleIcon = computed(() => {
 }
 
 .role-text {
-  /* Critical for truncation inside a flex child: allow it to shrink */
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

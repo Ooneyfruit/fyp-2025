@@ -7,7 +7,7 @@
 import { computed } from 'vue';
 
 import BasePill from '@/components/shared/BasePill.vue';
-import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+import { useRotaColours } from '@/features/rota/composables/useRotaColours';
 import { type PracticeUser } from '@/features/users/userTypes';
 
 const props = defineProps<{
@@ -15,12 +15,12 @@ const props = defineProps<{
   type: 'role' | 'admin' | 'contract';
 }>();
 
-const { getRoleColor } = useRotaColors();
+const { getRoleColour } = useRotaColours();
 
 interface PillConfig {
   label: string;
   variant: 'primary' | 'admin' | 'muted' | 'success' | 'warning' | 'danger';
-  customColors?: { bg: string; accent: string };
+  customColours?: { bg: string; accent: string };
 }
 
 /**
@@ -42,18 +42,17 @@ const getContractConfig = (m: PracticeUser): PillConfig => {
 
 /**
  * Configuration mappings.
- * 'role' type now fetches the persistent colour using the Role Name.
  */
 const typeMappers: Record<string, (m: PracticeUser) => PillConfig> = {
   role: (m) => {
     // Key Logic: Use the Role Name string. This matches the logic in RotaDayCell.vue.
-    const roleColors = getRoleColor(m.role);
+    const roleColours = getRoleColour(m.role);
     return {
       label: m.role || 'No Role',
-      variant: 'muted', // Base variant, overridden by customColors
-      customColors: {
-        bg: roleColors.bg,
-        accent: roleColors.accent
+      variant: 'muted', // Base variant, overridden by customColours
+      customColours: {
+        bg: roleColours.bg,
+        accent: roleColours.accent
       }
     };
   },
@@ -76,7 +75,7 @@ const pillConfig = computed<PillConfig>(() => {
 </script>
 
 <template>
-  <BasePill :custom-colors="pillConfig.customColors" :variant="pillConfig.variant">
+  <BasePill :custom-colours="pillConfig.customColours" :variant="pillConfig.variant">
     {{ pillConfig.label }}
   </BasePill>
 </template>

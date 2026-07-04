@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
  * Rota shift management modal. Allows assigning or removing staff from a specific shift slot.
- * Now manages its own visibility and data state via useModal to fix animation lifecycle bugs.
  */
 
 import { doc, type DocumentReference, Timestamp } from 'firebase/firestore';
@@ -23,7 +22,7 @@ import RotaAssignedStaff from './RotaAssignedStaff.vue';
 import RotaShiftModalFooter from './RotaShiftModalFooter.vue';
 import RotaStaffPicker, { type PickerStaffMember } from './RotaStaffPicker.vue';
 
-// --- Type Definitions ---
+// Type Definitions
 
 export interface RotaShiftModalData {
   role: PracticeRole;
@@ -55,13 +54,13 @@ const emit = defineEmits<{
   saved: [];
 }>();
 
-// --- Composables ---
+// Composables
 const { user: authUser } = useAuth();
 const { showToast } = useToast();
 const { users: practiceUsers, isLoading: usersLoading } = usePracticeUsers();
 const { isVisible, data: modalData, open, close } = useModal<RotaShiftModalData>();
 
-// --- Local State ---
+// Local State
 const searchQuery = ref('');
 const pendingAdds = ref<MappedMember[]>([]);
 const pendingRemoves = ref<string[]>([]);
@@ -76,7 +75,7 @@ const handleOpen = (payload?: RotaShiftModalData) => {
 
 defineExpose({ open: handleOpen, close });
 
-// --- Computed Data ---
+// Computed Data
 const role = computed(() => modalData.value?.role || { id: 'unknown', name: 'Unknown' });
 const surgery = computed(() => modalData.value?.surgery || { id: 'unknown', name: 'Unknown' });
 const date = computed(
@@ -87,7 +86,13 @@ const modalTitle = computed(
   () => `${role.value.name} - ${surgery.value.name} (${date.value.label})`
 );
 
-// --- Data Mapping ---
+const isAdmin = computed(() => authUser.value?.is_administrator ?? false);
+const currentUserId = computed(() => {
+  const user = authUser.value as { uid?: string; id?: string; profile?: { id?: string } };
+  return user?.uid || user?.id || user?.profile?.id || null;
+});
+
+// Data Mapping
 const mappedMembers = computed<MappedMember[]>(() => {
   return practiceUsers.value.map((member) => ({
     uid: member.profile.id || '',
@@ -128,7 +133,6 @@ const currentStaffList = computed<ExtendedShift[]>(() => {
     date: Timestamp.now(),
     user_id: m.uid,
     user_name: m.name,
-    // Construct proper references to satisfy Shift interface
     role_id: practiceRef ? doc(practiceRef, 'roles', role.value.id) : dummyRef,
     surgery_id: practiceRef ? doc(practiceRef, 'surgeries', surgery.value.id) : dummyRef,
     isTemp: true,
@@ -157,7 +161,7 @@ const otherStaff = computed(() =>
   availableStaffList.value.filter((m) => !isRoleMatch(m.roleName, role.value.name))
 );
 
-// --- Change Detection Logic ---
+// Change Detection Logic
 const hasChanges = computed(() => pendingAdds.value.length > 0 || pendingRemoves.value.length > 0);
 
 const saveLabel = computed(() => {
@@ -165,7 +169,7 @@ const saveLabel = computed(() => {
   return 'Save Changes';
 });
 
-// --- Actions ---
+// Actions
 const handleAddStaff = (member: PickerStaffMember) => {
   pendingAdds.value.push(member as MappedMember);
 };
@@ -220,7 +224,7 @@ const saveChanges = async () => {
   }
 };
 
-// --- Footer Configurations ---
+// Footer Configurations
 const footerComponent = markRaw(RotaShiftModalFooter);
 const footerProps = computed(() => ({
   hasChanges: hasChanges.value,
@@ -234,7 +238,6 @@ const confirmationFooter = markRaw(BaseModalConfirmation);
 const confirmationFooterProps = computed(() => ({
   onSave: saveChanges,
   loading: saving.value,
-  // We use the same dynamic label for consistency
   saveLabel: saveLabel.value,
   discardLabel: 'Discard Changes'
 }));
@@ -256,6 +259,8 @@ const confirmationFooterProps = computed(() => ({
   >
     <div class="modal-body-wrapper">
       <RotaAssignedStaff
+        :current-user-id="currentUserId"
+        :is-admin="isAdmin"
         :staff="currentStaffList"
         :target-role-name="role.name"
         @remove="markForRemoval"
@@ -285,7 +290,7 @@ const confirmationFooterProps = computed(() => ({
 
 .divider {
   border: 0;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-colour);
   margin: 0;
 }
 </style>

@@ -17,7 +17,7 @@ import { useToast } from '@/composables/useToast';
 // Standardised casing and alias usage.
 import { UserModal } from '@/features/users/usersApi';
 
-// --- Type Definitions ---
+// Type Definitions
 
 /**
  * [name] - The user's display name.
@@ -35,7 +35,7 @@ import { UserModal } from '@/features/users/usersApi';
  * Open - Opens the modal.
  */
 
-// --- Logic & State ---
+// Logic & State
 
 const { user } = useAuth();
 const { showToast } = useToast();

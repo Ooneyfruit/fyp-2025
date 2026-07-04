@@ -20,10 +20,14 @@ const props = withDefaults(
   defineProps<{
     staff?: AssignedShift[];
     targetRoleName?: string;
+    currentUserId?: string | null;
+    isAdmin?: boolean;
   }>(),
   {
     staff: () => [],
-    targetRoleName: ''
+    targetRoleName: '',
+    currentUserId: null,
+    isAdmin: false
   }
 );
 
@@ -40,11 +44,25 @@ defineEmits<{
  * @returns True if the user's role does NOT match the target role.
  */
 const isException = (shift: AssignedShift): boolean => {
-  // If the user has no role defined, we don't flag it as an exception (avoids UI noise).
   if (!shift.roleName) return false;
 
   // Use shared logic: Exception = NOT a match
   return !isRoleMatch(shift.roleName, props.targetRoleName);
+};
+
+/**
+ * Determines if the current user has permission to remove the assigned shift.
+ * Admins can remove any shift, regular users can only remove their own.
+ */
+const canRemove = (shift: AssignedShift): boolean => {
+  if (props.isAdmin) return true;
+
+  const shiftUserId =
+    typeof shift.user_id === 'object' && shift.user_id !== null && 'id' in shift.user_id
+      ? (shift.user_id as { id: string }).id
+      : shift.user_id;
+
+  return shiftUserId === props.currentUserId;
 };
 </script>
 
@@ -57,7 +75,8 @@ const isException = (shift: AssignedShift): boolean => {
         v-for="shift in staff"
         :key="shift.id"
         class="staff-card assigned"
-        title="Click to remove from shift"
+        :disabled="!canRemove(shift)"
+        :title="canRemove(shift) ? 'Click to remove from shift' : ''"
         type="button"
         @click="$emit('remove', shift)"
       >
@@ -69,7 +88,7 @@ const isException = (shift: AssignedShift): boolean => {
           </span>
         </div>
 
-        <div class="remove-indicator">
+        <div v-if="canRemove(shift)" class="remove-indicator">
           <IconClose :stroke-width="2.5" />
         </div>
       </button>
@@ -93,8 +112,6 @@ const isException = (shift: AssignedShift): boolean => {
   gap: 0.5rem;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Slightly wider for role text */
 }
-
-/* Child elements defined before hover modifiers to satisfy specificity rules */
 
 .staff-info {
   display: flex;
@@ -158,25 +175,29 @@ const isException = (shift: AssignedShift): boolean => {
   width: 100%;
 }
 
+.staff-card:disabled {
+  cursor: default;
+}
+
 /* Hover State: "Removal" Style */
 
-.staff-card:hover {
+.staff-card:not(:disabled):hover {
   background-color: #fee2e2; /* Red-50 */
   border-color: #fca5a5; /* Red-300 */
 }
 
 /* On hover, change text colours to indicate destructive action */
 
-.staff-card:hover .staff-name {
+.staff-card:not(:disabled):hover .staff-name {
   color: #b91c1c; /* Red-700 */
 }
 
-.staff-card:hover .exception-role {
+.staff-card:not(:disabled):hover .exception-role {
   color: #b91c1c;
   opacity: 0.8;
 }
 
-.staff-card:hover .remove-indicator {
+.staff-card:not(:disabled):hover .remove-indicator {
   color: #b91c1c;
 }
 </style>

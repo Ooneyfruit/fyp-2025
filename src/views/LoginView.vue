@@ -10,7 +10,7 @@ import { useRouter } from 'vue-router';
 import BaseButton from '@/components/shared/BaseButton.vue';
 import { useAuth } from '@/composables/useAuth';
 
-// --- Logic & State ---
+// Logic & State
 
 const { user, login } = useAuth();
 
@@ -72,12 +72,12 @@ const handleLogin = async (): Promise<void> => {
 }
 
 .brand {
-  color: var(--color-primary);
+  color: var(--colour-primary);
   margin-bottom: 0.625rem;
 }
 
 .error {
-  color: var(--color-danger);
+  color: var(--colour-danger);
   margin-top: 0.9375rem;
 }
 </style>

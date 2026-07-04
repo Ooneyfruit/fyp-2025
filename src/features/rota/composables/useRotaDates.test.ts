@@ -8,23 +8,15 @@ import { ref } from 'vue';
 import { useRotaDates } from './useRotaDates';
 
 describe('useRotaDates', () => {
-  // Create a mock breakpoints object to satisfy the dependency injection.
   const mockBreakpoints = {
     isMobile: ref(false)
   };
 
   it('initialises with the correct start of the week', () => {
     // Arrange: Mock the current date to a known Wednesday.
-    // We can't easily mock 'new Date()' inside the composable without a global mock,
-    // so we rely on the internal logic that defaults to 'today' if storage is empty.
-    // For specific date testing, we inspect the relative consistency.
 
     const { currentStartDate, visibleDays } = useRotaDates(mockBreakpoints);
 
-    // Act: Ensure we are at a clean state (today).
-    // The composable defaults to today, which is dynamic, so we check the structure.
-
-    // Assert: We should have days generated.
     expect(visibleDays.value.length).toBeGreaterThan(0);
     expect(currentStartDate.value).toBeInstanceOf(Date);
   });

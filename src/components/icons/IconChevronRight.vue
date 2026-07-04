@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Right-pointing chevron icon.
- * Standardized chevron icon for directional indicators (Right).
+ * Standardised chevron icon for directional indicators (Right).
  * Used for pagination or next navigation.
  */
 </script>

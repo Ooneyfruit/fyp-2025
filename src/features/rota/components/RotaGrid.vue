@@ -1,3 +1,11 @@
+<script lang="ts">
+/**
+ * (needs description).
+ */
+
+const defaultIsRequirementUnmet = () => false;
+</script>
+
 <script setup lang="ts">
 /**
  * Rota grid component for displaying shifts in a tabular format.
@@ -8,23 +16,10 @@ import { type PropType, ref } from 'vue';
 
 import { useBreakpoints } from '@/composables/useBreakpoints';
 import type { RotaDay } from '@/features/rota/composables/useRotaDates';
-import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
+import type { RotaRow, Shift } from '@/features/rota/rotaTypes';
 
 import RotaGridDesktop from './RotaGridDesktop.vue';
 import RotaGridMobile from './RotaGridMobile.vue';
-
-/**
- * Represents a row in the rota grid.
- * Includes denormalised role and surgery data.
- * The index signature is required to ensure compatibility with BaseTable's Record type.
- */
-interface RotaRow {
-  [key: string]: unknown;
-  id: string;
-  role: PracticeRole;
-  surgery: PracticeSurgery;
-  _isGroupStart?: boolean;
-}
 
 defineProps({
   days: {
@@ -38,6 +33,10 @@ defineProps({
   getShifts: {
     type: Function as PropType<(roleId: string, surgeryId: string, dateIso: string) => Shift[]>,
     required: true
+  },
+  isRequirementUnmet: {
+    type: Function as PropType<(roleId: string, surgeryId: string, day: RotaDay) => boolean>,
+    default: () => defaultIsRequirementUnmet
   }
 });
 
@@ -58,6 +57,7 @@ const handleSlotClick = (payload: { rowItem: unknown; day: RotaDay }) => {
       v-if="isMobile"
       :days="days"
       :get-shifts="getShifts"
+      :is-requirement-unmet="isRequirementUnmet"
       :rows="rows"
       @slot-click="handleSlotClick"
     />
@@ -65,6 +65,7 @@ const handleSlotClick = (payload: { rowItem: unknown; day: RotaDay }) => {
       v-else
       :days="days"
       :get-shifts="getShifts"
+      :is-requirement-unmet="isRequirementUnmet"
       :rows="rows"
       @slot-click="handleSlotClick"
     />

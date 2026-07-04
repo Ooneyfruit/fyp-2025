@@ -68,7 +68,7 @@ const processDocument = (d: QueryDocumentSnapshot<DocumentData>, batch: WriteBat
 
   addLog(`Fixing: ${d.id} -> ${correctId}`);
 
-  // 1. Create the new document with the deterministic ID
+  // Create the new document with the deterministic ID
   const newRef = doc(db, 'practice_users', correctId);
 
   // Use batch.set to create or overwrite the new document
@@ -81,7 +81,7 @@ const processDocument = (d: QueryDocumentSnapshot<DocumentData>, batch: WriteBat
     { merge: true }
   );
 
-  // 2. Delete the old document with the random ID
+  // Delete the old document with the random ID
   batch.delete(d.ref);
 
   return true;

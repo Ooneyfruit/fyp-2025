@@ -28,7 +28,6 @@ async function getSubcollectionData(
   const subData: Record<string, firestore.DocumentData> = {};
   const snapshot = await collectionRef.get();
 
-  // Iterate over the docs array to satisfy iterator requirements.
   for (const doc of snapshot.docs) {
     subData[doc.id] = doc.data();
   }

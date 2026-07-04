@@ -11,10 +11,8 @@ import type { PracticeUser } from '@/features/users/userTypes';
 import UserCardList from './UserCardList.vue';
 
 describe('UserCardList.vue', () => {
-  // Fix: Mock DocumentReference cleanly
   const mockRef = { id: 'ref_1' } as unknown as DocumentReference;
 
-  // Fix: Full mock objects matching PracticeUser interface
   const mockUsers: PracticeUser[] = [
     {
       id: '1',

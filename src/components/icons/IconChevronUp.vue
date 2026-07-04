@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Up-pointing double chevron icon.
- * Standardized chevron icon for directional indicators (Up).
+ * Standardised chevron icon for directional indicators (Up).
  * Used for collapsing accordions or sorting.
  */
 </script>

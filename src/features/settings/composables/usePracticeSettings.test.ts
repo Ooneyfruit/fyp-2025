@@ -5,7 +5,7 @@
 import { mount } from '@vue/test-utils';
 import { onSnapshot } from 'firebase/firestore';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { defineComponent, h, nextTick, ref } from 'vue';
+import { defineComponent, h, nextTick, ref, type UnwrapRef } from 'vue';
 
 import { usePracticeSettings } from './usePracticeSettings';
 
@@ -33,29 +33,29 @@ describe('usePracticeSettings', () => {
 
   beforeEach(() => {
     // Reset snapshots to return a known practice state.
-    vi.mocked(onSnapshot).mockImplementation((_ref, callback) => {
-      // @ts-expect-error - Simulating partial Firestore snapshot.
-      callback({
-        exists: () => true,
-        data: () => ({ name: 'Test Practice', address: '123 Fake St' }),
-        docs: []
-      });
+    vi.mocked(onSnapshot).mockImplementation(((...args: unknown[]) => {
+      const callback = args.find((arg) => typeof arg === 'function') as
+        | ((snapshot: unknown) => void)
+        | undefined;
+      if (callback) {
+        callback({
+          exists: () => true,
+          data: () => ({ name: 'Test Practice', address: '123 Fake St' }),
+          docs: []
+        });
+      }
       return vi.fn();
-    });
+    }) as unknown as typeof onSnapshot);
   });
 
   it('initialises listeners and populates data', async () => {
     const wrapper = mount(TestHost);
-    // We cast to 'any' here because Vue Test Utils unwraps refs on 'vm',
-    // making the types inconsistent with the Composable's return type (Ref<T>).
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as UnwrapRef<ReturnType<typeof usePracticeSettings>>;
 
     await nextTick();
 
     expect(onSnapshot).toHaveBeenCalled();
 
-    // Fix: Access .name directly because vm unwraps top-level refs.
     expect(vm.details.name).toBe('Test Practice');
     expect(vm.isLoading).toBe(false);
   });

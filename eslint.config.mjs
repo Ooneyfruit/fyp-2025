@@ -6,6 +6,7 @@
 import process from 'node:process';
 
 import pluginJs from '@eslint/js';
+import pluginVitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginImport from 'eslint-plugin-import';
 import pluginPromise from 'eslint-plugin-promise';
@@ -13,7 +14,6 @@ import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
 import pluginSonar from 'eslint-plugin-sonarjs';
 import pluginTsdoc from 'eslint-plugin-tsdoc';
 import pluginUnicorn from 'eslint-plugin-unicorn';
-import pluginVitest from 'eslint-plugin-vitest';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';

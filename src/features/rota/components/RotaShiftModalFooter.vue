@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
  * Footer actions for the Rota Shift Modal.
- * Extracted to avoid nested template issues in the parent modal.
  */
 import BaseButton from '@/components/shared/BaseButton.vue';
 

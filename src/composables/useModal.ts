@@ -21,7 +21,7 @@ export function useModal<T = unknown>(): UseModalReturn<T> {
 
   /**
    * Opens the modal and optionally sets the context data.
-   * @param payload - The data to initialize the modal with.
+   * @param payload - The data to initialise the modal with.
    */
   const open = (payload?: T) => {
     if (payload !== undefined) {

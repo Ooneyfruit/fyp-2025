@@ -8,7 +8,7 @@ import { computed, type PropType } from 'vue';
 
 import IconEdit from '@/components/icons/IconEdit.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
-import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+import { useRotaColours } from '@/features/rota/composables/useRotaColours';
 import type { Shift } from '@/features/rota/rotaTypes';
 
 const MAX_INITIALS = 2;
@@ -32,22 +32,23 @@ const props = defineProps({
   },
   isWeekend: { type: Boolean, default: false },
   isToday: { type: Boolean, default: false },
-  isBeforeToday: { type: Boolean, default: false }
+  isBeforeToday: { type: Boolean, default: false },
+  isRequirementUnmet: { type: Boolean, default: false }
 });
 
 defineEmits(['click']);
 
-const { getRoleColor } = useRotaColors();
+const { getRoleColour } = useRotaColours();
 
 const hasData = computed(() => props.shifts.length > 0);
 
 // Use Role Name as the key if available, matching the User List logic.
-const colors = computed(() => getRoleColor(props.roleName || props.roleId || ''));
+const colours = computed(() => getRoleColour(props.roleName || props.roleId || ''));
 
 const pillStyles = computed(() => ({
-  backgroundColor: colors.value.bg,
-  borderColor: colors.value.accent,
-  color: colors.value.accent
+  backgroundColor: colours.value.bg,
+  borderColor: colours.value.accent,
+  color: colours.value.accent
 }));
 
 /**
@@ -84,12 +85,16 @@ const getInitials = (name: string | undefined): string => {
     type="button"
     @click="$emit('click')"
   >
+    <div v-if="isRequirementUnmet" class="unmet-indicator" title="Minimum staff requirement unmet">
+      !
+    </div>
+
     <div v-for="shift in shifts" :key="shift.id" class="shift-pill" :style="pillStyles">
       <div class="pill-content">
-        <span class="initials" :style="{ color: colors.accent }">
+        <span class="initials" :style="{ color: colours.accent }">
           {{ getInitials(shift.user_name) }}
         </span>
-        <span class="name" :style="{ color: colors.accent }">
+        <span class="name" :style="{ color: colours.accent }">
           {{ shift.user_name }}
         </span>
       </div>
@@ -131,7 +136,7 @@ const getInitials = (name: string | undefined): string => {
   width: 100%;
 }
 
-/* --- State Styling --- */
+/* State Styling */
 
 .rota-slot.slot-weekday {
   background-color: white;
@@ -141,6 +146,12 @@ const getInitials = (name: string | undefined): string => {
 .rota-slot.slot-weekend {
   background-color: #f3f4f6;
   border: 1px solid #e2e4e7;
+}
+
+.rota-slot.slot-unmet {
+  /* Red-400 */
+  border-color: #f87171;
+  border-width: 2px;
 }
 
 .rota-slot.slot-weekend-past {
@@ -196,12 +207,12 @@ const getInitials = (name: string | undefined): string => {
   border-color: #3b82f6;
 }
 
-/* --- Placeholders & Overlays --- */
+/* Placeholders & Overlays */
 
-/* 1. Empty State Plus Icon */
+/* Empty State Plus Icon */
 .empty-placeholder {
   align-items: center;
-  color: #64748b; /* Updated to Slate 500 for better contrast against white/grey */
+  color: #64748b;
   display: flex;
   inset: 0;
   justify-content: center;
@@ -226,7 +237,25 @@ const getInitials = (name: string | undefined): string => {
   color: #3b82f6;
 }
 
-/* 2. Occupied State Edit Overlay */
+/* Unmet Indicator */
+.unmet-indicator {
+  align-items: center;
+  background-color: var(--colour-danger);
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  font-size: 0.75rem;
+  font-weight: 800;
+  height: 1.25rem;
+  justify-content: center;
+  position: absolute;
+  right: 0.25rem;
+  top: 0.25rem;
+  width: 1.25rem;
+  z-index: 5;
+}
+
+/* Occupied State Edit Overlay */
 .edit-overlay {
   align-items: center;
   background-color: rgb(255 255 255 / 60%);
@@ -248,7 +277,7 @@ const getInitials = (name: string | undefined): string => {
   background: white;
   border-radius: 50%;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
-  color: var(--color-primary);
+  color: var(--colour-primary);
   display: flex;
   padding: 6px;
 }
@@ -258,13 +287,12 @@ const getInitials = (name: string | undefined): string => {
   width: 1rem;
 }
 
-/* UPDATED: Reduced size to be visually consistent with the edit icon */
 .plus-icon {
   height: 1.15rem;
   width: 1.15rem;
 }
 
-/* --- Pill Styling --- */
+/* Pill Styling */
 .shift-pill {
   border-radius: 999px;
   border-style: solid;

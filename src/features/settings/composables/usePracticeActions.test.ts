@@ -26,7 +26,6 @@ describe('usePracticeActions', () => {
   it('updates details via Firestore', async () => {
     const { updateDetails } = usePracticeActions();
 
-    // Fixed: Added 'address' to satisfy PracticeDetails interface
     const newDetails = { name: 'New Name', phone: '111', address: '123 Fake St' };
 
     await updateDetails(newDetails);

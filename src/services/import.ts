@@ -95,9 +95,8 @@ function processValue(key: string, value: unknown): unknown {
 
 /**
  * Traverses a data object to convert JSON representations back into Firestore types.
- * Recursively handles nested objects but skips strict subcollection structures.
  * @param data - The raw JSON data object.
- * @returns The data object with Firestore types restored.
+ * @returns The data object.
  */
 function reviveFirestoreTypes(data: unknown): unknown {
   if (!data || typeof data !== 'object') {
@@ -203,7 +202,6 @@ async function importData() {
   // Construct the absolute path to the data file ensuring cross-platform compatibility.
   const filePath = path.join(__dirname, '../../docs/firestore-export-CURRENT.json');
 
-  // Read the file synchronously as we cannot proceed without this data.
   const fileContents = readFileSync(filePath, 'utf8');
   const data = JSON.parse(fileContents);
 

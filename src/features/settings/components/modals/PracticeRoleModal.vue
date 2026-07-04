@@ -12,7 +12,7 @@ import BaseInput from '@/components/shared/BaseInput.vue';
 import BaseModal from '@/components/shared/BaseModal.vue';
 import BaseModalFooter from '@/components/shared/BaseModalFooter.vue';
 import BaseSelect from '@/components/shared/BaseSelect.vue';
-import { ROLE_PALETTE } from '@/features/rota/composables/useRotaColors';
+import { ROLE_PALETTE } from '@/features/rota/composables/useRotaColours';
 import { usePracticeActions } from '@/features/settings/composables/usePracticeActions';
 import { ROLE_ICONS } from '@/features/settings/composables/useRoleIcons';
 import { type PracticeRoleConfig } from '@/features/settings/settingsTypes';
@@ -41,7 +41,7 @@ const form = reactive<PracticeRoleConfig>({
   name: '',
   type: 'Practitioner',
   icon_id: undefined,
-  color_index: undefined
+  colour_index: undefined
 });
 
 const isEditMode = computed(() => !!props.roleToEdit);
@@ -55,14 +55,14 @@ watch(
       form.id = role.id;
       form.name = role.name;
       form.type = role.type;
-      form.icon_id = role.icon_id || undefined;
-      form.color_index = role.color_index;
+      form.icon_id = role.icon_id ?? undefined;
+      form.colour_index = role.colour_index ?? undefined;
     } else {
       form.id = '';
       form.name = '';
       form.type = 'Practitioner';
       form.icon_id = undefined;
-      form.color_index = undefined;
+      form.colour_index = undefined;
     }
     initialJson.value = JSON.stringify(form);
   },
@@ -78,8 +78,12 @@ watch(
 
 const handleSubmit = async () => {
   isSubmitting.value = true;
-  // Convert undefined back to null if 'No Icon' was selected for the payload.
-  const payload = { ...form, icon_id: form.icon_id || null };
+  // Convert undefined back to null if 'No Icon' or 'Automatic Assignment' was selected for the payload.
+  const payload = {
+    ...form,
+    icon_id: form.icon_id ?? null,
+    colour_index: form.colour_index ?? null
+  };
   await saveRole(payload as PracticeRoleConfig);
   isSubmitting.value = false;
   emit('close');
@@ -180,20 +184,20 @@ const archiveFooterProps = computed(() => ({
         <div class="rd-field">
           <fieldset class="selection-fieldset">
             <legend class="rd-field-label">Theme Colour</legend>
-            <div class="color-grid">
-              <div class="color-option-wrapper">
+            <div class="colour-grid">
+              <div class="colour-option-wrapper">
                 <input
-                  id="color-auto"
-                  v-model="form.color_index"
+                  id="colour-auto"
+                  v-model="form.colour_index"
                   class="sr-only"
-                  name="roleColor"
+                  name="roleColour"
                   type="radio"
                   :value="undefined"
                 />
                 <label
-                  class="color-swatch auto-swatch"
-                  :class="{ active: form.color_index === undefined }"
-                  for="color-auto"
+                  class="colour-swatch auto-swatch"
+                  :class="{ active: form.colour_index === undefined }"
+                  for="colour-auto"
                   title="Automatic Assignment"
                 >
                   <IconMagicWand class="auto-icon" />
@@ -201,20 +205,24 @@ const archiveFooterProps = computed(() => ({
                 </label>
               </div>
 
-              <div v-for="(color, index) in ROLE_PALETTE" :key="index" class="color-option-wrapper">
+              <div
+                v-for="(colour, index) in ROLE_PALETTE"
+                :key="index"
+                class="colour-option-wrapper"
+              >
                 <input
-                  :id="`color-${index}`"
-                  v-model="form.color_index"
+                  :id="`colour-${index}`"
+                  v-model="form.colour_index"
                   class="sr-only"
-                  name="roleColor"
+                  name="roleColour"
                   type="radio"
                   :value="index"
                 />
                 <label
-                  class="color-swatch"
-                  :class="{ active: form.color_index === index }"
-                  :for="`color-${index}`"
-                  :style="{ backgroundColor: color.bg, borderColor: color.accent }"
+                  class="colour-swatch"
+                  :class="{ active: form.colour_index === index }"
+                  :for="`colour-${index}`"
+                  :style="{ backgroundColor: colour.bg, borderColor: colour.accent }"
                   :title="`Colour ${index + 1}`"
                 >
                   <span class="sr-only">Colour {{ index + 1 }}</span>
@@ -226,7 +234,7 @@ const archiveFooterProps = computed(() => ({
       </div>
 
       <div v-if="isEditMode" class="rd-danger-zone">
-        <h4 class="rd-section-header" style="color: var(--color-danger)">Danger Zone</h4>
+        <h4 class="rd-section-header" style="color: var(--colour-danger)">Danger Zone</h4>
         <div class="danger-actions">
           <p v-if="!isDeleted" class="danger-text">
             Archiving removes this role from the practice configuration.
@@ -265,7 +273,7 @@ const archiveFooterProps = computed(() => ({
 }
 
 .icon-grid,
-.color-grid {
+.colour-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
@@ -273,14 +281,14 @@ const archiveFooterProps = computed(() => ({
 }
 
 .icon-option-wrapper,
-.color-option-wrapper {
+.colour-option-wrapper {
   display: flex;
 }
 
 .icon-selection-tile {
   align-items: center;
   background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-colour);
   border-radius: 8px;
   cursor: pointer;
   display: flex;
@@ -291,7 +299,7 @@ const archiveFooterProps = computed(() => ({
 }
 
 .icon-selection-tile:hover {
-  border-color: var(--color-primary-light);
+  border-color: var(--colour-primary-light);
   transform: translateY(-1px);
 }
 
@@ -306,7 +314,7 @@ const archiveFooterProps = computed(() => ({
   width: 1.25rem;
 }
 
-.color-swatch {
+.colour-swatch {
   align-items: center;
   border: 2px solid transparent;
   border-radius: 50%;
@@ -320,7 +328,7 @@ const archiveFooterProps = computed(() => ({
 
 .auto-swatch {
   background-color: var(--bg-app);
-  border-color: var(--border-color);
+  border-color: var(--border-colour);
   color: var(--text-muted);
 }
 
@@ -331,21 +339,21 @@ const archiveFooterProps = computed(() => ({
 
 /* Selection States */
 input:checked + .icon-selection-tile {
-  background-color: var(--color-primary-faint);
-  border-color: var(--color-primary);
+  background-color: var(--colour-primary-faint);
+  border-color: var(--colour-primary);
   border-width: 2px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
 }
 
 input:checked + .icon-selection-tile .role-svg {
-  color: var(--color-primary);
+  color: var(--colour-primary);
 }
 
-input:checked + .color-swatch {
-  border-color: var(--color-primary);
+input:checked + .colour-swatch {
+  border-color: var(--colour-primary);
   box-shadow:
     0 0 0 2px white,
-    0 0 0 4px var(--color-primary);
+    0 0 0 4px var(--colour-primary);
 }
 
 .danger-actions {

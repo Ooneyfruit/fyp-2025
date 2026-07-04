@@ -27,7 +27,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
     name: 'RotaDent',
     short_name: 'RotaDent',
     description: 'Advanced Dental Practice Rota Management',
-    theme_color: '#1d4ed8', // Synchronised with --color-primary.
+    theme_color: '#1d4ed8', // Synchronised with --colour-primary.
     background_color: '#f8fafc', // Synchronised with --bg-app.
     display: 'standalone',
 

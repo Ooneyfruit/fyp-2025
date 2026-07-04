@@ -19,7 +19,7 @@ import {
   type SurgeryConfig
 } from '@/features/settings/settingsTypes';
 
-// --- Helper Functions (Module Scope) ---
+// Helper Functions (Module Scope)
 
 const extractId = (val: unknown): string => {
   if (val && typeof val === 'object' && 'id' in val) {
@@ -46,7 +46,7 @@ interface SettingsState {
 }
 
 /**
- * Initializes all real-time listeners for the practice.
+ * Initialises all real-time listeners for the practice.
  */
 const startListeners = (pRef: DocumentReference, state: SettingsState): Unsubscribe[] => {
   const subs: Unsubscribe[] = [];
@@ -77,13 +77,12 @@ const startListeners = (pRef: DocumentReference, state: SettingsState): Unsubscr
     state.minStaff.value = snap.docs.map((d) => markRaw(mapStaffConfig(d)));
   });
 
-  // Consolidated push to satisfy unicorn/no-array-push-push
   subs.push(detailsSub, surgeriesSub, rolesSub, staffSub);
 
   return subs;
 };
 
-// --- Composable ---
+// Composable
 
 export function usePracticeSettings() {
   const { user } = useAuth();

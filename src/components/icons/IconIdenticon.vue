@@ -2,8 +2,8 @@
 /**
  * Changeable icon dependent on a seed string.
  * Renders a unique, symmetrical insignia based on a seed string.
- * Refactored to use a "Greedy Meshing" algorithm to merge adjacent shapes into a single SVG path.
- * Includes precision rounding to prevent sub-pixel rendering artifacts.
+ * Uses a greedy meshing algorithm to merge adjacent shapes into a single SVG path.
+ * Includes precision rounding to prevent sub-pixel rendering artefacts.
  */
 import { computed } from 'vue';
 
@@ -57,7 +57,7 @@ const props = defineProps<{
 }>();
 
 /**
- * Rounds a number to a fixed precision to avoid floating point artifacts in SVG.
+ * Rounds a number to avoid floating point artifacts in SVG.
  * E.g., 0.99999999999 becomes 1.
  * @param n - The number to round.
  * @returns The rounded number.
@@ -168,7 +168,7 @@ const getMergeWidth = (
 };
 
 /**
- * Checks if a row segment can be added to the current merge block.
+ * Checks if a row segment can be combined into the current merge block.
  * @param x - The starting x-coordinate of the block.
  * @param y - The starting y-coordinate of the block.
  * @param currentHeight - The current height offset being checked.
@@ -199,7 +199,7 @@ const canExtendHeight = (
 };
 
 /**
- * Calculates the maximum height for a mergeable rectangle given a fixed width.
+ * Calculates the maximum height for a mergeable rectangle.
  * @param x - The starting x-coordinate of the block.
  * @param y - The starting y-coordinate of the block.
  * @param width - The confirmed width of the block.
@@ -248,7 +248,6 @@ const markVisited = (
 
 /**
  * Orchestrates the greedy meshing for a rectangle and returns its path.
- * Refactored to reduce cognitive complexity.
  * @param x - The starting x-coordinate.
  * @param y - The starting y-coordinate.
  * @param grid - The complete grid data.
@@ -276,7 +275,7 @@ const getMergedRectPath = (
 };
 
 /**
- * Rotate a point around a center (0.5, 0.5) and translate to grid position (x, y).
+ * Rotate a point around a centre (0.5, 0.5) and translate to grid position (x, y).
  * @param p - The point to transform.
  * @param angleDeg - Rotation angle in degrees.
  * @param x - Grid x offset.
@@ -373,7 +372,6 @@ const processCell = (
 
 /**
  * Generates the flattened SVG Path Data string from a grid model.
- * Implements "Greedy Meshing" to optimize rendering performance and visual quality.
  * @param grid - The grid data structure to process.
  * @returns The final SVG path data string.
  */

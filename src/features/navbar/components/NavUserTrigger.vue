@@ -58,6 +58,6 @@ defineProps<{
 
 .profile-trigger:hover .email-label,
 .profile-trigger:hover .edit-icon {
-  color: var(--color-primary);
+  color: var(--colour-primary);
 }
 </style>

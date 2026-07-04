@@ -15,8 +15,6 @@ defineProps({
   variant: {
     type: String,
     default: 'primary',
-    // Validator inlined for 'vue/valid-define-props'.
-    // Includes type check to satisfy TS 'unknown' argument error.
     validator: (v) =>
       typeof v === 'string' && ['primary', 'secondary', 'danger', 'outline', 'ghost'].includes(v)
   },
@@ -29,8 +27,6 @@ defineProps({
   iconPosition: {
     type: String,
     default: 'left',
-    // Validator inlined for 'vue/valid-define-props'.
-    // Includes type check to satisfy TS 'unknown' argument error.
     validator: (v) => typeof v === 'string' && ['left', 'right'].includes(v)
   }
 });
@@ -100,16 +96,16 @@ defineEmits(['click']);
   opacity: 0.6;
 }
 
-/* --- Variants --- */
+/* Variants */
 
-/* Primary: Solid Brand Color */
+/* Primary: Solid Brand Colour */
 .rd-button-primary {
-  background-color: var(--primary-color, #2563eb);
+  background-color: var(--primary-colour, #2563eb);
   color: white;
 }
 
 .rd-button-primary:not(:disabled):hover {
-  background-color: var(--primary-color-dark, #1d4ed8);
+  background-color: var(--primary-colour-dark, #1d4ed8);
 }
 
 /* Secondary: Grey Background */
@@ -125,7 +121,7 @@ defineEmits(['click']);
 
 /* Danger: Red */
 .rd-button-danger {
-  background-color: var(--color-danger);
+  background-color: var(--colour-danger);
   color: white;
 }
 
@@ -135,11 +131,8 @@ defineEmits(['click']);
 
 /* Outline: Border only */
 .rd-button-outline {
-  /* Changed from transparent to white to satisfy accessibility contrast checkers. */
   background-color: #fff;
   border-color: #cbd5e1;
-
-  /* Darkened to #1e293b (Slate-800) for strict AAA accessibility contrast. */
   color: #1e293b;
 }
 

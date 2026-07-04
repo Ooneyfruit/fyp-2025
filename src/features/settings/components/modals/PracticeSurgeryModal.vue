@@ -58,9 +58,9 @@ const toTimestamp = (timeStr: string) => {
   return Timestamp.fromDate(d);
 };
 
-const fromTimestamp = (ts: unknown) => {
-  if (ts && typeof ts === 'object' && 'seconds' in ts) {
-    const d = new Date((ts as Timestamp).seconds * MS_PER_SEC);
+const fromTimestamp = (timestamp: unknown) => {
+  if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
+    const d = new Date((timestamp as Timestamp).seconds * MS_PER_SEC);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   }
   return '09:00';
@@ -163,7 +163,6 @@ const footerProps = computed(() => ({
   onConfirm: handleSubmit
 }));
 
-// We define this configuration object for the nested confirmation modal
 // Using BaseModalFooter ensures consistent button styling
 const archiveFooterProps = computed(() => ({
   confirmLabel: 'Yes, Archive',
@@ -236,7 +235,7 @@ const archiveFooterProps = computed(() => ({
       </div>
 
       <div v-if="isEditMode" class="rd-danger-zone">
-        <h4 class="rd-section-header" style="color: var(--color-danger)">Danger Zone</h4>
+        <h4 class="rd-section-header" style="color: var(--colour-danger)">Danger Zone</h4>
         <div class="danger-actions">
           <p v-if="!isDeleted" class="danger-text">
             Archiving removes this surgery from the rota view.
@@ -309,7 +308,7 @@ const archiveFooterProps = computed(() => ({
 
 .step-input {
   appearance: textfield;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-colour);
   border-radius: 4px;
   font-weight: 600;
   height: 2rem;
@@ -326,7 +325,7 @@ const archiveFooterProps = computed(() => ({
 .step-btn {
   align-items: center;
   background: white;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-colour);
   border-radius: 4px;
   color: var(--text-muted);
   cursor: pointer;
@@ -338,7 +337,7 @@ const archiveFooterProps = computed(() => ({
 
 .step-btn:hover {
   background: var(--table-row-hover);
-  color: var(--color-primary);
+  color: var(--colour-primary);
 }
 
 .icon-small {

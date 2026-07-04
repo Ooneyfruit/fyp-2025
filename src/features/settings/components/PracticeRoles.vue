@@ -11,7 +11,7 @@ import BaseButton from '@/components/shared/BaseButton.vue';
 import BaseTable, { type TableHeader } from '@/components/shared/BaseTable.vue';
 import BaseToggle from '@/components/shared/BaseToggle.vue';
 import RoleActionCell from '@/features/settings/components/cells/RoleActionCell.vue';
-import RoleColorCell from '@/features/settings/components/cells/RoleColorCell.vue';
+import RoleColourCell from '@/features/settings/components/cells/RoleColourCell.vue';
 import RoleIconCell from '@/features/settings/components/cells/RoleIconCell.vue';
 import PracticeRoleModal from '@/features/settings/components/modals/PracticeRoleModal.vue';
 import { usePracticeActions } from '@/features/settings/composables/usePracticeActions';
@@ -57,7 +57,7 @@ const headers = computed<TableHeader[]>(() => [
     label: 'Colour',
     align: 'center',
     width: '100px',
-    cellComponent: markRaw(RoleColorCell)
+    cellComponent: markRaw(RoleColourCell)
   },
   {
     key: 'icon',

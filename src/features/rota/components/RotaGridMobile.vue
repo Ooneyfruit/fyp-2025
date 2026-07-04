@@ -1,23 +1,24 @@
+<script lang="ts">
+/**
+ * (needs description).
+ */
+
+const defaultIsRequirementUnmet = () => false;
+</script>
+
 <script setup lang="ts">
 /**
  * Card-based vertically stacked format for rendering the rota grid on mobile.
  */
 import { computed, type PropType, provide } from 'vue';
 
-import { useRotaColors } from '@/features/rota/composables/useRotaColors';
+import { useRotaColours } from '@/features/rota/composables/useRotaColours';
 import type { RotaDay } from '@/features/rota/composables/useRotaDates';
-import type { PracticeRole, PracticeSurgery, Shift } from '@/features/rota/rotaTypes';
+import type { PracticeRole, RotaRow, Shift } from '@/features/rota/rotaTypes';
 import { getRoleIcon } from '@/features/settings/composables/useRoleIcons';
 
 import RotaDayCell from './RotaDayCell.vue';
 import RotaLoading from './RotaLoading.vue';
-
-interface RotaRow {
-  [key: string]: unknown;
-  id: string;
-  role: PracticeRole;
-  surgery: PracticeSurgery;
-}
 
 const props = defineProps({
   days: {
@@ -31,17 +32,22 @@ const props = defineProps({
   getShifts: {
     type: Function as PropType<(roleId: string, surgeryId: string, dateIso: string) => Shift[]>,
     required: true
+  },
+  isRequirementUnmet: {
+    type: Function as PropType<(roleId: string, surgeryId: string, day: RotaDay) => boolean>,
+    default: () => defaultIsRequirementUnmet
   }
 });
 
 const emit = defineEmits(['slot-click']);
 
 provide('getShifts', props.getShifts);
+provide('isRequirementUnmet', props.isRequirementUnmet);
 provide('onGridClick', (payload: { rowItem: unknown; day: RotaDay }) => {
   emit('slot-click', payload);
 });
 
-const { getRoleColor } = useRotaColors();
+const { getRoleColour } = useRotaColours();
 
 // Group rows by Role, then iterate through Surgeries
 const groupedRows = computed(() => {
@@ -65,7 +71,7 @@ const getRoleName = (name: string) => {
 };
 
 const getRoleBadgeStyle = (roleName: string) => {
-  const c = getRoleColor(roleName);
+  const c = getRoleColour(roleName);
   return {
     backgroundColor: c.bg,
     color: c.accent,
@@ -124,7 +130,6 @@ const getRoleBadgeStyle = (roleName: string) => {
             :style="{ gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))` }"
           >
             <div v-for="day in days" :key="day.key" class="day-slot-cell">
-              <!-- Mock table header structure to satisfy cell requirements -->
               <RotaDayCell :header="{ meta: day } as any" :item="rowItem" />
             </div>
           </div>
@@ -156,7 +161,7 @@ const getRoleBadgeStyle = (roleName: string) => {
 /* Sticky Header */
 .sticky-header {
   background: white;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid var(--border-colour);
   display: grid;
   position: sticky;
 
@@ -179,14 +184,14 @@ const getRoleBadgeStyle = (roleName: string) => {
 }
 
 .day-header-cell.is-today {
-  color: var(--color-primary);
+  color: var(--colour-primary);
   font-weight: 800;
 }
 
 /* Role Group */
 .role-group {
   background: white;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-colour);
   border-radius: var(--border-radius, 8px);
   display: flex;
   flex-direction: column;
@@ -231,13 +236,13 @@ const getRoleBadgeStyle = (roleName: string) => {
 }
 
 .surgery-group:not(:first-child) {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-colour);
 }
 
 .surgery-title-bar {
   align-items: center;
   background-color: var(--bg-surface, #fff);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-colour);
   color: var(--text-muted);
   display: flex;
   font-size: 0.8rem;

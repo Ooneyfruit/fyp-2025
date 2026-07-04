@@ -250,7 +250,6 @@ export function useRotaDates(breakpoints: UseBreakpointsReturn): UseRotaDatesRet
   };
 
   const jumpToDate = (date: Date): void => {
-    // Ensure we have a valid date object and strip time information
     if (date instanceof Date && !Number.isNaN(date.getTime())) {
       anchorDate.value = getMidnightDate(date);
     }

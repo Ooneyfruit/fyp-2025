@@ -36,3 +36,8 @@ firebase-debug.*.log*
 # OS Generated Files
 .DS_Store
 Thumbs.db
+
+# Compiled config files
+vite.config.js
+vite.config.d.ts
+firestore-debug.log*

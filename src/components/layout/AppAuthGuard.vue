@@ -5,14 +5,14 @@
 import AppLoading from '@/components/shared/AppLoading.vue';
 import { useAuth } from '@/composables/useAuth';
 
-// Access the reactive readiness state from the auth composable
-const { isAuthReady } = useAuth();
+// Access the reactive readiness state and message from the auth composable
+const { isAuthReady, authMessage } = useAuth();
 </script>
 
 <template>
   <div class="app-auth-guard app-layout">
     <Transition mode="out-in" name="fade">
-      <AppLoading v-if="!isAuthReady" full-screen> Checking authentication... </AppLoading>
+      <AppLoading v-if="!isAuthReady" full-screen> {{ authMessage }} </AppLoading>
 
       <slot v-else />
     </Transition>

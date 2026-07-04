@@ -10,17 +10,17 @@ import { reactive, watch } from 'vue';
 
 import type { PracticeRole } from '@/features/rota/rotaTypes';
 
-interface RoleColor {
+interface RoleColour {
   bg: string;
   accent: string;
 }
 
-const STORAGE_KEY = 'rd-rota-role-colors';
+const STORAGE_KEY = 'rd-rota-role-colours';
 const DEFAULT_PALETTE_INDEX = 7;
 const HASH_BIT_SHIFT = 5;
 const PALETTE_SIZE = 8;
 
-export const ROLE_PALETTE: RoleColor[] = [
+export const ROLE_PALETTE: RoleColour[] = [
   { bg: '#e2e8f0', accent: '#334155' }, // 0: Slate
   { bg: '#f3e8ff', accent: '#7e22ce' }, // 1: Purple
   { bg: '#ffe4e6', accent: '#a03f58' }, // 2: Rose
@@ -81,12 +81,12 @@ const hashStringToIndex = (str: string): number => {
  * Checks if an index is available for assignment.
  */
 const isIndexAvailable = (idx: number, currentKey: string): boolean => {
-  // 1. Hard Block: Is this index used by ANY override?
+  // Hard Block: Is this index used by ANY override?
   for (const overrideIdx of Object.values(globalState.overrides)) {
     if (overrideIdx === idx) return false;
   }
 
-  // 2. Soft Block: Is this index used by another role's auto-assignment?
+  // Soft Block: Is this index used by another role's auto-assignment?
   for (const [key, val] of Object.entries(globalState.autoRegistry)) {
     if (key !== currentKey && val === idx) return false;
   }
@@ -109,26 +109,26 @@ const findSafeIndex = (preferred: number, key: string): number => {
 /**
  * Retrieves the colour for a role.
  */
-const getRoleColor = (roleKey?: string): RoleColor => {
+const getRoleColour = (roleKey?: string): RoleColour => {
   const defaultColor = ROLE_PALETTE[DEFAULT_PALETTE_INDEX]!;
   if (!roleKey) return defaultColor;
 
   ensureInitialized();
   const key = roleKey.trim().toLowerCase();
 
-  // 1. Check Overrides (Highest Priority)
+  // Check Overrides (Highest Priority)
   const overrideIdx = globalState.overrides[key];
   if (overrideIdx !== undefined) {
     return ROLE_PALETTE[overrideIdx] || defaultColor;
   }
 
-  // 2. Check Existing Auto-Assignment
+  // Check Existing Auto-Assignment
   const autoIdx = globalState.autoRegistry[key];
   if (autoIdx !== undefined && isIndexAvailable(autoIdx, key)) {
     return ROLE_PALETTE[autoIdx] || defaultColor;
   }
 
-  // 3. Assign New
+  // Assign New
   const preferred = hashStringToIndex(key);
   const safeIdx = findSafeIndex(preferred, key);
 
@@ -151,10 +151,10 @@ const prefillRegistry = (roles: PracticeRole[]) => {
 
   // Apply new overrides
   for (const role of roles) {
-    if (role.color_index !== undefined && role.color_index !== null) {
+    if (role.colour_index !== undefined && role.colour_index !== null) {
       const key = role.name.trim().toLowerCase();
-      globalState.overrides[key] = role.color_index;
-      forbiddenIndices.add(role.color_index);
+      globalState.overrides[key] = role.colour_index;
+      forbiddenIndices.add(role.colour_index);
     }
   }
 
@@ -166,6 +166,6 @@ const prefillRegistry = (roles: PracticeRole[]) => {
   }
 };
 
-export function useRotaColors() {
-  return { getRoleColor, prefillRegistry, ROLE_PALETTE };
+export function useRotaColours() {
+  return { getRoleColour, prefillRegistry, ROLE_PALETTE };
 }

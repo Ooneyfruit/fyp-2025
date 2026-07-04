@@ -106,11 +106,11 @@ defineEmits(['navigate-month', 'navigate-period', 'jump-today']);
 .today-link-desktop {
   background: none;
   border: none;
-  color: var(--primary-color);
+  color: var(--primary-colour);
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 600;
-  height: 1.2rem; /* Fixed height context */
+  height: 1.2rem;
   line-height: 1;
   margin-top: 4px;
   padding: 2px 4px;

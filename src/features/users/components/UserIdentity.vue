@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Displays user identity with dynamic support for synchronized Google icons.
+ * Displays user identity with dynamic support for synchronised Google icons.
  */
 
 import IconIdenticon from '@/components/icons/IconIdenticon.vue';
@@ -73,7 +73,7 @@ withDefaults(
 .identicon {
   align-items: center;
   background: var(--bg-app);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-colour);
   display: flex;
   justify-content: center;
 }
@@ -87,7 +87,7 @@ withDefaults(
   min-width: 0;
 }
 
-/* Typography and ellipsis behavior for long text strings */
+/* Typography and ellipsis behaviour for long text strings */
 .name,
 .email {
   overflow: hidden;

@@ -113,7 +113,7 @@ const userHeaders: TableHeader[] = [
 <template>
   <div ref="adapterRoot" class="adapter-container">
     <div v-if="!users || users.length === 0" class="loading-overlay">
-      <p>Synchronizing Practice Identities...</p>
+      <p>Synchronising Practice Identities...</p>
     </div>
 
     <BaseTable v-else-if="!isMobile" :headers="userHeaders" :items="users as any[]" />

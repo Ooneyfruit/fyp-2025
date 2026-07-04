@@ -15,7 +15,7 @@ export interface PracticeRoleConfig {
   /** The unique identifier for the chosen SVG icon */
   icon_id?: string;
   /** Index of the colour in the shared ROLE_PALETTE */
-  color_index?: number;
+  colour_index?: number;
   /** Flag indicating if the role has been soft-deleted */
   is_deleted?: boolean;
 }

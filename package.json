@@ -6,8 +6,9 @@
   "main": "src/main.ts",
   "scripts": {
     "start": "npm run dev",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test": "vitest --exclude src/test/firestore.rules.test.ts",
+    "test:run": "vitest run --exclude src/test/firestore.rules.test.ts",
+    "test:rules": "firebase emulators:exec \"vitest run src/test/firestore.rules.test.ts\"",
     "setup": "npm install && firebase login",
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
@@ -54,10 +55,12 @@
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^20.4.2",
     "@eslint/js": "^9.17.0",
+    "@firebase/rules-unit-testing": "^5.0.1",
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^25.3.0",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/eslint-plugin": "^1.6.21",
     "@vue/test-utils": "^2.2.7",
     "@vue/tsconfig": "^0.8.1",
     "cspell": "^9.6.4",
@@ -70,9 +73,8 @@
     "eslint-plugin-sonarjs": "^4.0.0",
     "eslint-plugin-tsdoc": "^0.5.0",
     "eslint-plugin-unicorn": "^63.0.0",
-    "eslint-plugin-vitest": "^0.5.4",
     "eslint-plugin-vue": "^10.8.0",
-    "firebase-tools": "^15.7.0",
+    "firebase-tools": "^13.6.0",
     "globals": "^17.3.0",
     "happy-dom": "^20.3.4",
     "husky": "^9.1.7",
@@ -95,7 +97,14 @@
     "vue-tsc": "^3.2.5"
   },
   "overrides": {
-    "minimatch": "10.2.4"
+    "minimatch": "10.2.4",
+    "uuid": "^11.1.1",
+    "@opentelemetry/core": "^2.8.0",
+    "@grpc/grpc-js": "^1.11.4",
+    "protobufjs": "^7.2.5",
+    "protobufjs-cli": "^2.5.7",
+    "tar": "^7.5.7",
+    "superstatic": "^10.0.0"
   },
   "repository": {
     "type": "git",

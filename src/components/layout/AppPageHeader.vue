@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Primary page heading component.
- * Provides a standardized visual hierarchy for page titles and subtitles.
+ * Provides a standardised visual hierarchy for page titles and subtitles.
  */
 defineProps({
   // The primary text displayed in the H1 tag.

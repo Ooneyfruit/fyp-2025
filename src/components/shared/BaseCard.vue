@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Provides a structural container component with standard styling.
- * Supports dynamic component injection for headers to satisfy flat template requirements.
+ * Supports dynamic component injection for headers.
  */
 
 defineProps({
@@ -68,6 +68,6 @@ defineProps({
 
 /* Visual divider: Adds a subtle border between the header and body to improve content separation. */
 .card-header + .card-body {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-colour);
 }
 </style>

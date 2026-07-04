@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Loading spinner.
- * Provides a standardized loading interface for both inline content and full-page transitions.
+ * Provides a standardised loading interface for both inline content and full-page transitions.
  */
 import { computed } from 'vue';
 
@@ -58,7 +58,7 @@ const spinnerSize = computed(() => (props.fullScreen ? '2rem' : '1.5rem'));
   font-size: 0.9375rem;
   font-weight: 500;
 
-  /* Optical nudge to align text with the visual center of the circular spinner. */
+  /* Optical nudge to align text with the visual centre of the circular spinner. */
   transform: translateY(0.0625rem);
 }
 </style>

@@ -2,8 +2,8 @@
 /**
  * Footer component for the rota date picker modal.
  *
- * Provides standardized action buttons for the date picker modal,
- * including "Cancel", "Confirm View", and a specialized "Reset to Today"
+ * Provides standardised action buttons for the date picker modal,
+ * including "Cancel", "Confirm View", and a specialised "Reset to Today"
  * button. It wraps the generic BaseModalFooter to provide context-specific
  * labels and styling for the rota feature.
  */

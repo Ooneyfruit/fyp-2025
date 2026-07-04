@@ -1,6 +1,5 @@
 /**
  * Manages event listeners to detect clicks outside a specific DOM element.
- * Essential for the closing logic of interactive UI overlays.
  */
 import { onMounted, onUnmounted, type Ref } from 'vue';
 
@@ -26,7 +25,6 @@ export function useClickOutside(
     }
 
     // Identify mouse interactions occurring outside the referenced element.
-    // Instance types are verified to satisfy the compiler and ensure safe property access.
     if (
       event instanceof MouseEvent &&
       event.target instanceof Node &&

@@ -138,7 +138,7 @@ const handleAdd = (member: PickerStaffMember) => {
 }
 
 .rd-input {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-colour);
   border-radius: var(--border-radius);
   font-size: 0.95rem;
   padding: 0.6rem;
@@ -157,7 +157,7 @@ const handleAdd = (member: PickerStaffMember) => {
 .staff-card {
   align-items: center;
   background: white;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-colour);
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
@@ -204,7 +204,7 @@ const handleAdd = (member: PickerStaffMember) => {
 }
 
 .group-label {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-colour);
   color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 600;

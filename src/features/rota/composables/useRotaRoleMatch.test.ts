@@ -24,7 +24,6 @@ describe('useRotaRoleMatch', () => {
 
   it('handles undefined or null inputs gracefully', () => {
     // The function explicitly checks for falsy values, so these are valid test cases.
-    // We removed @ts-expect-error because passing null matches the signature (string | null).
     expect(isRoleMatch(undefined, 'Dentist')).toBe(false);
     expect(isRoleMatch('Dentist', null)).toBe(false);
     expect(isRoleMatch(null, null)).toBe(false);

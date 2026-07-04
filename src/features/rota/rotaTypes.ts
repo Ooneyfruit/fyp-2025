@@ -6,12 +6,20 @@
 import { type DocumentReference, type Timestamp } from 'firebase/firestore';
 import { z } from 'zod';
 
-// --- Domain Interfaces ---
+// Domain Interfaces
+
+export interface RotaRow {
+  [key: string]: unknown;
+  id: string;
+  role: PracticeRole;
+  surgery: PracticeSurgery;
+  _isGroupStart?: boolean;
+}
 
 export interface PracticeRole {
   id: string;
   name: string;
-  color_index?: number;
+  colour_index?: number;
   icon_id?: string;
   is_deleted?: boolean;
 }
@@ -20,6 +28,7 @@ export interface PracticeSurgery {
   id: string;
   name: string;
   is_deleted?: boolean;
+  days_of_operation?: string[];
 }
 
 export interface Shift {
@@ -53,12 +62,12 @@ export interface ShiftInput {
   end_time?: string;
 }
 
-// --- Validation Schemas ---
+// Validation Schemas
 
 export const PracticeRoleSchema = z.object({
   id: z.string(),
   name: z.string(),
-  color_index: z.number().optional(),
+  colour_index: z.number().optional(),
   icon_id: z.string().optional(),
   is_deleted: z.boolean().optional()
 });

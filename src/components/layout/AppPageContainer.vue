@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Standard page wrapper to ensure consistent padding and max-width constraints.
- * Now supports a 'fluid' mode for wide data tables.
+ * Supports a 'fluid' mode for wide data tables.
  */
 defineProps({
   fluid: { type: Boolean, default: false }
@@ -23,9 +23,6 @@ defineProps({
   width: 100%;
 }
 
-/* * Fluid mode removes the strict max-width to use available screen real estate.
- * Useful for large data tables like the Rota.
- */
 .page-container.is-fluid {
   max-width: 100%;
   padding: var(--spacing-md) var(--spacing-lg);

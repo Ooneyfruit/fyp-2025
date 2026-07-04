@@ -9,7 +9,9 @@ import {
   doc,
   type DocumentReference,
   getDocs,
+  query,
   Timestamp,
+  where,
   writeBatch
 } from 'firebase/firestore';
 import { computed, markRaw, onMounted, ref } from 'vue';
@@ -37,6 +39,7 @@ interface UserForm extends UserAccessForm {
   role: string;
   profile_image: string;
   user_id: string;
+  membership_id: string;
 }
 
 interface InboundUser {
@@ -47,6 +50,7 @@ interface InboundUser {
   is_administrator?: unknown;
   is_employee?: unknown;
   profile_image?: string;
+  id?: string;
   [key: string]: unknown;
 }
 
@@ -68,7 +72,8 @@ const defaultForm = (): UserForm => ({
   is_administrator: false,
   is_employee: true,
   profile_image: '',
-  user_id: ''
+  user_id: '',
+  membership_id: ''
 });
 
 const form = ref<UserForm>(defaultForm());
@@ -80,10 +85,10 @@ const isLastAdmin = computed(() => {
   return admins.length <= 1 && admins.some((a) => a.profile.id === form.value.user_id);
 });
 
-// --- Change Detection Logic ---
+// Change Detection Logic
 const isDirty = computed(() => JSON.stringify(form.value) !== initialState.value);
 
-// --- Helpers ---
+// Helpers
 const resolveId = (u: InboundUser): string => {
   if (u.user?.id) return u.user.id;
   if (u.uid) return u.uid;
@@ -117,7 +122,8 @@ const normaliseUserData = (u: InboundUser): UserForm => ({
   is_administrator: Boolean(u.is_administrator),
   is_employee: resolveBool(u.is_employee, true),
   profile_image: resolveProfileImage(u),
-  user_id: resolveId(u)
+  user_id: resolveId(u),
+  membership_id: u.id || ''
 });
 
 const handleOpen = (userData?: InboundUser) => {
@@ -159,7 +165,8 @@ const handleDelete = async () => {
     const currentUser = authUser.value;
     if (!currentUser?.practiceRef?.id) throw new Error('Action requires active practice context.');
     const pId = currentUser.practiceRef.id;
-    await deleteDoc(doc(db, 'practice_users', `${form.value.user_id}_${pId}`));
+    const membershipId = form.value.membership_id || `${form.value.user_id}_${pId}`;
+    await deleteDoc(doc(db, 'practice_users', membershipId));
     showToast(`User ${form.value.name} access revoked.`);
     close();
   } catch (error) {
@@ -169,26 +176,72 @@ const handleDelete = async () => {
   }
 };
 
+const getExistingUserByEmail = async (email: string) => {
+  const emailsToCheck = [email];
+  if (email.endsWith('@gmail.com')) {
+    emailsToCheck.push(email.replace('@gmail.com', '@googlemail.com'));
+  } else if (email.endsWith('@googlemail.com')) {
+    emailsToCheck.push(email.replace('@googlemail.com', '@gmail.com'));
+  }
+
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('email', 'in', emailsToCheck));
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs[0] || null;
+};
+
+const checkExistingMembership = async (userRef: DocumentReference, pRef: DocumentReference) => {
+  const memberQuery = query(
+    collection(db, 'practice_users'),
+    where('user', '==', userRef),
+    where('practice', '==', pRef)
+  );
+  const memberSnap = await getDocs(memberQuery);
+  if (!memberSnap.empty) {
+    throw new Error('A user with this email is already a member of this practice.');
+  }
+};
+
+const resolveUserReference = async (pRef: DocumentReference) => {
+  if (isEdit.value) {
+    return { uid: form.value.user_id, ref: doc(db, 'users', form.value.user_id), exists: true };
+  }
+
+  const existingUserDoc = await getExistingUserByEmail(form.value.email);
+
+  if (existingUserDoc) {
+    await checkExistingMembership(existingUserDoc.ref, pRef);
+    return { uid: existingUserDoc.id, ref: existingUserDoc.ref, exists: true };
+  }
+
+  const newRef = doc(collection(db, 'users'));
+  return { uid: newRef.id, ref: newRef, exists: false };
+};
+
 const executeBatchSave = async (pRef: DocumentReference) => {
   const batch = writeBatch(db);
-  const uid = form.value.user_id || doc(collection(db, 'users')).id;
-  const userRef = doc(db, 'users', uid);
+  const { uid, ref: userRef, exists: existingProfileFound } = await resolveUserReference(pRef);
+
+  if (!existingProfileFound || isEdit.value) {
+    batch.set(
+      userRef,
+      {
+        name: form.value.name,
+        email: form.value.email,
+        address: form.value.address,
+        profile_image: form.value.profile_image || '',
+        current_practice: pRef
+      },
+      { merge: true }
+    );
+  }
+
+  // If editing an existing profile, use the cached exact DB membership doc ID
+  const membershipId = form.value.membership_id || `${uid}_${pRef.id}`;
 
   batch.set(
-    userRef,
-    {
-      name: form.value.name,
-      email: form.value.email,
-      address: form.value.address,
-      profile_image: form.value.profile_image || '',
-      current_practice: pRef
-    },
-    { merge: true }
-  );
-
-  const memberId = `${uid}_${pRef.id}`;
-  batch.set(
-    doc(db, 'practice_users', memberId),
+    doc(db, 'practice_users', membershipId),
     {
       role: form.value.role,
       is_administrator: form.value.is_administrator,
@@ -221,7 +274,7 @@ const save = async () => {
   }
 };
 
-// --- Footer Configurations ---
+// Footer Configurations
 const footerComponent = markRaw(UserModalFooter);
 const footerProps = computed(() => ({
   hasChanges: isDirty.value,
@@ -325,6 +378,7 @@ const confirmationFooterProps = computed(() => ({
           <BaseButton
             :disabled="isLastAdmin"
             :label="deleteConfirmation ? 'Confirm Removal?' : 'Delete'"
+            type="button"
             variant="danger"
             @blur="deleteConfirmation = false"
             @click="handleDelete"
@@ -352,7 +406,7 @@ const confirmationFooterProps = computed(() => ({
 }
 
 .danger-title {
-  color: var(--color-danger);
+  color: var(--colour-danger);
   font-size: 0.9rem;
   font-weight: 700;
 }

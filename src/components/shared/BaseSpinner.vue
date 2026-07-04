@@ -5,11 +5,11 @@
  */
 import { computed } from 'vue';
 
-// Define configuration properties for the spinner's size, thickness, and brand color.
+// Define configuration properties for the spinner's size, thickness, and brand colour.
 const props = defineProps({
   size: { type: String, default: '1.5rem' },
   thickness: { type: String, default: '0.125rem' },
-  color: { type: String, default: 'var(--color-primary)' }
+  color: { type: String, default: 'var(--colour-primary)' }
 });
 
 // Construct a style object to dynamically apply prop values to the spinner's borders.
@@ -28,7 +28,7 @@ const spinnerStyles = computed(() => ({
 <style scoped>
 /* Layout: specific styling for the circular track and its visual consistency. */
 .base-spinner {
-  /* Apply a muted color to the non-active segments of the circular track. */
+  /* Apply a muted colour to the non-active segments of the circular track. */
   border-color: #e2e8f0;
   border-radius: 50%;
   border-style: solid;

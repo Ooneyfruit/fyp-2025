@@ -2,7 +2,7 @@
 /**
  * A reusable input component.
  *
- * This component standardizes the styling and behavior of basic text
+ * This component standardises the styling and behaviour of basic text
  * inputs across the application. It acts as a wrapper around a standard
  * HTML `<input>`, providing seamless `v-model` integration using a computed
  * getter/setter. It accepts an optional ID for label association.

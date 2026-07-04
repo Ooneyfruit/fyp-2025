@@ -27,7 +27,7 @@ jobs:
       - name: Run Spellcheck
         run: npm run spellcheck
 
-  # 2. Quality Gate: Unit Tests
+  # 2. Quality Gate: Unit & Security Rules Tests
   test:
     runs-on: ubuntu-latest
     steps:
@@ -37,9 +37,16 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
+      - name: Setup Java (for Firebase Emulators)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - run: npm ci
       - name: Run Unit Tests
         run: npm run test:run
+      - name: Run Security Rules Tests
+        run: npm run test:rules
 
   # 3. Build & Preview (Only runs if Lint & Test pass)
   build_and_preview:

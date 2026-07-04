@@ -3,7 +3,7 @@
  * Main view for the Rota Management feature.
  * Orchestrates the grid, navigation header, and shift modification modals.
  */
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 // Components
 import AppPageContainer from '@/components/layout/AppPageContainer.vue';
@@ -16,17 +16,9 @@ import RotaShiftModal, {
 } from '@/features/rota/components/RotaShiftModal.vue';
 import { useRotaData } from '@/features/rota/composables/useRotaData';
 import { type RotaDay, useRotaDates } from '@/features/rota/composables/useRotaDates';
-import type { PracticeRole, PracticeSurgery } from '@/features/rota/rotaTypes';
+import type { RotaRow } from '@/features/rota/rotaTypes';
 
-// --- Types ---
-
-interface RotaRow {
-  id: string;
-  role: PracticeRole;
-  surgery: PracticeSurgery;
-}
-
-// --- Logic & State ---
+// Logic & State
 
 const RESIZE_DEBOUNCE_MS = 80;
 
@@ -45,10 +37,10 @@ const {
   currentStartDate
 } = useRotaDates(breakpoints);
 
-// 2. Data Management
-const { flattenedRows, loadData, getShiftsForSlot } = useRotaData(user);
+// Data Management
+const { flattenedRows, getShiftsForSlot, isRequirementUnmet } = useRotaData(user);
 
-// 3. Computed Props for UI
+// Computed Props for UI
 const dateRangeLabel = computed(() => {
   if (visibleDays.value.length === 0) return '';
   const start = visibleDays.value[0]!.label;
@@ -61,7 +53,7 @@ const isCurrentWeek = computed(() => {
   return visibleDays.value.some((d) => d.iso === today);
 });
 
-// 4. Modal / Interaction Logic
+// Modal / Interaction Logic
 // Ref to the modal component instance to call open()
 const rotaShiftModalRef = ref<InstanceType<typeof RotaShiftModal> | null>(null);
 
@@ -77,11 +69,8 @@ const onSlotClick = ({ rowItem, day }: { rowItem: RotaRow; day: RotaDay }) => {
 };
 
 const onShiftsSaved = () => {
-  loadData();
+  // Data is now reactive, no need to manually reload
 };
-
-// Initial Data Load Trigger
-watch(() => user.value?.practiceRef?.id, loadData, { immediate: true });
 </script>
 
 <template>
@@ -102,6 +91,7 @@ watch(() => user.value?.practiceRef?.id, loadData, { immediate: true });
     <RotaGrid
       :days="visibleDays"
       :get-shifts="getShiftsForSlot"
+      :is-requirement-unmet="isRequirementUnmet"
       :rows="flattenedRows"
       @slot-click="onSlotClick"
     />

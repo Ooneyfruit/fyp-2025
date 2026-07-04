@@ -3,17 +3,17 @@
  * Global type definitions for Vue single-file components and virtual modules.
  */
 
+/// <reference types="vite/client" />
+
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';
 
-  // Use object and unknown to satisfy strict linting rules against empty objects and explicit any.
   const component: DefineComponent<object, object, unknown>;
   export default component;
 }
 
 /**
  * Ambient module declaration for the Vite PWA virtual registry.
- * This ensures TypeScript recognises the 'virtual:pwa-register/vue' import.
  */
 declare module 'virtual:pwa-register/vue' {
   import { type Ref } from 'vue';

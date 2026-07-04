@@ -34,7 +34,6 @@ const fetchPracticeDetails = async (
 
       if (pSnap.exists()) {
         const data = pSnap.data();
-        // Explicitly cast data to an object type to satisfy TS spread constraints.
         return { id: pRef.id, ...(data as Record<string, unknown>) } as PracticeSummary;
       }
 
@@ -69,6 +68,27 @@ const performSwitch = async (practiceId: string): Promise<void> => {
 };
 
 /**
+ * Evaluates the current practice list to prevent ghost contexts mid-session.
+ * @param currentPractices - The currently available practices.
+ * @param activeId - The user's active practice ID.
+ * @param loading - The loading state of the practices listener.
+ */
+const handleFallbackPractice = (
+  currentPractices: PracticeSummary[] | undefined,
+  activeId: string | undefined,
+  loading: boolean
+): void => {
+  if (loading || !activeId || !currentPractices) return;
+
+  const hasAccess = currentPractices.some((p) => p.id === activeId);
+  const fallbackPractice = currentPractices[0];
+
+  if (!hasAccess && fallbackPractice) {
+    performSwitch(fallbackPractice.id);
+  }
+};
+
+/**
  * Composable for fetching user's practices and handling context switching.
  * @returns An object containing the reactive practices list, switch handler, and loading state.
  */
@@ -83,12 +103,15 @@ export function useUserPractices(): {
   let bridgeListener: Unsubscribe | null = null;
 
   /**
-   * Sets up the listener for the user's memberships.
-   * @param uid - The user ID to query.
+   * Cleans up the listener and resets the practices list.
    */
-  const init = (uid: string): void => {
+  const cleanup = () => {
     if (bridgeListener) bridgeListener();
-    // Query the bridge collection to find all practices the user is a member of.
+    practices.value = [];
+  };
+
+  const init = (uid: string) => {
+    cleanup();
     const q = query(collection(db, 'practice_users'), where('user', '==', doc(db, 'users', uid)));
 
     bridgeListener = onSnapshot(
@@ -103,22 +126,24 @@ export function useUserPractices(): {
     );
   };
 
-  onUnmounted(() => {
-    if (bridgeListener) bridgeListener();
-    practices.value = [];
-  });
+  onUnmounted(cleanup);
 
   // Re-initialise the listener when the authenticated user changes.
   watch(
     () => authUser.value?.uid,
-    (newUid) => {
-      if (newUid) {
-        init(newUid);
-      } else {
-        practices.value = [];
-      }
-    },
+    (newUid) => (newUid ? init(newUid) : cleanup()),
     { immediate: true }
+  );
+
+  // Reactive fallback: handles access revocation mid-session to prevent ghost contexts.
+  watch(
+    () => [practices.value, authUser.value?.practiceRef?.id, isLoading.value],
+    ([currentPractices, activeId, loading]) =>
+      handleFallbackPractice(
+        currentPractices as PracticeSummary[] | undefined,
+        activeId as string | undefined,
+        loading as boolean
+      )
   );
 
   return { practices, handleSwitch: performSwitch, isLoading };

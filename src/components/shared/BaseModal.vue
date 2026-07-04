@@ -14,7 +14,7 @@ export default {
 
 <script setup lang="ts">
 /**
- * Primary responsibility: Provides a robust, accessible modal dialog system.
+ * Primary responsibility: Provides a robust, accessible modal dialogue system.
  * Features:
  * - Stack-aware scroll locking (via shared module state).
  * - Keyboard dismissal.
@@ -48,7 +48,6 @@ const props = withDefaults(
     footerProps?: Record<string, unknown>;
     /**
      * Whether the modal should animate on initial render.
-     * Essential for modals that are conditionally rendered (v-if) in the parent.
      */
     appear?: boolean;
     /**
@@ -92,7 +91,7 @@ const props = withDefaults(
 // Define events for state management and cleanup notifications.
 const emit = defineEmits(['request-close', 'closed']);
 
-// Internal state for the exit confirmation dialog.
+// Internal state for the exit confirmation dialogue.
 const showExitConfirmation = ref(false);
 
 /**
@@ -149,8 +148,8 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 };
 
-// --- Scroll Locking Logic ---
-// We track 'isLocked' per instance to prevent double-counting if the watcher fires redundantly.
+// Scroll Locking Logic
+// Tracks 'isLocked' per instance to prevent double-counting if the watcher fires redundantly.
 let isLocked = false;
 
 const lockBody = () => {
@@ -250,7 +249,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Layout: full-screen fixed container to center the modal dialog. */
+/* Layout: full-screen container to centre the modal dialogue. */
 .modal-root {
   align-items: center;
   display: flex;
@@ -287,7 +286,7 @@ onUnmounted(() => {
   z-index: 1;
 }
 
-/* Resets default user-agent styles for the native dialog element. */
+/* Resets default user-agent styles for the native dialogue element. */
 dialog.modal-container {
   border: none;
   color: inherit;
@@ -317,7 +316,7 @@ dialog.modal-container {
 
 /* Header: layout and visual separation from the main body content. */
 .modal-header {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-colour);
   justify-content: space-between;
 }
 
@@ -344,7 +343,7 @@ dialog.modal-container {
 
 .close-btn:hover {
   background-color: var(--bg-app);
-  color: var(--color-danger);
+  color: var(--colour-danger);
 }
 
 .close-btn :deep(svg) {
@@ -364,7 +363,7 @@ dialog.modal-container {
   background: var(--bg-app);
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-colour);
   padding: var(--spacing-sm) var(--spacing-md);
 }
 

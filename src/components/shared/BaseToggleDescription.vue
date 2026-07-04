@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Labeled toggle component for forms.
+ * Labelled toggle component for forms.
  * Logic: combines a descriptive block with a functional toggle switch while maintaining shared state.
  */
 import BaseToggle from './BaseToggle.vue';
@@ -28,7 +28,3 @@ defineEmits(['update:modelValue']);
     />
   </div>
 </template>
-
-<style scoped>
-/* Logic: layout and interactive state styling are handled in main.css. */
-</style>

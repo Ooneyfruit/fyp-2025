@@ -34,7 +34,6 @@ const profileListeners = new Map<string, { unsub: Unsubscribe; count: number }>(
 
 /**
  * A fallback profile object that satisfies the UserProfile interface.
- * Used when data is still loading to prevent TypeScript union errors.
  */
 const LOADING_PROFILE: UserProfile = {
   uid: '',
@@ -46,7 +45,7 @@ const LOADING_PROFILE: UserProfile = {
 };
 
 /**
- * Increments the reference count and initializes a profile listener if needed.
+ * Increments the reference count and initialises a profile listener if needed.
  * @param userRef - The Firestore reference to the user document.
  */
 const attachProfileListener = (userRef: DocumentReference) => {
@@ -64,7 +63,7 @@ const attachProfileListener = (userRef: DocumentReference) => {
     userRef,
     (pSnap: DocumentSnapshot) => {
       if (pSnap.exists()) {
-        // Use markRaw to prevent Proxying of Firestore objects (DataCloneError Fix)
+        // Use markRaw to prevent Proxying of Firestore objects
         globalProfileStore.value[uid] = markRaw(pSnap.data() as UserProfile);
       }
     },
@@ -115,7 +114,7 @@ const getPracticeQuery = (practiceId: string, currentUser: UserProfile | null): 
 };
 
 /**
- * Synchronizes listener attachments based on the new snapshot data.
+ * Synchronises listener attachments based on the new snapshot data.
  * @param snapshot - The latest query snapshot from Firestore.
  * @param currentMemberships - The current list of loaded memberships.
  * @returns The mapped list of membership objects.
@@ -148,7 +147,7 @@ const processSnapshotUpdates = (
 /**
  * Transforms raw membership data into a sorted list with profile details.
  * @param list - The list of raw practice memberships.
- * @returns The enriched and sorted user list.
+ * @returns The resolved user list.
  */
 const resolveUserList = (list: PracticeMembership[]): PracticeUser[] => {
   return list
@@ -189,7 +188,7 @@ export function usePracticeUsers() {
   };
 
   /**
-   * Initiates real-time synchronization for practice memberships.
+   * Initiates real-time synchronisation for practice memberships.
    * @param practiceId - The id of the practice to monitor.
    */
   const startSync = (practiceId: string) => {
@@ -216,7 +215,7 @@ export function usePracticeUsers() {
 
   onUnmounted(stopSync);
 
-  // Synchronize the membership list whenever the active practice context or permissions change.
+  // Synchronise the membership list whenever the active practice context or permissions change.
   watch(
     () => [authUser.value?.practiceRef?.id, authUser.value?.is_administrator],
     ([newId]) => {

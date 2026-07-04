@@ -24,8 +24,8 @@ const isModalOpen = ref(false);
         <h4 class="card-title">General Information</h4>
         <BaseButton
           aria-label="Edit Details"
-          class="edit-btn"
           :icon="IconEdit"
+          icon-only
           variant="secondary"
           @click="isModalOpen = true"
         />

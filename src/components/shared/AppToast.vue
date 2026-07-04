@@ -44,7 +44,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 </template>
 
 <style scoped>
-/* Layout: fixed overlay anchored to the bottom center of the screen. */
+/* Layout: fixed overlay anchored to the bottom centre of the screen. */
 .toast-overlay {
   bottom: 2rem;
   left: 50%;
@@ -61,7 +61,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
 
 /* Theme: Card styling with a brand accent and flex alignment for actions. */
 .toast-body {
-  border-left: 0.375rem solid var(--color-primary);
+  border-left: 0.375rem solid var(--colour-primary);
   padding: 0.75rem 1rem;
   pointer-events: auto;
 }
@@ -124,7 +124,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
   transform: translate(-50%, 1.5rem) scale(0.95);
 }
 
-/* Responsive: Optimize layout for mobile viewports using a dynamic wrapping strategy. */
+/* Responsive: Optimise layout for mobile viewports using a dynamic wrapping strategy. */
 @media (width <= 40rem) {
   .toast-overlay {
     bottom: 1rem;
@@ -134,7 +134,7 @@ const { message, isVisible, actionLabel, handleAction, hideToast } = useToast();
   .toast-content {
     align-items: center;
 
-    /* Logic: utilize wrapping instead of a forced column to prevent unnecessary vertical expansion. */
+    /* Logic: utilise wrapping instead of a forced column to prevent unnecessary vertical expansion. */
     flex-wrap: wrap;
     gap: 0.5rem var(--spacing-sm);
   }

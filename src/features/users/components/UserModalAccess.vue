@@ -11,7 +11,6 @@ import BaseToggleDescription from '@/components/shared/BaseToggleDescription.vue
 import { user as authUser } from '@/composables/useAuth';
 import { type UserProfile } from '@/features/users/userTypes';
 
-// Define the shape of the form data we are editing
 export interface UserAccessForm {
   is_administrator: boolean;
   is_employee: boolean;
@@ -33,7 +32,6 @@ const showDemotionWarning = ref(false);
  * Logic: determines if the administrative toggle should be interactive.
  */
 const isAdminToggleDisabled = computed(() => {
-  // We can safely cast/check authUser here because useAuth is strictly typed now.
   const currentUser = authUser.value as UserProfile | null;
   const currentUserIsAdmin = currentUser?.is_administrator ?? false;
 
@@ -110,7 +108,7 @@ const abortDemotion = () => {
 .demotion-warning {
   align-items: center;
   background: hsl(var(--hue-warning) 100% 96%);
-  border: 1px solid var(--color-warning);
+  border: 1px solid var(--colour-warning);
   border-radius: var(--border-radius);
   display: flex;
   gap: 1.5rem;
@@ -121,7 +119,7 @@ const abortDemotion = () => {
 
 /* Typography: styling for the warning description */
 .warning-text {
-  color: var(--color-warning);
+  color: var(--colour-warning);
   display: flex;
   flex-direction: column;
   font-size: 0.85rem;

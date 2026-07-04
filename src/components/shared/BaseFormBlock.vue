@@ -27,7 +27,7 @@ defineProps({
 }
 
 .block-header {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-colour);
   color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 700;

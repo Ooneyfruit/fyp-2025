@@ -16,7 +16,7 @@
 .rd-selector-bar {
   align-items: center;
   background-color: var(--bg-surface, #fff);
-  border: 1px solid var(--border-color, #e2e8f0);
+  border: 1px solid var(--border-colour, #e2e8f0);
   border-radius: 8px;
   box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
   display: flex;

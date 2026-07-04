@@ -29,6 +29,11 @@ const getShifts = inject<(roleId: string, surgeryId: string, dateIso: string) =>
   () => []
 );
 
+const isRequirementUnmet = inject<(roleId: string, surgeryId: string, day: RotaDay) => boolean>(
+  'isRequirementUnmet',
+  () => false
+);
+
 const onGridClick = inject<(payload: { rowItem: unknown; day: RotaDay }) => void>(
   'onGridClick',
   () => {}
@@ -36,6 +41,9 @@ const onGridClick = inject<(payload: { rowItem: unknown; day: RotaDay }) => void
 
 const row = computed(() => props.item as RotaRow);
 const day = computed(() => props.header.meta as RotaDay);
+const isUnmet = computed(() =>
+  isRequirementUnmet(row.value.role.id, row.value.surgery.id, day.value)
+);
 
 const handleClick = () => {
   onGridClick({ rowItem: props.item, day: day.value });
@@ -46,6 +54,7 @@ const handleClick = () => {
   <div class="cell-wrapper">
     <RotaSlot
       :is-before-today="day.isBeforeToday"
+      :is-requirement-unmet="isUnmet"
       :is-today="day.isToday"
       :is-weekend="day.isWeekend"
       :role-id="row.role.id"

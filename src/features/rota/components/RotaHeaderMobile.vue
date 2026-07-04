@@ -110,7 +110,7 @@ const handleDateUpdate = (date: Date) => {
   background: none;
   border: none;
   bottom: -1.5rem; /* Position below the nav bar */
-  color: var(--primary-color);
+  color: var(--primary-colour);
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 700;

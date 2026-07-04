@@ -6,7 +6,6 @@
 import BaseButton from '@/components/shared/BaseButton.vue';
 
 // Define the interface for the actions passed by BaseModal.
-// Removed 'const props =' to fix ESLint "assigned but never used" error.
 withDefaults(
   defineProps<{
     onStay?: () => void;

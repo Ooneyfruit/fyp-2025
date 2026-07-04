@@ -23,7 +23,7 @@ const props = withDefaults(
 
 const emit = defineEmits<(e: 'update:date', date: Date) => void>();
 
-// --- Internal State ---
+// Internal State
 // The month being viewed in the picker calendar
 const viewDate = ref(new Date()); // Default to Today on load
 // The start date of the 3-day period, pending confirmation
@@ -50,7 +50,7 @@ const open = () => {
   isMonthPickerOpen.value = false;
 };
 
-// --- Calendar Grid Generation ---
+// Calendar Grid Generation
 
 const calendarDays = computed<{ date: Date | null; id: string }[]>(() => {
   const year = viewDate.value.getFullYear();
@@ -82,7 +82,7 @@ const calendarDays = computed<{ date: Date | null; id: string }[]>(() => {
   return days;
 });
 
-// --- Actions ---
+// Actions
 
 let lastClickTime = 0;
 let lastClickedDateVal = 0;
@@ -129,7 +129,6 @@ const changeYear = (delta: number) => {
 
 const selectToday = () => {
   const now = new Date();
-  // Capture the year currently being viewed before we update the view to Today
   const viewingYear = viewDate.value.getFullYear();
 
   now.setHours(0, 0, 0, 0);
@@ -138,7 +137,6 @@ const selectToday = () => {
   selectedDate.value = now;
   viewDate.value = new Date(now);
 
-  // Only close the month picker if the year we were viewing matches the current year
   if (viewingYear === now.getFullYear()) {
     isMonthPickerOpen.value = false;
   }

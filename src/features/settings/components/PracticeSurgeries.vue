@@ -39,12 +39,9 @@ const isModalOpen = ref(false);
 const selectedSurgery = ref<SurgeryConfig | null>(null);
 
 const displayedItems = computed(() => {
-  return (
-    props.items
-      .filter((item) => !!item.is_deleted === showArchived.value)
-      // Cast to Record to satisfy BaseTable requirements (Interface vs Index Signature)
-      .map((item) => item as unknown as Record<string, unknown>)
-  );
+  return props.items
+    .filter((item) => !!item.is_deleted === showArchived.value)
+    .map((item) => item as unknown as Record<string, unknown>);
 });
 
 // Comparator for Start Time sorting

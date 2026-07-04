@@ -35,9 +35,9 @@ const handleAction = () => {
 <template>
   <div class="cell-actions">
     <BaseButton
-      class="btn-square"
       :class="isDeleted ? 'restore-btn' : 'edit-btn'"
       :icon="isDeleted ? IconArchiveRestore : IconEdit"
+      icon-only
       :title="isDeleted ? 'Restore Role' : 'Edit Role'"
       variant="secondary"
       @click="handleAction"
@@ -52,24 +52,13 @@ const handleAction = () => {
   width: 100%;
 }
 
-/* Force perfect centering and square aspect ratio for icon-only buttons */
-.btn-square {
-  align-items: center;
-  border-color: transparent;
-  display: flex;
-  height: 2rem;
-  justify-content: center;
-  padding: 0 !important;
-  width: 2rem;
-}
-
 .restore-btn:hover {
-  background-color: var(--color-success-bg);
-  color: var(--color-success);
+  background-color: var(--colour-success-bg);
+  color: var(--colour-success);
 }
 
 .edit-btn:hover {
   background-color: #eff6ff;
-  color: var(--color-primary);
+  color: var(--colour-primary);
 }
 </style>

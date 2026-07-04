@@ -7,7 +7,7 @@
 import { type DocumentReference, type Timestamp } from 'firebase/firestore';
 import { z } from 'zod';
 
-// --- Validation Schemas ---
+// Validation Schemas
 
 /**
  * Runtime schema for the User Profile.
@@ -26,7 +26,7 @@ export const UserProfileSchema = z.object({
   id: z.string().optional()
 });
 
-// --- Type Definitions ---
+// Type Definitions
 
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 
@@ -37,7 +37,6 @@ export type FirestoreDate = Timestamp | { seconds: number } | string | number | 
 
 /**
  * Represents a user's membership within a specific practice.
- * Updated to match the actual Firestore 'practice_users' document structure.
  */
 export interface PracticeMembership {
   id: string;

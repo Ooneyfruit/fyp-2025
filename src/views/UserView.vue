@@ -18,7 +18,7 @@ import { useAdminAccess } from '@/composables/useAdminAccess';
 import { usePracticeUsers, UserDataViewAdapter, UserModal } from '@/features/users/usersApi';
 import { type PracticeUser } from '@/features/users/userTypes';
 
-// --- Type Definitions ---
+// Type Definitions
 
 /**
  * Interface defining the methods exposed by the UserModal component.
@@ -27,7 +27,7 @@ interface UserModalInstance {
   open: (user?: PracticeUser) => void;
 }
 
-// --- Logic and State ---
+// Logic and State
 
 // Enforce admin privileges for this view.
 useAdminAccess();

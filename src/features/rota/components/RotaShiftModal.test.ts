@@ -10,7 +10,7 @@ import { createShift, deleteShift } from '@/features/rota/rotaApi';
 
 import RotaShiftModal from './RotaShiftModal.vue';
 
-// --- Mocks ---
+// Mocks
 
 vi.mock('@/features/rota/rotaApi', () => ({
   createShift: vi.fn(),
@@ -116,7 +116,7 @@ describe('RotaShiftModal.vue', () => {
   it('saves new shifts when staff are added', async () => {
     const wrapper = mount(RotaShiftModal, { global: globalOptions });
 
-    // 1. Add staff via picker event
+    // Add staff via picker event
     const picker = wrapper.findComponent(RotaStaffPickerStub);
     await picker.vm.$emit('add', {
       uid: 'user_1',
@@ -124,7 +124,7 @@ describe('RotaShiftModal.vue', () => {
       role: 'Dentist'
     });
 
-    // 2. Trigger Save via the Footer prop directly
+    // Trigger Save via the Footer prop directly
     // This avoids testing DOM event propagation quirks and focuses on logic wiring
     const footer = wrapper.findComponent(RotaShiftModalFooterStub);
     const onSave = footer.props('onSave');

@@ -21,9 +21,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 /**
- * Initialize Firestore with persistent local caching enabled.
- * This utilizes the indexedDb-based persistent cache to improve load speeds across sessions.
- * Multiple tab management is enabled to synchronize the cache across browser instances.
+ * Initialise Firestore with persistent local caching enabled.
+ * This utilises the indexedDb-based persistent cache to improve load speeds across sessions.
+ * Multiple tab management is enabled to synchronise the cache across browser instances.
  */
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({

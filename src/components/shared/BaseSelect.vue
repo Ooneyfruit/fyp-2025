@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 /**
- * Standardized form selection component.
+ * Standardised form selection component.
  * Provides a visual wrapper for native selects with an animated chevron.
  */
 import IconChevronDown from '@/components/icons/IconChevronDown.vue';
@@ -13,7 +13,7 @@ defineProps({
   variant: {
     type: String,
     default: 'secondary',
-    validator: (v) => ['primary', 'secondary', 'danger'].includes(v)
+    validator: (v) => ['primary', 'secondary', 'danger'].includes(v as string)
   },
   fluid: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false }
@@ -22,11 +22,12 @@ defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 /**
- * Synchronizes the internal state and forces a blur to reset animations.
+ * Synchronises the internal state and forces a blur to reset animations.
+ *
  * @param event - The native change event.
  */
-const handleChange = (event) => {
-  const target = event.target;
+const handleChange = (event: Event) => {
+  const target = event.target as HTMLSelectElement | null;
 
   if (!target) {
     return;
@@ -101,7 +102,7 @@ const handleChange = (event) => {
 }
 
 .rd-select-danger + .select-icon {
-  color: var(--color-danger);
+  color: var(--colour-danger);
 }
 
 /* State: Rotate the icon 180 degrees when the select is active or focused. */

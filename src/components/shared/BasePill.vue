@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Provides a standardized, functional wrapper for small status
+ * Provides a standardised, functional wrapper for small status
  * indicators and categorization tags within the RotaDent design system.
  */
 
@@ -21,7 +21,7 @@ const props = defineProps({
    * Enables dynamic branding (e.g. for Rota Roles) while keeping standard pill geometry.
    * Structure: `{ bg: '#hex', accent: '#hex' }`
    */
-  customColors: {
+  customColours: {
     type: Object,
     default: null
   }
@@ -29,15 +29,15 @@ const props = defineProps({
 
 /**
  * Dynamically computes styles to override class-based defaults
- * only when customColors are provided.
+ * only when customColours are provided.
  */
 const styles = computed(() => {
-  if (!props.customColors) return {};
+  if (!props.customColours) return {};
 
   return {
-    backgroundColor: props.customColors.bg,
-    color: props.customColors.accent,
-    borderColor: props.customColors.accent
+    backgroundColor: props.customColours.bg,
+    color: props.customColours.accent,
+    borderColor: props.customColours.accent
   };
 });
 </script>

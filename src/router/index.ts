@@ -10,7 +10,6 @@ import { useToast } from '@/composables/useToast';
 
 /**
  * Interface representing the user properties required by the router.
- * Extracted from original documentation definitions.
  */
 interface RouterUser {
   is_administrator?: boolean;
@@ -63,7 +62,7 @@ const router = createRouter({
 
 /**
  * Navigation guard to enforce authentication and role-based access.
- * Uses return-based navigation control to satisfy modern Vue Router standards.
+ * Uses return-based navigation controls.
  * * @param to - Target route.
  * @returns Resolves with a route path for redirection or undefined to proceed.
  */
@@ -83,7 +82,7 @@ router.beforeEach(async (to: RouteLocationNormalized): Promise<string | void> =>
     });
   }
 
-  // Cast the generic user ref to our specific RouterUser interface.
+  // Cast the generic user ref to the RouterUser interface.
   const currentUser = user.value as RouterUser | null;
 
   // Redirect unauthenticated users to the login page unless they are already navigating there.

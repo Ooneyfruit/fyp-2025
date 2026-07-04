@@ -4,7 +4,7 @@
  *
  * This component provides a customizable styled checkbox that looks like a
  * toggle switch (slider). It supports `v-model` binding for two-way data
- * synchronization and can be disabled. It automatically generates a unique
+ * synchronisation and can be disabled. It automatically generates a unique
  * ID to link the `<input>` with its `<label>` for accessibility.
  */
 
@@ -16,7 +16,6 @@ defineProps<{
   label?: string;
 }>();
 
-// Fixed definition to satisfy SonarLint
 const emit = defineEmits<(e: 'update:modelValue', checked: boolean) => void>();
 
 const elementId = useId();
@@ -63,7 +62,7 @@ function handleChange(event: Event) {
 }
 
 .rd-toggle-input:checked + .rd-toggle .rd-toggle-slider {
-  background-color: var(--color-primary);
+  background-color: var(--colour-primary);
 }
 
 .rd-toggle-input:checked + .rd-toggle .rd-toggle-slider::before {

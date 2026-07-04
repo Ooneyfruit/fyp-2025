@@ -29,7 +29,6 @@ const addLog = (msg) => {
  */
 const repairDocument = (d, batch) => {
   const data = d.data();
-  // Ensure we have the necessary data to construct the ID.
   const userId = data.user?.id;
   const practiceId = data.practice?.id;
 

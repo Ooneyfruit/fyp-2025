@@ -1,0 +1,134 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Check if the user is authenticated.
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if the user matches the target userId.
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Check if the user is a member of the practice.
+    function isMemberOfPractice(practiceId) {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/practice_users/$(request.auth.uid + "_" + practiceId));
+    }
+    
+    // Check if the user is an administrator of the practice.
+    function isAdminOfPractice(practiceId) {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/practice_users/$(request.auth.uid + "_" + practiceId)).data.is_administrator == true;
+    }
+    
+    // Check if the user is a global developer/superuser with proper OAuth verification.
+    function isSuperuser() {
+      return isAuthenticated() && 
+        request.auth.token.email_verified == true && (
+          request.auth.token.email == 'douglas.yellow@gmail.com' || 
+          request.auth.token.email == 'douglas.yellow@googlemail.com'
+        );
+    }
+    
+    function isPracticeAdminOfUser(userData) {
+      return userData.current_practice != null && 
+        isAdminOfPractice(userData.current_practice[4]);
+    }
+
+    // --- Rules for Users ---
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isSuperuser() || 
+        (resource != null && isPracticeAdminOfUser(resource.data));
+      allow write: if isOwner(userId) || isSuperuser() ||
+        (request.resource != null && isPracticeAdminOfUser(request.resource.data));
+
+      // Recursive match for any subcollections under user documents
+      match /{allSubcollections=**} {
+        allow read, write: if isOwner(userId) || isSuperuser();
+      }
+    }
+
+    // --- Rules for Practice Users (Memberships) ---
+    match /practice_users/{membershipId} {
+      allow read: if isSuperuser() || (
+        isAuthenticated() && (
+          // Required for user practice list queries and single doc lookup of own profile:
+          resource.data.user == /databases/$(database)/documents/users/$(request.auth.uid) ||
+          // Required for practice admin membership tables:
+          isAdminOfPractice(resource.data.practice[4])
+        )
+      );
+      
+      allow write: if isSuperuser() || (
+        isAuthenticated() && (
+          (resource != null && isAdminOfPractice(resource.data.practice[4])) ||
+          (request.resource != null && isAdminOfPractice(request.resource.data.practice[4]))
+        )
+      );
+    }
+
+    // --- Rules for Practices and Subcollections ---
+    match /practices/{practiceId} {
+      allow read: if isSuperuser() || isMemberOfPractice(practiceId);
+      allow write: if isSuperuser() || isAdminOfPractice(practiceId);
+
+      // Recursive match for all subcollections (roles, surgeries, minimum_operating_staff, etc.)
+      match /{allSubcollections=**} {
+        allow read: if isSuperuser() || isMemberOfPractice(practiceId);
+        allow write: if isSuperuser() || isAdminOfPractice(practiceId);
+      }
+    }
+
+    // --- Rules for Shifts ---
+    match /shifts/{shiftId} {
+      // Allow read for any authenticated user to support root collection queries.
+      allow read: if isSuperuser() || isAuthenticated();
+      
+      // Writes must be from an administrator of the shift's practice.
+      // Extracts practice ID from the role_id Reference segments (segment 4).
+      allow create: if isSuperuser() || (
+        isAuthenticated() && 
+        isAdminOfPractice(request.resource.data.role_id[4])
+      );
+      allow update: if isSuperuser() || (
+        isAuthenticated() && 
+        isAdminOfPractice(resource.data.role_id[4])
+      );
+      allow delete: if isSuperuser() || (
+        isAuthenticated() && 
+        isAdminOfPractice(resource.data.role_id[4])
+      );
+    }
+
+    // --- Rules for Absences ---
+    match /absences/{absenceId} {
+      allow read: if isSuperuser() || (
+        isAuthenticated() && (
+          resource.data.user_id == /databases/$(database)/documents/users/$(request.auth.uid) ||
+          isPracticeAdminOfUser(get(resource.data.user_id).data)
+        )
+      );
+      allow write: if isSuperuser() || (
+        isAuthenticated() && (
+          request.resource.data.user_id == /databases/$(database)/documents/users/$(request.auth.uid) ||
+          isPracticeAdminOfUser(get(request.resource.data.user_id).data)
+        )
+      );
+    }
+
+    // --- Rules for Warnings ---
+    match /warnings/{warningId} {
+      allow read: if isSuperuser() || (
+        isAuthenticated() && 
+        isMemberOfPractice(get(resource.data.shift_id).data.role_id[4])
+      );
+      allow write: if isSuperuser() || (
+        isAuthenticated() && 
+        isAdminOfPractice(get(request.resource.data.shift_id).data.role_id[4])
+      );
+    }
+  }
+}

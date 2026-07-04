@@ -15,17 +15,14 @@ import UserModal from '@/features/users/components/UserModal.vue';
 import NavPracticeSwitcher from './NavPracticeSwitcher.vue';
 import NavUserMenu from './NavUserMenu.vue';
 
-// --- Type Definitions ---
+// Type Definitions
 interface UseLayoutReturn {
   isMobile: Ref<boolean>;
 }
-
-// Define the shape of the UserModal instance we are referencing
 interface UserModalInstance {
   open: (userData: unknown) => void;
 }
 
-// Fix: Use function type syntax for defineEmits to satisfy SonarLint S6598
 defineEmits<(e: 'toggleSidebar') => void>();
 
 const { user } = useAuth();
@@ -70,7 +67,7 @@ provide('userModal', userModalRef);
 .navbar {
   align-items: center;
   background: white;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-colour);
   display: flex;
   height: var(--navbar-height);
   justify-content: space-between;
@@ -96,14 +93,14 @@ provide('userModal', userModalRef);
 }
 
 .brand-text {
-  color: var(--color-primary);
+  color: var(--colour-primary);
   font-size: 1.25rem;
   font-weight: 600;
   white-space: nowrap;
 }
 
 .logo-icon {
-  color: var(--color-primary);
+  color: var(--colour-primary);
   height: 1.9rem;
   width: 1.9rem;
 }
